@@ -27,7 +27,7 @@ import cloudImg from '../../assests/images/uploadcloud.png';
 import _ from 'lodash';
 import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTIC, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
 import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RawMaterialDomesticFileHeadsVBC, RawMaterialDomesticFileHeadsZBC, RMDomesticVBC, RMDomesticVBCTempData, RMDomesticZBC, RMDomesticZBCTempData, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
-import { checkForSameFileUpload } from '../../helper';
+import { checkForSameFileUpload, getConfigurationKey } from '../../helper';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -88,6 +88,20 @@ class BulkUpload extends Component {
     */
     onPressHeads = (costingHeadFlag) => {
         this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+    }
+
+
+    checkLabourRateConfigure = (excelData) => {
+        return excelData.filter((el) => {
+            if (getConfigurationKey().IsOperationLabourRateConfigure === false) {
+                if (el.value === 'LabourRate') return false;
+            }
+            if (getConfigurationKey().IsDestinationPlantConfigure === false) {
+                if (el.value === 'DestinationPlant') return false;
+                if (el.value === 'DestinationPlantCode') return false;
+            }
+            return true;
+        })
     }
 
     /**
@@ -180,10 +194,11 @@ class BulkUpload extends Component {
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
+
+                                checkForFileHead = checkForSameFileUpload(this.checkLabourRateConfigure(ZBCOperation), fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(this.checkLabourRateConfigure(VBCOperation), fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
