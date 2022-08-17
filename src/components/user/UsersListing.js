@@ -118,11 +118,15 @@ class UsersListing extends Component {
 
 	}
 
+	onRowSelect = () => {
+		const selectedRows = this.state.gridApi?.getSelectedRows()
+		this.setState({ selectedRowData: selectedRows })
+	}
 
 	onBtExport = () => {
 		let tempArr = []
-
-		tempArr = this.props.userDataList
+		tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.userDataList ? this.props.userDataList : [])
 		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
@@ -528,10 +532,19 @@ class UsersListing extends Component {
 		const { handleSubmit, initialConfiguration, } = this.props;
 		const { EditAccessibility, AddAccessibility } = this.state;
 
+		const isFirstColumn = (params) => {
+
+			var displayedColumns = params.columnApi.getAllDisplayedColumns();
+			var thisIsFirstColumn = displayedColumns[0] === params.column;
+			return thisIsFirstColumn;
+		}
+
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
 			sortable: true,
+			headerCheckboxSelectionFilteredOnly: true,
+			checkboxSelection: isFirstColumn
 
 		};
 
@@ -658,6 +671,8 @@ class UsersListing extends Component {
 								}}
 								frameworkComponents={frameworkComponents}
 								enableBrowserTooltips={true}
+								onSelectionChanged={this.onRowSelect}
+								rowSelection={'multiple'}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>

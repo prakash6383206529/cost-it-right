@@ -515,7 +515,6 @@ class BOPImportListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
