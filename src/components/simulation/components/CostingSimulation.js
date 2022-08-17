@@ -398,10 +398,11 @@ function CostingSimulation(props) {
         }
 
         else if (temp.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            if (selectedRows[0].LockedBySimulationProcessStep === '' || selectedRows[0].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'}`)
+            let index = selectedRows.length - 1
+            if (selectedRows[index].LockedBySimulationProcessStep === '' || selectedRows[index].LockedBySimulationProcessStep === null) {
+                Toaster.warning(`${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'}`)
             } else {
-                Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+                Toaster.warning(`This costing is under approval with token number ${selectedRows[index].LockedBySimulationToken ? selectedRows[index].LockedBySimulationToken : '-'} at ${selectedRows[index].LockedBySimulationProcessStep ? selectedRows[index].LockedBySimulationProcessStep : "-"} with ${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'} .`)
             }
             gridApi.deselectAll()
             return false
