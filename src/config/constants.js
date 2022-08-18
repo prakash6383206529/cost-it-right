@@ -1848,6 +1848,11 @@ export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
+export const IMPORT = "Import"
+
+// SPACE KEY CODE
+export const SPACEBAR = 32
+
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
