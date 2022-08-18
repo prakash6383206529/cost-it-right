@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { BOUGHTOUTPART } from '../../../config/constants';
+import { BOUGHTOUTPART, DIMENSIONLESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
@@ -52,7 +52,7 @@ class AddBOPForm extends Component {
       this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, (res) => {
-          if (res?.data?.Data?.UnitOfMeasurementType == 'Dimensionless') {
+          if (res?.data?.Data?.UnitOfMeasurementType == DIMENSIONLESS) {
             this.setState({ isDimensionless: true })
           } else {
             this.setState({ isDimensionless: false })
