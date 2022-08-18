@@ -358,7 +358,7 @@ function SheetMetalBaicDrawer(props) {
                         required: true,
                         pattern: {
                           value: /^\d{0,6}(\.\d{0,4})?$/i,
-                          message: 'Maximum length for interger is 6 and for decimal is 4',
+                          message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
                       }}
                       handleChange={calculateProcessCost}
