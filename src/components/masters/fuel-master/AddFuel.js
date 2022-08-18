@@ -167,6 +167,19 @@ class AddFuel extends Component {
     return true;
   }
 
+  checkDuplicateRateGrid = (rateGrid, StateName, effectiveDate) => {
+    let countForGrid = 0
+    rateGrid && rateGrid.map((item) => {
+      if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY')))) {
+        countForGrid++
+      }
+    })
+
+    if (countForGrid !== 0) {
+      Toaster.warning('Rate for this State and Effective Date already exist')
+    }
+    return countForGrid
+  }
 
   rateTableHandler = () => {
     const { StateName, rateGrid, effectiveDate, } = this.state;
@@ -216,27 +229,9 @@ class AddFuel extends Component {
           return false;
         }
       }
-
-      let countSame = 0
-      let objList = rateGrid && rateGrid.map((item) => {
-        let obj = {}
-        obj.stateList = (item.StateId)
-        obj.effectiveDateList = (DayTime(item.effectiveDate).format('DD/MM/YYYY'))
-        return obj
-      })
-
-      let checkObj = { stateList: StateName?.value, effectiveDateList: DayTime(effectiveDate).format('DD/MM/YYYY') }
-      objList && objList.map((item) => {
-        if (JSON.stringify(item) === JSON.stringify(checkObj)) {
-          countSame++
-        }
-        return null
-      })
-      if (countSame !== 0) {
-        Toaster.warning('Rate for this State and Effective Date already exist')
+      if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
         return false
       }
-
       tempArray.push(...rateGrid, {
         Id: '',
         StateLabel: StateName ? StateName.label : '',
@@ -275,6 +270,9 @@ class AddFuel extends Component {
     const { StateName, rateGrid, effectiveDate, rateGridEditIndex } = this.state;
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
+    if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
+      return false
+    }
     let tempArray = [];
 
     if (fieldsObj === undefined || Number(fieldsObj) === 0) {
