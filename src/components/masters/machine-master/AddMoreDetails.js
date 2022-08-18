@@ -378,7 +378,7 @@ class AddMoreDetails extends Component {
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
-              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit }
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -799,6 +799,11 @@ class AddMoreDetails extends Component {
    * @description Used for Annual Maintenance
    */
   onPressUsesFuel = () => {
+    if (this.state.IsUsesFuel === false) {
+      this.props.change('FuelCostPerUnit', 0)
+      this.props.change('ConsumptionPerYear', 0)
+      this.props.change('TotalFuelCostPerYear', 0)
+    }
     this.setState({
       IsUsesFuel: !this.state.IsUsesFuel,
     });
@@ -1121,14 +1126,9 @@ class AddMoreDetails extends Component {
 
     if (IsUsesFuel) {
 
-
-
       const FuelCostPerUnit = checkForNull(machineFullValue?.FuelCostPerUnit)
-
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
-
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
-
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
     } else {
@@ -1475,11 +1475,6 @@ class AddMoreDetails extends Component {
       return false;
     }
 
-    // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-    // const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
-    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
-
-    const OutputPerHours = fieldsObj.OutputPerHours
     const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
     const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
@@ -1488,13 +1483,23 @@ class AddMoreDetails extends Component {
       Toaster.warning('Machine rate can not be negative.')
       return false;
     }
-
     let MachineRate
-    const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
+    // const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+
     if (UOM.type === TIME) {
+
       MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+
+      if (UOM.uom === "Minutes") {
+
+        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
+      } else if (UOM.uom === "Seconds") {
+
+        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
+      }
+
     } else {
-      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
 
     this.setState({ IsFinancialDataChanged: true })
@@ -1506,25 +1511,25 @@ class AddMoreDetails extends Component {
       processId: processName.value,
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
-      OutputPerHours: OutputPerHours,
-      OutputPerYear: OutputPerYear,
       MachineRate: MachineRate,
     }
 
-
     tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
+
+    const { isProcessGroup } = this.state
 
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup,
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
-      this.props.change('OutputPerHours', 0)
-      this.props.change('OutputPerYear', 0)
-      this.props.change('MachineRate', 0)
+
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
+
   };
 
   /**
@@ -2176,9 +2181,9 @@ class AddMoreDetails extends Component {
     }
   }
   /**
-* @method DisplayMachineRateLabel
-* @description for machine rate label with dynamic uom change
-*/
+  * @method DisplayMachineRateLabel
+  * @description for machine rate label with dynamic uom change
+  */
 
   DisplayMachineRateLabel = () => {
     return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
