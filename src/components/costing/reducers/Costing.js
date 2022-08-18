@@ -12,7 +12,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW, CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE,
   IS_COSTING_EFFECTIVE_DATE_DISABLED, CLOSE_OPEN_ACCORDION, BOP_DRAWER_LIST, SET_CUTOFF_RMC, GET_COSTING_SPECIFIC_TECHNOLOGY, SET_PLASTIC_ARR, SET_ASSEM_BOP_CHARGE,
   CHECK_IS_DATA_CHANGE, SET_ARRAY_FOR_COSTING, CHECK_IS_DISCOUNT_DATA_CHANGE, CHECK_IS_TOOL_DATA_CHANGE, CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE, CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
-  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT
 } from '../../../config/constants';
 
 const initialState = {
@@ -406,7 +406,7 @@ export default function costingReducer(state = initialState, action) {
     case GET_RM_DRAWER_DATA_LIST:
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
-        item.NetLandedCostCombine = item.EntryType === 'Import' ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
         return item
       })
       return {
@@ -489,7 +489,7 @@ export default function costingReducer(state = initialState, action) {
     case BOP_DRAWER_LIST:
       let tempBOP = [...action.payload]
       let arrayBOP = tempBOP && tempBOP.map((item) => {
-        item.NetLandedCostCombine = item.EntryType === 'Import' ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
         return item
       })
       return {

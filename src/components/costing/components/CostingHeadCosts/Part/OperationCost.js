@@ -72,14 +72,14 @@ function OperationCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
       let GridArray = gridData !== null ? gridData : [];
-      let QuantityMain = 1
+      let finalQuantity = 1
       let rowArray = rowData && rowData.map(el => {
         if (el.UOMType === MASS) {
-          QuantityMain = rmFinishWeight ? rmFinishWeight : 1
+          finalQuantity = rmFinishWeight ? rmFinishWeight : 1
         } else {
-          QuantityMain = el.Quantity
+          finalQuantity = el.Quantity
         }
-        const WithLaboutCost = checkForNull(el.Rate) * checkForNull(QuantityMain);
+        const WithLaboutCost = checkForNull(el.Rate) * checkForNull(finalQuantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
         const OperationCost = WithLaboutCost + WithOutLabourCost;
         return {
@@ -89,7 +89,7 @@ function OperationCost(props) {
           OperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: QuantityMain,
+          Quantity: finalQuantity,
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,

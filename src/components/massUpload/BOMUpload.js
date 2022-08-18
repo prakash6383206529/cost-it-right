@@ -10,6 +10,7 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
+import DayTime from '../common/DayTimeWrapper';
 
 class BOMUpload extends Component {
   constructor(props) {
@@ -92,6 +93,9 @@ class BOMUpload extends Component {
 
               let obj = {}
               val.map((el, i) => {
+                if ((fileHeads[i] === 'EffectiveDate') && typeof el === 'string') {
+                  el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+                }
                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                   el = getJsDateFromExcel(el)
                 }

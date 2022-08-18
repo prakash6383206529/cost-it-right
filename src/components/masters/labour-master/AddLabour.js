@@ -10,7 +10,7 @@ import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, SPACEBAR } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -752,7 +752,11 @@ class AddLabour extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) && gridTable.length !== 0 ? true : false} />
+                              isDisabled={(isEditFlag || this.state.inputLoader) && gridTable.length !== 0 ? true : false}
+                              onKeyDown={(onKeyDown) => {
+                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                              }}
+                            />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
