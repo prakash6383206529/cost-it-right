@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { getLeftMenu, getModuleIdByPathName } from '../../actions/auth/AuthActions';
 import { loggedInUserId } from '../../helper/auth';
 import { Link } from "react-router-dom";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
@@ -21,13 +20,13 @@ class Leftmenu extends Component {
 	UNSAFE_componentWillMount() {
 	}
 	setModuleId = (ModuleId) => {
-		reactLocalStorage.set('ModuleId', ModuleId)
+		JSON.parse(localStorage.getItem('ModuleId'))
 	}
 
 	render() {
 		const { location, topAndLeftMenuData } = this.props;
 		const activeURL = location && location.pathname ? location.pathname : null;
-		const ModuleId = reactLocalStorage.get('ModuleId')
+		const ModuleId = JSON.parse(localStorage.getItem('ModuleId'))
 		let leftMenuFromAPI = []
 		topAndLeftMenuData &&
 			topAndLeftMenuData.map((el, i) => {
