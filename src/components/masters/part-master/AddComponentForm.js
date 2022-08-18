@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -225,6 +225,9 @@ class AddComponentForm extends Component {
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handlePartChange(e)}
                   noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the part numbers' : "No results found"}
+                  onKeyDown={(onKeyDown) => {
+                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  }}
                 />
                 {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
               </div>

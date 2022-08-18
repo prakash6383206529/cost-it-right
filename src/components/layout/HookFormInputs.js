@@ -4,6 +4,7 @@ import "./formInputs.css";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
+import { SPACEBAR } from "../../config/constants";
 
 export const TextFieldHooks = (input) => {
 
@@ -182,7 +183,7 @@ export const SearchableSelectHookForm = (field) => {
                 isLoading={isLoader}
                 isMulti={isMultiple}
                 onKeyDown={(onKeyDown) => {
-                  if (onKeyDown.keyCode === 32 && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
@@ -453,6 +454,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 value={value}
                 isLoading={isLoader}
                 noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
+                onKeyDown={(onKeyDown) => {
+                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                }}
               />
               {isLoader && <LoaderCustom customClass={`input-loader ${isLoaderClass}`} />}
             </div>

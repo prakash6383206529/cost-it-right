@@ -12,7 +12,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { GENERATOR_DIESEL, } from '../../../config/constants';
+import { GENERATOR_DIESEL, SPACEBAR, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -1359,7 +1359,11 @@ class AddPower extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={isEditFlag ? true : false} />
+                                    isDisabled={isEditFlag ? true : false}
+                                    onKeyDown={(onKeyDown) => {
+                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
+                                  />
                                 </div>
                                 {!isEditFlag && (
                                   <div
