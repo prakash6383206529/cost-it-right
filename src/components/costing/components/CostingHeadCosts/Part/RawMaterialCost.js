@@ -1152,7 +1152,7 @@ function RawMaterialCost(props) {
                                   }}
                                   defaultValue={item.ScrapRecoveryPercentage}
                                   className=""
-                                  customClassName={'withBorder'}
+                                  customClassName={'withBorder scrap-recovery'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleScrapRecoveryChange(e, index)
