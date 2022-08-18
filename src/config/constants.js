@@ -1642,7 +1642,7 @@ export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
 export const COSTING_SUMMARY_ = 'Costing Summary'
-export const APPROVAL_APP = 'Approval'
+export const APPROVAL_APP = 'Approval Status'
 export const TAX = 'Tax'
 export const COSTING_DETAILS_REPORT = 'Costing Details'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
@@ -1906,4 +1906,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.434";
+export const VERSION = "V1.2.435";
