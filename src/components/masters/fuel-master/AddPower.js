@@ -1315,7 +1315,7 @@ class AddPower extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isEditFlag ? `Update Power` : `Add Power`}</h2>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power</h1>
                       </div>
                     </div>
                   </div>
