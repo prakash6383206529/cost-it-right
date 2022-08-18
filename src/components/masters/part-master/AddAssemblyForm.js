@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { ASSEMBLY } from '../../../config/constants';
+import { ASSEMBLY, SPACEBAR } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
@@ -216,6 +216,9 @@ class AddAssemblyForm extends Component {
                                     loadOptions={promiseOptions}
                                     onChange={(e) => this.handleAssemblyPartChange(e)}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the assembly numbers' : "No results found"}
+                                    onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
                                 />
                                 {this.state.issubAssembyNoNotSelected && <div className='text-help'>This field is required.</div>}
                             </div>

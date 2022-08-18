@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { BOUGHTOUTPART, DIMENSIONLESS } from '../../../config/constants';
+import { BOUGHTOUTPART, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
@@ -228,6 +228,9 @@ class AddBOPForm extends Component {
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
                   noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  onKeyDown={(onKeyDown) => {
+                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  }}
                 />
                 {this.state.isBOPNoNotSelected && <div className='text-help'>This field is required.</div>}
               </div>

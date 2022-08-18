@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, SPACEBAR, } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -1382,7 +1382,11 @@ class AddMachineRate extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                 value={this.state.vendorName}
-                                isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                              />
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </div>
                           </Col>}

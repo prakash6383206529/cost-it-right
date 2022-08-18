@@ -18,6 +18,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import { SPACEBAR } from '../../../config/constants';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -488,7 +489,11 @@ class AddInterestRate extends Component {
                               loadOptions={promiseOptions}
                               onChange={(e) => this.handleVendorName(e)}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                              value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                              onKeyDown={(onKeyDown) => {
+                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                              }}
+                            />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>

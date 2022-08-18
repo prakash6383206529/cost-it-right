@@ -3,7 +3,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import "./formInputs.css";
-import { Children } from "react";
+import { SPACEBAR } from "../../config/constants";
 
 /*
 @method: renderLoginTextInputField
@@ -264,7 +264,7 @@ export function renderMultiSelectField(field) {
           onChange={field.selectionChanged}
           placeholder={placeholder}
           onKeyDown={(onKeyDown) => {
-            if (onKeyDown.keyCode === 32 && !onKeyDown.target.value) onKeyDown.preventDefault();
+            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
           }}
         />
       </div>
@@ -706,7 +706,7 @@ export const searchableSelect = ({
         menuPlacement={menuPlacement}
         className={"searchable"}
         onKeyDown={(onKeyDown) => {
-          if (onKeyDown.keyCode === 32 && !onKeyDown.target.value) onKeyDown.preventDefault();
+          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}
       />
       {children}
@@ -773,7 +773,7 @@ export const RFReactSelect = ({
         onFocus={onFocus}
         className={className}
         onKeyDown={(onKeyDown) => {
-          if (onKeyDown.keyCode === 32 && !onKeyDown.target.value) onKeyDown.preventDefault();
+          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}
       />
       {touched && error}
