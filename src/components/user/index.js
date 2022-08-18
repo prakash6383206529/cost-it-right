@@ -4,7 +4,6 @@ import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstr
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
@@ -31,7 +30,7 @@ class User extends Component {
   }
 
   topAndLeftMenuFunction = () => {
-    let ModuleId = reactLocalStorage.get('ModuleId');
+    let ModuleId = JSON.parse(localStorage.getItem('ModuleId'));
     let leftMenuFromAPI = []
     const { topAndLeftMenuData } = this.props;
     topAndLeftMenuData && topAndLeftMenuData.map(el => {

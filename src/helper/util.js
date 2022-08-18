@@ -71,7 +71,7 @@ const handleHTTPStatus = (response) => {
       toast.error('Authentication error. Please contact your IT Team.')
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
-      reactLocalStorage.set('ModuleId', '');
+      localStorage.setItem("ModuleId", JSON.stringify(""))
       window.location.assign('/login');
       return false
     case 403:
@@ -953,11 +953,39 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (props) => {
+export const showTitleForActiveToggle = (index) => {
   setTimeout(() => {
-    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    let titleActive = document.getElementsByClassName("active-switch")[index];
+
+    if (titleActive === undefined || titleActive === null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleActive = document.getElementsByClassName("active-switch")[rowIndex];
+    }
+
     titleActive?.setAttribute('title', 'Active');
-    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    let titleInactive = document.getElementsByClassName("inactive-switch")[index];
+
+    if (titleInactive === undefined || titleInactive == null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
+    }
+
     titleInactive?.setAttribute('title', 'Inactive');
   }, 500);
 }

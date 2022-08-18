@@ -69,6 +69,8 @@ class AddLabour extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.setState({ inputLoader: true })
       this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+    }
+    if (!this.state.isViewMode) {
       this.props.getMachineTypeSelectList(() => { })
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {

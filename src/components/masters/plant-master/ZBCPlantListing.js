@@ -178,7 +178,7 @@ class ZBCPlantListing extends Component {
 
         const { ActivateAccessibility } = this.props;
         if (rowData.UserId === loggedInUserId()) return null;
-        showTitleForActiveToggle(props)
+        showTitleForActiveToggle(props?.rowIndex)
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">

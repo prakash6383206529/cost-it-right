@@ -375,7 +375,7 @@ class AddMoreDetails extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit }
@@ -1119,18 +1119,25 @@ class AddMoreDetails extends Component {
     const { fieldsObj, initialConfiguration } = this.props;
     const { IsUsesFuel, IsUsesSolarPower, machineFullValue } = this.state;
 
+
     if (IsUsesFuel) {
 
+
+
       const FuelCostPerUnit = checkForNull(machineFullValue?.FuelCostPerUnit)
+
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
+
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
+
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
-    } else if (IsUsesSolarPower) {
+    } else {
+
       // if (IsUsesSolarPower) {
-      this.props.change('FuelCostPerUnit', 0)
-      this.props.change('ConsumptionPerYear', 0)
-      this.props.change('TotalFuelCostPerYear', 0)
+      // this.props.change('FuelCostPerUnit', 0)
+      // this.props.change('ConsumptionPerYear', 0)
+      // this.props.change('TotalFuelCostPerYear', 0)
 
       const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)  //state
       const UtilizationFactorPercentage = checkForNull(fieldsObj?.UtilizationFactorPercentage)
@@ -3185,7 +3192,7 @@ class AddMoreDetails extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Utilization(%)`}
+                                  label={`Efficiency(%)`}
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3841,6 +3848,7 @@ function mapStateToProps(state) {
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
+
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
   const { fuelComboSelectList } = fuel;
