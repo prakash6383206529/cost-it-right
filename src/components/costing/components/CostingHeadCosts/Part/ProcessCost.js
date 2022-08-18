@@ -1006,7 +1006,7 @@ function ProcessCost(props) {
                         required: true,
                         pattern: {
                           value: /^\d{0,6}(\.\d{0,4})?$/i,
-                          message: 'Max. length for integer is 6 and for decimal is 4',
+                          message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
                       }}
                       errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[index] && errors.SingleProcessGridField[index][parentIndex] && errors.SingleProcessGridField[index][parentIndex].Quantity : ''}
@@ -1191,7 +1191,7 @@ function ProcessCost(props) {
                                           required: true,
                                           pattern: {
                                             value: /^\d{0,6}(\.\d{0,4})?$/i,
-                                            message: 'Max. length for integer is 6 and for decimal is 4',
+                                            message: 'Maximum length for integer is 6 and for decimal is 4',
                                           },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
