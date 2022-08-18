@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
@@ -213,23 +212,15 @@ class SideBar extends Component {
    * @description Used to set left menu and Redirect to first menu.
    */
   setLeftMenu = (ModuleId) => {
-    reactLocalStorage.set("ModuleId", ModuleId);
+    localStorage.setItem("ModuleId", JSON.stringify(ModuleId))
   };
-
-
-  setModuleId = (ModuleId) => {
-    reactLocalStorage.set('ModuleId', ModuleId)
-  }
 
   /**
   * @method setLeftMenu
   * @description Used to set left menu and Redirect to first menu.
   */
-  SetMenu = (ModuleId) => {
-    if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
-      this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
-    }
-    reactLocalStorage.set("MenuModuleId", ModuleId);
+  SetMenu = () => {
+    JSON.parse(localStorage.getItem('ModuleId'))
   };
 
   /**
@@ -247,7 +238,7 @@ class SideBar extends Component {
             <>
               <li>
                 <Link
-                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: "/",
@@ -261,7 +252,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? activeDashBoard : dashboardImg}`}
+                    src={`${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeDashBoard : dashboardImg}`}
                     alt={module + " icon"}
                   />
                   <span>{module}</span>
@@ -306,7 +297,7 @@ class SideBar extends Component {
               // }}
               >
                 <Link
-                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
@@ -321,7 +312,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? masterActive : masterImage}
+                    src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? masterActive : masterImage}
                     alt={module + " icon"}
                   />
                   <span>Masters</span>
@@ -337,7 +328,7 @@ class SideBar extends Component {
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: JSON.parse(localStorage.getItem('MenuModuleId')), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -401,7 +392,7 @@ class SideBar extends Component {
               <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
                 <Link
                   key={i}
-                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
@@ -414,7 +405,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? addMasterActive : additionalMaster}
+                    src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? addMasterActive : additionalMaster}
                     alt={module + " icon"}
                   />
                   <span>Additional Masters</span>
@@ -429,7 +420,7 @@ class SideBar extends Component {
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: JSON.parse(localStorage.getItem('MenuModuleId')), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -473,7 +464,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: el.LandingPageURL,
@@ -494,7 +485,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
+                  src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
                 <span>Report</span>
@@ -522,7 +513,7 @@ class SideBar extends Component {
                 <Link
                   key={i}
                   // isActive={location && location.pathname === '/costing' ? true : false}
-                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
@@ -535,7 +526,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeCosting : costingImg}
+                    src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeCosting : costingImg}
                     alt={module + " icon"}
                   />
                   <span>Costing </span>
@@ -551,7 +542,7 @@ class SideBar extends Component {
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: JSON.parse(localStorage.getItem('MenuModuleId')), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -594,7 +585,7 @@ class SideBar extends Component {
             <li className={'nav-item dropdown'}>
               <Link
                 key={i}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
@@ -609,7 +600,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSimulation : simulationImg}
+                  src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeSimulation : simulationImg}
                   alt={module + " icon"}
                 />
                 <span>Simulation</span>
@@ -626,7 +617,7 @@ class SideBar extends Component {
                             onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: localStorage.getItem('ModuleId'), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
@@ -684,7 +675,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: el.LandingPageURL,
@@ -697,7 +688,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeUser : userImg}
+                  src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeUser : userImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>
@@ -724,7 +715,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/audit",
@@ -737,7 +728,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
+                  src={JSON.parse(localStorage.getItem('ModuleId')) === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>

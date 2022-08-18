@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { Link, } from "react-router-dom";
 import "./Breadcrumb.scss";
 
 class Breadcrumb extends Component {
@@ -23,7 +21,7 @@ class Breadcrumb extends Component {
 		if (prevProps.location !== this.props.location || prevProps.leftMenuData !== this.props.leftMenuData) {
 			const { location, leftMenuData, menusData } = prevProps;
 			if (location) {
-				const ModuleID = reactLocalStorage.get('ModuleId');
+				const ModuleID = JSON.parse(localStorage.getItem('ModuleId'));
 				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL === location.pathname);
 				const menuObj = menusData && menusData.find(el => el.ModuleId === ModuleID);
 				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')
