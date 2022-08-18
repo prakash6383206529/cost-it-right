@@ -51,7 +51,9 @@ class MachineRateListing extends Component {
             isBulkUpload: false,
             isLoader: false,
             showPopup: false,
+            showCopyPopup: false,
             deletedId: '',
+            copyId: '',
             isFinalApprovar: false,
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
@@ -251,13 +253,16 @@ class MachineRateListing extends Component {
     * @method copyItem
     * @description edit material type
     */
-    copyItem = (Id) => {
+    confirmCopy = (Id) => {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
                 this.resetState()
             }
         });
+    }
+    copyItem = (Id) => {
+        this.setState({ showCopyPopup: true, copyId: Id })
     }
 
     /**
@@ -285,8 +290,13 @@ class MachineRateListing extends Component {
         this.setState({ showPopup: false })
 
     }
+    onCopyPopupConfirm = () => {
+        this.confirmCopy(this.state.copyId);
+        this.setState({ showCopyPopup: false })
+
+    }
     closePopUp = () => {
-        this.setState({ showPopup: false })
+        this.setState({ showPopup: false, showCopyPopup: false })
     }
     /**
     * @method renderPaginationShowsTotal
@@ -345,9 +355,10 @@ class MachineRateListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.MachineId == props.node.data.MachineId) {
+                if (item.MachineId === props.node.data.MachineId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
         } else {
@@ -754,6 +765,9 @@ class MachineRateListing extends Component {
                 }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
+                }
+                {
+                    this.state.showCopyPopup && <PopupMsgWrapper isOpen={this.state.showCopyPopup} closePopUp={this.closePopUp} confirmPopup={this.onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />
                 }
                 {
                     this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} isViewFlag={true} />
