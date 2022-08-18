@@ -353,7 +353,7 @@ class UsersListing extends Component {
 
 		const { ActivateAccessibility } = this.state;
 		if (rowData.UserId === loggedInUserId()) return null;
-		showTitleForActiveToggle(props)
+		showTitleForActiveToggle(props?.rowIndex)
 		return (
 			<>
 				<label htmlFor="normal-switch" className="normal-switch">

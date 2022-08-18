@@ -197,12 +197,10 @@ class ReasonListing extends Component {
    */
   statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    console.log('cellValue: ', cellValue);
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
     const { ActivateAccessibility } = this.state;
     if (rowData.UserId === loggedInUserId()) return null;
-    showTitleForActiveToggle(props)
+    showTitleForActiveToggle(props?.rowIndex)
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
