@@ -253,7 +253,7 @@ function Plastic(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                       // maxLength: 4,
                     }}
@@ -277,7 +277,7 @@ function Plastic(props) {
                       required: false,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -335,7 +335,7 @@ function Plastic(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                        message: 'Maximum length for integer is 4 and for decimal is 7',
                       },
 
                     }}

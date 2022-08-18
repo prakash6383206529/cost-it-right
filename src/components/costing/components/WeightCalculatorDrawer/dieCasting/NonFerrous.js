@@ -247,7 +247,7 @@ function NonFerrous(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
 
                                                 }}
@@ -271,7 +271,7 @@ function NonFerrous(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -340,7 +340,7 @@ function NonFerrous(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -409,7 +409,7 @@ function NonFerrous(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
 
                                         }}
