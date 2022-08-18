@@ -129,8 +129,10 @@ class AddMoreDetails extends Component {
         groupName: false
       },
       UOMName: 'UOM',
-      FuelEntryId: ''
+      FuelEntryId: '',
+      DataToChange: [],
     }
+    this.dropzone = React.createRef();
   }
 
 
@@ -267,6 +269,7 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
 
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -324,7 +327,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
+            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -374,7 +377,8 @@ class AddMoreDetails extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
-              FuelEntryId: Data?.FuelEntryId
+              FuelEntryId: Data?.FuelEntryId,
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -1122,9 +1126,7 @@ class AddMoreDetails extends Component {
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
-    } else {
-
-
+    } else if (IsUsesSolarPower) {
       // if (IsUsesSolarPower) {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
@@ -1605,10 +1607,21 @@ class AddMoreDetails extends Component {
     this.props.change('NetLandedCost', NetLandedCost)
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false, attachmentLoader: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-
+    this.setState({ attachmentLoader: true })
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -1621,13 +1634,25 @@ class AddMoreDetails extends Component {
       this.props.fileUploadMachine(data, (res) => {
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files, attachmentLoader: false })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray, attachmentLoader: false })
       })
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
+      this.dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -1661,6 +1686,10 @@ class AddMoreDetails extends Component {
     if (FileId == null) {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
+    }
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -1720,6 +1749,7 @@ class AddMoreDetails extends Component {
     }
 
     const { data, editDetails, fieldsObj } = this.props;
+    const { DataToChange } = this.state
 
     const userDetail = userDetails()
 
@@ -1828,6 +1858,14 @@ class AddMoreDetails extends Component {
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
         }
+      } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+        && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+        && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+        && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+      ) {
+        this.cancel()
+        return false
+
       } else {
         let MachineData = { ...requestData, MachineId: editDetails.Id }
         this.props.reset()
@@ -1952,9 +1990,19 @@ class AddMoreDetails extends Component {
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
           }
+        } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+          && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+          && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+        ) {
+
+          Toaster.warning('Please change data to send Machine for approval')
+          return false
         } else {
+
           this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })
         }
+
       } else {
 
         this.props.reset()
@@ -1972,7 +2020,6 @@ class AddMoreDetails extends Component {
   }
 
   handleYearChange = (year) => {
-
     this.setState({
       manufactureYear: year
     })
@@ -3624,23 +3671,37 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? '' :
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              disabled={this.state.isViewMode}
-                              //onSubmit={this.handleSubmit}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
-                              inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                              disabled={this.state.isViewFlag ? true : isViewMode}
+                              inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">
+                                    Browse
+                                  </span>
+                                  <br />
+                                  file to upload
+                                </span>
+                              </div>))}
                               styles={{
                                 dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
                                 inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
                               }}
                               classNames="draper-drop"
-                            />}
+                            />
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>
@@ -3659,7 +3720,7 @@ class AddMoreDetails extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>
+                                    {!this.state.isViewMode && <img className="float-right" alt={''} disabled={this.state.isViewMode} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>}
                                   </div>
                                 )
                               })
@@ -3708,30 +3769,35 @@ class AddMoreDetails extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
           isEditFlag={false}
           ID={''}
           anchor={'right'}
-        />}
-        {isOpenAvailability && <EfficiencyDrawer
-          isOpen={isOpenAvailability}
-          closeDrawer={this.closeAvailabilityDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          NoOfWorkingHours={this.state.NoOfWorkingHours}
-          NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
-        />}
-        {isOpenProcessDrawer && <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={this.closeProcessDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        />
+        }
+        {
+          isOpenAvailability && <EfficiencyDrawer
+            isOpen={isOpenAvailability}
+            closeDrawer={this.closeAvailabilityDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            NoOfWorkingHours={this.state.NoOfWorkingHours}
+            NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
+          />
+        }
+        {
+          isOpenProcessDrawer && <AddProcessDrawer
+            isOpen={isOpenProcessDrawer}
+            closeDrawer={this.closeProcessDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
 
 
         {

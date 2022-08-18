@@ -106,9 +106,8 @@ class UserRegistration extends Component {
     this.props.getMastersSelectList(() => { })
 
     setTimeout(() => {
-      this.props.change('UserName', "")
-      this.props.change('Password', "")
-    }, 400);
+      this.props.reset()
+    }, 380);
   }
 
   /**

@@ -118,11 +118,15 @@ class UsersListing extends Component {
 
 	}
 
+	onRowSelect = () => {
+		const selectedRows = this.state.gridApi?.getSelectedRows()
+		this.setState({ selectedRowData: selectedRows })
+	}
 
 	onBtExport = () => {
 		let tempArr = []
-
-		tempArr = this.props.userDataList
+		tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.userDataList ? this.props.userDataList : [])
 		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
@@ -315,24 +319,9 @@ class UsersListing extends Component {
 	}
 
 	handleChange = (cell, row) => {
-		let data = {
-			Id: row.UserId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-		this.setState({ showPopup: true, row: row, cell: cell })
-		const toastrConfirmOptions = {
 
-			onOk: () => {
-				this.confirmDeactivateItem(data, cell);
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />,
-		};
-		// return toastr.confirm(
-		// 	`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
-		// 	toastrConfirmOptions
-		// );
+		this.setState({ showPopup: true, row: row, cell: cell })
+
 	}
 
 	/**
@@ -528,10 +517,19 @@ class UsersListing extends Component {
 		const { handleSubmit, initialConfiguration, } = this.props;
 		const { EditAccessibility, AddAccessibility } = this.state;
 
+		const isFirstColumn = (params) => {
+
+			var displayedColumns = params.columnApi.getAllDisplayedColumns();
+			var thisIsFirstColumn = displayedColumns[0] === params.column;
+			return thisIsFirstColumn;
+		}
+
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
 			sortable: true,
+			headerCheckboxSelectionFilteredOnly: true,
+			checkboxSelection: isFirstColumn
 
 		};
 
@@ -658,6 +656,8 @@ class UsersListing extends Component {
 								}}
 								frameworkComponents={frameworkComponents}
 								enableBrowserTooltips={true}
+								onSelectionChanged={this.onRowSelect}
+								rowSelection={'multiple'}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>

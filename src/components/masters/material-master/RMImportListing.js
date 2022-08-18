@@ -66,7 +66,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -224,8 +224,15 @@ function RMImportListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
-                isReset = false
+              if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                if (floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
+              } else {
+
+                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
               }
             }
             // Sets the filter model via the grid API
@@ -274,7 +281,11 @@ function RMImportListing(props) {
           setWarningMessage(false)
           for (var prop in floatingFilterData) {
 
-            if (prop !== "DepartmentCode") {
+            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+              if (prop !== "DepartmentName") {
+                floatingFilterData[prop] = ""
+              }
+            } else {
               floatingFilterData[prop] = ""
             }
           }
@@ -629,7 +640,11 @@ function RMImportListing(props) {
     gridOptions?.api?.setFilterModel(null);
 
     for (var prop in floatingFilterData) {
-      if (prop !== "DepartmentCode") {
+      if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+        if (prop !== "DepartmentName") {
+          floatingFilterData[prop] = ""
+        }
+      } else {
         floatingFilterData[prop] = ""
       }
     }
@@ -694,7 +709,7 @@ function RMImportListing(props) {
     filter: true,
     sortable: true,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isFirstColumn,
+    headerCheckboxSelection: isSimulation ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -835,6 +850,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>

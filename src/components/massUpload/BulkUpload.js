@@ -27,7 +27,7 @@ import cloudImg from '../../assests/images/uploadcloud.png';
 import _ from 'lodash';
 import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTIC, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
 import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RawMaterialDomesticFileHeadsVBC, RawMaterialDomesticFileHeadsZBC, RMDomesticVBC, RMDomesticVBCTempData, RMDomesticZBC, RMDomesticZBCTempData, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
-import { checkForSameFileUpload } from '../../helper';
+import { checkForSameFileUpload, getConfigurationKey } from '../../helper';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -87,7 +87,23 @@ class BulkUpload extends Component {
     * @description Used for Costing head check
     */
     onPressHeads = (costingHeadFlag) => {
-        this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+        setTimeout(() => {
+            this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+        }, 300);
+    }
+
+
+    checkLabourRateConfigure = (excelData) => {
+        return excelData.filter((el) => {
+            if (getConfigurationKey().IsOperationLabourRateConfigure === false) {
+                if (el.value === 'LabourRate') return false;
+            }
+            if (getConfigurationKey().IsDestinationPlantConfigure === false) {
+                if (el.value === 'DestinationPlant') return false;
+                if (el.value === 'DestinationPlantCode') return false;
+            }
+            return true;
+        })
     }
 
     /**
@@ -104,7 +120,6 @@ class BulkUpload extends Component {
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
         } else {
-
             let data = new FormData()
             data.append('file', fileObj)
 
@@ -112,7 +127,6 @@ class BulkUpload extends Component {
                 if (err) {
 
                 } else {
-
                     fileHeads = resp.rows[0];
                     let checkForFileHead
                     switch (String(this.props.fileName)) {
@@ -180,10 +194,11 @@ class BulkUpload extends Component {
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
+
+                                checkForFileHead = checkForSameFileUpload(this.checkLabourRateConfigure(ZBCOperation), fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(this.checkLabourRateConfigure(VBCOperation), fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
@@ -230,7 +245,7 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string') {
-                                    el = DayTime(el).format('YYYY-MM-DD HH:mm:ss')
+                                    el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
@@ -487,7 +502,6 @@ class BulkUpload extends Component {
                 costingHead={costingHead}
             />
         }
-
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}

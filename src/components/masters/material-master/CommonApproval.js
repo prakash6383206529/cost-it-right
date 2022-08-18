@@ -115,15 +115,12 @@ function CommonApproval(props) {
 * @description getting approval list table
 */
 
-    const getTableData = (skip = 0, take = 10, isPagination = true, dataObj) => {
-
+    const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, pageDropDownChange = false) => {
         //  API CALL FOR GETTING RM APPROVAL LIST
         setLoader(true)
-
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
             let obj = { ...floatingFilterData }
-
 
             if (res) {
                 let isReset = true
@@ -135,19 +132,16 @@ function CommonApproval(props) {
                         }
                     }
                     // Sets the filter model via the grid API
-
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    setTimeout(() => {
+                        setWarningMessage(false)
+                        setFloatingFilterData(obj)
+                    }, 23);
                 }, 300);
-
-                setTimeout(() => {
-                    setWarningMessage(false)
-                }, 330);
-
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
             }
-
         }))
     }
 
@@ -286,10 +280,8 @@ function CommonApproval(props) {
 
     const oldpriceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-
                 {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
             </>
         )
@@ -297,7 +289,6 @@ function CommonApproval(props) {
 
     const requestedOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
 
@@ -376,11 +367,7 @@ function CommonApproval(props) {
     * @description Renders Name link
     */
     const linkableFormatter = (props) => {
-
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
         if (selectedCostingListSimulation?.length > 0) {
             selectedCostingListSimulation.map((item) => {
 
@@ -560,7 +547,6 @@ function CommonApproval(props) {
         resizable: true,
         filter: true,
         sortable: true,
-        headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
 
@@ -575,32 +561,39 @@ function CommonApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
 
+
+
         var value = document.getElementById('page-size').value;
 
         if (Number(newPageSize) === 10) {
-            getTableData(currentRowIndex, 10, true, floatingFilterData)
+            getTableData(currentRowIndex, 10, true, floatingFilterData, true)
             setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
             setGlobalTake(10)
             setPageNo(pageNoNew)
         }
         else if (Number(newPageSize) === 50) {
-            getTableData(currentRowIndex, 50, true, floatingFilterData)
+
             setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
             setGlobalTake(50)
             setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
-                // getTableData(0, 50, true, floatingFilterData)
+                getTableData(0, 50, true, floatingFilterData)
+            } else {
+                getTableData(currentRowIndex, 50, true, floatingFilterData, true)
             }
+
         }
         else if (Number(newPageSize) === 100) {
-            getTableData(currentRowIndex, 100, true, floatingFilterData)
+
             setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
             setGlobalTake(100)
 
             if (pageNo >= Math.ceil(totalRecordCount / 100)) {
                 setPageNo(Math.ceil(totalRecordCount / 100))
-                // getTableData(0, 100, true, floatingFilterData)
+                getTableData(0, 100, true, floatingFilterData)
+            } else {
+                getTableData(currentRowIndex, 100, true, floatingFilterData, true)
             }
         }
 
@@ -610,6 +603,10 @@ function CommonApproval(props) {
         }
         else {
             gridApi.paginationSetPageSize(Number(value));
+        }
+        if (props.isApproval) {
+
+            props?.isPageNoChange()
         }
     };
 
@@ -672,7 +669,7 @@ function CommonApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-react`}>
+                    <div className={`ag-grid-react`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -706,7 +703,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>}
@@ -723,9 +720,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>}
+
                                     {props?.MasterId === RM_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
 
@@ -743,9 +738,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>}
-                                    {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' headerName="Effective Date"></AgGridColumn>} */}
                                     {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-
 
 
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
@@ -761,10 +754,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTonnage" headerName='Machine Tonnage' cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="ProcessName" headerName='Process Name'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
-                                    {/* {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' ></AgGridColumn>} */}
                                     {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-
-
 
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
@@ -778,12 +768,20 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
-                                    {/* {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="EffectiveDate" headerName="EffectiveDate" cellRenderer='effectiveDateRenderer'></AgGridColumn>} */}
+
                                     {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
+                                    <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
+                                    <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {!loader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                    {!loader &&
+
+                                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />
+
+
+                                    }
                                     {
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>

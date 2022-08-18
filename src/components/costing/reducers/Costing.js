@@ -404,10 +404,15 @@ export default function costingReducer(state = initialState, action) {
         ComponentItemDiscountData: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
+      let temp = [...action.payload]
+      let arrayRM = temp && temp.map((item) => {
+        item.EntryType === 'Import' ? item.NetLandedCostCombine = item.NetLandedCostConversion : item.NetLandedCostCombine = item.NetLandedCost
+        return item
+      })
       return {
         ...state,
         loading: false,
-        rmDrawerList: action.payload
+        rmDrawerList: arrayRM
       }
     case GET_PROCESS_DRAWER_DATA_LIST:
       return {
@@ -482,10 +487,15 @@ export default function costingReducer(state = initialState, action) {
         CloseOpenAccordion: action.payload
       }
     case BOP_DRAWER_LIST:
+      let tempBOP = [...action.payload]
+      let arrayBOP = tempBOP && tempBOP.map((item) => {
+        item.EntryType === 'Import' ? item.NetLandedCostCombine = item.NetLandedCostConversion : item.NetLandedCostCombine = item.NetLandedCost
+        return item
+      })
       return {
         ...state,
         loading: false,
-        bopDrawerList: action.payload
+        bopDrawerList: arrayBOP
       }
     case IS_COSTING_EFFECTIVE_DATE_DISABLED:
       return {

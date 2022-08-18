@@ -58,7 +58,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -156,12 +156,22 @@ class MachineRateListing extends Component {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in obj) {
-                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                                isReset = false
+
+                            if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                    isReset = false
+                                }
+                            } else {
+                                if (obj[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                        setTimeout(() => {
+                            this.setState({ warningMessage: false })
+                        }, 23);
 
                     }, 300);
 
@@ -546,8 +556,8 @@ class MachineRateListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -705,6 +715,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>

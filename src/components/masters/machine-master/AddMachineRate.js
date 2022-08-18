@@ -117,7 +117,7 @@ class AddMachineRate extends Component {
 
 
     // For Showing form in view mode if data is added in add more detail form
-    if (data.isViewFlag === true) {
+    if (data.isViewFlag === true || editDetails.isViewFlag === true) {
       this.setState({
         isViewMode: true,
         isViewFlag: true,
@@ -885,7 +885,7 @@ class AddMachineRate extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
