@@ -34,7 +34,7 @@ export default function (ComposedComponent, PAGENAME) {
                         //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
                         reactLocalStorage.setObject("isUserLoggedIn", false);
                         reactLocalStorage.setObject("userDetail", {});
-                        reactLocalStorage.set('ModuleId', '');
+                        localStorage.setItem("ModuleId", JSON.stringify(""))
                         this.setState({ redirectToLogin: true })
                     }
                 })
