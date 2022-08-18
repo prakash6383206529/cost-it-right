@@ -326,7 +326,7 @@ function AddBOP(props) {
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
