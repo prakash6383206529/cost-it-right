@@ -196,6 +196,7 @@ export const MESSAGES = {
   DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully',
   MACHINE_DELETE_ALERT: 'Are you sure you want to delete this Machine?',
   UPDATE_MACHINE_SUCCESS: 'Machine has been updated successfully',
+  COPY_MACHINE_POPUP: "Are you sure you want to copy this Machine?",
   COPY_MACHINE_SUCCESS: 'Machine has been copied successfully',
 
   //MACHINE TYPE
