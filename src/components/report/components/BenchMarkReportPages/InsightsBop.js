@@ -14,7 +14,7 @@ import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutPart
 import { PaginationWrapper } from '../../../common/commonPagination';
 
 function Insights(props) {
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })

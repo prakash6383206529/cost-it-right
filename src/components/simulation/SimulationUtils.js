@@ -129,7 +129,6 @@ export const impactmasterDownload = (impactedMasterData) => {
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
-
         tempObj.push(item.OperationName)
         tempObj.push(item.OperationCode)
         tempObj.push(item.UOM)
@@ -137,6 +136,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewOperationRate)
         tempObj.push(item.EffectiveDate)
         operationArraySet.push(tempObj)
+        return null
     })
 
     impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
@@ -159,6 +159,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.RMShearingCost)
         tempObj.push(item.EffectiveDate)
         rmArraySet.push(tempObj)
+        return null
     })
 
     impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
@@ -174,6 +175,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewPOPrice)
         tempObj.push(item.EffectiveDate)
         bopArraySet.push(tempObj)
+        return null
     })
     impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -188,6 +190,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.OldExchangeRate)
         tempObj.push(item.EffectiveDate)
         erArraySet.push(tempObj)
+        return null
     })
 
     const multiDataSet = [

@@ -1,12 +1,11 @@
-import React, { Component, useState } from 'react'
+import React, { useState } from 'react'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { useDispatch } from 'react-redux'
 import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RAW_MATERIAL, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
 
@@ -24,8 +23,6 @@ function CostingDetailSimulationDrawer(props) {
     // table code starts here
     const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation, isReportLoader } = props
 
-    const dispatch = useDispatch()
-
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     /**
@@ -42,16 +39,6 @@ function CostingDetailSimulationDrawer(props) {
             setIsApprovalDrawer(false)
         }
     }
-
-    const sendForApprovalData = () => {
-        setIsApprovalDrawer(true)
-    }
-
-
-    const cancel = (e = '') => {
-        toggleDrawer(e)
-    }
-
 
     // table code ends here
     if (showApprovalHistory === true) {
