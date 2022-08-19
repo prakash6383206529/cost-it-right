@@ -81,9 +81,8 @@ function AddBOP(props) {
   }
 
   const netLandedConversionFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.Currency !== '-' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData.NetLandedCostCurrency !== '-' ? checkForDecimalAndNull(rowData.NetLandedCostCurrency, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -325,7 +324,7 @@ function AddBOP(props) {
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
