@@ -729,39 +729,39 @@ function ReportListing(props) {
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                            <div>
-                                <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}><div className='refresh mr-0'></div></button>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn(ReportMaster)}
-                                </ExcelFile>
-                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
-                                    {renderColumnSAP(ReportSAPMaster)}
-                                </ExcelFile>
-
-                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
-                                    {renderColumnSAPEncoded(ReportSAPMaster)}
-                                </ExcelFile>
+                            <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                {renderColumn(ReportMaster)}
+                            </ExcelFile>
 
 
-                                {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                            {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                            </button></div> :
 
-                                    <>
-                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                            {/* DOWNLOAD */}
-                                        </button>
+                                <>
+                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        {/* DOWNLOAD */}
+                                    </button>
 
-                                        <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
-                                            <button id={'Excel-Downloads'} type="button" >
-                                            </button>}>
-                                            {renderColumn(ReportMaster)}
-                                        </ExcelFile>
+                                    <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                                        <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                                        </button>}>
+                                        {renderColumn(ReportMaster)}
+                                    </ExcelFile>
 
-                                    </>
+                                </>
 
-                                }
+                            }
+                            <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
+                                {renderColumnSAP(ReportSAPMaster)}
+                            </ExcelFile>
 
-                            </div>
+                            <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
+                                {renderColumnSAPEncoded(ReportSAPMaster)}
+                            </ExcelFile>
                         </div>
 
                     </Col>

@@ -5,6 +5,10 @@
 }
 .p-absolute {
     position: absolute;
+    &.right-22 {
+      right: 22px;
+      z-index: -1;  
+    }
 }
 .rate-form-container {
     .p-absolute {
