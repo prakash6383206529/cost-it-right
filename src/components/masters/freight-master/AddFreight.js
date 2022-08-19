@@ -24,6 +24,7 @@ import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from "../../../helper";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -59,7 +60,8 @@ class AddFreight extends Component {
         criteria: false,
         rate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     };
   }
   /**
@@ -685,6 +687,7 @@ class AddFreight extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
+                                    onFocus={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -694,7 +697,7 @@ class AddFreight extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
                           )}
                           <Col md="3">

@@ -27,9 +27,9 @@ import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
-import { CheckApprovalApplicableMaster, displayUOM } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 
@@ -81,6 +81,8 @@ class AddBOPDomestic extends Component {
       isSourceChange: false,
       source: '',
       remarks: '',
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -1042,6 +1044,7 @@ class AddBOPDomestic extends Component {
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                  onFocus={() => onFocus(this)}
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
@@ -1054,7 +1057,7 @@ class AddBOPDomestic extends Component {
                                 ></div>
                               )}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                           </Col>
 
                           {this.state.IsVendor && (
@@ -1124,8 +1127,10 @@ class AddBOPDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : 'Select Date'}
+                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
 
                           <Col md="3">
