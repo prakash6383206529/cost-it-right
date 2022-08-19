@@ -188,7 +188,7 @@ function RawMaterialCost(props) {
         tempArray && tempArray.map((item, index) => {
           setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
           setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
           return null
@@ -713,6 +713,7 @@ function RawMaterialCost(props) {
           item.NetLandedCost = weightData.RawMaterialCost
           item.WeightCalculatorRequest = weightData
           item.WeightCalculationId = weightData.WeightCalculationId
+          item.RawMaterialCalculatorId = weightData.WeightCalculationId
           item.IsCalculatedEntry = true
           item.IsCalculaterAvailable = true
           item.CutOffRMC = CutOffRMC
@@ -762,7 +763,7 @@ function RawMaterialCost(props) {
     tempArr && tempArr.map((item, index) => {
       setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       return null
