@@ -30,8 +30,6 @@ function SimulationApprovalListing(props) {
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approveDrawer, setApproveDrawer] = useState(false)
-    const [selectedIds, setSelectedIds] = useState('')
-    const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
     const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
@@ -490,13 +488,10 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
-        else {
-            setReasonId(selectedRows[0]?.ReasonId)
-        }
 
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
-        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]

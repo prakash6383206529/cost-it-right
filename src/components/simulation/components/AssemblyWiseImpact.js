@@ -26,7 +26,6 @@ function AssemblyWiseImpact(props) {
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
-    const [showTableData, setShowTableData] = useState(false);
     const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const dispatch = useDispatch();
@@ -55,16 +54,7 @@ function AssemblyWiseImpact(props) {
                 })
             }
             setCount(1)
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-
-                if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                    setShowTableData(true)
-                }
-                else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                    setShowTableData(false)
-                }
-            }))
-
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
         }
         setloader(false)
 

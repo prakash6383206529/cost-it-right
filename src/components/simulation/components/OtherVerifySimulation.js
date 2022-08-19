@@ -37,11 +37,6 @@ function OtherVerifySimulation(props) {
     const [verifyList, setVerifyList] = useState([])
     const [loader, setLoader] = useState(false)
 
-    // const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-    //     mode: 'onBlur',
-    //     reValidateMode: 'onChange',
-    // })
-
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -200,8 +195,6 @@ function OtherVerifySimulation(props) {
                     break;
             }
         }
-
-
     }, 500)
 
     const closeDrawer = (e = '', mode) => {

@@ -31,13 +31,9 @@ function ReportListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [createDate, setCreateDate] = useState(Date);
-    const [costingVersionChange, setCostingVersion] = useState('');
-    const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
@@ -101,16 +97,10 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const createDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        setCreateDate(cellValue)
-    }
-
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
-        setCostingVersion(temp);
         return temp
     }
 
@@ -147,13 +137,11 @@ function ReportListing(props) {
             ))
         }
         setIsOpen(true)
-        setUserId(UserId)
     }
 
     const closeUserDetails = () => {
         setIsViewRM(false)
         setIsOpen(false)
-
     }
 
     const dateFormatter = (props) => {
@@ -266,7 +254,6 @@ function ReportListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
@@ -449,12 +436,6 @@ function ReportListing(props) {
 
         // getTableData(0, 100, true, floatingFilterData, false);
 
-        let departmentList = JSON.parse(localStorage.getItem('departmentList'))
-        departmentList = departmentList.split(",")
-        const found = departmentList.find(element => {
-            return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
-        })
-
         // if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin')) {  MAY BE USED LATER
 
         //     if (found !== undefined) {
@@ -543,14 +524,8 @@ function ReportListing(props) {
             }, 1400);
         }
     };
-
-    useEffect(() => {
-
-    }, [tableData])
-
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
         hyphenFormatter: hyphenFormatter,
         partTypeAssemblyFormatter: partTypeAssemblyFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
@@ -645,12 +620,6 @@ function ReportListing(props) {
         const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
-    }
-    const lastWeekFilter = () => {
-
-        setPageNo(1)
-        setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true, true);
     }
 
     return (
