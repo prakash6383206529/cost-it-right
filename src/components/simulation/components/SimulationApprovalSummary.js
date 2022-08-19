@@ -71,14 +71,14 @@ function SimulationApprovalSummary(props) {
     const [costingList, setCostingList] = useState([])
     const [simulationDetail, setSimulationDetail] = useState({})
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
-    const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
+    const [isApprovalDone, setIsApprovalDone] = useState(true) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
 
     /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
     // const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
@@ -157,7 +157,7 @@ function SimulationApprovalSummary(props) {
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
-        setLoader(true)
+        setLoader(false)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
@@ -274,7 +274,7 @@ function SimulationApprovalSummary(props) {
 
         setTimeout(() => {
 
-            setLoader(false)
+            setLoader(true)
         }, 500);
 
     }
@@ -286,7 +286,7 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
-        setLoader(true)
+        setLoader(false)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
@@ -987,7 +987,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     <CalculatorWrapper />
-                    {loader && <LoaderCustom />}
+                    {!loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         <Errorbox goToTopID={'success-box'} customClass={successBoxClass()} errorText={showSuccessMessage ? funcForSuccessBoxButton() : status} />
                         <Errorbox goToTopID={'error-box'} customClass={errorBoxClass()} errorText={showErrorMessage ? funcForErrorBoxButton() : errorStatus} />
@@ -1522,7 +1522,7 @@ domLayout='autoHeight'
 
                     </div>
 
-                    {!isApprovalDone && !loader &&
+                    {!isApprovalDone && loader &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
