@@ -21,7 +21,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
-import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -238,23 +238,6 @@ function BDSimulation(props) {
             return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
-    }
-
-
-    const runSimulation = () => {
-        let basicRateCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-
-            if (basicRateCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
     }
 
     const cancel = () => {

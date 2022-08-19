@@ -32,8 +32,6 @@ function MRSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [selectedRowData, setSelectedRowData] = useState([]);
-    const [tableData, setTableData] = useState([])
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -192,11 +190,6 @@ function MRSimulation(props) {
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter
     };
-
-    const onRowSelect = () => {
-        var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
-    }
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -327,8 +320,7 @@ function MRSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
-                                                // frameworkComponents={frameworkComponents}
-                                                onSelectionChanged={onRowSelect}
+                                            // frameworkComponents={frameworkComponents}
                                             >
                                                 <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
@@ -381,7 +373,7 @@ function MRSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

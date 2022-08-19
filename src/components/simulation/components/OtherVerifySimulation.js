@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,41 +11,28 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
     const { cancelVerifyPage, isExchangeRate } = props
-    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
-    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
     const [effectiveDate, setEffectiveDate] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
 
     const dispatch = useDispatch()
 
@@ -94,19 +80,16 @@ function OtherVerifySimulation(props) {
 
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
@@ -155,11 +138,9 @@ function OtherVerifySimulation(props) {
                 setObj(obj)
                 setSimulationDrawer(true)
 
-            default:
                 break;
+            default:
         }
-
-
     }, 500)
 
     const closeDrawer = (e = '', mode) => {

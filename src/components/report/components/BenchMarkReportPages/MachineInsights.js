@@ -4,19 +4,18 @@ import { Col, Row } from 'reactstrap';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../../dashboard/ChartsDashboard'
+import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { getProcessesSelectList } from '../../../masters/actions/MachineMaster'
 import { PaginationWrapper } from '../../../common/commonPagination';
 
 function Insights(props) {
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
