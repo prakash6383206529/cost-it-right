@@ -10,7 +10,7 @@ import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
 function SimulationUpload(props) {
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, control, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -58,9 +58,8 @@ function SimulationUpload(props) {
                     break;
                 case RMIMPORT:
                     setUploadData({ fileName: 'RMImport', label: 'RM Import' })
-
-                default:
                     break;
+                default:
             }
             setIsBulkUpload(true)
 

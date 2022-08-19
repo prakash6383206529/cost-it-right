@@ -1,5 +1,4 @@
 import React, { useState, useRef, Fragment } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +9,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, ZBC, AssemblyWiseImpactt } from '../../../config/constants';
+import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
@@ -40,12 +39,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { formState: getValues, setValue } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
-
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
@@ -56,9 +50,7 @@ function CostingSimulation(props) {
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
     const [apiData, setAPIData] = useState([])
-    const [id, setId] = useState('')
     const [pricesDetail, setPricesDetail] = useState({})
-    const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -331,7 +323,6 @@ function CostingSimulation(props) {
             simulationId: simulationId,
             costingId: data.CostingId
         }
-        setId(id)
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldNetOperationCost, NewOperationCost: data.NewNetOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency
         })
@@ -785,10 +776,6 @@ function CostingSimulation(props) {
         const cell = props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
-
-    useEffect(() => {
-
-    }, [isView])
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []

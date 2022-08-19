@@ -14,14 +14,12 @@ export function Impactedmasterdata(props) {
         let operationListing = false
         let exchangeRateListing = false
         let bopListing = false
-        let machineRateListing = false
 
         if (data?.length !== 0) {
             rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
             operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
-            machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
         }
 
         return (<>
