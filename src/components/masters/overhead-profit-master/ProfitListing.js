@@ -307,7 +307,7 @@ class ProfitListing extends Component {
             } if (item.VendorName === '-') {
                 item.VendorName = ' '
             }
-            if (item.EffectiveDate.includes('T')) {
+            if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }
