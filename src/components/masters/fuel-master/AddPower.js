@@ -21,7 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue, showDataOnHover } from '../../../helper';
+import { calculatePercentageValue, onFocus, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -86,7 +86,8 @@ class AddPower extends Component {
         unitGenerated: false,
         selfPowerCont: false,
         unitGeneratedDiesel: false
-      }
+      },
+      showErrorOnFocus: false
     }
   }
 
@@ -1363,6 +1364,7 @@ class AddPower extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
+                                    onFocus={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -1372,7 +1374,7 @@ class AddPower extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">

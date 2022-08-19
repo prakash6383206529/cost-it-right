@@ -21,6 +21,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const selector = formValueSelector('AddLabour')
 
@@ -57,7 +58,8 @@ class AddLabour extends Component {
         labourType: false,
         labourRate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     }
   }
 
@@ -762,8 +764,10 @@ class AddLabour extends Component {
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
+                              onFocus={() => onFocus(this)}
                             />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+
                           </div>
                         </Col>
                       )}

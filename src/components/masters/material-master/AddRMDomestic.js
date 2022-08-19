@@ -32,7 +32,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
@@ -113,7 +113,9 @@ class AddRMDomestic extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
   /**
@@ -1487,6 +1489,7 @@ class AddRMDomestic extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
+                                  onFocus={() => onFocus(this)}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1496,7 +1499,7 @@ class AddRMDomestic extends Component {
                                 ></div>
                               )}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                           </Col>
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
@@ -1705,9 +1708,10 @@ class AddRMDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
                                 placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
+                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
 
                         </Row>

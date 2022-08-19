@@ -1025,3 +1025,14 @@ export const showDataOnHover = (value) => {
   const data = temp.join(", ");
   return data;
 }
+
+// SHOW ERROR ON TOUCH IN VENDOR DROPDOWN AND DATE
+export const onFocus = (thisRef, dateFocus) => {
+  const temp = thisRef.state.selectValue && thisRef.selectRef.current.inputRef.select();
+  if (dateFocus) {
+    thisRef.setState({ showErrorOnFocusDate: true })
+  } else {
+    thisRef.setState({ showErrorOnFocus: true })
+  }
+  return temp
+}

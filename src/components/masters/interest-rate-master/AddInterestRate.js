@@ -21,6 +21,7 @@ import { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 import { SPACEBAR } from '../../../config/constants';
+import { onFocus } from '../../../helper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -49,6 +50,8 @@ class AddInterestRate extends Component {
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
 
     }
   }
@@ -534,8 +537,9 @@ class AddInterestRate extends Component {
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
+                                onFocus={() => onFocus(this)}
                               />
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </div>
                           </Col>
                         )}
@@ -715,8 +719,10 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
+                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
+                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>

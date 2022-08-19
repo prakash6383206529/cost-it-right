@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const gridOptions = {};
 
@@ -118,7 +119,8 @@ class AddVolume extends Component {
       gridColumnApi: null,
       rowData: null,
       setDisable: false,
-      inputLoader: false
+      inputLoader: false,
+      showErrorOnFocus: false
     }
   }
 
@@ -751,6 +753,7 @@ class AddVolume extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
+                                    onFocus={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -760,7 +763,7 @@ class AddVolume extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
 
                           )}
