@@ -9,6 +9,7 @@ import {
   GET_VOLUME_DATA_BY_PART_AND_YEAR,
   config,
 } from '../../../config/constants'
+import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
 // const config() = config
 
@@ -121,9 +122,10 @@ export function getVolumeDataList(filterData, callback) {
  */
 export function deleteVolume(ID, callback) {
   return (dispatch) => {
+    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.VolumeApprovedId}&VolumeBudgetedId=${ID.VolumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
     dispatch({ type: API_REQUEST })
     axios
-      .delete(`${API.deleteVolume}/${ID}`, config())
+      .delete(`${API.deleteVolume}?${QueryParams}`, config())
       .then((response) => {
         callback(response)
       })

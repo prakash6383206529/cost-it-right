@@ -3034,7 +3034,6 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Plant", value: "Plant", },
-    { label: "Destination Plant", value: "DestinationPlant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
     { label: "Approved Quantity", value: "ApprovedQuantity", },
 ]
