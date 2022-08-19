@@ -33,14 +33,10 @@ function ReportListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [createDate, setCreateDate] = useState(Date);
-    const [costingVersionChange, setCostingVersion] = useState('');
-    const [tableData, setTableData] = useState([])
+
     const [isLoader, setLoader] = useState(true)
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
@@ -104,16 +100,10 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const createDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        setCreateDate(cellValue)
-    }
-
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
-        setCostingVersion(temp);
         return temp
     }
 
@@ -150,14 +140,11 @@ function ReportListing(props) {
             ))
         }
         setIsOpen(true)
-        setUserId(UserId)
     }
 
     const closeUserDetails = () => {
         setIsViewRM(false)
         setIsOpen(false)
-        setUserId("")
-
     }
 
     const dateFormatter = (props) => {
@@ -270,7 +257,6 @@ function ReportListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
@@ -543,15 +529,9 @@ function ReportListing(props) {
             }, 1400);
         }
     };
-
-    useEffect(() => {
-
-    }, [tableData])
-
     const frameworkComponents = {
 
         linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
         hyphenFormatter: hyphenFormatter,
         partTypeAssemblyFormatter: partTypeAssemblyFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
@@ -704,13 +684,13 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus, true)
     }
+    // COMMENT FOR NOW AS TOLD BY TR
+    // const lastWeekFilter = () => {
 
-    const lastWeekFilter = () => {
-
-        setPageNo(1)
-        setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true, true);
-    }
+    //     setPageNo(1)
+    //     setCurrentRowIndex(0)
+    //     getTableData(0, 100, true, floatingFilterData, true, true);
+    // }
 
     return (
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">

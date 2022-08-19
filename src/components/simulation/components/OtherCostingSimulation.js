@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
-import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -34,11 +33,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { getValues, setValue } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
-
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
@@ -47,12 +41,9 @@ function OtherCostingSimulation(props) {
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
-    const [id, setId] = useState('')
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
-    const [material, setMaterial] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
-    const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -214,7 +205,6 @@ function OtherCostingSimulation(props) {
             simulationId: simulationId,
             costingId: data.CostingId
         }
-        setId(id)
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
             CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
@@ -442,10 +432,6 @@ function OtherCostingSimulation(props) {
         setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
 
     }
-
-    useEffect(() => {
-
-    }, [isView])
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []

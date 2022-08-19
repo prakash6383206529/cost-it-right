@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {
     API,
-    API_REQUEST,
     API_FAILURE,
     GET_REPORT_LIST, config, EMPTY_GUID,
     GET_ALL_REPORT_LIST

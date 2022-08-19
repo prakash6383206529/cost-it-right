@@ -7,9 +7,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedCostingListSimualtion, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, COMBINED_PROCESS, EMPTY_GUID } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -25,12 +25,7 @@ import ERSimulation from './SimulationPages/ERSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
-import OverheadListing from '../../masters/overhead-profit-master/OverheadListing'
-import ProfitListing from '../../masters/overhead-profit-master/ProfitListing'
 import ScrollToTop from '../../common/ScrollToTop';
-import OverheadSimulation from './SimulationPages/OverheadSimulation';
-import ProfitSimulation from './SimulationPages/ProfitSimulation';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import _ from 'lodash'
 
@@ -38,9 +33,8 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
-    const { location } = props;
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -56,7 +50,8 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
-    const [vendor, setVendor] = useState({})
+    /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+    // const [vendor, setVendor] = useState({})
     const [filterStatus, setFilterStatus] = useState(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
@@ -87,7 +82,6 @@ function Simulation(props) {
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
-    const selectedCostingListSimulation = useSelector(state => state.simulation.selectedCostingListSimulation)
 
     useEffect(() => {
         if (technology && (technology?.value !== undefined && technology?.value !== '')) {
@@ -113,7 +107,8 @@ function Simulation(props) {
                 technologyId: value.value,
                 loggedInUserId: loggedInUserId(),
                 simulationTechnologyId: (String(master.value) === BOPDOMESTIC || String(master.value) === BOPIMPORT || String(master.value) === EXCHNAGERATE || master.value === undefined) ? 0 : master.value,
-                vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
+                /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+                // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
@@ -137,7 +132,8 @@ function Simulation(props) {
                 technologyId: value.value,
                 loggedInUserId: loggedInUserId(),
                 simulationTechnologyId: master.value,
-                vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
+                /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+                // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
             if (value !== '' && Object.keys(master).length > 0) {
@@ -221,17 +217,6 @@ function Simulation(props) {
     }
 
     const renderModule = (value) => {
-        let temp = userDetails().Department
-        temp = temp && temp.map((item) => {
-            item = item.DepartmentCode
-            return item
-        })
-        // let tempValue = token
-        // tempValue = tempValue && tempValue.map((item) => {
-        //     let object = {}
-        //     object.SimulationId = item.value
-        //     return object
-        // })
         let tempValue = [{ SimulationId: tokenForSimulation?.value }]
 
         let obj = {
@@ -747,13 +732,6 @@ function Simulation(props) {
     const openEditPage = () => {
         setShowEditTable(true)
     }
-    const openEditPageReload = () => {
-        setShowEditTable(false)
-        setTimeout(() => {
-
-            setShowEditTable(true)
-        }, 1);
-    }
 
     const editMasterPage = (page) => {
         // let tempObject = token && token.map((item) => {
@@ -897,7 +875,7 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={((rmDomesticListing && rmDomesticListing.length === 0) || (rmImportListing && rmImportListing.length === 0) || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
                                         !isUploadSimulation(master.value) &&

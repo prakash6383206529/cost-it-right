@@ -1,15 +1,8 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId } from '../../../helper/auth'
-import { Badge } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
-import { GridTotalFormate } from '../../common/TableGridFunctions'
-import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -26,27 +19,6 @@ function SimulationHistory(props) {
 
   const dispatch = useDispatch()
 
-  const simulatedOnFormatter = (cell, row, enumObject, rowIndex) => {
-    //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-    return cell != null ? cell : '';
-  }
-
-  const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-    //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-    return cell != null ? cell : '';
-  }
-
-  const linkableFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div onClick={() => { }} className={'link'}>{cell}</div>
-  }
-
-  const buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <button className="View" type={'button'} onClick={() => { }} />
-      </>
-    )
-  }
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
@@ -74,54 +46,10 @@ function SimulationHistory(props) {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const statusFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div className={cell}>{row.DisplayCostingStatus}</div>
-  }
-
-  const renderVendorName = () => {
-    return <>Vendor Name</>
-  }
-  const renderImpactCosting = () => {
-    return <>Impacted Costing </>
-  }
-  const renderImpactParts = () => {
-    return <>Impacted Parts </>
-  }
-  const renderSimulatedBy = () => {
-    return <>Simulated By </>
-  }
-  const renderSimulatedOn = () => {
-    return <>Simulated On </>
-  }
-  const renderApprovedOn = () => {
-    return <>Approved On </>
-  }
-  const renderApprovedBy = () => {
-    return <>Approved By </>
-  }
-
   useEffect(() => {
     dispatch(getSimulationHistory(() => { }))
   }, [])
 
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-    //exportCSVText: 'Download Excel',
-    //onExportToCSV: this.onExportToCSV,
-    //paginationShowsTotal: true,
-    //paginationShowsTotal: this.renderPaginationShowsTotal,
-
-  }
   return (
     <div className="container-fluid simulation-history-page">
       <Row>

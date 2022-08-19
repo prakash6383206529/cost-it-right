@@ -4,7 +4,6 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -21,9 +20,8 @@ import Simulation from '../Simulation';
 import { VBC, ZBC } from '../../../../config/constants';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { Field } from 'redux-form';
 import WarningMessage from '../../../common/WarningMessage';
-import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -35,7 +33,6 @@ function RMSimulation(props) {
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -334,27 +331,6 @@ function RMSimulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
-
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -398,9 +374,7 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     }
-
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)

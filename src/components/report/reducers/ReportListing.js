@@ -43,7 +43,7 @@
 
 
 import {
-    API_REQUEST, CREATED_BY_ASSEMBLY, GET_REPORT_LIST, GET_ALL_REPORT_LIST,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST,
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 

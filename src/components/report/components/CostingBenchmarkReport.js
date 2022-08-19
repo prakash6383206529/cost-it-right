@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing'
 import RMImportListing from '../../masters/material-master/RMImportListing'
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../../simulation/actions/Simulation'
+import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
@@ -24,7 +24,7 @@ import OperationInsights from '../../report/components/BenchMarkReportPages/Oper
 function CostingBenchmarkReport(props) {
 
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
