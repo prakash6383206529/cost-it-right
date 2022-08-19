@@ -23,6 +23,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -70,7 +71,9 @@ class AddOverhead extends Component {
       inputLoader: false,
       minEffectiveDate: '',
       isDataChanged: this.props.data.isEditFlag,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -934,11 +937,12 @@ class AddOverhead extends Component {
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onFocus={() => onFocus(this)}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
                               />
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </div>
                           </Col>
                         )}
@@ -1081,8 +1085,10 @@ class AddOverhead extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
+                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
+                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                         </Col>
                       </Row>
 

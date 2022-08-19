@@ -16,6 +16,7 @@ import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
+import { onFocus } from '../../../helper';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -38,7 +39,8 @@ class AddIndivisualProduct extends Component {
             uploadAttachements: true,
             isImpactCalculation: false,
             setDisable: false,
-            attachmentLoader: false
+            attachmentLoader: false,
+            showErrorOnFocusDate: false
         }
     }
 
@@ -489,9 +491,7 @@ class AddIndivisualProduct extends Component {
 
                                                     <Col md="3">
                                                         <div className="form-group">
-
                                                             <div className="inputbox date-section">
-
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
@@ -503,14 +503,13 @@ class AddIndivisualProduct extends Component {
                                                                     autoComplete={'off'}
                                                                     required={true}
                                                                     changeHandler={(e) => {
-
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
                                                                     disabled={isViewMode}
-
+                                                                    onFocus={() => onFocus(this, true)}
                                                                 />
-
+                                                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                                                             </div>
                                                         </div>
                                                     </Col>
