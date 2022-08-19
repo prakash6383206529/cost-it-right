@@ -306,7 +306,6 @@ function VerifySimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
         setSelectedRowData(selectedRows)
     }
 
