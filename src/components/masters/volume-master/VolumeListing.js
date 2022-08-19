@@ -225,8 +225,8 @@ class VolumeListing extends Component {
    * @method deleteItem
    * @description confirm delete Item.
    */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+  deleteItem = (obj) => {
+    this.setState({ showPopup: true, deletedId: obj })
   }
 
   /**
@@ -255,12 +255,16 @@ class VolumeListing extends Component {
   buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
+    let obj = {}
+    obj.volumeId = rowData.VolumeId
+    obj.VolumeApprovedId = rowData.VolumeApprovedId
+    obj.VolumeBudgetedId = rowData.VolumeBudgetedId
 
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
         {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
@@ -611,7 +615,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
