@@ -15,6 +15,7 @@ import { renderNumberInputField, searchableSelect, } from "../../layout/FormInpu
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { debounce } from 'lodash';
+import { onFocus } from '../../../helper';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -35,7 +36,8 @@ class AddExchangeRate extends Component {
       setDisable: false,
       disablePopup: false,
       minEffectiveDate: '',
-      isFinancialDataChange: false
+      isFinancialDataChange: false,
+      showErrorOnFocusDate: false
 
     }
   }
@@ -430,9 +432,9 @@ class AddExchangeRate extends Component {
                               onChangeRaw={(e) => e.preventDefault()}
                               required
                               disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
-
+                              onFocus={() => onFocus(this, true)}
                             />
-
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                           </div>
                         </div>
                       </Col>

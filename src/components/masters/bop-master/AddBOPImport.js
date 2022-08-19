@@ -33,7 +33,7 @@ import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 
@@ -68,7 +68,7 @@ class AddBOPImport extends Component {
       IsFinancialDataChanged: true,
       oldDate: '',
 
-      UOM: {},
+      UOM: [],
       isOpenUOM: false,
       currency: [],
       isDateChange: false,
@@ -94,6 +94,8 @@ class AddBOPImport extends Component {
       isSourceChange: false,
       source: '',
       remarks: '',
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -807,7 +809,6 @@ class AddBOPImport extends Component {
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        console.log('IsFinancialDataChanged: ', IsFinancialDataChanged);
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -1058,8 +1059,7 @@ class AddBOPImport extends Component {
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                               required={true}
                               handleChangeDescription={this.handleUOM}
                               valueDescription={this.state.UOM}
@@ -1108,6 +1108,7 @@ class AddBOPImport extends Component {
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                  onFocus={() => onFocus(this)}
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
@@ -1120,7 +1121,7 @@ class AddBOPImport extends Component {
                                 ></div>
                               )}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                           </Col>
                           {this.state.IsVendor && (
                             <>
@@ -1199,10 +1200,11 @@ class AddBOPImport extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
+                                onFocus={() => onFocus(this, true)}
                                 placeholder={isEditFlag ? '-' : "Select Date"}
                               />
+                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
-
                           </Col>
                           <Col md="3">
                             <Field
@@ -1513,5 +1515,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddBOPImport));
