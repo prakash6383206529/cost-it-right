@@ -1848,6 +1848,11 @@ export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
+export const IMPORT = "Import"
+
+// SPACE KEY CODE
+export const SPACEBAR = 32
+
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
@@ -1906,4 +1911,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.435";
+export const VERSION = "V1.2.437";

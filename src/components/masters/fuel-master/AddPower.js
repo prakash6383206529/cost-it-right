@@ -12,7 +12,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { GENERATOR_DIESEL, } from '../../../config/constants';
+import { GENERATOR_DIESEL, SPACEBAR, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -1313,7 +1313,7 @@ class AddPower extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isEditFlag ? `Update Power` : `Add Power`}</h2>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power</h1>
                       </div>
                     </div>
                   </div>
@@ -1364,7 +1364,11 @@ class AddPower extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={isEditFlag ? true : false} />
+                                    isDisabled={isEditFlag ? true : false}
+                                    onKeyDown={(onKeyDown) => {
+                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
+                                  />
                                 </div>
                                 {!isEditFlag && (
                                   <div

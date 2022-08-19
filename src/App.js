@@ -41,7 +41,7 @@ class App extends Component {
     window.location.assign('/login');
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
-    reactLocalStorage.set('ModuleId', '');
+    localStorage.setItem("ModuleId", JSON.stringify(""))
 
     //setTimeout(() => {
     //}, 100)
