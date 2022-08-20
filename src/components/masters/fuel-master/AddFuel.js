@@ -19,7 +19,7 @@ import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
-import _, { debounce } from 'lodash';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -172,6 +172,7 @@ class AddFuel extends Component {
       if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY')))) {
         countForGrid++
       }
+      return null
     })
 
     if (countForGrid !== 0) {
@@ -391,6 +392,7 @@ class AddFuel extends Component {
       fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -398,6 +400,7 @@ class AddFuel extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -407,7 +410,7 @@ class AddFuel extends Component {
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
-
+        return null
       });
       return temp;
     }

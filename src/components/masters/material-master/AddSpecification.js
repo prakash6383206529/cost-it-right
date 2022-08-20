@@ -312,7 +312,7 @@ class AddSpecification extends Component {
     if (isEditFlag) {
 
 
-      if (DataToChange.Specification == values.Specification && DropdownChanged) {
+      if (DataToChange.Specification === values.Specification && DropdownChanged) {
         this.cancel('cancel')
         return false
       }

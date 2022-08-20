@@ -27,7 +27,6 @@ import { getConfigurationKey } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -174,7 +173,6 @@ class PowerListing extends Component {
   */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
@@ -324,17 +322,6 @@ class PowerListing extends Component {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
-
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-    };
 
     const isFirstColumn = (params) => {
 

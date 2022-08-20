@@ -187,7 +187,6 @@ class UOMMaster extends Component {
   buttonFormatter = (props) => {
     const { EditAccessibility } = this.state;
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     return (
       <>

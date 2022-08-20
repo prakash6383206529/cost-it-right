@@ -74,6 +74,7 @@ export default function MachineReducer(state = initialState, action) {
             action.payload && action.payload.map((item) => {
                 item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
                 arr.push(item)
+                return null
             })
             return {
                 ...state,
@@ -86,6 +87,7 @@ export default function MachineReducer(state = initialState, action) {
             action.payload && action.payload.map((item) => {
                 item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
                 arry.push(item)
+                return null
             })
             return {
                 ...state,
