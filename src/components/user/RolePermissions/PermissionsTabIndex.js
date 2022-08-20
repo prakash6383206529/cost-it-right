@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Loader } from "../../common/Loader";
 import "../UserRegistration.scss";
 import {
     getActionHeadsSelectList, getModuleActionInit, getModuleActionInitNew

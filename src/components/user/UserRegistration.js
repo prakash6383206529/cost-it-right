@@ -16,11 +16,10 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { EMPTY_DATA, IV, iv, KEY, key } from "../../config/constants";
+import { EMPTY_DATA, IV, KEY } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -501,12 +500,14 @@ class UserRegistration extends Component {
             isSelectAll = false
           }
         }
+        return null
       })
     } else {
       temp111 && temp111.map((ele, index) => {
         if (ele.IsChecked === false) {
           isSelectAll = false
         }
+        return null
       })
     }
 

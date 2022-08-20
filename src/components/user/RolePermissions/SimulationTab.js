@@ -39,6 +39,7 @@ class SimulationTab extends Component {
                 if (ele.ModuleName === 'Simulation') {
                     this.setState({ checkBox: ele.SelectAll })
                 }
+                return null
             })
         }
     }
@@ -71,7 +72,7 @@ class SimulationTab extends Component {
         let actionNames = actionData && actionData.find(el => el.ModuleName === SIMULATION)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
-                if (item.Value == 0) return false;
+                if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                     return (
                         <th className="crud-label">
@@ -80,6 +81,7 @@ class SimulationTab extends Component {
                         </th>
                     )
                 }
+                return null
             })
         }
     }
@@ -166,7 +168,7 @@ class SimulationTab extends Component {
     }
 
     selectAllHandlerEvery = () => {
-        const { Modules, checkBox } = this.state;
+        const { Modules } = this.state;
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
         let isCheckedSelectAll = !booleanVal
@@ -183,6 +185,7 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
+                return null
             })
             if (item?.Sequence === 0) {
                 item.IsChecked = false
@@ -220,6 +223,7 @@ class SimulationTab extends Component {
             if (item.ActionName === 'Add') {
                 addActionIndex = index
             }
+            return null
         })
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];

@@ -47,6 +47,7 @@ class UsersTab extends Component {
         if (ele.ModuleName === 'Users') {
           this.setState({ checkBox: ele.SelectAll })
         }
+        return null
       })
     }
   }
@@ -88,6 +89,7 @@ class UsersTab extends Component {
             </th>
           )
         }
+        return null
       })
     }
   }
@@ -98,7 +100,7 @@ class UsersTab extends Component {
   */
   moduleHandler = (index) => {
     //alert('hi')
-    const { Modules, checkedAll } = this.state;
+    const { Modules } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
 
     let actionArray = [];
@@ -188,6 +190,7 @@ class UsersTab extends Component {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
+        return null
       })
       item.IsChecked = isCheckedSelectAll
       return actionRows;
