@@ -13,9 +13,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
 import { renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -165,24 +165,24 @@ class AddExchangeRate extends Component {
   onFinancialDataChange = (e) => {
 
     if (e.target.name === "CurrencyExchangeRate") {
-      if (e.target.value == this.state.DataToChange.CurrencyExchangeRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+      if (e.target.value === this.state.DataToChange.CurrencyExchangeRate && this.state.DataToChange.BankRate === this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage === this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate === this.props.filedObj.CustomRate) {
         this.setState({ isFinancialDataChange: false })
         return
       }
     } else if (e.target.name === "BankRate") {
-      if (e.target.value == this.state.DataToChange.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+      if (e.target.value === this.state.DataToChange.BankRate && this.state.DataToChange.CurrencyExchangeRate === this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.BankCommissionPercentage === this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate === this.props.filedObj.CustomRate) {
         this.setState({ isFinancialDataChange: false })
         return
       }
     }
     else if (e.target.name === "BankCommissionPercentage") {
-      if (e.target.value == this.state.DataToChange.BankCommissionPercentage && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+      if (e.target.value === this.state.DataToChange.BankCommissionPercentage && this.state.DataToChange.BankRate === this.props.filedObj.BankRate && this.state.DataToChange.CurrencyExchangeRate === this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.CustomRate === this.props.filedObj.CustomRate) {
         this.setState({ isFinancialDataChange: false })
         return
       }
     }
     else if (e.target.name === "CustomRate") {
-      if (e.target.value == this.state.DataToChange.CustomRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate) {
+      if (e.target.value === this.state.DataToChange.CustomRate && this.state.DataToChange.BankRate === this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage === this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CurrencyExchangeRate === this.props.filedObj.CurrencyExchangeRate) {
         this.setState({ isFinancialDataChange: false })
         return
       }
@@ -233,24 +233,22 @@ class AddExchangeRate extends Component {
       }
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
-        const toastrConfirmOptions = {
-          onOk: () => {
+        // const toastrConfirmOptions = {
+        //   onOk: () => {
 
-            this.props.updateExchangeRate(updateData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
+        //     this.props.updateExchangeRate(updateData, (res) => {
+        //       this.setState({ setDisable: false })
+        //       if (res?.data?.Result) {
+        //         Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        //         this.cancel()
+        //       }
+        //     });
+        //   },
+        //   onCancel: () => { },
+        //   component: () => <ConfirmComponent />,
+        // }
         // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
-
-
     } else {/** Add new detail for creating exchange master **/
 
       this.setState({ setDisable: true })

@@ -903,10 +903,6 @@ class AddRMDomestic extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
       // this.props.fileDeleteRMDomestic(deleteData, (res) => {
       //   Toaster.success('File has been deleted successfully.')
       //   let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
@@ -952,7 +948,7 @@ class AddRMDomestic extends Component {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
-    const { initialConfiguration, fieldsObj } = this.props
+    const { fieldsObj } = this.props
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1196,7 +1192,7 @@ class AddRMDomestic extends Component {
    */
   render() {
 
-    const { handleSubmit, initialConfiguration, data, isRMAssociated } = this.props
+    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
 
     const filterList = (inputValue) => {

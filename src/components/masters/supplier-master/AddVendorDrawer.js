@@ -325,10 +325,10 @@ class AddVendorDrawer extends Component {
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
-            if (DropdownChanged && DataToCheck.Email == values.Email && DataToCheck.PhoneNumber == values.PhoneNumber &&
-                DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
-                DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
-                DataToCheck.AddressLine2 == values.AddressLine2) {
+            if (DropdownChanged && DataToCheck.Email === values.Email && DataToCheck.PhoneNumber === values.PhoneNumber &&
+                DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
+                DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
+                DataToCheck.AddressLine2 === values.AddressLine2) {
 
                 this.toggleDrawer('', 'cancel')
                 return false
@@ -396,7 +396,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, isVisible } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
         return (
             <div>

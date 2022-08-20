@@ -9,8 +9,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import { debounce } from 'lodash';
 
 class AddMaterialType extends Component {
@@ -61,14 +59,11 @@ class AddMaterialType extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { reset, ID, isEditFlag, DataToChange, initialValues } = this.props;
+    const { reset, ID, isEditFlag, initialValues } = this.props;
 
     if (isEditFlag) {
-
-
-
-      if (initialValues.CalculatedDensityValue == values.CalculatedDensityValue && initialValues.MaterialType == values.MaterialType) {
-        this.cancel()
+      if (initialValues.CalculatedDensityValue === values.CalculatedDensityValue && initialValues.MaterialType === values.MaterialType) {
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })

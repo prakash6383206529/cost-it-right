@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 import AddRMDomestic from './AddRMDomestic';
 import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
@@ -12,23 +11,13 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
 
-
-
-
 function RowMaterialMaster(props) {
 
-
-
-    const [isRMOpen, setisRMOpen] = useState(false);
-    const [isOpen, setisOpen] = useState(false);
-    const [isEditFlag, setisEditFlag] = useState(false);
-    const [isViewFlag, setisViewFlag] = useState(false);
-    const [Id, setId] = useState('');
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
 
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
@@ -45,7 +34,6 @@ function RowMaterialMaster(props) {
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
     const [isRMAssociated, setIsRMAssociated] = useState(false);
-    const dispatch = useDispatch()
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
 
@@ -183,8 +171,6 @@ function RowMaterialMaster(props) {
 
     // const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
     //     EditAccessibilityRMANDGRADE, } = this.state;
-
-    const history = History
 
     if (isRMDomesticForm === true) {
         return <AddRMDomestic

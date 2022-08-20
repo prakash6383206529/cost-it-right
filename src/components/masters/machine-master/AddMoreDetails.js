@@ -637,7 +637,6 @@ class AddMoreDetails extends Component {
 
   handleFuelType = (newValue, actionMeta) => {
     const { machineFullValue, effectiveDate } = this.state;
-    const { initialConfiguration } = this.props
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
         const { fuelType, selectedPlants } = this.state;
@@ -816,7 +815,6 @@ class AddMoreDetails extends Component {
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
       const { IsUsesSolarPower, selectedPlants, machineFullValue } = this.state;
-      const { initialConfiguration } = this.props
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
         this.props.getPowerCostUnit(selectedPlants.value, res => {
@@ -1121,7 +1119,7 @@ class AddMoreDetails extends Component {
   */
   powerCost = () => {
     const { fieldsObj, initialConfiguration } = this.props;
-    const { IsUsesFuel, IsUsesSolarPower, machineFullValue } = this.state;
+    const { IsUsesFuel, machineFullValue } = this.state;
 
 
     if (IsUsesFuel) {
@@ -1761,7 +1759,7 @@ class AddMoreDetails extends Component {
       return false
     }
 
-    const { data, editDetails, fieldsObj } = this.props;
+    const { editDetails, fieldsObj } = this.props;
     const { DataToChange } = this.state
 
     const userDetail = userDetails()
@@ -2194,8 +2192,8 @@ class AddMoreDetails extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
-    const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
+    const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
+    const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
     return (
       <>
@@ -2531,10 +2529,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.loanToggle}
-                              className={`${isLoanOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.loanToggle} type="button">{isLoanOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -2639,10 +2635,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.workingHourToggle}
-                              className={`${isWorkingOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.workingHourToggle} type="button">{isWorkingOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -2742,10 +2736,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.depreciationToogle}
-                              className={`${isDepreciationOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.depreciationToogle} type="button">{isDepreciationOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -2866,10 +2858,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.variableCostToggle}
-                              className={`${isVariableCostOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.variableCostToggle} type="button">{isVariableCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -3104,10 +3094,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.powerToggle}
-                              className={`${isPowerOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.powerToggle} type="button">{isPowerOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {isPowerOpen && <div className="accordian-content row mx-0 w-100">
@@ -3288,10 +3276,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.labourToggle}
-                              className={`${isLabourOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.labourToggle} type="button">{isLabourOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -3454,10 +3440,8 @@ class AddMoreDetails extends Component {
                             customClass={'Personal-Details'} />
                         </Col>
                         <Col md="6">
-                          <div className={'right-details'}>
-                            <a
-                              onClick={this.processToggle}
-                              className={`${isProcessOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.processToggle} type="button">{isProcessOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
                         {
@@ -3648,10 +3632,8 @@ class AddMoreDetails extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="6">
-                            <div className={'right-details'}>
-                              <a
-                                onClick={this.processGroupToggle}
-                                className={`${isProcessGroupOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                            <div className={'right-details text-right'}>
+                              <button className="btn btn-small-primary-circle ml-1" onClick={this.processGroupToggle} type="button">{isProcessGroupOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                             </div>
                           </Col>
                           {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">

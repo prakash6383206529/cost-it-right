@@ -259,7 +259,7 @@ class AddBOPDomestic extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, filterPlantList, cityList,
+    const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, cityList,
       UOMSelectList, partSelectList, } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
@@ -592,7 +592,7 @@ class AddBOPDomestic extends Component {
 
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED

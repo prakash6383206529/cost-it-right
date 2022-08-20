@@ -365,9 +365,6 @@ export function getPlantSelectListByVendor(VendorId, callback) {
  */
 export function fileUploadBOPDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadBOPDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {

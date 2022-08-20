@@ -291,7 +291,6 @@ class AddVolume extends Component {
    */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const rowIndex = props?.rowIndex
     return (
       <>
@@ -302,7 +301,6 @@ class AddVolume extends Component {
 
   budgetedQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -314,7 +312,6 @@ class AddVolume extends Component {
 
   actualQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -403,8 +400,9 @@ class AddVolume extends Component {
 
                   return tableArray.sort()
                 }
-
+                return null
               })
+              return null
             })
 
           setTimeout(() => {
@@ -452,6 +450,7 @@ class AddVolume extends Component {
     tableData.map((item) => {
       item.BudgetedQuantity = 0;
       item.ApprovedQuantity = 0
+      return null
     })
 
     reset('AddVolume')
@@ -638,12 +637,6 @@ class AddVolume extends Component {
 
 
       });
-    const cellEditProp = {
-      mode: 'click',
-      blurToSave: true,
-      beforeSaveCell: this.beforeSaveCell,
-      afterSaveCell: this.afterSaveCell
-    };
 
     const defaultColDef = {
       resizable: true,

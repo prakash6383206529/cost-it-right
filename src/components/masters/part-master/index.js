@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
@@ -23,7 +23,6 @@ class PartMaster extends Component {
             isPartForm: false,
             isProductForm: false,
             getDetails: {},
-
             ViewAccessibility: false,
             AddAccessibility: false,
             EditAccessibility: false,

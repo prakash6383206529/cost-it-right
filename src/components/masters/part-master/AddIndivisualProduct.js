@@ -261,12 +261,9 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
-
-        let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+        const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
 
         if (isEditFlag) {
-
 
             if (DropdownChanged && uploadAttachements && (DataToCheck.Remark) === (values.Remark)) {
                 this.cancel()
@@ -302,10 +299,7 @@ class AddIndivisualProduct extends Component {
                         this.cancel()
                     }
                 });
-
             }
-
-
 
         } else {
 

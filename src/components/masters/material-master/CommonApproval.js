@@ -8,7 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper'
-import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID, PENDING } from '../../../config/constants';
+import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -263,13 +263,11 @@ function CommonApproval(props) {
 
     const createdOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '';
     }
 
     const priceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
 
@@ -398,6 +396,7 @@ function CommonApproval(props) {
                             props.node.setSelected(true)
                         }
                 }
+                return null
             })
         }
 

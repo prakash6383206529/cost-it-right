@@ -16,7 +16,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 import { SPACEBAR } from '../../../config/constants';
 import { onFocus } from '../../../helper';
@@ -104,6 +103,7 @@ class AddInterestRate extends Component {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -111,6 +111,7 @@ class AddInterestRate extends Component {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -118,6 +119,7 @@ class AddInterestRate extends Component {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }

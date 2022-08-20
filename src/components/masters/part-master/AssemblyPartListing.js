@@ -7,8 +7,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import Switch from "react-switch";
-import { loggedInUserId } from '../../../helper/auth';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
@@ -168,7 +166,6 @@ class AssemblyPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
@@ -187,39 +184,6 @@ class AssemblyPartListing extends Component {
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-    handleChange = (cell, row, enumObject, rowIndex) => {
-        let data = {
-            Id: row.PlantId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-
-    }
-
-    /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch" className="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
     }
 
     /**

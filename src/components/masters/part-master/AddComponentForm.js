@@ -7,7 +7,6 @@ import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART, LEVEL1, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
-import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import { onFocus } from '../../../helper';

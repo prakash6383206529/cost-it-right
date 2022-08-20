@@ -310,10 +310,8 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-
-
-      if (DataToChange.Specification == values.Specification && DropdownChanged) {
-        this.cancel()
+      if (DataToChange.Specification === values.Specification && DropdownChanged) {
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
