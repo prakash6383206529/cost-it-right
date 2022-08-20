@@ -1,29 +1,21 @@
 import React from 'react';
-import { Container, Row, Col, Table } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 
-
-
 const FetchDrawer = (props) => {
     const { register, handleSubmit, formState: { errors }, control } = useForm();
-
-
     // Post api and get Api integration is pending.
     const renderListing = () => {
 
     }
-
     const cancel = () => {
         props.toggleDrawer()
     }
-
     const onSubmit = data => {
 
     }
-
-
     return (
         <>
 

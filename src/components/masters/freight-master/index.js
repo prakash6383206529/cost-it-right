@@ -8,8 +8,6 @@ import FreightListing from './FreightListing';
 import PackagListing from './PackagListing';
 import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import ScrollToTop from '../../common/ScrollToTop';
 
 class FreightMaster extends Component {
@@ -171,7 +169,7 @@ class FreightMaster extends Component {
 
                             <TabContent activeTab={this.state.activeTab}>
 
-                                {this.state.activeTab == 1 &&
+                                {this.state.activeTab === 1 &&
                                     <TabPane tabId="1">
                                         <FreightListing
                                             displayForm={this.displayFreightForm}
@@ -185,7 +183,7 @@ class FreightMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 2 &&
+                                {this.state.activeTab === 2 &&
                                     <TabPane tabId="2">
                                         <PackagListing
                                             displayForm={this.displayPackagForm}

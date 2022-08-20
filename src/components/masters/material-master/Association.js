@@ -8,8 +8,6 @@ import { required } from '../../../helper';
 import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import { debounce } from 'lodash';
 
 class Association extends Component {

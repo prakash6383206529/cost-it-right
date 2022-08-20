@@ -27,7 +27,6 @@ import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
-import { setItemData } from '../../costing/actions/Costing';
 
 // const config() = config
 
@@ -385,9 +384,6 @@ export function deleteOperationAPI(OperationId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {

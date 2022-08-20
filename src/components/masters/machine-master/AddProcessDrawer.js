@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
+import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper/validation'
 import { renderText } from '../../layout/FormInputs'
@@ -156,18 +156,8 @@ class AddProcessDrawer extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const { selectedPlants, selectedMachine, effectiveDate, DataToChange } = this.state
-    const { isEditFlag, isMachineShow, ID } = this.props
-
-    let plantArray =
-      selectedPlants && selectedPlants.map((item) => ({
-        PlantName: item.Text, PlantId: item.Value,
-      }))
-
-    let machineArray =
-      selectedMachine && selectedMachine.map((item) => ({
-        Machine: item.Text, MachineId: item.Value,
-      }))
+    const { DataToChange } = this.state
+    const { isEditFlag, ID } = this.props
 
     this.setState({ setDisable: true })
     /** Update existing detail of supplier master **/

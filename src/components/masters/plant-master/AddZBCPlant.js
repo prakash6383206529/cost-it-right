@@ -319,7 +319,7 @@ class AddZBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { isEditFlag } = this.props;
     const { country, isViewMode, setDisable } = this.state;
     return (
       <>

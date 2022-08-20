@@ -160,7 +160,7 @@ class OverheadProfit extends Component {
                 </Nav>
 
                 <TabContent activeTab={this.state.activeTab}>
-                  {this.state.activeTab == 1 && (
+                  {this.state.activeTab === 1 && (
                     <TabPane tabId="1">
                       <OverheadListing
                         formToggle={this.displayOverheadForm}
@@ -175,7 +175,7 @@ class OverheadProfit extends Component {
                     </TabPane>
                   )}
 
-                  {this.state.activeTab == 2 && (
+                  {this.state.activeTab === 2 && (
                     <TabPane tabId="2">
                       <ProfitListing
                         formToggle={this.displayProfitForm}
