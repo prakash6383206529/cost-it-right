@@ -7,10 +7,10 @@ import {
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
-import { SIMULATION, } from "../../../config/constants";
-import { renderActionCommon } from "../userUtil"
+import { AUDIT, } from "../../../config/constants";
+import Switch from "react-switch";
 
-class SimulationTab extends Component {
+class CostingBulkUploadTab extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -21,9 +21,15 @@ class SimulationTab extends Component {
             Modules: [],
             actionData: [],
             actionSelectList: [],
-            checkBox: false
-
         }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description used to called after mounting component
+    */
+    componentDidMount() {
+
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -33,13 +39,6 @@ class SimulationTab extends Component {
                 actionData: actionData,
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
-            })
-
-            actionData && actionData.map((ele, index) => {
-                if (ele.ModuleName === 'Simulation') {
-                    this.setState({ checkBox: ele.IsChecked })
-                }
-                return null
             })
         }
     }
@@ -69,7 +68,7 @@ class SimulationTab extends Component {
     */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
-        let actionNames = actionData && actionData.find(el => el.ModuleName === SIMULATION)
+        let actionNames = actionData && actionData.find(el => el.ModuleName === AUDIT)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value === 0) return false;
@@ -91,6 +90,7 @@ class SimulationTab extends Component {
     * @description used to checked module
     */
     moduleHandler = (index) => {
+        //alert('hi')
         const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
@@ -106,7 +106,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray, checkBox: false })
+            this.setState({ Modules: tempArray })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = true;
@@ -115,7 +115,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray, checkBox: false })
+            this.setState({ Modules: tempArray })
         }
     }
 
@@ -144,7 +144,9 @@ class SimulationTab extends Component {
     }
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules } = this.state;
+        const { Modules, } = this.state;
+        //const { actionSelectList } = this.props;
+
         let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
         let tempArray = [];
@@ -156,45 +158,15 @@ class SimulationTab extends Component {
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, checkBox: false })
+            this.setState({ Modules: tempArray, })
         } else {
             let actionArray = actionRows && actionRows.map((item, index) => {
                 item.IsChecked = true;
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, checkBox: false })
+            this.setState({ Modules: tempArray, })
         }
-    }
-
-    selectAllHandlerEvery = () => {
-        const { Modules } = this.state;
-        let booleanVal = this.state.checkBox
-        this.setState({ checkBox: !booleanVal })
-        let isCheckedSelectAll = !booleanVal
-
-        let actionRows
-        let actionArray = Modules && Modules.map((item, index) => {
-            if (item.Sequence === 0) {
-                item.IsChecked = false
-            }
-            actionRows = item
-            item.Actions && item.Actions.map((item1, index) => {
-                if (item.Sequence === 0) {
-                    item1.IsChecked = false
-                } else {
-                    item1.IsChecked = isCheckedSelectAll;
-                }
-                return null
-            })
-            if (item?.Sequence === 0) {
-                item.IsChecked = false
-            } else {
-                item.IsChecked = isCheckedSelectAll
-            }
-            return actionRows;
-        })
-        this.setState({ Modules: actionArray, })
     }
 
     /**
@@ -202,70 +174,58 @@ class SimulationTab extends Component {
     * @description used to render row of actions
     */
     renderAction = (actions, parentIndex) => {
+        const { actionSelectList } = this.state;
 
-        return renderActionCommon(actions, parentIndex, this, SIMULATION)
+        return actionSelectList && actionSelectList.map((el, i) => {
+            if (el.Value === 0) return false;
+            return actions && actions.map((item, index) => {
+                if (el.Value !== item.ActionId) return false;
+                return (
+                    <td className="text-center">
+                        {
+                            <label htmlFor="normal-switch" className="normal-switch">
+                                <Switch
+                                    onChange={() => this.actionCheckHandler(parentIndex, index)}
+                                    checked={item.IsChecked}
+                                    value={item.ActionId}
+                                    id="normal-switch"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#959CB6"
+                                    checkedIcon={false}
+                                    uncheckedIcon={false}
+                                    height={18}
+                                    width={40}
+                                />
+                            </label>
+                        }
+                    </td>
+                )
+            })
+        })
     }
 
     /**
     * @method actionCheckHandler
     * @description Used to check/uncheck action's checkbox
     */
-    actionCheckHandler = (parentIndex, childIndex, actions) => {
+    actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
-        let runActionIndex;
-        let addActionIndex;
-        let boolean = false
-
-        actions && actions.map((item, index) => {
-            if (item.ActionName === 'Run') {
-                runActionIndex = index
-            }
-            if (item.ActionName === 'Add') {
-                addActionIndex = index
-            }
-            return null
-        })
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
             if (childIndex === index) {
-                boolean = !el.IsChecked
                 el.IsChecked = !el.IsChecked
             }
             return el;
         })
-
-
-        if (childIndex === runActionIndex) {
-            actionArray = actionRow && actionRow.map((el, index) => {              // IF RUN ACTION TOGGLE IS TRUE THEN ADD ACTION TOGGLE WILL ALSO BE MADE TRUE
-                if (addActionIndex === index) {
-
-                    if (boolean === true) {
-                        el.IsChecked = true
-                    }
-                }
-                return el;
-            })
-        }
-
-        if (childIndex === addActionIndex) {
-            actionArray = actionRow && actionRow.map((el, index) => {        // IF ADD ACTION TOGGLE IS FALSE THEN RUN ACTION TOGGLE WILL ALSO BE MADE FALSE
-                if (runActionIndex === index) {
-                    if (boolean === false) {
-                        el.IsChecked = false
-                    }
-                }
-                return el;
-            })
-        }
-
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
-            let actionTemp = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-            let checkedActions = actionTemp.filter(item => item.IsChecked === true)
-            let tempValue = checkedActions && checkedActions.length !== 0 ? true : false;
-            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: tempValue, Actions: actionArray }) })
+            let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
+            let checkedActions = aa.filter(item => item.IsChecked === true)
+            let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
+            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
         })
     }
@@ -278,9 +238,20 @@ class SimulationTab extends Component {
 
     updateModules = () => {
         const { Modules } = this.state;
-        this.props.permissions(Modules, SIMULATION)
+        this.props.permissions(Modules, AUDIT)
     }
 
+    /**
+    * @method cancel
+    * @description used to cancel role edit
+    */
+    cancel = () => {
+
+    }
+
+    clearForm = () => {
+
+    }
 
     render() {
         const { actionSelectList } = this.state;
@@ -292,26 +263,13 @@ class SimulationTab extends Component {
                             <thead>
                                 <tr>
                                     <th>{`Module`}</th>
-                                    <th className="select-all-block pr-2">
-                                        <label className="custom-checkbox align-middle text-left">
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={this.state.checkBox}
-                                                onClick={() =>
-                                                    this.selectAllHandlerEvery()
-                                                }
-                                            />
-                                            <span className=" before-box pl-0">Select All</span>
-                                        </label>
-                                    </th>
+                                    <th>{``}</th>
                                     {this.renderActionHeads(actionSelectList)}
                                 </tr>
                             </thead>
                             <tbody>
                                 {this.state.Modules &&
                                     this.state.Modules.map((item, index) => {
-                                        if (item.Sequence === 0) return false
                                         return (
                                             <tr key={index}>
                                                 <td>
@@ -334,27 +292,31 @@ class SimulationTab extends Component {
                                                         </label>
                                                     }
                                                 </td>
-                                                <td className="select-all-block"><label className="custom-checkbox">
-                                                    {" "}
-                                                    {
-                                                        <input
-                                                            type="checkbox"
-                                                            value={"All"}
-                                                            className={
-                                                                this.isCheckAll(index, item.Actions)
-                                                                    ? "selected-box"
-                                                                    : "not-selected-box"
-                                                            }
-                                                            checked={this.isCheckAll(index, item.Actions)}
-                                                            onClick={() =>
-                                                                this.selectAllHandler(index, item.Actions)
-                                                            }
-                                                        />
-                                                    }
-                                                    <span className=" before-box">Select All</span>
-                                                </label>
+                                                <td className="select-all-block">
+                                                    <label className="custom-checkbox">
+                                                        {" "}
+                                                        {
+                                                            <input
+                                                                type="checkbox"
+                                                                value={"All"}
+                                                                className={
+                                                                    this.isCheckAll(index, item.Actions)
+                                                                        ? "selected-box"
+                                                                        : "not-selected-box"
+                                                                }
+                                                                checked={this.isCheckAll(
+                                                                    index,
+                                                                    item.Actions
+                                                                )}
+                                                                onClick={() =>
+                                                                    this.selectAllHandler(index, item.Actions)
+                                                                }
+                                                            />
+                                                        }
+                                                        <span className=" before-box">Select All</span>
+                                                    </label>
                                                 </td>
-                                                { }
+
                                                 {this.renderAction(item.Actions, index)}
                                             </tr>
                                         );
@@ -394,4 +356,4 @@ export default connect(mapStateToProps, {
     getModuleSelectList,
     getActionHeadsSelectList,
     getModuleActionInit,
-})(SimulationTab);
+})(CostingBulkUploadTab);

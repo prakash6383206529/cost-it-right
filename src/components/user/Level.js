@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
-import { Loader } from "../common/Loader";
-import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
@@ -180,19 +179,19 @@ class Level extends Component {
         tempObj.label = temp[0]
         tempObj.value = temp[1]
         arrayOfTechnology.push(tempObj)
+        return null
       })
       return arrayOfTechnology
     }
 
     if (label === 'level') {
-      let level = 5
-
       // for (let i = 1; i <= level; i++) {
       //   temp.push({ label: `L-${i}`, value: i })
       // }
       levelList && levelList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }

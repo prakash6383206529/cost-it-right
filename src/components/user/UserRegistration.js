@@ -16,7 +16,6 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
@@ -501,12 +500,14 @@ class UserRegistration extends Component {
             isSelectAll = false
           }
         }
+        return null
       })
     } else {
       temp111 && temp111.map((ele, index) => {
         if (ele.IsChecked === false) {
           isSelectAll = false
         }
+        return null
       })
     }
 

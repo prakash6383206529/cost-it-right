@@ -113,6 +113,7 @@ class SideBar extends Component {
       let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
       let simulationArray = simulationPages && simulationPages.filter((item) => {
         if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
+        return null
       })
       if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
         localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
@@ -278,8 +279,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -377,8 +380,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -452,8 +457,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -573,8 +580,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -662,8 +671,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -756,17 +767,17 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 ">
+              <button className="btn btn-no-border" >
                 <img
                   src={Logo}
                   // src={require("../../assests/images/sipl-logo.jpg")}
                   alt="Systematix"
                   height="40"
                 />
-              </a>
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
+              </button>
+              <button className="btn btn-no-border">
                 <img src={cirLogo} alt="Cost It Right" height="40" />
-              </a>
+              </button>
               <button
                 className="navbar-toggler p-0 border-0"
                 type="button"
@@ -811,13 +822,13 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
+                      <button className="btn btn-no-border" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
-                          alt=""
+                          alt="logout"
                         />
-                      </a>
+                      </button>
                     </li>
                   ) : (
                     ""
