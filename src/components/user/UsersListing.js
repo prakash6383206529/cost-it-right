@@ -15,7 +15,6 @@ import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
-import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';

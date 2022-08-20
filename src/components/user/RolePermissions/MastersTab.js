@@ -8,9 +8,7 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from "../../../config/constants";
 import { MASTERS, } from "../../../config/constants";
-import Switch from "react-switch";
 import { renderActionCommon } from "../userUtil"
-import _ from 'lodash';
 
 class MastersTab extends Component {
   constructor(props) {
@@ -48,6 +46,7 @@ class MastersTab extends Component {
         if (ele.ModuleName === 'Master') {
           this.setState({ checkBox: ele.IsChecked })
         }
+        return null
       })
     }
   }
@@ -89,6 +88,7 @@ class MastersTab extends Component {
             </th>
           )
         }
+        return null
       })
     }
   }
@@ -216,7 +216,7 @@ class MastersTab extends Component {
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
 
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
@@ -227,6 +227,7 @@ class MastersTab extends Component {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
+        return null
       })
       item.IsChecked = isCheckedSelectAll
       return actionRows;
@@ -288,6 +289,7 @@ class MastersTab extends Component {
         let indexRM = tempArray1 && tempArray1.findIndex((x) => x.PageName === RAW_MATERIAL_NAME_AND_GRADE)
         tempArray1[indexRM]?.Actions && tempArray1[indexRM]?.Actions.map((item) => {
           item.IsChecked = false
+          return null
         })
       }
       this.setState({ Modules: tempArray1 })

@@ -80,6 +80,7 @@ class AuditTab extends Component {
                         </th>
                     )
                 }
+                return null
             })
         }
     }
@@ -90,7 +91,7 @@ class AuditTab extends Component {
     */
     moduleHandler = (index) => {
         //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
@@ -134,7 +135,7 @@ class AuditTab extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules } = this.state;
 
         let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
         if (actionData && actionData !== undefined) {
