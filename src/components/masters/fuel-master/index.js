@@ -154,7 +154,7 @@ class FuelMaster extends Component {
 
                                 <TabContent activeTab={this.state.activeTab}>
 
-                                    {this.state.activeTab === 1 &&
+                                    {this.state.activeTab === '1' &&
                                         <TabPane tabId="1">
                                             <FuelListing
                                                 formToggle={this.displayFuelForm}
@@ -169,7 +169,7 @@ class FuelMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab === 2 &&
+                                    {this.state.activeTab === '2' &&
                                         <TabPane tabId="2">
                                             <PowerListing
                                                 formToggle={this.displayPowerForm}
