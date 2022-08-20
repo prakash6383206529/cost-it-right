@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue, decimalLength2, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
+import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -25,7 +25,6 @@ import { calculatePercentageValue, onFocus, showDataOnHover } from '../../../hel
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddPower');
@@ -525,8 +524,8 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-
         powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        return null
       })
 
       powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
@@ -647,8 +646,8 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-
         powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        return null
       })
 
       powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
@@ -701,6 +700,7 @@ class AddPower extends Component {
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
         powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        return null
       })
 
       powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
@@ -817,7 +817,7 @@ class AddPower extends Component {
 * @description Used to handle updateProcessGrid
 */
   updatePowerGrid = () => {
-    const { source, UOM, powerGrid, powerGridEditIndex, power } = this.state;
+    const { source, UOM, powerGrid, powerGridEditIndex } = this.state;
     const { fieldsObj } = this.props;
 
     let powerTotalT = 0
@@ -828,6 +828,7 @@ class AddPower extends Component {
         } else {
           powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
         }
+        return null
       })
     }
     let count = 0;
@@ -1010,7 +1011,7 @@ class AddPower extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, vendorWithVendorCodeSelectList, filterPlantList,
+    const { powerTypeSelectList, vendorWithVendorCodeSelectList,
       UOMSelectList, plantSelectList, stateList } = this.props;
     const temp = [];
 
@@ -1018,6 +1019,7 @@ class AddPower extends Component {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -1026,6 +1028,7 @@ class AddPower extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -1034,6 +1037,7 @@ class AddPower extends Component {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
+        return null
       });
       return temp;
     }
@@ -1044,7 +1048,7 @@ class AddPower extends Component {
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
-
+        return null
       });
       return temp;
     }
@@ -1090,9 +1094,8 @@ class AddPower extends Component {
   */
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-      effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
+      effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
       handleChange, DeleteChanged, AddChanged } = this.state;
-    const { initialConfiguration, fieldsObj } = this.props;
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1112,8 +1115,8 @@ class AddPower extends Component {
 
     if (isEditFlag) {
       if (IsVendor) {
-        if (DataToChangeVendor.NetPowerCostPerUnit == values.NetPowerCostPerUnit) {
-          this.cancel()
+        if (DataToChangeVendor.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
+          this.cancel('cancel')
           return false
         }
         this.setState({ setDisable: true })
@@ -1144,23 +1147,23 @@ class AddPower extends Component {
         if (selfGridDataArray.length > DataToChangeZ.SGChargesDetails.length) {
           addRow = 1
         }
-        if (addRow == 0) {
+        if (addRow === 0) {
           for (let i = 0; i < selfGridDataArray.length; i++) {
             let grid = DataToChangeZ.SGChargesDetails[i]
             let sgrid = selfGridDataArray[i]
-            if (grid.AssetCost == sgrid.AssetCost && grid.AnnualCost == sgrid.AnnualCost && grid.CostPerUnitOfMeasurement == sgrid.CostPerUnitOfMeasurement &&
-              grid.UnitGeneratedPerUnitOfFuel == sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum == sgrid.UnitGeneratedPerAnnum &&
-              grid.PowerContributionPercentage == sgrid.PowerContributionPercentage) {
+            if (grid.AssetCost === sgrid.AssetCost && grid.AnnualCost === sgrid.AnnualCost && grid.CostPerUnitOfMeasurement === sgrid.CostPerUnitOfMeasurement &&
+              grid.UnitGeneratedPerUnitOfFuel === sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum === sgrid.UnitGeneratedPerAnnum &&
+              grid.PowerContributionPercentage === sgrid.PowerContributionPercentage) {
               count++
             }
           }
         }
         let sebGrid = DataToChangeZ.SEBChargesDetails[0]
-        if ((AddChanged && DropdownChanged || (sebGrid.MinDemandKWPerMonth == values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW == values.DemandChargesPerKW &&
-          sebGrid.AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW == values.MaxDemandChargesKW &&
-          sebGrid.MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA == values.DutyChargesAndFCA
-          && sebGrid.PowerContributaionPersentage == values.SEBPowerContributaion)) && addRow == 0 && count == selfGridDataArray.length && handleChange && DeleteChanged) {
-          this.cancel()
+        if (((AddChanged && DropdownChanged) || (sebGrid.MinDemandKWPerMonth === values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW === values.DemandChargesPerKW &&
+          sebGrid.AvgUnitConsumptionPerMonth === values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW === values.MaxDemandChargesKW &&
+          sebGrid.MeterRentAndOtherChargesPerAnnum === values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA === values.DutyChargesAndFCA
+          && sebGrid.PowerContributaionPersentage === values.SEBPowerContributaion)) && addRow === 0 && count === selfGridDataArray.length && handleChange && DeleteChanged) {
+          this.cancel('cancel')
           return false
         }
 
@@ -1277,7 +1280,6 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
-    let tempp = 0
     const filterList = (inputValue) => {
       let tempArr = []
 

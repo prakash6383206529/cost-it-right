@@ -40,7 +40,6 @@ function RMImportListing(props) {
   const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility, selectionForListingMasterAPI, objectForMultipleSimulation, apply, ListFor } = props;
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
-  const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -174,17 +173,12 @@ function RMImportListing(props) {
           props?.changeTokenCheckBox(true)
         }
         if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          let DynamicData = res.data.DynamicData;
-          setmaxRange(DynamicData.MaxRange);
           setloader(false);
 
         } else if (res && res.response && res.response.status === 412) {
-          setmaxRange(0);
           setloader(false);
 
         } else {
-          setmaxRange(0);
           setloader(false);
         }
 
@@ -464,7 +458,6 @@ function RMImportListing(props) {
   }
 
 
-
   /**
   * @method commonCostFormatter
   * @description Renders buttons
@@ -488,9 +481,10 @@ function RMImportListing(props) {
 
     if (selectedCostingListSimulation?.length > 0) {
       selectedCostingListSimulation.map((item) => {
-        if (item.RawMaterialId == props.node.data.RawMaterialId) {
+        if (item.RawMaterialId === props.node.data.RawMaterialId) {
           props.node.setSelected(true)
         }
+        return null
       })
       return cellValue
     } else {

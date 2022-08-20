@@ -24,7 +24,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -96,32 +95,6 @@ class FuelListing extends Component {
             isViewMode: isViewMode
         }
         this.props.getDetails(data);
-    }
-
-    /**
-    * @method deleteItem
-    * @description confirm delete Raw Material details
-    */
-    deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-    }
-
-    /**
-    * @method confirmDelete
-    * @description confirm delete Fuel details
-    */
-    confirmDelete = (ID) => {
-        // this.props.deleteFuelDetailAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
-        //         this.getDataList()
-        //     }
-        // });
     }
 
     /**
@@ -277,17 +250,8 @@ class FuelListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+        const ExcelFile = ReactExport.ExcelFile;
 
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();

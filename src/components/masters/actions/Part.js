@@ -181,9 +181,6 @@ export function getPartSelectList(callback) {
  */
 export function fileUploadPart(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadPart, data, config());
         request.then((response) => {
             if (response && response.status === 200) {

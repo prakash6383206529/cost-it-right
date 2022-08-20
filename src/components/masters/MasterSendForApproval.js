@@ -180,6 +180,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
@@ -204,6 +205,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
@@ -226,6 +228,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery ?? false, OperationRequest: approvalObj })
@@ -248,6 +251,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })

@@ -11,7 +11,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -26,7 +26,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -233,7 +232,7 @@ class ReasonListing extends Component {
   confirmDeactivateItem = (data, cell) => {
     this.props.activeInactiveReasonStatus(data, res => {
       if (res && res.data && res.data.Result) {
-        if (cell == true) {
+        if (cell === true) {
           Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
           Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
@@ -350,20 +349,8 @@ class ReasonListing extends Component {
    */
   render() {
     const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    }
     const isFirstColumn = (params) => {
 
       var displayedColumns = params.columnApi.getAllDisplayedColumns();

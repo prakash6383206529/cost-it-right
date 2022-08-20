@@ -6,10 +6,7 @@ import {
     CREATE_MATERIAL_SUCCESS,
     CREATE_MATERIAL_FAILURE,
     GET_RM_LIST_SUCCESS,
-    GET_RM_GRADE_LIST_SUCCESS,
     GET_GRADE_DATA_SUCCESS,
-    GET_RM_CATEGORY_LIST_SUCCESS,
-    GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_SPECIFICATION_DATA_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
@@ -21,7 +18,6 @@ import {
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
-    GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
     GET_MACHINE_DATALIST_SUCCESS,
@@ -45,7 +41,7 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -718,7 +714,7 @@ export function createRMDomestic(data, callback) {
  */
 export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
     return (dispatch) => {
-        if (RawMaterialDetailsId != '') {
+        if (RawMaterialDetailsId !== '') {
             axios.get(`${API.getRawMaterialDetailsDataAPI}/${RawMaterialDetailsId}`, config())
                 .then((response) => {
                     dispatch({
@@ -1184,9 +1180,6 @@ export function getRMImportDataList(data, skip, take, isPagination, obj, callbac
  */
 export function fileUpdateRMDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.put(API.fileUpdateRMDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {

@@ -153,9 +153,7 @@ class AddTaxDetails extends Component {
     /** Update detail of TAX  */
     if (this.props.isEditFlag) {
 
-
-
-      if (DataToCheck.TaxName == values.TaxName && DataToCheck.Rate == values.Rate && DropdownChanged) {
+      if (DataToCheck.TaxName === values.TaxName && DataToCheck.Rate === values.Rate && DropdownChanged) {
 
         this.toggleDrawer('')
         return false

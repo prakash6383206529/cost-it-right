@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -32,15 +31,10 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class VendorListing extends Component {
     constructor(props) {
@@ -170,11 +164,7 @@ class VendorListing extends Component {
     * @description GET VENDOR DATA LIST
     */
     getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj, isPagination) => {
-        let filterData = {
-            vendorType: vendorType,
-            vendorName: vendorName,
-            country: country,
-        }
+
         this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
@@ -324,7 +314,6 @@ class VendorListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.value;
-        const rowData = props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
@@ -355,7 +344,7 @@ class VendorListing extends Component {
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
@@ -647,48 +636,6 @@ class VendorListing extends Component {
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills">
                                         <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Type"}
-                                            options={this.renderListing("vendorType")}
-
-                                            validate={
-                                                this.state.vendorType == null ||
-                                                    this.state.vendorType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorType}
-                                            valueDescription={this.state.vendorType}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Vendors"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            options={this.renderListing("vendorList")}
-
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
                                     </div>
 
                                     <div className="flex-fill">

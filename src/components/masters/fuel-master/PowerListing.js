@@ -29,7 +29,6 @@ import { getConfigurationKey } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -173,7 +172,6 @@ class PowerListing extends Component {
   */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, ViewAccessibility, DeleteAccessibility } = this.props;
     return (
@@ -321,19 +319,9 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
+    const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
 
@@ -351,13 +339,9 @@ class PowerListing extends Component {
     };
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // effectiveDateRenderer: this.effectiveDateFormatter,
-      // costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
+      effectiveDateRenderer: this.effectiveDateFormatter,
       customNoRowsOverlay: NoContentFound,
-      // freightCostFormatter: this.freightCostFormatter,
-      // shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      commonCostFormatter: this.commonCostFormatter
     };
 
     return (
@@ -408,6 +392,17 @@ class PowerListing extends Component {
                       >
                         <div className={"plus mr-0"}></div>
                         {/* ADD */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.bulkToggle}
+                        title="Bulk Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Bulk Upload */}
                       </button>
                     )}
                     {

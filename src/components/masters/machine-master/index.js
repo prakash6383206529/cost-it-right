@@ -9,7 +9,6 @@ import ProcessListing from './ProcessListing';
 import { checkPermission } from '../../../helper/util';
 import { MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
 import ScrollToTop from '../../common/ScrollToTop';
-import { getConfigurationKey } from '../../../helper';
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from '../material-master/CommonApproval';
 

@@ -8,8 +8,6 @@ import FuelListing from './FuelListing';
 import PowerListing from './PowerListing';
 import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import ScrollToTop from '../../common/ScrollToTop';
 
 class FuelMaster extends Component {
@@ -149,7 +147,7 @@ class FuelMaster extends Component {
 
                                 <TabContent activeTab={this.state.activeTab}>
 
-                                    {this.state.activeTab == 1 &&
+                                    {this.state.activeTab === 1 &&
                                         <TabPane tabId="1">
                                             <FuelListing
                                                 formToggle={this.displayFuelForm}
@@ -162,7 +160,7 @@ class FuelMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 2 &&
+                                    {this.state.activeTab === 2 &&
                                         <TabPane tabId="2">
                                             <PowerListing
                                                 formToggle={this.displayPowerForm}

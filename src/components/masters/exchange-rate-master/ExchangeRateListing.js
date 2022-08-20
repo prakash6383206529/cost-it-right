@@ -14,7 +14,6 @@ import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../conf
 import { checkPermission } from '../../../helper/util';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -361,22 +360,6 @@ class ExchangeRateListing extends Component {
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
-        };
-
-
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom customClass="simulation-Loader" /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
         };
 
         return (

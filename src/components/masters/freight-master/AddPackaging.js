@@ -1,26 +1,7 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from "redux-form";
-import { } from 'reactstrap';
-import { checkForNull, } from "../../../helper/validation";
-import {
-
-} from "../../layout/FormInputs";
-import {
-
-} from '../../../actions/Common';
-import {
-
-} from '../actions/BoughtOutParts';
-
-import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
-
+import { reduxForm } from "redux-form";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
-
-import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-
 
 class AddPackaging extends Component {
     constructor(props) {
@@ -29,18 +10,7 @@ class AddPackaging extends Component {
         this.state = {
             isEditFlag: false,
             IsVendor: false,
-
-
         }
-    }
-
-
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-
     }
 
     /**

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -110,6 +110,7 @@ class AddClientDrawer extends Component {
             countryList && countryList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -117,6 +118,7 @@ class AddClientDrawer extends Component {
             stateList && stateList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -124,6 +126,7 @@ class AddClientDrawer extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -195,14 +198,14 @@ class AddClientDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { city, country, DataToCheck, DropdownChanged } = this.state;
+        const { city, DataToCheck, DropdownChanged } = this.state;
         const { isEditFlag, ID } = this.props;
 
         /** Update existing detail of supplier master **/
         if (isEditFlag) {
-            if (DropdownChanged && DataToCheck.ClientName == values.ClientName && DataToCheck.ClientEmailId == values.ClientEmailId &&
-                DataToCheck.PhoneNumber == values.PhoneNumber && DataToCheck.Extension == values.Extension &&
-                DataToCheck.MobileNumber == values.MobileNumber && DataToCheck.ZipCode == values.ZipCode) {
+            if (DropdownChanged && DataToCheck.ClientName === values.ClientName && DataToCheck.ClientEmailId === values.ClientEmailId &&
+                DataToCheck.PhoneNumber === values.PhoneNumber && DataToCheck.Extension === values.Extension &&
+                DataToCheck.MobileNumber === values.MobileNumber && DataToCheck.ZipCode === values.ZipCode) {
 
                 this.toggleDrawer('')
                 return false
