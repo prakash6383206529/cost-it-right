@@ -47,6 +47,7 @@ class ReportsTab extends Component {
         if (ele.ModuleName === 'Reports And Analytics') {
           this.setState({ checkBox: ele.SelectAll })
         }
+        return null
       })
     }
   }
@@ -79,7 +80,7 @@ class ReportsTab extends Component {
     let actionNames = actionData && actionData.find(el => el.ModuleName === REPORTS_AND_ANALYTICS)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
           return (
             <th className="crud-label">
@@ -88,6 +89,7 @@ class ReportsTab extends Component {
             </th>
           )
         }
+        return null
       })
     }
   }
@@ -98,7 +100,7 @@ class ReportsTab extends Component {
   */
   moduleHandler = (index) => {
     //alert('hi')
-    const { Modules, checkedAll } = this.state;
+    const { Modules } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
 
     let actionArray = [];
@@ -142,7 +144,7 @@ class ReportsTab extends Component {
   * @description used to select module's action row (Horizontally)
   */
   isCheckAll = (parentIndex, actionData) => {
-    const { Modules, actionSelectList } = this.state;
+    const { Modules } = this.state;
 
     let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
     if (actionData && actionData !== undefined) {
@@ -151,7 +153,7 @@ class ReportsTab extends Component {
   }
 
   selectAllHandler = (parentIndex, actionRows) => {
-    const { Modules, actionSelectList } = this.state;
+    const { Modules } = this.state;
     //const { actionSelectList } = this.props;
 
     let checkedActions = actionRows.filter(item => item.IsChecked === true)
@@ -188,6 +190,7 @@ class ReportsTab extends Component {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
+        return null
       })
       item.IsChecked = isCheckedSelectAll
       return actionRows;

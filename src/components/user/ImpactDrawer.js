@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, } from 'reactstrap';
 import { Field, reduxForm } from 'redux-form';
-import { Loader } from '../common/Loader';
 
 class ImpactDrawer extends Component {
 
