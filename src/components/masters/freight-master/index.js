@@ -163,7 +163,7 @@ class FreightMaster extends Component {
 
                             <TabContent activeTab={this.state.activeTab}>
 
-                                {this.state.activeTab === 1 &&
+                                {this.state.activeTab === '1' &&
                                     <TabPane tabId="1">
                                         <FreightListing
                                             displayForm={this.displayFreightForm}
@@ -176,7 +176,7 @@ class FreightMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab === 2 &&
+                                {this.state.activeTab === '2' &&
                                     <TabPane tabId="2">
                                         <PackagListing
                                             displayForm={this.displayPackagForm}
