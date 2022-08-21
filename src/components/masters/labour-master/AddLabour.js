@@ -11,7 +11,7 @@ import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA, SPACEBAR } from '../../../config/constants'
-import { loggedInUserId, userDetails } from '../../../helper/auth'
+import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -21,6 +21,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const selector = formValueSelector('AddLabour')
 
@@ -57,7 +58,8 @@ class AddLabour extends Component {
         labourType: false,
         labourRate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     }
   }
 
@@ -156,6 +158,7 @@ class AddLabour extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -349,8 +352,8 @@ class AddLabour extends Component {
 
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
-    const { fieldsObj, error } = this.props
-    if ((IsEmployeContractual ? vendorName.length == 0 : false) || selectedPlants.length == 0 || StateName == 0) {
+    const { fieldsObj } = this.props
+    if ((IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -377,7 +380,7 @@ class AddLabour extends Component {
         return false
       }
 
-      if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
+      if (fieldsObj !== undefined && isNaN(Number(fieldsObj))) {
         Toaster.warning('Please enter valid value.')
         return false;
       }
@@ -580,7 +583,6 @@ class AddLabour extends Component {
    */
   onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
-    const userDetail = userDetails()
 
     if (vendorName.length <= 0 && IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -756,8 +758,10 @@ class AddLabour extends Component {
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
+                              onFocus={() => onFocus(this)}
                             />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+
                           </div>
                         </Col>
                       )}

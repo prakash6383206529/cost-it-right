@@ -1,16 +1,12 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { searchableSelect, focusOnError } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import { setApprovalLevelForTechnology, getAllTechnologyAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
 
 class LevelTechnology extends Component {
     constructor(props) {
@@ -61,7 +57,7 @@ class LevelTechnology extends Component {
     * @description Used to handle 
     */
     technologyHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ technology: newValue });
         } else {
             this.setState({ technology: [] });
@@ -73,7 +69,7 @@ class LevelTechnology extends Component {
     * @description Used to handle 
     */
     levelHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ level: newValue });
         } else {
             this.setState({ level: [] });

@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const gridOptions = {};
 
@@ -118,7 +119,8 @@ class AddVolume extends Component {
       gridColumnApi: null,
       rowData: null,
       setDisable: false,
-      inputLoader: false
+      inputLoader: false,
+      showErrorOnFocus: false
     }
   }
 
@@ -289,7 +291,6 @@ class AddVolume extends Component {
    */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const rowIndex = props?.rowIndex
     return (
       <>
@@ -300,7 +301,6 @@ class AddVolume extends Component {
 
   budgetedQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -312,7 +312,6 @@ class AddVolume extends Component {
 
   actualQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -401,8 +400,9 @@ class AddVolume extends Component {
 
                   return tableArray.sort()
                 }
-
+                return null
               })
+              return null
             })
 
           setTimeout(() => {
@@ -450,6 +450,7 @@ class AddVolume extends Component {
     tableData.map((item) => {
       item.BudgetedQuantity = 0;
       item.ApprovedQuantity = 0
+      return null
     })
 
     reset('AddVolume')
@@ -660,12 +661,6 @@ class AddVolume extends Component {
 
 
       });
-    const cellEditProp = {
-      mode: 'click',
-      blurToSave: true,
-      beforeSaveCell: this.beforeSaveCell,
-      afterSaveCell: this.afterSaveCell
-    };
 
     const defaultColDef = {
       resizable: true,
@@ -775,6 +770,7 @@ class AddVolume extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
+                                    onFocus={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -784,7 +780,7 @@ class AddVolume extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
 
                           )}

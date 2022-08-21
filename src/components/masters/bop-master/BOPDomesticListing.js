@@ -14,7 +14,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -336,9 +335,10 @@ class BOPDomesticListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.RawMaterialId == props.node.data.RawMaterialId) {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return cellValue
         } else {
@@ -370,9 +370,10 @@ class BOPDomesticListing extends Component {
         //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.BoughtOutPartId == props.node.data.BoughtOutPartId) {
+                if (item.BoughtOutPartId === props.node.data.BoughtOutPartId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return cellValue
         } else {

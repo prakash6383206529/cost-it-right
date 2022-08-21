@@ -7,7 +7,7 @@ import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
@@ -227,7 +227,7 @@ class LevelsListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { EditAccessibility, DeleteAccessibility } = this.state;
+		const { EditAccessibility } = this.state;
 		return (
 			<>
 				{EditAccessibility && <button title='Edit' type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
@@ -236,38 +236,12 @@ class LevelsListing extends Component {
 		)
 	}
 
-	afterSearch = (searchText, result) => {
-
-	}
-
-	handleChange = (cell, row, enumObject, rowIndex) => {
-		let data = {
-			Id: row.LevelId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-	}
-
-	confirmDeactivateItem = (data, cell) => {
-		//   this.props.activeInactiveStatus(data, res => {
-		//     if (res && res.data && res.data.Result) {
-		//         // if (cell == true) {
-		//         //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-		//         // } else {
-		//         //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-		//         // }
-		//         // this.getTableListData()
-		//         this.filterList()
-		//     }
-		// })
-	}
 
 	/**
 	 * @method statusButtonFormatter
 	 * @description Renders buttons
 	 */
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { ActivateAccessibility } = this.props;
 		// if (ActivateAccessibility) {
 		return (
 			<>

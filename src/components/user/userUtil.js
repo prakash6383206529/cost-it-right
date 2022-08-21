@@ -13,6 +13,7 @@ export function renderActionCommon(actions, parentIndex, thisRef, moduleName) {
             if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                 actionHeads.push(item.Value)           //COLLECTING ACTION ID OF ALL ACTIONS IN HEADER 
             }
+            return null
         })
     }
 

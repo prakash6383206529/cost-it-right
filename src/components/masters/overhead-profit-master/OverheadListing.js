@@ -283,7 +283,7 @@ class OverheadListing extends Component {
             } if (item.ClientName === '-') {
                 item.ClientName = ' '
             }
-            if (item.EffectiveDate?.includes('T')) {
+            if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }

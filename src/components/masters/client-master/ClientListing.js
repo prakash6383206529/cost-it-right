@@ -22,15 +22,10 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class ClientListing extends Component {
     constructor(props) {
@@ -169,7 +164,6 @@ class ClientListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
@@ -313,20 +307,6 @@ class ClientListing extends Component {
         const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            // onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();

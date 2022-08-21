@@ -32,7 +32,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
@@ -112,7 +112,9 @@ class AddRMDomestic extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
   /**
@@ -900,10 +902,6 @@ class AddRMDomestic extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
       // this.props.fileDeleteRMDomestic(deleteData, (res) => {
       //   Toaster.success('File has been deleted successfully.')
       //   let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
@@ -949,7 +947,7 @@ class AddRMDomestic extends Component {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
-    const { initialConfiguration, fieldsObj } = this.props
+    const { fieldsObj } = this.props
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1192,7 +1190,7 @@ class AddRMDomestic extends Component {
    */
   render() {
 
-    const { handleSubmit, initialConfiguration, data, isRMAssociated } = this.props
+    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
 
 
@@ -1476,6 +1474,7 @@ class AddRMDomestic extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
+                                  onFocus={() => onFocus(this)}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1485,7 +1484,7 @@ class AddRMDomestic extends Component {
                                 ></div>
                               )}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                           </Col>
 
                           {(this.state.HasDifferentSource ||
@@ -1659,9 +1658,10 @@ class AddRMDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
                                 placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
+                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                         </Row>
 

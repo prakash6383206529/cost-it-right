@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from "reactstrap";
-import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
@@ -22,8 +22,8 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, SPACEBAR } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from "../../../helper";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -59,7 +59,8 @@ class AddFreight extends Component {
         criteria: false,
         rate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     };
   }
   /**
@@ -171,6 +172,7 @@ class AddFreight extends Component {
         vendorListByVendorType.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -179,6 +181,7 @@ class AddFreight extends Component {
         cityList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -187,6 +190,7 @@ class AddFreight extends Component {
         cityList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -195,6 +199,7 @@ class AddFreight extends Component {
         freightModeSelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -203,6 +208,7 @@ class AddFreight extends Component {
         freightFullTruckCapacitySelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -211,6 +217,7 @@ class AddFreight extends Component {
         freightRateCriteriaSelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -491,8 +498,6 @@ class AddFreight extends Component {
     const {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
-    const { fieldsObj } = this.props;
-
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -503,9 +508,9 @@ class AddFreight extends Component {
     const userDetail = userDetails();
     if (isEditFlag) {
       if (
-        DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
-        DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
-        DataToChange.PartTruckLoadRatePerKilogram == values.PartTruckLoadRatePerKilogram
+        DataToChange.LoadingUnloadingCharges === values.LoadingUnloadingCharges &&
+        DataToChange.PartTruckLoadRatePerCubicFeet === values.PartTruckLoadRatePerCubicFeet &&
+        DataToChange.PartTruckLoadRatePerKilogram === values.PartTruckLoadRatePerKilogram
         &&
         (AddUpdate && HandleChanged) &&
         DeleteChanged
@@ -690,6 +695,7 @@ class AddFreight extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
+                                    onFocus={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -699,7 +705,7 @@ class AddFreight extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
                           )}
                           <Col md="3">

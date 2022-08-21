@@ -112,12 +112,14 @@ class Role extends Component {
 						isSelectAll = false
 					}
 				}
+				return null
 			})
 		} else {
 			oldData && oldData.map((ele, index) => {
 				if (ele.IsChecked === false) {
 					isSelectAll = false
 				}
+				return null
 			})
 		}
 

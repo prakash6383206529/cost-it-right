@@ -304,7 +304,7 @@ class ProfitListing extends Component {
                 item.ProfitPercentage = ' '
             } if (item.ProfitRMPercentage === null) {
                 item.ProfitRMPercentage = ' '
-            } if (item.VendorName === '-') {
+            } if (item?.VendorName === '-') {
                 item.VendorName = ' '
             }
             if (item?.EffectiveDate?.includes('T')) {

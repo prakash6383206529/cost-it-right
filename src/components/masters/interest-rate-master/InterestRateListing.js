@@ -9,13 +9,11 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
@@ -28,7 +26,6 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -191,7 +188,6 @@ class InterestRateListing extends Component {
   buttonFormatter = (props) => {
 
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
@@ -202,43 +198,6 @@ class InterestRateListing extends Component {
       </>
     )
   };
-
-  handleChange = (cell, row, enumObject, rowIndex) => {
-    let data = {
-      Id: row.VendorId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !cell, //Status of the user.
-    }
-
-  }
-
-
-
-  /**
-  * @method statusButtonFormatter
-  * @description Renders buttons
-  */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <label htmlFor="normal-switch" className="normal-switch">
-          {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-          />
-        </label>
-      </>
-    )
-  }
-
-
   /**
   * @method indexFormatter
   * @description Renders serial number

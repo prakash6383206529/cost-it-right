@@ -32,7 +32,7 @@ import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
@@ -104,7 +104,8 @@ class AddMachineRate extends Component {
         processName: false,
         processUOM: false,
         machineRate: false
-      }
+      },
+      showErrorOnFocusDate: false
     }
   }
 
@@ -977,7 +978,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
 
 
     if (vendorName.length <= 0) {
@@ -1516,7 +1517,9 @@ class AddMachineRate extends Component {
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                                onFocus={() => onFocus(this, true)}
                               />
+                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>

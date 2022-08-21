@@ -97,6 +97,7 @@ class AddFuelNameDrawer extends Component {
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
+        return null
       });
       return temp;
     }

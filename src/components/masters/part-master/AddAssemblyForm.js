@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY, SPACEBAR } from '../../../config/constants';
-import { getRandomSixDigit } from '../../../helper/util';
+import { getRandomSixDigit, onFocus } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
@@ -24,7 +24,8 @@ class AddAssemblyForm extends Component {
             childData: [],
             isLoader: false,
             updateAsyncDropdown: false,
-            issubAssembyNoNotSelected: false
+            issubAssembyNoNotSelected: false,
+            showErrorOnFocus: false
         }
     }
 
@@ -211,11 +212,12 @@ class AddAssemblyForm extends Component {
                                     loadOptions={promiseOptions}
                                     onChange={(e) => this.handleAssemblyPartChange(e)}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the assembly numbers' : "No results found"}
+                                    onFocus={() => onFocus(this)}
                                     onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
                                 />
-                                {this.state.issubAssembyNoNotSelected && <div className='text-help'>This field is required.</div>}
+                                {((this.state.showErrorOnFocus && this.state.assemblyPart.length === 0) || this.state.issubAssembyNoNotSelected) && <div className='text-help'>This field is required.</div>}
                             </div>
                         </Col>
                         <Col md="6">

@@ -24,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
@@ -78,7 +78,9 @@ class AddOperation extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -518,8 +520,8 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedPlants, vendorName, files,
-      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
-    const { initialConfiguration, filedObj } = this.props;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+    const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
@@ -736,7 +738,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup, selectedTechnology } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -907,6 +909,7 @@ class AddOperation extends Component {
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
+                                onFocus={() => onFocus(this)}
                               />
                             </div>
                             {!isEditFlag && (
@@ -916,7 +919,7 @@ class AddOperation extends Component {
                               ></div>
                             )}
                           </div>
-                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                          {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                         </Col>
 
                       )}
@@ -1001,7 +1004,9 @@ class AddOperation extends Component {
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                             placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                            onFocus={() => onFocus(this, true)}
                           />
+                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
 

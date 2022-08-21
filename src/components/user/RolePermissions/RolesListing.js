@@ -216,22 +216,11 @@ class RolesListing extends Component {
   */
   render() {
     const { AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (<NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
     };
 
     const frameworkComponents = {

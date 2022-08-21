@@ -306,16 +306,6 @@ class SpecificationListing extends Component {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();

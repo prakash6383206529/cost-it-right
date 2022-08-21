@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
+import { renderText } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPART, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper';
 
 class AddBOPForm extends Component {
   static contextType = PartEffectiveDate
@@ -24,7 +25,8 @@ class AddBOPForm extends Component {
       isLoader: false,
       updateAsyncDropdown: false,
       isBOPNoNotSelected: false,
-      isDimensionless: false
+      isDimensionless: false,
+      showErrorOnFocus: false,
     }
   }
 
@@ -52,7 +54,7 @@ class AddBOPForm extends Component {
       this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, (res) => {
-          if (res?.data?.Data?.UnitOfMeasurementType == DIMENSIONLESS) {
+          if (res?.data?.Data?.UnitOfMeasurementType === DIMENSIONLESS) {
             this.setState({ isDimensionless: true })
           } else {
             this.setState({ isDimensionless: false })
@@ -215,11 +217,12 @@ class AddBOPForm extends Component {
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
                   noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  onFocus={() => onFocus(this)}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                   }}
                 />
-                {this.state.isBOPNoNotSelected && <div className='text-help'>This field is required.</div>}
+                {((this.state.showErrorOnFocus && this.state.BOPPart.length === 0) || this.state.isBOPNoNotSelected) && <div className='text-help'>This field is required.</div>}
               </div>
             </Col>
             <Col md="6">

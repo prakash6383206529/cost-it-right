@@ -33,7 +33,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
@@ -110,7 +110,9 @@ class AddRMImport extends Component {
       disablePopup: false,
       setDisable: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -908,7 +910,7 @@ class AddRMImport extends Component {
       HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration, fieldsObj } = this.props;
+    const { fieldsObj } = this.props;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1428,6 +1430,7 @@ class AddRMImport extends Component {
                                   placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
+                                  onFocus={() => onFocus(this)}
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
@@ -1436,7 +1439,7 @@ class AddRMImport extends Component {
                               </div>
                               {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
@@ -1534,10 +1537,11 @@ class AddRMImport extends Component {
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
                                   placeholder="Select Date"
-
+                                  onFocus={() => onFocus(this, true)}
                                 />
                               </div>
                             </div>
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                           <Col md="3">
                             <Field

@@ -39,6 +39,7 @@ class CostingTab extends Component {
         if (ele.ModuleName === 'Costing') {
           this.setState({ checkBox: ele.SelectAll })
         }
+        return null
       })
     }
   }
@@ -72,7 +73,7 @@ class CostingTab extends Component {
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
 
           if (item.Text === 'Reject') {
@@ -93,6 +94,7 @@ class CostingTab extends Component {
             )
           }
         }
+        return null
       })
     }
   }
@@ -182,7 +184,7 @@ class CostingTab extends Component {
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
 
@@ -199,6 +201,7 @@ class CostingTab extends Component {
         } else {
           item1.IsChecked = isCheckedSelectAll;
         }
+        return null
       })
       if (item?.Sequence === 0) {
         item.IsChecked = false

@@ -9,11 +9,9 @@ import NoContentFound from '../../common/NoContentFound';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import AddTaxDetails from './AddTaxDetails';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react';
@@ -22,7 +20,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const gridOptions = {};
 class TaxListing extends Component {
   constructor(props) {
     super(props);
@@ -169,7 +166,6 @@ class TaxListing extends Component {
 */
   buttonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>

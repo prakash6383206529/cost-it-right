@@ -97,7 +97,7 @@ class AddReason extends Component {
 
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
-      if (DataToCheck.Reason == values.Reason) {
+      if (DataToCheck.Reason === values.Reason) {
 
         this.toggleDrawer('', 'cancel')
         return false
@@ -274,5 +274,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddReason));

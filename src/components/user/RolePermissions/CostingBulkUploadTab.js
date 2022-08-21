@@ -80,6 +80,7 @@ class CostingBulkUploadTab extends Component {
                         </th>
                     )
                 }
+                return null
             })
         }
     }
@@ -90,7 +91,7 @@ class CostingBulkUploadTab extends Component {
     */
     moduleHandler = (index) => {
         //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
@@ -134,7 +135,7 @@ class CostingBulkUploadTab extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules } = this.state;
 
         let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
         if (actionData && actionData !== undefined) {
@@ -176,7 +177,7 @@ class CostingBulkUploadTab extends Component {
         const { actionSelectList } = this.state;
 
         return actionSelectList && actionSelectList.map((el, i) => {
-            if (el.Value == 0) return false;
+            if (el.Value === 0) return false;
             return actions && actions.map((item, index) => {
                 if (el.Value !== item.ActionId) return false;
                 return (
