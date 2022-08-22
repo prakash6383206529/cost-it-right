@@ -322,7 +322,7 @@ class AddPower extends Component {
         PowerDetailID: data.Id,
       })
 
-      this.props.getPowerDetailData(data.Id, res => {
+      this.props.getPowerDetailData(data, res => {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
@@ -1170,6 +1170,7 @@ class AddPower extends Component {
         this.setState({ setDisable: true })
         let requestData = {
           PowerId: PowerDetailID,
+          PlantId: plantArray && plantArray[0]?.PlantId,
           IsVendor: IsVendor,
           Plants: plantArray,
           StateId: StateName.value,

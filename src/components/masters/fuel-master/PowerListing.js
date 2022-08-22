@@ -111,14 +111,16 @@ class PowerListing extends Component {
   }
 
   /**
-  * @method editItemDetails
-  * @description edit material type
-  */
-  editItemDetails = (Id) => {
+ * @method viewOrEditItemDetails
+ * @description edit or view material type
+ */
+  viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id,
+      Id: Id?.PowerId,
       IsVendor: this.state.IsVendor,
+      isViewMode: isViewMode,
+      plantId: Id?.PlantId
     }
     this.props.getDetails(data);
   }
