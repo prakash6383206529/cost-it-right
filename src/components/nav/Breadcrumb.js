@@ -22,7 +22,7 @@ class Breadcrumb extends Component {
 		if (prevProps.location !== this.props.location || prevProps.leftMenuData !== this.props.leftMenuData) {
 			const { location, leftMenuData, menusData } = prevProps;
 			if (location) {
-				const ModuleID = reactLocalStorage.get("ModuleId");
+				const ModuleID = reactLocalStorage.get('ModuleId');
 				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL === location.pathname);
 				const menuObj = menusData && menusData.find(el => el.ModuleId === ModuleID);
 				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')

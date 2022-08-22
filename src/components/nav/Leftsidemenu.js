@@ -26,7 +26,7 @@ class Leftmenu extends Component {
 	render() {
 		const { location, topAndLeftMenuData } = this.props;
 		const activeURL = location && location.pathname ? location.pathname : null;
-		const ModuleId = reactLocalStorage.get("ModuleId")
+		const ModuleId = reactLocalStorage.get('ModuleId')
 		let leftMenuFromAPI = []
 		topAndLeftMenuData &&
 			topAndLeftMenuData.map((el, i) => {
