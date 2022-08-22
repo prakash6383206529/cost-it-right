@@ -12,6 +12,7 @@ import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class User extends Component {
   constructor(props) {
@@ -31,7 +32,7 @@ class User extends Component {
   }
 
   topAndLeftMenuFunction = () => {
-    let ModuleId = JSON.parse(localStorage.getItem('ModuleId'));
+    let ModuleId = reactLocalStorage.get('ModuleId');
     let leftMenuFromAPI = []
     const { topAndLeftMenuData } = this.props;
     topAndLeftMenuData && topAndLeftMenuData.map(el => {
