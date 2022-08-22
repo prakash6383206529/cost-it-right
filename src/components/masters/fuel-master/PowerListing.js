@@ -115,9 +115,10 @@ class PowerListing extends Component {
   viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id,
+      Id: Id?.PowerId,
       IsVendor: this.state.IsVendor,
-      isViewMode: isViewMode
+      isViewMode: isViewMode,
+      plantId: Id?.PlantId
     }
     this.props.getDetails(data);
   }
@@ -171,14 +172,17 @@ class PowerListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+    const rowData = props?.data;
+    let obj = {}
+    obj.PowerId = rowData?.PowerId
+    obj.PlantId = rowData?.PlantId
+    obj.PowerDetailId = rowData?.PowerDetailId
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, true)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, false)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
