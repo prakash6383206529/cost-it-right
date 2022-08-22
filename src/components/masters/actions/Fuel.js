@@ -18,6 +18,7 @@ import {
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 
 // const config() = config;
@@ -588,8 +589,9 @@ export function getVendorPowerDetailData(PowerId, callback) {
  */
 export function deletePowerDetail(Id, callback) {
     return (dispatch) => {
+        const QueryParams = `PowerId=${Id.PowerId}&PlantId=${Id.PlantId}&LoggedInUserId=${userDetails().LoggedInUserId}`
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePowerDetail}/${Id}`, config())
+        axios.delete(`${API.deletePowerDetail}?${QueryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
