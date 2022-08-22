@@ -507,7 +507,7 @@ class SideBar extends Component {
                             onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: JSON.parse(localStorage.getItem('MenuModuleId')), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
