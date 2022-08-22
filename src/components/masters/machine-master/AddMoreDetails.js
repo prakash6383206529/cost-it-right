@@ -1507,7 +1507,7 @@ class AddMoreDetails extends Component {
     let tempData = processGrid[processGridEditIndex];
     tempData = {
       processName: processName.label,
-      processId: processName.value,
+      ProcessId: processName.value,
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
@@ -1562,7 +1562,7 @@ class AddMoreDetails extends Component {
     this.setState({
       processGridEditIndex: index,
       isEditIndex: true,
-      processName: { label: tempData.processName, value: tempData.processId },
+      processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
@@ -3110,7 +3110,7 @@ class AddMoreDetails extends Component {
                                 onChange={this.onPressUsesFuel}
                                 checked={this.state.IsUsesFuel}
                                 id="normal-switch"
-                                disabled={isEditFlag || disableAllForm ? true : false}
+                                disabled={disableAllForm ? true : false}
                                 background="#4DC771"
                                 onColor="#4DC771"
                                 onHandleColor="#ffffff"
@@ -3138,7 +3138,7 @@ class AddMoreDetails extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleFuelType}
                                   valueDescription={this.state.fuelType}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                 />
                               </Col>
                               <Col md="3">
@@ -3210,7 +3210,7 @@ class AddMoreDetails extends Component {
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                   component={renderText}
                                   //required={true}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                   className=" "
                                   customClassName="withBorder"
                                 />
@@ -3223,7 +3223,7 @@ class AddMoreDetails extends Component {
                                     onChange={this.onPressUsesSolarPower}
                                     checked={this.state.IsUsesSolarPower}
                                     id="normal-switch"
-                                    disabled={isEditFlag || disableAllForm ? true : false}
+                                    disabled={disableAllForm ? true : false}
                                     background="#4DC771"
                                     onColor="#4DC771"
                                     onHandleColor="#ffffff"
