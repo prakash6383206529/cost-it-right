@@ -122,7 +122,7 @@ export function getVolumeDataList(filterData, callback) {
  */
 export function deleteVolume(ID, callback) {
   return (dispatch) => {
-    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.VolumeApprovedId}&VolumeBudgetedId=${ID.VolumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
+    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
     dispatch({ type: API_REQUEST })
     axios
       .delete(`${API.deleteVolume}?${QueryParams}`, config())
