@@ -252,8 +252,8 @@ class VolumeListing extends Component {
     const rowData = props?.data;
     let obj = {}
     obj.volumeId = rowData.VolumeId
-    obj.VolumeApprovedId = rowData.VolumeApprovedId
-    obj.VolumeBudgetedId = rowData.VolumeBudgetedId
+    obj.volumeApprovedId = rowData.VolumeApprovedId
+    obj.volumeBudgetedId = rowData.VolumeBudgetedId
 
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
