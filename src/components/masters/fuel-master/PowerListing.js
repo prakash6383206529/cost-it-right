@@ -137,12 +137,13 @@ class PowerListing extends Component {
   */
   confirmDelete = (ID) => {
     if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID, (res) => {
+      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
+      this.setState({ showPopup: false })
     } else {
       this.props.deletePowerDetail(ID, (res) => {
         if (res.data.Result === true) {
@@ -173,16 +174,30 @@ class PowerListing extends Component {
   */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+    const rowData = props?.data;
+    let obj = {}
+    obj.PowerId = rowData?.PowerId
+    obj.PlantId = rowData?.PlantId
+    obj.PowerDetailId = rowData?.PowerDetailId
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
         {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
         {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
+
+
+  /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
 
   /**
   * @method costingHeadFormatter
@@ -323,6 +338,31 @@ class PowerListing extends Component {
     const { isEditFlag, } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
+    var filterParams = {
+      date: "",
+      comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+          Number(dateParts[2]),
+          Number(dateParts[1]) - 1,
+          Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+          return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+          return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+          return 1;
+        }
+      },
+      browserDatePicker: true,
+      minValidYear: 2000,
+    };
+
     const isFirstColumn = (params) => {
 
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -340,7 +380,8 @@ class PowerListing extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      effectiveDateFormatter: this.effectiveDateFormatter,
     };
 
     return (
@@ -407,8 +448,6 @@ class PowerListing extends Component {
 
                       </>
 
-
-
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                       <div className="refresh mr-0"></div>
@@ -453,6 +492,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
+                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 

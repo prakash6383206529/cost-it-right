@@ -506,31 +506,34 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    const { IsUsesSolarPower, machineFullValue } = this.state;
+    const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
     const { initialConfiguration, editDetails } = this.props
     let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
 
     if (!editMode) {
       if (newValue && newValue !== '') {
         this.setState({ selectedPlants: newValue, })
-        this.props.getPowerCostUnit(newValue.value, res => {
-          let Data = res?.data?.DynamicData;
-          if (res && res.data && res.data.Message !== '') {
-            Toaster.warning(res.data.Message)
-            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
-          } else {
-            //  if(IsUsesSolarPower)
-            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
-          }
-        })
+
+        if (effectiveDate) {
+          this.props.getPowerCostUnit(newValue.value, effectiveDate, res => {
+            let Data = res?.data?.DynamicData;
+            if (res && res.data && res.data.Message !== '') {
+              Toaster.warning(res.data.Message)
+              machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              })
+              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            } else {
+              //  if(IsUsesSolarPower)
+              machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              })
+              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            }
+          })
+        }
       } else {
         this.setState({ selectedPlants: [] })
       }
@@ -740,6 +743,32 @@ class AddMoreDetails extends Component {
       effectiveDate: date,
       isDateChange: true,
     });
+
+    const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
+    const { initialConfiguration, editDetails } = this.props
+
+    if (Object.keys(selectedPlants)?.length > 0) {
+      this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let Data = res?.data?.DynamicData;
+        if (res && res.data && res.data.Message !== '') {
+          Toaster.warning(res.data.Message)
+          machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+          })
+          this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+          //  if(IsUsesSolarPower)
+          machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+          })
+          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        }
+      })
+    }
+
+
   };
   /**
    * @method handleChange
