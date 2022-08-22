@@ -82,7 +82,8 @@ class BOMUpload extends Component {
           let fileData = [];
 
           resp.rows.map((val, index) => {
-            if (index > 0) {
+            if (val === []) return false
+            if (index > 0 && val?.length > 0) {
 
               // BELOW CODE FOR HANDLE EMPTY CELL VALUE
               const i = val.findIndex(e => e === undefined);
@@ -224,7 +225,7 @@ class BOMUpload extends Component {
                     type="submit"
                     className="submit-button save-btn" >
                     <div className={"save-icon"}></div>
-                     {isEditFlag ? 'Update' : 'Save'}
+                    {isEditFlag ? 'Update' : 'Save'}
                   </button>
                 </div>
               </Row>
