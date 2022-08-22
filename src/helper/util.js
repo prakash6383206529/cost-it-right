@@ -71,7 +71,7 @@ const handleHTTPStatus = (response) => {
       toast.error('Authentication error. Please contact your IT Team.')
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
-      localStorage.setItem("ModuleId", JSON.stringify(""))
+      reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
       return false
     case 403:
