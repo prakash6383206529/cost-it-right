@@ -3,8 +3,8 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
-import { renderText } from "../layout/FormInputs";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString } from "../../helper/validation";
+import { focusOnError, renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
@@ -165,7 +165,7 @@ class Department extends Component {
 												name={"DepartmentName"}
 												type="text"
 												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
 												component={renderText}
 												required={true}
 												maxLength={26}
@@ -179,7 +179,7 @@ class Department extends Component {
 												name={"DepartmentCode"}
 												type="text"
 												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
 												component={renderText}
 												required={true}
 												customClassName={'withBorder'}
@@ -268,4 +268,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,
+	touchOnChange: true,
+	onSubmitFail: errors => {
+		focusOnError(errors);
+	},
 })(Department));
