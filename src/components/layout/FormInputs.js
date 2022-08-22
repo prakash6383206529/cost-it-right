@@ -187,6 +187,7 @@ export function renderPasswordInputField(field) {
           {...input}
           id={"password"}
           placeholder={placeholder}
+          autoComplete={field.autoComplete}
         />
         {field.isEyeIcon === true && (
           <div

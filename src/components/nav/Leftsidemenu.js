@@ -6,6 +6,7 @@ import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -19,13 +20,13 @@ class Leftmenu extends Component {
 	}
 
 	setModuleId = (ModuleId) => {
-		JSON.parse(localStorage.getItem('ModuleId'))
+		reactLocalStorage.set('ModuleId', ModuleId)
 	}
 
 	render() {
 		const { location, topAndLeftMenuData } = this.props;
 		const activeURL = location && location.pathname ? location.pathname : null;
-		const ModuleId = JSON.parse(localStorage.getItem('ModuleId'))
+		const ModuleId = reactLocalStorage.get('ModuleId')
 		let leftMenuFromAPI = []
 		topAndLeftMenuData &&
 			topAndLeftMenuData.map((el, i) => {
