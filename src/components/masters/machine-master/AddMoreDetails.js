@@ -95,6 +95,7 @@ class AddMoreDetails extends Component {
 
       remarks: '',
       files: [],
+      powerId: '',
 
       manufactureYear: new Date(),
 
@@ -351,6 +352,7 @@ class AddMoreDetails extends Component {
               }
             })
 
+
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -378,6 +380,7 @@ class AddMoreDetails extends Component {
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
+              powerId: Data?.PowerId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
@@ -521,14 +524,14 @@ class AddMoreDetails extends Component {
               Toaster.warning(res.data.Message)
               machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
               })
               this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
             } else {
               //  if(IsUsesSolarPower)
               machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
               })
               this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
             }
@@ -754,14 +757,14 @@ class AddMoreDetails extends Component {
           Toaster.warning(res.data.Message)
           machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
           })
           this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
         } else {
           //  if(IsUsesSolarPower)
           machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
           })
           this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -832,7 +835,10 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
+      this.props.getFuelComboData(() => { })
+      this.setState({ fuelType: [] })
     }
+
     this.setState({
       IsUsesFuel: !this.state.IsUsesFuel,
     });
@@ -844,10 +850,10 @@ class AddMoreDetails extends Component {
    */
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
-      const { IsUsesSolarPower, selectedPlants, machineFullValue } = this.state;
+      const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
-        this.props.getPowerCostUnit(selectedPlants.value, res => {
+        this.props.getPowerCostUnit(selectedPlants.value, effectiveDate, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -1779,7 +1785,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1838,12 +1844,12 @@ class AddMoreDetails extends Component {
       OtherYearlyCost: values.OtherYearlyCost,
       TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
       IsUsesFuel: IsUsesFuel,
-      PowerId: '',
+      PowerId: powerId ? powerId : "",
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-      IsUsesSolarPower: IsUsesSolar,
+      IsUsesSolarPower: IsUsesSolarPower,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
       FuelEntryId: this.state.FuelEntryId,
@@ -1971,12 +1977,12 @@ class AddMoreDetails extends Component {
         OtherYearlyCost: values.OtherYearlyCost,
         TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
         IsUsesFuel: IsUsesFuel,
-        PowerId: '',
+        PowerId: powerId ? powerId : "",
         UtilizationFactorPercentage: values.UtilizationFactorPercentage,
         PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
         TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-        IsUsesSolarPower: IsUsesSolar,
+        IsUsesSolarPower: IsUsesSolarPower,
         FuleId: fuelType ? fuelType.value : '',
         FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
         ConsumptionPerYear: values.ConsumptionPerYear,
