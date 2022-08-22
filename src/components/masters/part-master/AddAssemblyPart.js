@@ -19,7 +19,7 @@ import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../conf
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit } from '../../../helper/util';
+import { getRandomSixDigit, onFocus, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -75,7 +75,9 @@ class AddAssemblyPart extends Component {
       partListingData: [],
       warningMessageTechnology: false,
       inputLoader: false,
-      convertPartToAssemblyPartId: ""
+      convertPartToAssemblyPartId: "",
+      uploadAttachements: true,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -1057,6 +1059,7 @@ class AddAssemblyPart extends Component {
                               label="Group Code"
                               name="ProductGroup"
                               placeholder={isViewMode ? '-' : "Select"}
+                              title={showDataOnHover(this.state.ProductGroup)}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -1104,7 +1107,7 @@ class AddAssemblyPart extends Component {
                             valueDescription={this.state.TechnologySelected}
                             disabled={isViewMode || this.state.warningMessageTechnology || (isEditFlag && !this.state.isBomEditable)}
                           />
-                          {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
+                          {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper mt-2" message={`Please reset the BOM to change the technology`} />}
                         </Col>
 
                         <Col md="3">
@@ -1126,10 +1129,12 @@ class AddAssemblyPart extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
+                                onFocus={() => onFocus(this, true)}
                               />
+                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
-                          {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
+                          {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date mt-2" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
                         </Col>
 
 
@@ -1364,7 +1369,6 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddAssemblyPart',
-  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },
