@@ -499,7 +499,7 @@ function StandardRub(props) {
                                         <SearchableSelectHookForm
                                             label={`Raw Material`}
                                             name={'RawMaterial'}
-                                            placeholder={'-Select-'}
+                                            placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}

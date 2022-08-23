@@ -258,7 +258,7 @@ function Rejection(props) {
                     <SearchableSelectHookForm
                         label={'Applicability'}
                         name={'Applicability'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
