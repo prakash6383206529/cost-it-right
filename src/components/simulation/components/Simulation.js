@@ -584,34 +584,39 @@ function Simulation(props) {
                     return false
                 }
                 Data && Data.forEach((element, index) => {
+                    console.log('element: ', element);
                     if (index !== 0) {
-                        if (element.IsVendor !== Data[index - 1].IsVendor) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
-                            setEditWarning(true);
-                            flag = false
-                        }
+                        // if (element.IsVendor !== Data[index - 1].IsVendor) {
+                        //     (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                        //     setEditWarning(true);
+                        //     flag = false
+                        // }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
                         }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if (element.Plants !== Data[index - 1].Plants) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
                         }
                     }
                 });
-                if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setEditWarning(false)
-                } if (flag === false && vendorFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } if (vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
-                } if (flag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
-                } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                if (userDetails().Role !== 'Group Category Head') {
+                    if (vendorFlag === true && plantFlag === true) {
+                        (length !== 0) && setFilterStatus('Please filter out the Vendor and Plant')
+                        setEditWarning(false)
+                    }
+                    // if (flag === false && vendorFlag === false) {
+                    //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    // } 
+                    if (vendorFlag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    }
+                    // if (flag === false && plantFlag === false) {
+                    //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    // }
                 }
                 break;
             case BOPIMPORT:
@@ -638,16 +643,17 @@ function Simulation(props) {
                         }
                     }
                 });
-                if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setEditWarning(false)
-                } if (flag === false && vendorFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } if (vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
-                } if (flag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
-                } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                if (userDetails().Role !== 'Group Category Head') {
+                    if (flag === true && vendorFlag === true && plantFlag === true) {
+                        (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                        setEditWarning(false)
+                    } if (flag === false && vendorFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    } if (vendorFlag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    } if (flag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    }
                 }
                 break;
             // case BOPIMPORT:
