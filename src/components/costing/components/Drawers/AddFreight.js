@@ -427,7 +427,7 @@ function AddFreight(props) {
                     <SearchableSelectHookForm
                       label={'Capacity'}
                       name={'Capacity'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: (freightType !== Fixed && freightType !== Percentage) ? true : false }}
@@ -445,7 +445,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Applicability'}
                         name={'Applicability'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -461,7 +461,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Rate Criteria'}
                         name={'Criteria'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: freightType !== Fixed ? true : false }}

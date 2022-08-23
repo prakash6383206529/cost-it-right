@@ -490,7 +490,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Plant"}
                       name={"fromPlant"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -507,7 +507,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Costing ID"}
                       name={"fromcostingId"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -529,7 +529,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Vendor"}
                       name={"fromVendorName"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -547,7 +547,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}
                         name={"fromVendorPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -566,7 +566,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
                         name={"fromDestinationPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -585,7 +585,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Costing ID"}
                       name={"fromVbccostingId"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -639,7 +639,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Plant"}
                       name={"toPlant"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -679,7 +679,7 @@ function CopyCosting(props) {
                   <SearchableSelectHookForm
                     label={'Costing ID'}
                     name={'tocostingId'}
-                    placeholder={'-Select-'}
+                    placeholder={'Select'}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -700,7 +700,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Vendor"}
                       name={"toVendorName"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -718,7 +718,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}
                         name={"toVendorPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -737,7 +737,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
                         name={"toDestinationPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -811,7 +811,7 @@ function CopyCosting(props) {
                   <SearchableSelectHookForm
                     label={'Costing ID'}
                     name={'toVbccostingId'}
-                    placeholder={'-Select-'}
+                    placeholder={'Select'}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

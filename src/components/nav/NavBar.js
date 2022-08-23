@@ -787,24 +787,19 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <button className="btn btn-no-border" >
-                <img
-                  src={Logo}
-                  // src={require("../../assests/images/sipl-logo.jpg")}
-                  alt="Systematix"
-                  height="40"
-                />
-              </button>
-              <button className="btn btn-no-border">
-                <img src={cirLogo} alt="Cost It Right" height="40" />
-              </button>
-              <button
-                className="navbar-toggler p-0 border-0"
-                type="button"
-                data-toggle="offcanvas"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </button>
+              <div className="logo-container">
+                <button className="btn btn-no-border">
+                  <img
+                    src={Logo}
+                    alt="Softude"
+                    height="40"
+                  />
+                </button>
+                <div className="border-left"></div>
+                <button className="btn btn-no-border">
+                  <img src={cirLogo} alt="Cost It Right" height="40" />
+                </button>
+              </div>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">

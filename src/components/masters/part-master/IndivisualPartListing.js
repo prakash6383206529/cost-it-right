@@ -492,6 +492,9 @@ class IndivisualPartListing extends Component {
             </ExcelSheet>);
     }
 
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
 
     /**
     * @method render
@@ -591,8 +594,8 @@ class IndivisualPartListing extends Component {
             <>
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
-                    <Row className="pt-3 no-filter-row">
-                        <Col md="12" className="search-user-block pr-0">
+                    <Row className="pt-4 no-filter-row">
+                        <Col md="8" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
@@ -647,8 +650,8 @@ class IndivisualPartListing extends Component {
                         </Col>
                     </Row>
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header mt-4 pt-1">
-
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             <AgGridReact
