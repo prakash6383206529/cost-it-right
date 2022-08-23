@@ -699,7 +699,7 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Costing Details</h1>
 
-                <Row className="pt-3 mb-2 blue-before">
+                <Row className="pt-4 mt-2 mb-2 blue-before">
                     {/* COMMENT FOR NOW AS TOLD BY TR */}
                     {/* <Col md="2" lg="2">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
@@ -713,27 +713,18 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                {renderColumn(ReportMaster)}
-                            </ExcelFile>
-
-
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
-
                                 <>
                                     <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                         {/* DOWNLOAD */}
                                     </button>
-
                                     <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
                                         <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                                         </button>}>
                                         {renderColumn(ReportMaster)}
                                     </ExcelFile>
-
                                 </>
-
                             }
                             <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
                                 {renderColumnSAP(ReportSAPMaster)}
@@ -857,16 +848,7 @@ function ReportListing(props) {
                             {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
                             <p><button className="next-btn" type="button" disabled={disableNextButtton} onClick={() => onBtNext()}> </button></p>
                         </div>
-
                     </div>
-                    <div className="d-flex pagination-button-container">
-                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                        {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                        {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                        {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                    </div>
-
                 </div>
             </div>
             {
