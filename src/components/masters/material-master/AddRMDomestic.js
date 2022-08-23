@@ -1019,10 +1019,10 @@ class AddRMDomestic extends Component {
 
       }
       else {
-        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate))
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
           && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
           this.cancel('submit')
@@ -1101,7 +1101,7 @@ class AddRMDomestic extends Component {
         if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
           && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
           Toaster.warning('Please change data to send RM for approval')
