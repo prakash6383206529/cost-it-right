@@ -236,7 +236,7 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-  
+
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
@@ -430,16 +430,16 @@ function AddToComparisonDrawer(props) {
               setIsVbcSelected(false)
               setisCbcSelected(false)
             } else {
-              if(isVbcSelected){
+              if (isVbcSelected) {
 
                 setIsVbcSelected(true)
                 setIsZbcSelected(false)
                 setisCbcSelected(false)
-              }else if(isZbcSelected){
+              } else if (isZbcSelected) {
                 setIsVbcSelected(false)
                 setIsZbcSelected(true)
                 setisCbcSelected(false)
-              }else{
+              } else {
                 setIsVbcSelected(false)
                 setIsZbcSelected(false)
                 setisCbcSelected(true)
@@ -555,7 +555,7 @@ function AddToComparisonDrawer(props) {
     if (label === 'costing') {
       if (viewMode === true) {
         costingSelectList && costingSelectList.map((item) => {
-          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY ||item.Status === APPROVED_BY_SIMULATION) {
+          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY || item.Status === APPROVED_BY_SIMULATION) {
             temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
             return null
           }
