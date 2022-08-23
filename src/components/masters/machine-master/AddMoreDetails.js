@@ -150,7 +150,7 @@ class AddMoreDetails extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
-    // this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
+    this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
     this.props.getFuelComboData(() => { })
     if (!this.props?.editDetails?.isEditFlag) {
 
@@ -211,7 +211,7 @@ class AddMoreDetails extends Component {
         fieldsObj: fieldsObj,
         selectedTechnology: selectedTechnology,
         machineType: machineType,
-        effectiveDate: fieldsObj.EffectiveDate
+        effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
       }, () => {
         // if (machineType && machineType.value) {
         //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -743,6 +743,7 @@ class AddMoreDetails extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
+
     this.setState({
       effectiveDate: date,
       isDateChange: true,
@@ -2537,6 +2538,7 @@ class AddMoreDetails extends Component {
                                 label="Effective Date"
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
+                                placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
@@ -2681,7 +2683,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 label="No. Of Shifts"
                                 component={searchableSelect}
-                                placeholder={'select'}
+                                placeholder={'Select'}
                                 options={this.renderListing('ShiftType')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [] : []}
@@ -2855,7 +2857,7 @@ class AddMoreDetails extends Component {
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
                                     dropdownMode="select"
-                                    placeholderText="Select date"
+                                    placeholderText={disableAllForm ? '-' : "Select Date"}
                                     className="withBorder"
                                     autoComplete={'off'}
                                     disabledKeyboardNavigation

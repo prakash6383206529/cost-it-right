@@ -182,7 +182,7 @@ function PushButtonDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Material Group"}
                     name={"MaterialGroup"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -201,7 +201,7 @@ function PushButtonDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Purchasing Group"}
                     name={"PurchasingGroup"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

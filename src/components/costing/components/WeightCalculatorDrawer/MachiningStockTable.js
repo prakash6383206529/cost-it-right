@@ -403,7 +403,7 @@ function MachiningStockTable(props) {
           <SearchableSelectHookForm
             label={`Shape Type`}
             name={'MachiningStock'}
-            placeholder={'-Select-'}
+            placeholder={'Select'}
             Controller={Controller}
             control={control}
             register={register}

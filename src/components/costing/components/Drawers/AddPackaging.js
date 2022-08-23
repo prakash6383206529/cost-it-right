@@ -339,7 +339,7 @@ function AddPackaging(props) {
                     <SearchableSelectHookForm
                       label={'Applicability'}
                       name={'Applicability'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: PackageType ? true : false }}

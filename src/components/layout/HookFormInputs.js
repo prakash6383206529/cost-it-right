@@ -73,6 +73,7 @@ export const TextFieldHookForm = (field) => {
                   name={name}
                   className={InputClassName}
                   disabled={isDisabled}
+                  placeholder={isDisabled ? '-' : 'Enter'}
                   value={value}
                   onChange={(e) => {
                     handleChange(e);
@@ -94,7 +95,7 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -123,7 +124,7 @@ export const NumberFieldHookForm = (field) => {
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
-
+                placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)
@@ -168,7 +169,7 @@ export const SearchableSelectHookForm = (field) => {
                 {...field}
                 {...register}
                 name={name}
-                placeholder={placeholder}
+                placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
                 isDisabled={isDisable}
                 onChange={(e, action) => {
                   handleChange(e, action);

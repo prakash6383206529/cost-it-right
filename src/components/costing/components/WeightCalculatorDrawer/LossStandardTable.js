@@ -462,7 +462,7 @@ function LossStandardTable(props) {
           <SearchableSelectHookForm
             label={`Type of Loss`}
             name={'LossOfType'}
-            placeholder={'-Select-'}
+            placeholder={'Select'}
             Controller={Controller}
             control={control}
             register={register}
@@ -567,7 +567,7 @@ function LossStandardTable(props) {
               <SearchableSelectHookForm
                 label={`Flash loss`}
                 name={'FlashLoss'}
-                placeholder={'-Select-'}
+                placeholder={'Select'}
                 Controller={Controller}
                 control={control}
                 register={register}
