@@ -535,7 +535,18 @@ function CommonApproval(props) {
     const sendForApproval = () => {
 
         if (selectedRowData?.length > 0) {
-            setApprovalDrawer(true)
+            let costingHead = selectedRowData[0]?.CostingHead
+            let valid = true
+            selectedRowData.map((item) => {
+                if (item.CostingHead !== costingHead) {
+                    Toaster.warning('Please select  token with same costing head.')
+                    valid = false
+                    return false
+                }
+            })
+            if (valid) {
+                setApprovalDrawer(true)
+            }
         }
         else {
             Toaster.warning('Please select draft token to send for approval.')
