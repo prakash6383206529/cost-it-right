@@ -350,6 +350,7 @@ class ReasonListing extends Component {
    */
   render() {
     const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
 

@@ -262,6 +262,7 @@ class FreightListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();

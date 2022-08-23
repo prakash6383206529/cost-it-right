@@ -764,7 +764,6 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedCostingListSimualtion
