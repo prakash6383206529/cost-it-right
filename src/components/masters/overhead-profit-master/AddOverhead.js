@@ -151,7 +151,7 @@ class AddOverhead extends Component {
           setTimeout(() => {
             const { costingHead, plantSelectList } = this.props;
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
+            const plantObj = plantSelectList && plantSelectList.find((item) => item.PlantId === Data.PlantId)
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
               Head = 'vendor';
@@ -168,7 +168,7 @@ class AddOverhead extends Component {
               costingHead: Head,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              plant: plantObj && plantObj !== undefined ? { label: plantObj.PlantNameCode, value: plantObj.PlantId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,

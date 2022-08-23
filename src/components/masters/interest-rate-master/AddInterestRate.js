@@ -270,11 +270,9 @@ class AddInterestRate extends Component {
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
+            const { paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
-
             this.setState({
               isEditFlag: true,
               IsVendor: Data.IsVendor,
@@ -282,7 +280,7 @@ class AddInterestRate extends Component {
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              plant: Data.PlantName !== undefined ? { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data.PlantId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 

@@ -154,7 +154,7 @@ class AddProfit extends Component {
             const { costingHead, plantSelectList } = this.props;
 
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
+            const plantObj = plantSelectList && plantSelectList.find((item) => item.PlantId === Data.PlantId)
 
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -173,7 +173,7 @@ class AddProfit extends Component {
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              plant: plantObj && plantObj !== undefined ? { label: plantObj.PlantNameCode, value: plantObj.PlantId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
