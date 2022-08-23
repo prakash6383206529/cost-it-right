@@ -358,7 +358,7 @@ class MachineRateListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.MachineId === props.node.data.MachineId) {
+                if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
                     props.node.setSelected(true)
                 }
                 return null
