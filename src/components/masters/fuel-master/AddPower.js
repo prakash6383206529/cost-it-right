@@ -364,7 +364,7 @@ class AddPower extends Component {
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
-              effectiveDate: DayTime(Data.SEBChargesDetails[0].EffectiveDate),
+              effectiveDate: DayTime(Data.EffectiveDate),
               powerGrid: tempArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
