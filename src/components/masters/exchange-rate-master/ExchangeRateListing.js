@@ -3,18 +3,17 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -24,6 +23,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { PaginationWrapper } from '../../common/commonPagination';
+import { getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,6 +54,7 @@ class ExchangeRateListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
+            selectedRowData: false
         }
     }
 
@@ -60,7 +62,6 @@ class ExchangeRateListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         this.setState({ isLoader: true })
         setTimeout(() => {
-            this.props.getCurrencySelectList(() => { })
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
@@ -69,10 +70,12 @@ class ExchangeRateListing extends Component {
                     })
                 }
                 if (this.props.selectionForListingMasterAPI === 'Master') {
+                    console.log('in api call 1');
                     this.getTableListData()
                 }
             }
             else {
+                console.log('in api call');
                 this.getTableListData()
             }
         }, 500);
@@ -102,17 +105,11 @@ class ExchangeRateListing extends Component {
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                }, () => {
-                    setTimeout(() => {
-                        this.props.getCurrencySelectList(() => { })
-                        this.getTableListData()
-                    }, 500);
-                })
+                },
+                )
             }
-
         }
     }
-
 
 
     /**
@@ -131,7 +128,7 @@ class ExchangeRateListing extends Component {
                 this.props?.changeTokenCheckBox(true)
             }
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
@@ -159,14 +156,8 @@ class ExchangeRateListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+
+
     }
 
 
@@ -178,6 +169,7 @@ class ExchangeRateListing extends Component {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+                console.log('in api call 3');
                 this.getTableListData()
             }
         });
@@ -215,6 +207,13 @@ class ExchangeRateListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    /**
+    * @method commonCostFormatter
+    */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
 
     /**
     * @method buttonFormatter
@@ -223,13 +222,13 @@ class ExchangeRateListing extends Component {
     buttonFormatter = (props) => {
 
         const cellValue = props?.value;
-        const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
+        const { DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {/* COMMENT BECAUSE DATA IS COMING FROM SAP SO NO NEED TO EDIT  15/07/2022  (MAY BE USED LATER) */}
+                {/* {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />} */}
                 {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -241,15 +240,15 @@ class ExchangeRateListing extends Component {
         this.setState({ toggleForm: true })
     }
 
-    hideForm = () => {
-
-        // this.props.getExchangeRateData('', (res) => { })
+    hideForm = (type) => {
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
         }, () => {
-            this.getTableListData()
+            if (type === 'submit') {
+                this.getTableListData()
+            }
         })
     }
 
@@ -276,14 +275,21 @@ class ExchangeRateListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.exchangeRateDataList ? this.props.exchangeRateDataList : [])
         return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
+
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -309,6 +315,7 @@ class ExchangeRateListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -317,7 +324,8 @@ class ExchangeRateListing extends Component {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
         customNoRowsOverlay: NoContentFound,
-        hyphenFormatter: this.hyphenFormatter
+        hyphenFormatter: this.hyphenFormatter,
+        commonCostFormatter: this.commonCostFormatter
     };
 
     /**
@@ -336,27 +344,18 @@ class ExchangeRateListing extends Component {
                 />
             )
         }
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-        };
-
-
-
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         return (
@@ -422,7 +421,7 @@ class ExchangeRateListing extends Component {
                                     // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -430,24 +429,20 @@ class ExchangeRateListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
                                 >
-                                    <AgGridColumn field="Currency" headerName="Currency" minWidth={155}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
                         </div>
                     </div>
@@ -480,8 +475,6 @@ function mapStateToProps({ exchangeRate, auth }) {
 export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
-    getCurrencySelectList,
-    getExchangeRateData,
     getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
@@ -489,4 +482,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ExchangeRateListing));

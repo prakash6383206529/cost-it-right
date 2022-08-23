@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getProductDataList, deleteProduct, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
@@ -21,6 +21,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { PaginationWrapper } from '../../common/commonPagination';
+import { hyphenFormatter } from '../masterUtil';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,23 +39,21 @@ class IndivisualProductListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
-
+            selectedRowData: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
         }
     }
 
     componentDidMount() {
-        this.getTableListData();
-
-    }
-
-    // Get updated list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData()
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getTableListData();
+            }
+        }, 300);
     }
 
     /**
@@ -65,7 +65,7 @@ class IndivisualProductListing extends Component {
         this.props.getProductDataList((res) => {
             this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;
@@ -138,13 +138,7 @@ class IndivisualProductListing extends Component {
         )
     };
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
+
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -275,29 +269,30 @@ class IndivisualProductListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl)
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.productDataList ? this.props.productDataList : [])
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr)
     };
 
-    returnExcelColumn = (data = []) => {
-        let temp = this.props.productDataList
+    returnExcelColumn = (data = [], tempArr) => {
+        let temp = tempArr
         temp && temp.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
-            } else if (item.RevisionNumber === null) {
+            } if (item.RevisionNumber === null) {
                 item.RevisionNumber = ' '
-            } else if (item.DrawingNumber === null) {
+            } if (item.DrawingNumber === null) {
                 item.DrawingNumber = ' '
-            } else if (item.EffectiveDate?.includes('T')) {
+            } if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-            } else if (item.IsConsideredForMBOM === true) {
-                item.IsConsideredForMBOM = 'Yes'
-            } else if (item.IsConsideredForMBOM === false) {
-                item.IsConsideredForMBOM = 'No'
             }
             return item
         })
@@ -313,6 +308,7 @@ class IndivisualProductListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -326,18 +322,25 @@ class IndivisualProductListing extends Component {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            hyphenFormatter: hyphenFormatter
         };
 
         return (
@@ -375,18 +378,12 @@ class IndivisualProductListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-
                                         <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
                                             </button>}>
-
                                             {this.onBtExport()}
                                         </ExcelFile>
-
                                     </>
-
-
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
@@ -408,7 +405,7 @@ class IndivisualProductListing extends Component {
                             domLayout='autoHeight'
                             rowData={this.props.productDataList}
                             pagination={true}
-                            paginationPageSize={10}
+                            paginationPageSize={defaultPageSize}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -416,11 +413,14 @@ class IndivisualProductListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            rowSelection={'multiple'}
+                            onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                         >
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+                            {/* <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"hyphenFormatter"}></AgGridColumn> */}
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -428,13 +428,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>
                 </div>
 

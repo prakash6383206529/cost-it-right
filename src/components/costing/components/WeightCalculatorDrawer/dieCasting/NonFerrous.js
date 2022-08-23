@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import LossStandardTable from '../LossStandardTable'
 import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { debounce } from 'lodash'
 
 
 function NonFerrous(props) {
@@ -36,6 +37,7 @@ function NonFerrous(props) {
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState({})
     const [nonFerrousDropDown, setNonFerrousDropDown] = useState(false)
+    const [isDisable, setIsDisable] = useState(false)
     const { rmRowData, activeTab, isHpdc, CostingViewMode, item } = props
 
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
@@ -163,7 +165,8 @@ function NonFerrous(props) {
         setValue('burningValue', checkForDecimalAndNull(burningValue, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
-    const onSubmit = () => {
+    const onSubmit = debounce(handleSubmit((values) => {
+        setIsDisable(true)
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
         obj.DieCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.DieCastingWeightCalculatorId ? WeightCalculatorRequest.DieCastingWeightCalculatorId : "0"
@@ -192,6 +195,7 @@ function NonFerrous(props) {
         obj.NetLossWeight = lostWeight
 
         dispatch(saveRawMaterialCalculationForDieCasting(obj, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
@@ -199,7 +203,7 @@ function NonFerrous(props) {
             }
         }))
 
-    }
+    }), 500)
 
 
     const onCancel = () => {
@@ -216,7 +220,7 @@ function NonFerrous(props) {
         <Fragment>
             <Row>
 
-                <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                <form noValidate className="form"
                     onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                     <Col md="12">
                         <div className="costing-border px-4">
@@ -243,7 +247,7 @@ function NonFerrous(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
 
                                                 }}
@@ -267,7 +271,7 @@ function NonFerrous(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -326,7 +330,7 @@ function NonFerrous(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Casting Weight(${activeTab === '3' ? `before machining` : `kg`})`}
+                                        label={`Casting Weight${activeTab === '3' ? ` (before machining)` : `(kg)`}`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -336,7 +340,7 @@ function NonFerrous(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -370,7 +374,7 @@ function NonFerrous(props) {
                             <Row className={'mt25'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Gross Weight (Kg)`}
+                                        label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -405,7 +409,7 @@ function NonFerrous(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
 
                                         }}
@@ -535,8 +539,9 @@ function NonFerrous(props) {
                             CANCEL
                         </button>
                         <button
-                            type="submit"
-                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                            type="button"
+                            onClick={onSubmit}
+                            disabled={props.CostingViewMode || isDisable ? true : false}
                             className="btn-primary save-btn"
                         >
                             <div className={'check-icon'}>

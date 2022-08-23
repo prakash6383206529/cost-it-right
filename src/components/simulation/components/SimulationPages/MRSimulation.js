@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import moment from 'moment';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
@@ -19,6 +19,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyMachineRateSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import Toaster from '../../../common/Toaster';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 const gridOptions = {
 
@@ -31,8 +32,6 @@ function MRSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [selectedRowData, setSelectedRowData] = useState([]);
-    const [tableData, setTableData] = useState([])
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -159,8 +158,7 @@ function MRSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -192,11 +190,6 @@ function MRSimulation(props) {
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter
     };
-
-    const onRowSelect = () => {
-        var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
-    }
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -243,7 +236,7 @@ function MRSimulation(props) {
 
         obj.SimulationCombinedProcess = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
@@ -270,7 +263,7 @@ function MRSimulation(props) {
                                             isbulkUpload &&
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
@@ -288,7 +281,7 @@ function MRSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
@@ -316,7 +309,7 @@ function MRSimulation(props) {
                                                 // columnDefs={c}
                                                 rowData={list}
                                                 pagination={true}
-                                                paginationPageSize={10}
+                                                paginationPageSize={defaultPageSize}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 // loadingOverlayComponent={'customLoadingOverlay'}
@@ -327,8 +320,7 @@ function MRSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
-                                                // frameworkComponents={frameworkComponents}
-                                                onSelectionChanged={onRowSelect}
+                                            // frameworkComponents={frameworkComponents}
                                             >
                                                 <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
@@ -348,14 +340,7 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
-
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
 
@@ -388,7 +373,7 @@ function MRSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

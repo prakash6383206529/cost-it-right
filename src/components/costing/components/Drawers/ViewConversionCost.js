@@ -296,7 +296,7 @@ function ViewConversionCost(props) {
                 <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
-                <th width="98px"><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
+                <th width="125px"><span>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
@@ -309,7 +309,7 @@ function ViewConversionCost(props) {
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
+                        <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
                               <div onClick={() =>
@@ -319,7 +319,7 @@ function ViewConversionCost(props) {
                           }
                           <span title={item.ProcessName}>
                             {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
-                        </td>}
+                        </td>
                         {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -390,7 +390,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -421,6 +422,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
@@ -461,7 +465,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -492,6 +497,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
@@ -619,7 +627,7 @@ function ViewConversionCost(props) {
       </Row>
       <Row>
         {/*TRANSPORTATION COST GRID */}
-        <Col md="12">
+        <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>

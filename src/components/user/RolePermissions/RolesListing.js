@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI } from '../../../actions/auth/AuthActions';
+import { getAllRoleAPI, deleteRoleAPI, activeInactiveRole } from '../../../actions/auth/AuthActions';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { ROLE } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
+import { loggedInUserId } from '../../../helper';
+import Switch from "react-switch";
 
 const gridOptions = {};
 
@@ -26,6 +29,7 @@ class RolesListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      ActivateAccessibility: false,
       isLoader: false,
       gridApi: null,
       gridColumnApi: null,
@@ -33,8 +37,8 @@ class RolesListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
-
+      deletedId: '',
+      cell: ''
     }
   }
 
@@ -51,6 +55,7 @@ class RolesListing extends Component {
           AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
         })
       }
     }
@@ -92,34 +97,13 @@ class RolesListing extends Component {
     this.props.getDetail(requestData)
   }
 
-  /**
-  * @method deleteItem
-  * @description confirm delete part
-  */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
-  }
 
-  onPopupConfirm = () => {
-    this.confirmDeleteItem(this.state.deletedId);
 
-  }
+
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
-  /**
-  * @method confirmDeleteItem
-  * @description confirm delete Role item
-  */
-  confirmDeleteItem = (RoleId) => {
-    this.props.deleteRoleAPI(RoleId, (res) => {
-      if (res.data.Result === true) {
-        Toaster.success(MESSAGES.DELETE_ROLE_SUCCESSFULLY);
-        this.getRolesListData();
-      }
-    });
-    this.setState({ showPopup: false })
-  }
+
 
   /**
   * @method buttonFormatter
@@ -150,8 +134,7 @@ class RolesListing extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   onFilterTextBoxChanged(e) {
@@ -163,33 +146,87 @@ class RolesListing extends Component {
     gridOptions.api.setFilterModel(null);
   }
 
+  handleChange = (cell, row) => {
+
+    this.setState({ showPopup: true, row: row, cell: cell })
+      ;
+  }
+  onPopupConfirm = () => {
+
+
+    let data = {
+      Id: this.state.row.RoleId,
+      ModifiedBy: loggedInUserId(),
+      IsActive: !this.state.cell, //Status of the Reason.
+    }
+    this.props.activeInactiveRole(data, (res) => {
+      if (res && res.data && res.data.Result) {
+        if (Boolean(this.state.cell) === true) {
+          Toaster.success(MESSAGES.ROLE_INACTIVE_SUCCESSFULLY)
+        } else {
+          Toaster.success(MESSAGES.ROLE_ACTIVE_SUCCESSFULLY)
+        }
+        this.getRolesListData();
+      }
+    })
+
+
+    this.setState({ showPopup: false })
+    this.setState({ showPopup2: false })
+
+
+  }
+
+  /**
+* @method statusButtonFormatter
+* @description Renders buttons
+*/
+  statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { ActivateAccessibility } = this.state;
+    if (rowData.UserId === loggedInUserId()) return null;
+    showTitleForActiveToggle(props)
+    return (
+      <>
+        <label htmlFor="normal-switch" className="normal-switch">
+          {/* <span>Switch with default style</span> */}
+          <Switch
+            onChange={() => this.handleChange(cellValue, rowData)}
+            checked={cellValue}
+            disabled={!ActivateAccessibility}
+            background="#ff6600"
+            onColor="#4DC771"
+            onHandleColor="#ffffff"
+            offColor="#FC5774"
+            id="normal-switch"
+            height={24}
+            className={cellValue ? "active-switch" : "inactive-switch"}
+          />
+        </label>
+      </>
+    )
+  }
+
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (<NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
     };
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
+      statusButtonFormatter: this.statusButtonFormatter,
     };
 
     return (
@@ -246,19 +283,14 @@ class RolesListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+                    <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                     <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
-                  <div className="paging-container d-inline-block float-right">
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
+                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
               </div>
               {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_DELETE_ALERT}`} />
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />
               }
 
             </Col>
@@ -285,5 +317,6 @@ export default connect(mapStateToProps,
   {
     getAllRoleAPI,
     deleteRoleAPI,
+    activeInactiveRole
   })(RolesListing);
 

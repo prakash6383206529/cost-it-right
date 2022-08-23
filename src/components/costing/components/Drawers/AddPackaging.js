@@ -100,7 +100,7 @@ function AddPackaging(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
-      calculateApplicabilityCost(newValue.label)
+      calculateApplicabilityCost(newValue.label, true)
     } else {
       setApplicability([])
     }
@@ -110,7 +110,7 @@ function AddPackaging(props) {
    * @method calculateApplicabilityCost
    * @description APPLICABILITY CALCULATION
    */
-  const calculateApplicabilityCost = (Text) => {
+  const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
 
@@ -215,6 +215,10 @@ function AddPackaging(props) {
           totalPackagingCost = getValues('PackagingCost')
           // setValue('PackagingCost',PackagingCostPercentage)
           setPackagingCost(totalPackagingCost)
+          if (applicablityDropDownChange) {
+            setValue('PackagingCost', 0)
+            setPackagingCost(0)
+          }
         }
         break;
       default:
@@ -274,11 +278,11 @@ function AddPackaging(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={'drawer-wrapper packing-drawer'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Update Packaging' : 'ADD Packaging'}</h3>
+                  <h3>{isEditFlag ? 'Update Packaging' : 'Add Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

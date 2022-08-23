@@ -13,6 +13,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingU
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const dispatch = useDispatch()
 
@@ -227,7 +228,7 @@ function AddAssemblyOperation(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  disabled={CostingViewMode}
+                  disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

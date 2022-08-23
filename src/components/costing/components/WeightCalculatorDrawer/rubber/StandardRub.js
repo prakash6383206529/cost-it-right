@@ -4,7 +4,6 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -33,6 +32,7 @@ function StandardRub(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
+    const [isDisable, setIsDisable] = useState(false)
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? WeightCalculatorRequest.ShotWeight : '',
@@ -423,7 +423,8 @@ function StandardRub(props) {
 
     }
 
-    const onSubmit = () => {
+    const onSubmit = debounce(handleSubmit(() => {
+        setIsDisable(true)
         let obj = {}
         obj.LayoutType = 'Default'
         obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
@@ -440,14 +441,9 @@ function StandardRub(props) {
         obj.RmDropDownData = rmDropDownData
         obj.CalculatedRmTableData = tableData
 
-        dispatch(saveRawMaterialCalciData(obj, res => {
-            if (res.data.Result) {
-                obj.WeightCalculationId = res.data.Identity
-                Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', obj, obj)
-            }
-        }))
-    }
+        //APPLY NEW ACTION HERE 
+
+    }), 500)
 
     const cancel = () => {
         props.toggleDrawer('')
@@ -473,7 +469,8 @@ function StandardRub(props) {
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                    <form noValidate className="form"
+                        // onSubmit={handleSubmit(onSubmit)}
                         onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={'mt25'}>
                             <div className="border pl-3 pr-3 pt-3">
@@ -525,9 +522,9 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         //value: /^[0-9]*$/i,
                                                         value: /^[0-9]\d*(\.\d+)?$/i,
@@ -550,7 +547,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -575,7 +572,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -601,7 +598,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -706,7 +703,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -857,11 +854,12 @@ function StandardRub(props) {
                                 <div className={'cancel-icon'}></div>
                                 CANCEL
                             </button>
+
                             <button
-                                type="submit"
-                                // disabled={isSubmitted ? true : false}
+                                type="button"
+                                className="submit-button  save-btn"
                                 onClick={onSubmit}
-                                className="btn-primary save-btn"
+                                disabled={props.CostingViewMode || isDisable ? true : false}
                             >
                                 <div className={'save-icon'}></div>
                                 {'SAVE'}

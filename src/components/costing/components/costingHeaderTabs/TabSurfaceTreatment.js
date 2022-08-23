@@ -2,13 +2,13 @@ import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData, setMessageForAssembly } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, userDetails, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
-import { ViewCostingContext } from '../CostingDetails';
+import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 
 function TabSurfaceTreatment(props) {
@@ -18,14 +18,15 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const vbcExistingCosting = useContext(VbcExistingCosting);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId,
-        SubAsmCostingId: costData.CostingId
+        AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
+        SubAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
@@ -257,7 +258,14 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-
+    let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+    let tempPartNumber = []
+    updatedArr && updatedArr.map((item) => {
+      if (item.IsCostingLocked === true) {
+        tempPartNumber.push(item.PartNumber)
+      }
+    })
+    dispatch(setMessageForAssembly(tempPartNumber.join(',')))
     let arr = setAssembly(params, Children, SurfaceTabData)
     // dispatch(setSurfaceData(arr, () => { }))
   }
@@ -1216,7 +1224,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
                           <th className="py-align-middle" style={{ width: "100px" }}>{`Quantity`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>

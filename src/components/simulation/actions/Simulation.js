@@ -14,7 +14,6 @@ import {
     config,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
-    GET_AMMENDENT_STATUS_COSTING,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
@@ -44,8 +43,11 @@ import {
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
-    SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_AMMENDENT_STATUS_COSTING,
+    GET_MASTER_SELECT_LIST_SIMUALTION,
+    SET_SELECTED_COSTING_LIST_SIMULATION,
+    GET_SIMULATION_APPROVAL_LIST_DRAFT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -150,20 +152,34 @@ export function runSimulationOnSelectedCosting(data, callback) {
     };
 }
 
-export function getSimulationApprovalList(filterData, callback) {
+export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({
             type: GET_SIMULATION_APPROVAL_LIST,
             payload: [],
         })
+        dispatch({
+            type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
+            payload: [],
+        })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
-        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, config())
+
+        const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&SimulationType=${obj.SimulationType !== undefined ? obj.SimulationType : ""}&AmedmentStatus=${obj.ProvisionalStatus !== undefined ? obj.ProvisionalStatus : ""}&LinkingTokenNo=${obj.LinkingTokenNo !== undefined ? obj.LinkingTokenNo : ""}&SimulationHead=${obj.SimulationTechnologyHead !== undefined ? obj.SimulationTechnologyHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&ImpactedCosting=${obj.ImpactCosting !== undefined ? obj.ImpactCosting : ""}&ImpactedParts=${obj.ImpactParts !== undefined ? obj.ImpactParts : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&InitiatedBy=${obj.SimulatedByName !== undefined ? obj.SimulatedByName : ""}&SimulatedOn=${obj.SimulatedOn !== undefined ? obj.SimulatedOn : ""}&LastApproval=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&SimulationStatus=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
+
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_SIMULATION_APPROVAL_LIST,
-                    payload: response.data.DataList,
-                })
+                if (filterData.isDashboard) {
+                    dispatch({
+                        type: GET_SIMULATION_APPROVAL_LIST,
+                        payload: response.data.DataList,
+                    })
+                } else {
+                    dispatch({
+                        type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
+                        payload: response.data.DataList,
+                    })
+                }
                 callback(response)
             }
         }).catch((error) => {
@@ -258,6 +274,10 @@ export function saveSimulationForRawMaterial(data, callback) {
 
 export function getApprovalSimulatedCostingSummary(params, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+            payload: [],
+        })
         const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
         const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, config())
         request.then((response) => {
@@ -1011,7 +1031,7 @@ export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, config());
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}&vendorId=${obj.vendorId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1167,6 +1187,36 @@ export function setTokenForSimulation(value) {
     return (dispatch) => {
         dispatch({
             type: SET_TOKEN_FOR_SIMULATION,
+            payload: value,
+        });
+    }
+}
+
+//FOR SELECTING MASTER LIST IN SIMULATION
+export function getMasterSelectListSimulation(loggedInUserId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getMasterSelectListSimulation}/${loggedInUserId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MASTER_SELECT_LIST_SIMUALTION,
+                    payload: response.data.SelectList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        })
+    }
+}
+
+export function setSelectedCostingListSimualtion(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_COSTING_LIST_SIMULATION,
             payload: value,
         });
     }

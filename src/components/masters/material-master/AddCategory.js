@@ -10,8 +10,6 @@ import { MESSAGES } from '../../../config/message';
 import { CATEGORY, NAME } from '../../../config/constants';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddCategory extends Component {
     constructor(props) {
@@ -212,4 +210,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddCategory',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddCategory));

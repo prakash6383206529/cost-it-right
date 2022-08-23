@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, checkForNullReturnBlank, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
-import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +17,7 @@ import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyProfitSimulation } from '../../actions/Simulation';
 import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
+import { PaginationWrapper } from '../../../common/commonPagination';
 const gridOptions = {
 
 };
@@ -79,11 +77,6 @@ function ProfitSimulation(props) {
         let tempRMCCBOP = 0
         let value = 0
 
-        let checkRMPercent_NOT_CHANGED = 0
-        let checkCCPercent_NOT_CHANGED = 0
-        let checkBOPPercent_NOT_CHANGED = 0
-        let checkPercent_NOT_CHANGED = 0
-
         let tempObj = new Set([]);
 
         list && list.map((item) => {
@@ -94,8 +87,6 @@ function ProfitSimulation(props) {
             tempRMBOP = 0
             tempBOPCC = 0
             tempRMCCBOP = 0
-
-
 
             switch (item.NewProfitApplicabilityType) {
                 case 'RM':
@@ -204,6 +195,7 @@ function ProfitSimulation(props) {
                 default:
                     return 'foo';
             }
+            return null
         })
         list && list.map((item) => {
             tempRM = 0
@@ -308,6 +300,7 @@ function ProfitSimulation(props) {
             } else {
                 value = value + 1
             }
+            return null
         })
 
         if ((Number(temp) <= Number(list.length))) {
@@ -427,6 +420,7 @@ function ProfitSimulation(props) {
 
                 return null;
             }
+            return null
         })
 
         obj.SimulationIds = tokenForMultiSimulation
@@ -437,7 +431,7 @@ function ProfitSimulation(props) {
         dispatch(runVerifyProfitSimulation(obj, res => {
 
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
@@ -736,8 +730,6 @@ function ProfitSimulation(props) {
     }
 
     const cellChange = (props) => {
-        const cell = props?.value;
-
     }
 
     const applicabilityCellEditor = (params) => {
@@ -786,8 +778,7 @@ function ProfitSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -1080,7 +1071,6 @@ function ProfitSimulation(props) {
 
         //     }
         // }
-        let value = false
         if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'
             || props?.value === 'RM + BOP' || props?.value === 'RM + CC' || props?.value === 'RM + CC + BOP') && props?.value !== undefined) {
             list && list.map((item) => {
@@ -1230,7 +1220,7 @@ function ProfitSimulation(props) {
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -1289,13 +1279,7 @@ function ProfitSimulation(props) {
 
                                         </AgGridReact>
 
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 

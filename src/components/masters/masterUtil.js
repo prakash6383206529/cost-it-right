@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { Col, Row } from 'reactstrap';
 import { useForm, Controller } from "react-hook-form";
@@ -16,20 +16,31 @@ export const ProcessGroup = (props) => {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
     const dispatch = useDispatch()
 
     const [rowData, setRowData] = useState([]);
-    const [apiData, setApiData] = useState([])
+    const [apiData, setApiData] = useState([]);
+    const [errorObj, setErrorObj] = useState({
+        groupName: false,
+        processSelect: false,
+        processAdd: false
+    })
+    const [processDropdown, setProcessDropdown] = useState({})
     const { processGroupApiData, processGroupList, processIdList } = useSelector(state => state.machine)
 
 
     const [selectedProcess, setSelectedProcess] = useState([])
     const [editIndex, setEditIndex] = useState('')
-
+    const [groupNameText, setGroupNameText] = useState('')
 
     useEffect(() => {
         if (isEditFlag || isViewFlag) {
-            setRowData(processGroupList)
+            if (props?.rowData && props.rowData.length > 0) {
+                setRowData(props?.rowData)
+            } else {
+                setRowData(processGroupList)
+            }
         } else {
             dispatch(setGroupProcessList([]))
         }
@@ -38,19 +49,28 @@ export const ProcessGroup = (props) => {
     const handleProcess = () => {
         const processName = getValues('process')
         const groupName = getValues('groupName')
-        if ((processName === undefined || processName === '' || Object.keys(processName).length === 0) || (groupName === undefined | groupName === '')) {
-            Toaster.warning('Please select group name and at least one process')
+        if ((processName === undefined || processName === '' || Object.keys(processName).length === 0) || (groupName === '')) {
+            setErrorObj({ groupName: true, processAdd: true })
+            return false
+        }
+        if (groupName === '') {
+            setErrorObj({ groupName: true })
             return false
         }
         setSelectedProcess([...selectedProcess, { ProcessName: processName?.label, ProcessId: processName?.value }])
         setValue('process', {})
+        setErrorObj({ processAdd: false })
+        setProcessDropdown({})
     }
 
     const resetHandler = () => {
         setValue('groupName', '')
         setValue('process', '')
+        setErrorObj({ groupName: false, processSelect: false, processSelectedArr: false })
         setSelectedProcess([])
         setEditIndex('')
+        setGroupNameText('')
+        setProcessDropdown({})
     }
 
 
@@ -65,12 +85,23 @@ export const ProcessGroup = (props) => {
         props.showDelete(uniqueStoreProcessList)
         dispatch(setProcessList(uniqueStoreProcessList))
     }
-
     const processTableHandler = () => {
         const groupName = getValues('groupName')
         const data = _.find(rowData, ['GroupName', groupName])
-        if (groupName === '' || selectedProcess?.length === 0) {
-            Toaster.warning('Please enter Group Name and Select Process')
+        let processList = []
+        let tableList = []
+        // 
+
+        if (groupNameText === '' && selectedProcess.length === 0) {
+            setErrorObj({ groupName: true, processSelect: true })
+            return false
+        }
+        if (groupNameText === '') {
+            setErrorObj({ groupName: true })
+            return false
+        }
+        if (selectedProcess.length === 0) {
+            setErrorObj({ processSelect: true })
             return false
         }
         props.changeDropdownValue()
@@ -78,8 +109,6 @@ export const ProcessGroup = (props) => {
         if (data !== undefined) {
             return Toaster.warning('This group name is already added')
         }
-        let processList = []
-        let tableList = []
 
         updateProcessidList()
         selectedProcess && selectedProcess.map((item, index) => {
@@ -97,13 +126,19 @@ export const ProcessGroup = (props) => {
 
         setApiData([...apiData, obj])
         setRowData([...rowData, tableObj])
+        props.setRowData([...rowData, tableObj])
+        setErrorObj({ groupName: false, processSelect: false })
+        setGroupNameText('')
         resetHandler()
     }
 
     const updateProcessTableHandler = () => {
         const tempData = rowData[editIndex]
         let groupName = getValues('groupName')
-
+        if (groupNameText === '' && groupName === '') {
+            setErrorObj({ groupName: true })
+            return false
+        }
         let processList = []
         let tableList = []
         selectedProcess && selectedProcess.map((item, index) => {
@@ -126,6 +161,8 @@ export const ProcessGroup = (props) => {
         setEditIndex('')
         resetHandler()
         props.changeDropdownValue()
+        setErrorObj({ groupName: false })
+        setGroupNameText('')
     }
 
     const renderListing = (label) => {
@@ -161,6 +198,7 @@ export const ProcessGroup = (props) => {
         let processIdList = []
         tempArrAfterDelete && tempArrAfterDelete.map(item => {
             item.ProcessList.map(process => processIdList.push(process.ProcessId))
+            return null
         })
 
         let uniqueStoreProcessList = [...new Set(processIdList)]
@@ -171,60 +209,64 @@ export const ProcessGroup = (props) => {
         setApiData(apiTempArrAfterDelete)
         resetHandler()
         setEditIndex('')
+        props.changeDropdownValue()
     }
 
     return (
         <>
             {
                 !props?.isListing &&
-                <Row>
+                <Row className='child-form-container'>
                     <Col className="col-md-3">
                         <TextFieldHookForm
                             label="Group Name"
                             name={"groupName"}
                             Controller={Controller}
+                            placeholder={props.isViewFlag ? '-' : "Enter"}
                             control={control}
                             register={register}
                             rules={{ required: false }}
-                            mandatory={false}
-                            handleChange={() => { }}
+                            mandatory={true}
+                            handleChange={(e) => { setGroupNameText(e.target.value) }}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
                             errors={errors.groupName}
                             disabled={props.isViewFlag}
                         />
+                        {errorObj.groupName && (getValues('groupName') === '') && groupNameText === '' && <div className='text-help p-absolute'>This field is required.</div>}
                     </Col>
                     <Col className="col-md-3 process-container">
                         <SearchableSelectHookForm
                             label={"Process"}
                             name={"process"}
-                            placeholder={"Select"}
+                            placeholder={props.isViewFlag ? '-' : "Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: false }}
                             register={register}
                             options={renderListing("process")}
-                            mandatory={false}
-                            handleChange={() => { }}
+                            mandatory={true}
+                            handleChange={(value) => { setProcessDropdown(value) }}
                             disabled={props.isViewFlag}
                             errors={errors.process}
                         />
+                        {errorObj.processAdd && Object.keys(processDropdown).length === 0 && <div className='text-help p-absolute'>Please select at least one process.</div>}
                         <div onClick={props.isViewFlag ? '' : handleProcess} disabled={true} className={`plus-icon-square mr5 right ${props.isViewFlag ? 'disabled' : ''}`}> </div>
                     </Col>
 
                     <Col md="4" className='process-group-wrapper'>
-                        <div className='border process-group'>
+                        <div className={`border process-group ${props.isViewFlag ? 'disabled' : ''}`}>
                             {
                                 selectedProcess && selectedProcess.map(item =>
                                     <span className='process-name'>{item.ProcessName}</span>
                                 )
                             }
                         </div>
+                        {errorObj.processSelect && selectedProcess.length === 0 && <div className='text-help p-absolute'>Please add process.</div>}
                     </Col>
                     <Col md="2" className='mb-2 d-flex align-items-center'>
-                        <div>
-
+                        <div className='d-flex'>
                             {
                                 editIndex === '' ?
                                     <>
@@ -295,7 +337,21 @@ export const ProcessGroup = (props) => {
 };
 
 
-// export const findProcessId = (processId,arr)=>{
+export const rmQueryParms = (isPagination, skip, take, obj) => {
 
-// }
+    let queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    return queryParamsSecond
 
+}
+
+export const bopQueryParms = (isPagination, skip, take, obj) => {
+
+    let queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    return queryParamsSecond
+
+}
+
+export const hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null && cellValue !== '' && cellValue !== undefined ? cellValue : '-'
+}

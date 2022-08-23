@@ -7,6 +7,7 @@ import {
     GET_ALL_PARTS_SUCCESS,
     GET_UNIT_PART_DATA_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
+    GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
     GET_PART_SELECTLIST_SUCCESS,
     GET_ASSEMBLY_PART_SELECTLIST,
     GET_COMPONENT_PART_SELECTLIST,
@@ -104,18 +105,25 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
 
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
-        var queryParams3 = `effectiveDate=${obj.EffectiveDate !== null || obj.EffectiveDate !== "" ? obj.EffectiveDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}`
+        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}`
         const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
         request.then((response) => {
-            if (response.data.Result === true) {
-                dispatch({
-                    type: GET_ALL_NEW_PARTS_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
+            if (response?.data?.Result === true || response.status === 204) {
 
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_ALL_NEW_PARTS_SUCCESS,
+                        payload: response?.status === 204 ? [] : response.data.DataList,
+                    });
+                } else {
 
+                    dispatch({
+                        type: GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
+                        payload: response?.status === 204 ? [] : response.data.DataList,
+                    });
+                }
             }
+            callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -173,9 +181,6 @@ export function getPartSelectList(callback) {
  */
 export function fileUploadPart(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadPart, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -306,11 +311,13 @@ export function getAssemblyPartDataList(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAssemblyPartDataList}`, config());
         request.then((response) => {
-            dispatch({
-                type: GET_ALL_PARTS_SUCCESS,
-                payload: response.data.DataList,
-            });
-            callback(response);
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_ALL_PARTS_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -328,11 +335,13 @@ export function getAssemblyPartDetail(PartId, callback) {
         if (PartId !== '') {
             const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
             request.then((response) => {
-                dispatch({
-                    type: GET_UNIT_PART_DATA_SUCCESS,
-                    payload: response.data.Data,
-                });
-                callback(response);
+                if (response.data.Result || response.status === 204) {
+                    dispatch({
+                        type: GET_UNIT_PART_DATA_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.Data,
+                    });
+                    callback(response);
+                }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
                 callback(error);
@@ -631,10 +640,10 @@ export function getProductDataList(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getProductDataList}`, config());
         request.then((response) => {
-            if (response.data.Result === true) {
+            if (response.data.Result === true || response.status === 204) {
                 dispatch({
                     type: GET_PRODUCT_DATA_LIST,
-                    payload: response.data.DataList,
+                    payload: response.status === 204 ? [] : response.data.DataList,
                 });
                 callback(response);
             }
@@ -787,4 +796,16 @@ export function getPartDescription(partNumber, partId, callback) {
 }
 
 
-
+export function convertPartToAssembly(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.convertPartToAssembly}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}

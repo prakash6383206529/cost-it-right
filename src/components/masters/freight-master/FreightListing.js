@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
-import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -23,10 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -44,7 +38,8 @@ class FreightListing extends Component {
       vendor: [],
       isLoader: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false
     }
   }
 
@@ -53,12 +48,14 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.fetchSupplierCityDataAPI(res => { });
-      this.getDataList()
-    }, 500);
+      if (!this.props.stopApiCallOnCancel) {
+        this.setState({ isLoader: true })
+        setTimeout(() => {
+          this.getDataList()
+        }, 500);
+      }
+    }, 300);
   }
 
   /**
@@ -76,7 +73,7 @@ class FreightListing extends Component {
       this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data, isLoader: false })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], isLoader: false })
       } else {
@@ -209,7 +206,6 @@ class FreightListing extends Component {
   }
 
   returnExcelColumn = (data = [], TempData) => {
-    const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
@@ -239,12 +235,18 @@ class FreightListing extends Component {
     params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    let tempArr = this.props.freightDetail && this.props.freightDetail
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.freightDetail ? this.props.freightDetail : [])
     return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -253,14 +255,9 @@ class FreightListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-  }
-
-  createCustomExportCSVButton = (onClick) => {
-    // return (
-    //   <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    // );
   }
 
   /**
@@ -269,25 +266,20 @@ class FreightListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
-
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -357,7 +349,7 @@ class FreightListing extends Component {
                   // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}
-                  paginationPageSize={10}
+                  paginationPageSize={defaultPageSize}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
                   // loadingOverlayComponent={'customLoadingOverlay'}
@@ -366,6 +358,8 @@ class FreightListing extends Component {
                     title: EMPTY_DATA,
                     imagClass: 'imagClass'
                   }}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                 >
                   <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
@@ -375,13 +369,7 @@ class FreightListing extends Component {
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
                   <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
-                <div className="paging-container d-inline-block float-right">
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
             </div>
           </Col>
@@ -416,9 +404,8 @@ export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
   getVendorListByVendorType,
-  fetchSupplierCityDataAPI,
-  getVendorWithVendorCodeSelectList,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(FreightListing));

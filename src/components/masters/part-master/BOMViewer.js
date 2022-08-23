@@ -11,6 +11,7 @@ import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
 import _ from 'lodash'
+import LoaderCustom from '../../common/LoaderCustom';
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -32,8 +33,11 @@ class BOMViewer extends Component {
       bomFromAPI: [],
       isCancel: false,
       isSaved: false,
-      partType: ''
-
+      partType: '',
+      isLoader: false,
+      zoomOutCount: 9,
+      isHoverZoomInBtn: false,
+      isHoverZoomOutBtn: false
     }
   }
 
@@ -44,6 +48,7 @@ class BOMViewer extends Component {
   componentDidMount() {
     const { isEditFlag, PartId, NewAddedLevelOneChilds, avoidAPICall } = this.props;
     if (isEditFlag && !avoidAPICall) {
+      this.setState({ isLoader: true })
       this.props.getBOMViewerTree(PartId, res => {
         if (res && res.status === 200) {
           let Data = res.data.Data;
@@ -53,7 +58,9 @@ class BOMViewer extends Component {
           tempArray && tempArray.map((el, i) => {
             if (el.Level === 'L1') {
               outputArray.push(el.Input)
+              this.setState({ isLoader: false })
             }
+            this.setState({ isLoader: false })
             return null;
           })
 
@@ -81,6 +88,56 @@ class BOMViewer extends Component {
     this.setState({ isOpenChildDrawer: true })
   }
 
+  zoomOut = () => {
+
+    if (this.state.zoomOutCount > 2) {
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount}`)
+      this.setState({ zoomOutCount: this.state.zoomOutCount - 1 })
+    }
+  }
+
+  zoomIn = () => {
+
+    if (this.state.zoomOutCount < 11) {
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount - 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount}`)
+      document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount + 1}`)
+      this.setState({ zoomOutCount: this.state.zoomOutCount + 1 })
+
+    }
+  }
+
+  /**
+   * @method handleMouseZoomIn
+   * @description FOR ZOOM IN BUTTON CHANGE CSS ON MOUSE HOVER
+   */
+  handleMouseZoomIn = () => {
+    this.setState({ isHoverZoomInBtn: true })
+  }
+  /**
+    * @method handleMouseOutZoomIn
+    * @description FOR ZOOM IN BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+  handleMouseOutZoomIn = () => {
+    this.setState({ isHoverZoomInBtn: false })
+  }
+  /**
+    * @method handleMouseZoomOut
+    * @description FOR ZOOM OUT BUTTON CHANGE CSS ON MOUSE HOVER
+    */
+  handleMouseZoomOut = () => {
+    this.setState({ isHoverZoomOutBtn: true })
+  }
+  /**
+    * @method handleMouseOutZoomOut
+    * @description FOR ZOOM OUT BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+  handleMouseOutZoomOut = () => {
+    this.setState({ isHoverZoomOutBtn: false })
+  }
+
   closeChildDrawer = (e = '', childData = {}) => {
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
@@ -96,7 +153,7 @@ class BOMViewer extends Component {
 
     let tempArray = [];
     let outputArray = [];
-    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
+    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
 
     if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
 
@@ -281,11 +338,10 @@ class BOMViewer extends Component {
   render() {
     const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
     const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
-
     return (
       <>
         <Drawer
-          className={"bom-viewer-main"}
+          className={"bom-viewer-main "}
           anchor={this.props.anchor}
           open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
@@ -305,6 +361,7 @@ class BOMViewer extends Component {
                   ></div>
                 </Col>
               </Row>
+              {this.state.isLoader && <LoaderCustom />}
               <form
                 noValidate
                 className="form bom-drawer-form"
@@ -346,7 +403,6 @@ class BOMViewer extends Component {
                             </button>
                           </>
                         }
-
                         <button
                           type="button"
                           onClick={this.childDrawerToggle}
@@ -357,6 +413,10 @@ class BOMViewer extends Component {
                       </Col>
                     )}
                 </Row>
+                <div className='zoom-container'>
+                  <button title='Zoom in' type="button" onClick={this.zoomIn} onMouseOver={this.handleMouseZoomIn} onMouseOut={this.handleMouseOutZoomIn} className={"secondary-btn p-1 mb-1"}><div className={`${this.state.isHoverZoomInBtn ? 'zoom-in-hover' : 'zoom-in'}`}></div></button>
+                  <button title='Zoom out' type="button" onClick={this.zoomOut} onMouseOver={this.handleMouseZoomOut} onMouseOut={this.handleMouseOutZoomOut} className={"secondary-btn p-1"}><div className={`${this.state.isHoverZoomOutBtn ? 'zoom-out-hover' : 'zoom-out'}`}></div></button>
+                </div>
                 <Row className="flowspace-row">
                   <Flowspace
                     theme="#2196f3"
@@ -370,7 +430,9 @@ class BOMViewer extends Component {
                       overflow: "auto",
                       maxWidth: "100vw",
                       maxHeight: "calc(100vh - 135px)",
+
                     }}
+                    connectionSize={100}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}
                   >
@@ -386,8 +448,7 @@ class BOMViewer extends Component {
                             width={200}
                             height={120}
                             onClick={() => {
-                              var selected_point = this.state
-                                .selected_point;
+                              var selected_point = this.state.selected_point;
                               if (selected_point === el.PartNumber) {
                                 selected_point = null;
                               } else {
@@ -446,7 +507,7 @@ class BOMViewer extends Component {
                   </Flowspace>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between">
+                {!isFromVishualAd && <Row className="sf-btn-footer no-gutters justify-content-between">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={"button"}
@@ -456,17 +517,15 @@ class BOMViewer extends Component {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {!isFromVishualAd && (
-                      <button
-                        type="submit"
-                        className="submit-button mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {"Save"}
-                      </button>
-                    )}
+                    <button
+                      type="submit"
+                      className="submit-button mr15 save-btn"
+                    >
+                      <div className={"save-icon"}></div>
+                      {"Save"}
+                    </button>
                   </div>
-                </Row>
+                </Row>}
               </form>
             </div>
             {isOpenChildDrawer && (
@@ -479,6 +538,7 @@ class BOMViewer extends Component {
                 anchor={"right"}
                 setChildPartsData={this.setChildPartsData}
                 BOMViewerData={this.state.flowpoints}
+                partAssembly={this.props.partAssembly}
               />
             )}
             {isOpenVisualDrawer && (
@@ -522,4 +582,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMViewer',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMViewer));

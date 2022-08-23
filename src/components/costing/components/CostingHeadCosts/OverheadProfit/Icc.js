@@ -49,6 +49,7 @@ function Icc(props) {
         callInventoryAPI(value)
 
         dispatch(gridDataAdded(true))
+        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -221,8 +222,6 @@ function Icc(props) {
                 default:
                     break;
             }
-
-            dispatch(isOverheadProfitDataChange(true))
         }
     }
 
@@ -306,7 +305,7 @@ function Icc(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
@@ -328,7 +327,7 @@ function Icc(props) {
                                             message: 'Invalid Number.'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

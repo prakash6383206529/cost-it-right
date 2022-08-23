@@ -1,14 +1,16 @@
 import { toast } from 'react-toastify';
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
-  G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
+  PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import { data } from 'react-dom-factories';
+import _ from 'lodash';
 
 
 
@@ -25,6 +27,9 @@ export const apiErrors = (res) => {
     response && handleHTTPStatus(response)
   } else {
     if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      setTimeout(() => {
+        toast.error('Something went wrong please try again.')
+      }, 600);
       return;
     }
     toast.error('Something went wrong please try again.')
@@ -63,11 +68,12 @@ const handleHTTPStatus = (response) => {
       const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
       return toast.error(errMsg400)
     case 401:
+      toast.error('Authentication error. Please contact your IT Team.')
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
-      reactLocalStorage.set('ModuleId', '');
+      localStorage.setItem("ModuleId", JSON.stringify(""))
       window.location.assign('/login');
-      return toast.error('Authentication error. Please contact your IT Team.')
+      return false
     case 403:
       const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
       return toast.error(errMsg403)
@@ -572,7 +578,6 @@ export function formViewData(costingSummary, header = '') {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
   obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
@@ -669,7 +674,10 @@ export function formViewData(costingSummary, header = '') {
   obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
   // //For Drawer Edit
-  obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
+  obj.partId = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartId ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
+  obj.partNumber = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartNumber ? dataFromAPI.CostingPartDetails.PartNumber : '-'
+
+  // ADD PARTID KEY HERE AND BIND IT WITH PART ID
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
   obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
   obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
@@ -698,9 +706,14 @@ export function formViewData(costingSummary, header = '') {
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
 
+  // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
+  obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
-
+  obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
+  obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
+  obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -749,11 +762,11 @@ export function convertmmTocm(value) {
 /**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
   switch (UOM) {
-    case G:
+    case DISPLAY_G:
       return checkForNull(value)
-    case KG:
+    case DISPLAY_KG:
       return checkForNull(value / 1000)
-    case MG:
+    case DISPLAY_MG:
       return checkForNull(value * 1000)
     default:
       break;
@@ -912,3 +925,114 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
   }
 }
 export const allEqual = arr => arr.every(val => val === arr[0]);
+
+// FOR SHOWING CURRENCY SYMBOL 
+export const getCurrencySymbol = (value) => {
+  switch (value) {
+    case "USD":
+      return "$"
+    case "EUR":
+      return "€"
+    case "GBP":
+      return "£"
+    case "IDR":
+      return "Rp"
+    case "JPY":
+      return "¥"
+    case "VND":
+      return "₫"
+    case "INR":
+      return "₹"
+    case "THB":
+      return "฿"
+    default:
+      break;
+  }
+}
+//FOR SHOWING SUPER VALUE FOR UOM
+export const displayUOM = (value) => {
+  let temp = []
+  if (value && value.includes('^')) {
+    for (let i = 0; i < value.length; i++) {
+      temp.push(value.charAt(i))
+    }
+    temp.splice(temp.length - 2, 1);
+    const UOMValue = <div className='p-relative'>{temp.map(item => {
+      return <span className='unit-text'>{item}</span>
+    })}
+    </div>
+    return UOMValue
+  }
+  return value
+}
+export const labelWithUOMAndCurrency = (label, UOM, currency) => {
+  return <div>
+    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
+  </div>
+}
+
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (index) => {
+  setTimeout(() => {
+    let titleActive = document.getElementsByClassName("active-switch")[index];
+
+    if (titleActive === undefined || titleActive === null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleActive = document.getElementsByClassName("active-switch")[rowIndex];
+    }
+
+    titleActive?.setAttribute('title', 'Active');
+    let titleInactive = document.getElementsByClassName("inactive-switch")[index];
+
+    if (titleInactive === undefined || titleInactive == null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
+    }
+
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
+}
+//COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
+export const checkForSameFileUpload = (master, fileHeads) => {
+  let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  array = _.map(master, 'label')
+  bulkUploadArray = [...array]
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
+  return checkForFileHead
+}
+
+// SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
+export const showDataOnHover = (value) => {
+  let temp = [];
+  value && value.map(item => temp.push(item.Text));
+  const data = temp.join(", ");
+  return data;
+}
+
+// SHOW ERROR ON TOUCH IN VENDOR DROPDOWN AND DATE
+export const onFocus = (thisRef, dateFocus) => {
+  const temp = thisRef.state.selectValue && thisRef.selectRef.current.inputRef.select();
+  if (dateFocus) {
+    thisRef.setState({ showErrorOnFocusDate: true })
+  } else {
+    thisRef.setState({ showErrorOnFocus: true })
+  }
+  return temp
+}

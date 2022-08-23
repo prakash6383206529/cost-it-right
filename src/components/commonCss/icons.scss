@@ -85,7 +85,9 @@
 
 .plus {@include icons("../../assests/images/Path 15286.svg", 12px,12px); }
 
-.swap {@include icons("../../assests/images/swap-logo.svg", 18px, 18px); }
+.swap {@include icons("../../assests/images/swap.svg", 18px, 18px); }
+
+.swap-hover {@include icons("../../assests/images/swap-hover.svg", 18px, 18px); }
 
 .go-to-top { @include icons("../../assests/images/go-to-top.svg", 22px, 22px); }
 
@@ -196,6 +198,15 @@
     background-position: center;
     display: inline-block;
 }
+.zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
+.zoom-in {@include icons("../../assests/images/zoom-in.svg",  10px, 10px)}
+.zoom-out {@include icons("../../assests/images/zoom-out.svg", 14px, 14px)}
+.zoom-out-hover {@include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)}
+
+.link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
+
+.broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
+
 .CalculatorIcon:disabled, .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled {
     border: none !important;
     opacity: 0.5;
@@ -241,8 +252,8 @@
 }
 .previous-btn {
     font-family: "agGridMaterial";
-    font-size: 22px;
-    line-height: 22px;
+    font-size: 20px;
+    line-height: 20px;
     font-style: normal;
     font-weight: normal;
     font-feature-settings: normal;
@@ -319,5 +330,14 @@
         }
         .ag-cell-wrapper {
             @extend .ag-react-container;
+        }
+    }
+
+    .link-icon-container {
+        position: relative !important;
+        .link-icon, .broken-link-icon {
+            position:absolute;
+            top: 32%;
+            left: 14px;
         }
     }

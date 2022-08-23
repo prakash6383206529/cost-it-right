@@ -29,6 +29,11 @@ import {
   SELECTED_PROCESS_AND_GROUPCODE,
   SET_PROCESS_ID,
   SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+  SAVE_PART_NUMBER_STOP_API_CALL,
+  SET_PART_NUMBER_ARRAY_API_CALL,
+  SET_MESSAGE_FOR_ASSEMBLY,
+  SET_PROCESS_GROUP_GRID,
+  SAVE_BOM_LEVEL_STOP_API_CALL,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -314,6 +319,7 @@ export function getBriefCostingById(CostingId, callback) {
         type: SET_COSTING_DATALIST_BY_COSTINGID,
         payload: [],
       })
+      callback();
     }
   };
 }
@@ -2419,7 +2425,7 @@ export function setIdsOfProcessGroup(data) {
 export function getMachineProcessGroupDetail(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -2455,6 +2461,93 @@ export function getFgWiseImpactDataForCosting(data, callback) {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
       callback(error)
+    })
+  }
+}
+
+/**
+ * @method savePartNumberAndBOMLevel
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function savePartNumber(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_PART_NUMBER_STOP_API_CALL,
+      payload: isDataChange
+    })
+  }
+}
+
+/**
+ * @method setPartNumberArrayAPICALL
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function setPartNumberArrayAPICALL(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PART_NUMBER_ARRAY_API_CALL,
+      payload: isDataChange
+    })
+  }
+}
+
+/**
+ * @method setMessageForAssembly
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setMessageForAssembly(message) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_MESSAGE_FOR_ASSEMBLY,
+      payload: message,
+    });
+  }
+};
+
+/**
+ * @method setProcessGroupGrid
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setProcessGroupGrid(grid) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PROCESS_GROUP_GRID,
+      payload: grid,
+    });
+  }
+};
+
+/**
+ * @method saveBOMLevel
+ * @description saveBOMLevel
+*/
+
+export function saveBOMLevel(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_BOM_LEVEL_STOP_API_CALL,
+      payload: data
+    })
+  }
+}
+/**
+ * @method checkFinalUser
+ * @description CHECK FINAL USER
+ */
+export function checkFinalUser(data, callback) {
+  return (dispatch) => {
+    const queryParams = `DepartmentId=${data.DepartmentId}&TechnologyId=${data.TechnologyId}&UserId=${data.UserId}&Mode=${data.Mode}`
+    const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
     })
   }
 }

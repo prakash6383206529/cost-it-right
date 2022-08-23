@@ -37,7 +37,7 @@
 //     //     dispatch(setAttachmentFileData(obj, () => { }))
 //     // }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
 
-//     //  const setAttachmentForSimulation = 
+//     //  const setAttachmentForSimulation =
 
 //     useEffect(() => {
 //         Attachements && Attachements.map(item => {
@@ -65,12 +65,7 @@
 
 
 
-//     // attacment section 
-//     // specify upload params and url for your files
-//     const getUploadParams = ({ file, meta }) => {
-//         return { url: 'https://httpbin.org/post', }
-//     }
-
+//     // attacment section
 //     // called every time a file's `status` changes
 //     const handleChangeStatus = ({ meta, file }, status) => {
 
@@ -368,7 +363,6 @@
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeStatus}
 //                                     PreviewComponent={Preview}
 //                                     // onSubmit={handleImapctSubmit}
@@ -454,7 +448,6 @@
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeSupplierConfirmationStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -541,7 +534,6 @@
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeInvoiceBackupStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -627,7 +619,6 @@
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleOtherChangeStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -713,7 +704,6 @@
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeAttachment}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}

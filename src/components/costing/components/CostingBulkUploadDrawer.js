@@ -11,6 +11,7 @@ import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
 import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -22,7 +23,8 @@ class CostingBulkUploadDrawer extends Component {
             files: [],
             fileData: '',
             fileName: '',
-            Technology: []
+            Technology: [],
+            attachmentLoader: false
         }
     }
 
@@ -63,10 +65,6 @@ class CostingBulkUploadDrawer extends Component {
         this.setState({ Technology: value })
     }
 
-    // specify upload params and url for your files
-    getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post' }
-    }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
 
@@ -75,7 +73,7 @@ class CostingBulkUploadDrawer extends Component {
 
         let data = new FormData()
         data.append('file', fileObj)
-
+        this.setState({ attachmentLoader: true })
         if (status === 'removed') {
             const removedFileName = file.name
             let tempArr = files.filter(
@@ -86,8 +84,7 @@ class CostingBulkUploadDrawer extends Component {
 
         if (status === 'done') {
 
-            this.setState({ fileName: file.name, fileData: file })
-
+            this.setState({ fileName: file.name, fileData: file, attachmentLoader: false })
 
         }
 
@@ -269,7 +266,6 @@ class CostingBulkUploadDrawer extends Component {
                                             </div>
                                         ) : (
                                             <Dropzone
-                                                getUploadParams={this.getUploadParams}
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
                                                 onChange={this.fileHandler}
@@ -280,20 +276,19 @@ class CostingBulkUploadDrawer extends Component {
                                                 inputContent={(files, extra) =>
                                                     extra.reject ? (
                                                         "Image, audio and video files only"
-                                                    ) : (
-                                                        <div className="text-center">
-                                                            <i className="text-primary fa fa-cloud-upload"></i>
-                                                            <span className="d-block">
-                                                                Drag and Drop or{" "}
-                                                                <span className="text-primary">
-                                                                    Browse
-                                                                </span>
-                                                                <br />
-                                                                file to upload
+                                                    ) : (<div className="text-center">
+                                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                                        <span className="d-block">
+                                                            Drag and Drop or{" "}
+                                                            <span className="text-primary">
+                                                                Browse
                                                             </span>
-                                                        </div>
-                                                    )
+                                                            <br />
+                                                            file to upload
+                                                        </span>
+                                                    </div>)
                                                 }
+
                                                 styles={{
                                                     dropzoneReject: {
                                                         borderColor: "red",
@@ -305,6 +300,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 classNames="draper-drop"
                                             />
                                         )}
+                                        {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -361,4 +357,5 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(CostingBulkUploadDrawer));

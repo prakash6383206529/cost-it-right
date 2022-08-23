@@ -4,21 +4,17 @@ import { useDispatch, useSelector } from 'react-redux'
 // import { getFgWiseImpactData } from '../actions/Simulation'
 import { checkForDecimalAndNull } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
-import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
-
-
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue } = props
+    const { headerName, dataForAssemblyImpact, impactType } = props
     const [loader, setLoader] = useState(false)
     const [count, setCount] = useState(0)
 
-    const impactData = useSelector((state) => state.simulation.impactData)
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
 
     const dispatch = useDispatch()
@@ -91,13 +87,6 @@ export function Fgwiseimactdata(props) {
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-
-    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
-
-        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
-
-    }
-
     return (
         <>
             {/* FG wise Impact section start */}
@@ -105,7 +94,7 @@ export function Fgwiseimactdata(props) {
             <Row className="mb-3">
                 <Col md="12">
                     {/* {impactType} */}
-                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
+                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} ${loader ? 'dynamic-border' : ''}`}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 {loader && <LoaderCustom />}
@@ -221,7 +210,7 @@ export function Fgwiseimactdata(props) {
                                     default:
                                         break;
                                 }
-
+                                return null
                             })
                             }
 

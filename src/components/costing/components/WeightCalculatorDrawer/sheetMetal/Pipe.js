@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM,
@@ -15,7 +15,16 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
+import { debounce } from 'lodash'
+
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
+  });
+
+  return values;
+}
 
 function Pipe(props) {
 
@@ -43,10 +52,9 @@ function Pipe(props) {
     }
   }
 
-  const { rmRowData, isEditFlag, item } = props
+  const { rmRowData, isEditFlag, item, CostingViewMode } = props
 
   const costData = useContext(costingInfoContext)
-  const CostingViewMode = useContext(ViewCostingContext);
 
   const defaultValues = {
 
@@ -93,13 +101,14 @@ function Pipe(props) {
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
   const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
-
-
-
-  const fieldValues = useWatch({
-    control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
-  })
+  const [isDisable, setIsDisable] = useState(false)
+  let fields = IsolateReRender(control)
+  let fieldValues = {
+    OuterDiameter: fields && fields[0],
+    Thickness: fields && fields[1],
+    SheetLength: fields && fields[2],
+    PartLength: fields && fields[3],
+  }
 
   const dispatch = useDispatch()
 
@@ -114,13 +123,13 @@ function Pipe(props) {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
-          : { label: kgObj.Text, value: kgObj.Value })
+          : { label: kgObj.Display, value: kgObj.Value })
         setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
-          : { label: kgObj.Text, value: kgObj.Value })
+          : { label: kgObj.Display, value: kgObj.Value })
       }, 100);
 
     }))
@@ -366,7 +375,7 @@ function Pipe(props) {
           const accept = AcceptableSheetMetalUOM.includes(item.Text)
           if (accept === false) return false
           if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
+          temp.push({ label: item.Display, value: item.Value })
           return null
         })
       return temp
@@ -385,8 +394,8 @@ function Pipe(props) {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {
-
+  const onSubmit = debounce(handleSubmit((values) => {
+    setIsDisable(true)
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -426,14 +435,14 @@ function Pipe(props) {
     }
 
     dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
-
+      setIsDisable(false)
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', data)
       }
     }))
-  }
+  }), 500)
 
   const handleUnit = (value) => {
     setValue('UOMDimension', { label: value.label, value: value.value })
@@ -448,7 +457,7 @@ function Pipe(props) {
   }
 
   const UnitFormat = () => {
-    return <>Net Surface Area (cm<sup>2</sup>)</>
+    return <>Net Surface Area(cm<sup>2</sup>)</>
   }
 
   const handleKeyDown = function (e) {
@@ -465,7 +474,7 @@ function Pipe(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+          <form noValidate className="form"
             onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <div className="costing-border border-top-0 px-4">
               <Row>
@@ -478,7 +487,7 @@ function Pipe(props) {
               </Row>
               <Row className={''}>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Outer Diameter(cm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
@@ -489,7 +498,7 @@ function Pipe(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -497,11 +506,11 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.OuterDiameter}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -512,7 +521,7 @@ function Pipe(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -520,11 +529,11 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Thickness}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
@@ -542,11 +551,8 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
-
-              <Row>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Sheet(cm)`}
                     name={'SheetLength'}
                     Controller={Controller}
@@ -557,7 +563,7 @@ function Pipe(props) {
                       required: false,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -565,11 +571,11 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.SheetLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Part(cm)`}
                     name={'PartLength'}
                     Controller={Controller}
@@ -580,7 +586,7 @@ function Pipe(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -588,11 +594,11 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.PartLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
                     Controller={Controller}
@@ -615,7 +621,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
@@ -637,12 +643,9 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
-
-              <Row className={''}>
                 <Col md="3">
-                  <TextFieldHookForm
-                    label={`Weight of Sheet(gm)`}
+                  <NumberFieldHookForm
+                    label={`Weight of Sheet(g)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
                     control={control}
@@ -664,8 +667,8 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
-                    label={`Weight of Part(gm)`}
+                  <NumberFieldHookForm
+                    label={`Weight of Part(g)`}
                     name={'WeightofPart'}
                     Controller={Controller}
                     control={control}
@@ -687,8 +690,8 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
-                    label={`Weight of Scrap(gm)`}
+                  <NumberFieldHookForm
+                    label={`Weight of Scrap(g)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
                     control={control}
@@ -747,7 +750,7 @@ function Pipe(props) {
               <hr className="mx-n4 w-auto" />
               <Row>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={UnitFormat()}
                     name={'NetSurfaceArea'}
                     Controller={Controller}
@@ -779,12 +782,12 @@ function Pipe(props) {
                     mandatory={true}
                     handleChange={handleUnit}
                     errors={errors.UOMDimension}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
 
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
                     Controller={Controller}
@@ -803,7 +806,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}
@@ -814,7 +817,7 @@ function Pipe(props) {
                       required: false,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={setFinishWeight}
@@ -822,13 +825,13 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.FinishWeightOfSheet}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
               </Row>
             </div>
 
-            {isEditFlag && !CostingViewMode &&
+            {!CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
                 <button
                   type={'button'}
@@ -837,7 +840,9 @@ function Pipe(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  type={'submit'}
+                  type="button"
+                  onClick={onSubmit}
+                  disabled={props.CostingViewMode || isDisable ? true : false}
                   className="submit-button save-btn">
                   <div className={'save-icon'}></div>
                   {'Save'}

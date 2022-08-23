@@ -15,6 +15,7 @@ import {
     GET_BOP_SOB_VENDOR_DATA_SUCCESS,
     GET_INITIAL_SOB_VENDORS_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
+    GET_ALL_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
     GET_SOB_LISTING,
     GET_BOP_APPROVAL_LIST
@@ -127,6 +128,19 @@ export default function BOPReducer(state = initialState, action) {
                 loading: false,
                 bopDomesticList: arr
             }
+        case GET_ALL_BOP_DOMESTIC_DATA_LIST:
+
+            let arry = []
+            arry = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
+                el.EffectiveDateNew = el.EffectiveDate                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
+                return true
+            })
+            return {
+                ...state,
+                loading: false,
+                allBopDataList: arry
+            }
+
         case GET_BOP_IMPORT_DATA_LIST:
 
             let arrImport = []

@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,6 +17,8 @@ import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../co
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
+import { PaginationWrapper } from '../../../common/commonPagination';
+import { hyphenFormatter } from '../../../masters/masterUtil';
 
 const gridOptions = {};
 
@@ -50,8 +52,10 @@ function AddProcess(props) {
     let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
       if (item.GroupName) {
         tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else if (tempArr?.IsChild) {      //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
       } else {
-        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId, IsChild: true })        // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
       }
 
       let obj = item
@@ -81,17 +85,17 @@ function AddProcess(props) {
     if (costData.VendorType === ZBC) {
       let data = {}
 
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
+      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
+          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
       } else {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(costData.ETechnologyType),
+          TechnologyId: String(costData?.TechnologyId),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
@@ -109,10 +113,10 @@ function AddProcess(props) {
 
     } else {
       let data = {}
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
+      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
+          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,
@@ -122,7 +126,7 @@ function AddProcess(props) {
       else {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(costData.ETechnologyType),
+          TechnologyId: String(costData?.TechnologyId),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,
@@ -165,11 +169,12 @@ function AddProcess(props) {
       processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
 
-    dispatch(setSelectedDataOfCheckBox(processData))
-
     var selectedRows = gridApi.getSelectedRows();
-
-    // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    if (selectedRows?.length === 0) {
+      dispatch(setSelectedDataOfCheckBox([]))
+    } else {
+      dispatch(setSelectedDataOfCheckBox(processData))
+    }
     setSelectedRowData(selectedRows)
   }
 
@@ -178,7 +183,7 @@ function AddProcess(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedProcessAndGroup.length === 0) {
+    if (selectedProcessAndGroup?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -207,6 +212,7 @@ function AddProcess(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
@@ -221,8 +227,7 @@ function AddProcess(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -256,7 +261,8 @@ function AddProcess(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    hyphenFormatter: hyphenFormatter
   };
 
   useEffect(() => {
@@ -362,7 +368,7 @@ function AddProcess(props) {
                                   domLayout='autoHeight'
                                   rowData={tableData}
                                   pagination={true}
-                                  paginationPageSize={10}
+                                  paginationPageSize={defaultPageSize}
                                   onGridReady={onGridReady}
                                   gridOptions={gridOptions}
                                   loadingOverlayComponent={'customLoadingOverlay'}
@@ -381,20 +387,14 @@ function AddProcess(props) {
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                  <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                  </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                               </div>
                             </div>
                           </Col>

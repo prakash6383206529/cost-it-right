@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
@@ -22,7 +22,6 @@ class PartMaster extends Component {
             isPartForm: false,
             isProductForm: false,
             getDetails: {},
-
             ViewAccessibility: false,
             AddAccessibility: false,
             EditAccessibility: false,
@@ -30,6 +29,8 @@ class PartMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             openDrawer: false,
+            isHover: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -73,7 +74,8 @@ class PartMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -89,8 +91,11 @@ class PartMaster extends Component {
     }
 
     //HIDE BOM & PART INDIVIDUAL FORM
-    hideForm = () => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, })
+    hideForm = (type) => {
+        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+        }
     }
 
     //DISPLAY INDIVIDUAL PART FORM
@@ -114,6 +119,24 @@ class PartMaster extends Component {
     }
 
 
+    openFetchDrawer = () => {
+        this.setState({ openDrawer: true })
+    }
+    /**
+    * @method handleMouse
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE HOVER
+    */
+    handleMouse = () => {
+        this.setState({ isHover: true })
+    }
+    /**
+    * @method handleMouseOut
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+    handleMouseOut = () => {
+        this.setState({ isHover: false })
+    }
+
 
     /**
     * @method render
@@ -127,6 +150,7 @@ class PartMaster extends Component {
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
                 displayBOMViewer={this.displayBOMViewer}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -134,6 +158,7 @@ class PartMaster extends Component {
             return <AddIndivisualPart
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -141,6 +166,8 @@ class PartMaster extends Component {
             return <AddIndivisualProduct
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+
             />
         }
 
@@ -153,9 +180,15 @@ class PartMaster extends Component {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h1>Part Master</h1>
-
+                                <button
+                                    type="button"
+                                    className={'secondary-btn mr5 mt-1'}
+                                    title="Fetch"
+                                    onClick={this.openFetchDrawer}
+                                    onMouseOver={this.handleMouse}
+                                    onMouseOut={this.handleMouseOut}>
+                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div></button>
                             </div>
-
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
@@ -189,6 +222,7 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -202,6 +236,7 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -215,6 +250,8 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+
                                         />
                                     </TabPane>}
                             </TabContent>

@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
-import { fetchCostingHeadsAPI, } from '../../../actions/Common';
-import { EMPTY_DATA } from '../../../config/constants';
+import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -21,6 +20,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { PaginationWrapper } from '../../common/commonPagination';
+import { i } from 'react-dom-factories';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,7 +45,7 @@ class OverheadListing extends Component {
             showPopup: false,
             deletedId: '',
             selectedRowData: [],
-            isLoader: false
+            isLoader: false,
         }
     }
 
@@ -53,16 +54,17 @@ class OverheadListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorWithVendorCodeSelectList()
-
-        this.getDataList(null, null, null, null)
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList(null, null, null, null)
+            }
+        }, 300);
     }
 
     // Get updated Table data list after any action performed.
     getUpdatedData = () => {
         this.getDataList(null, null, null, null)
+
     }
 
     getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
@@ -155,23 +157,6 @@ class OverheadListing extends Component {
     };
 
     /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let headText = '';
-        if (cellValue === 'ZBC') {
-            headText = 'Zero Based';
-        } if (cellValue === 'VBC') {
-            headText = 'Vendor Based';
-        } if (cellValue === 'CBC') {
-            headText = 'Client Based';
-        }
-        return headText;
-    }
-
-    /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
@@ -258,12 +243,16 @@ class OverheadListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.overheadProfitList ? this.props.overheadProfitList : [])
         return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -284,12 +273,6 @@ class OverheadListing extends Component {
                 item.VendorName = ' '
             } if (item.ClientName === '-') {
                 item.ClientName = ' '
-            } if (item.TypeOfHead === 'VBC') {
-                item.TypeOfHead = 'Vendor Based'
-            } if (item.TypeOfHead === 'ZBC') {
-                item.TypeOfHead = 'Zero Based'
-            } if (item.TypeOfHead === 'CBC') {
-                item.TypeOfHead = 'Client Based'
             }
             if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
@@ -310,6 +293,7 @@ class OverheadListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -322,29 +306,10 @@ class OverheadListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-
-
-        const onRowSelect = () => {
-            var selectedRows = this.state.gridApi.getSelectedRows();
-            if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
-            }
-
-            this.setState({ selectedRowData: selectedRows })
-
-        }
-
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
         }
 
@@ -353,18 +318,16 @@ class OverheadListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
-
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
-            plantFormatter: this.plantFormatter
+            plantFormatter: this.plantFormatter,
+            customNoRowsOverlay: NoContentFound
         };
 
 
@@ -431,7 +394,7 @@ class OverheadListing extends Component {
                                     domLayout='autoHeight'
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -441,7 +404,7 @@ class OverheadListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
+                                    onSelectionChanged={this.onRowSelect}
 
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
@@ -456,13 +419,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="OverheadId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
                         </div>
 
@@ -500,14 +457,12 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getOverheadDataList,
-    fetchCostingHeadsAPI,
     deleteOverhead,
-    fetchModelTypeAPI,
     activeInactiveOverhead,
-    getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(OverheadListing));

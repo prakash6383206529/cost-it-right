@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
-import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { checkFinalUser, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -15,11 +15,15 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { debounce } from 'lodash'
-import Toaster from '../../../common/Toaster'
 import { INR } from '../../../../config/constants'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import HeaderTitle from '../../../common/HeaderTitle'
-import { EMPTY_GUID } from '../../../../config/constants'
+import { EMPTY_GUID, VBC } from '../../../../config/constants'
+import { ErrorMessage } from '../../../simulation/SimulationUtils'
+import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
+import NoContentFound from '../../../common/NoContentFound'
+import { getLastSimulationData } from '../../../simulation/actions/Simulation'
+import Toaster from '../../../common/Toaster'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -42,7 +46,12 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(true)
+  const [fgWiseAcc, setFgWiseAcc] = useState(false)
+  const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
+  const [editWarning, setEditWarning] = useState(false)
+  const [finalLevelUser, setFinalLevelUser] = useState(false)
+  const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+  const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -52,13 +61,55 @@ function ApprovalSummary(props) {
     approvalSummaryHandler()
   }, [])
 
+  useEffect(() => {
+
+    if (Object.keys(approvalData).length > 0 && approvalDetails.TypeOfCosting === VBC) {
+      dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
+        const structureOfData = {
+          ExchangeRateImpactedMasterDataList: [],
+          OperationImpactedMasterDataList: [],
+          RawMaterialImpactedMasterDataList: [],
+          BoughtOutPartImpactedMasterDataList: []
+        }
+        let masterId
+        let Data = []
+        if (Number(res?.status) === 204) {
+          Data = structureOfData
+        } else {
+          Data = res?.data?.Data
+          masterId = res?.data?.Data?.SimulationTechnologyId;
+        }
+
+        if (res) {
+          setImpactedMasterDataListForLastRevisionData(Data)
+          setMasterIdForLastRevision(masterId)
+          // setLastRevisionDataAcc(true)
+        }
+      }))
+    }
+
+  }, [approvalData])
+
+  useEffect(() => {
+    let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+    if (lastRevisionDataAcc && check) {
+      Toaster.warning('There is no data for the Last Revision.')
+      setEditWarning(true)
+    } else {
+      setEditWarning(false)
+    }
+  }, [lastRevisionDataAcc, impactedMasterDataListForLastRevisionData])
+
   const approvalSummaryHandler = () => {
     setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       setIsLoader(false)
@@ -81,8 +132,22 @@ function ApprovalSummary(props) {
         PurchasingGroup: PurchasingGroup,
         MaterialGroup: MaterialGroup,
         DecimalOption: DecimalOption,
-        LastCostingId: LastCostingId
+        LastCostingId: LastCostingId,
+        EffectiveDate: ApprovalDetails[0].EffectiveDate,
+        VendorId: VendorId
       })
+
+      let obj = {
+        DepartmentId: DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: technologyId,
+        Mode: 'costing'
+      }
+      dispatch(checkFinalUser(obj, res => {
+        if (res && res.data && res.data.Result) {
+          setFinalLevelUser(res.data.Data.IsFinalApprover)
+        }
+      }))
     }),
 
     )
@@ -209,6 +274,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
+          {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
@@ -250,19 +316,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part No:`}</span>
                         <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Name:`}</span>
                         <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
                       <th className='overflow-description'>
-                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Description:`}</span>
                         <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
@@ -324,32 +390,32 @@ function ApprovalSummary(props) {
                 <Table responsive className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Costing ID`}</th>
-                      {approvalDetails.TypeOfCosting === 'VBC' && (
-                        <th>{`ZBC/Vendor Name`}</th>
+                      <th>{`Costing ID:`}</th>
+                      {approvalDetails.TypeOfCosting === VBC && (
+                        <th>{`ZBC/Vendor Name:`}</th>
                       )}
                       {
                         checkVendorPlantConfigurable() &&
                         <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          {approvalDetails.TypeOfCosting === VBC ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
                       {
-                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === VBC) &&
                         <th>
-                          {`Plant(Code)`}
+                          {`Plant(Code):`}
                         </th>
                       }
-                      <th>{`SOB`}</th>
+                      <th>{`SOB(%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
-                      <th>{`Old/Current Price`}</th>
+                      <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
-                      <th>{`Variance`}</th>
-                      <th>{`Consumption Quantity`}</th>
-                      <th>{`Remaining Quantity`}</th>
-                      <th>{`Effective Date`}</th>
-                      <th>{`Annual Impact`}</th>
-                      <th>{`Impact of The Year`}</th>
+                      <th>{`Variance:`}</th>
+                      <th>{`Consumption Quantity:`}</th>
+                      <th>{`Remaining Quantity:`}</th>
+                      <th>{`Effective Date:`}</th>
+                      <th>{`Annual Impact:`}</th>
+                      <th>{`Impact of The Year:`}</th>
 
                     </tr>
                   </thead>
@@ -359,18 +425,18 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
+                      {approvalDetails.TypeOfCosting === VBC && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
                       {/* </td> */}
                       {
                         checkVendorPlantConfigurable() &&
                         <td>
                           {
-                            approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            approvalDetails.TypeOfCosting === VBC ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
                         </td>
                       }
                       {
-                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === VBC) &&
                         <td>
                           {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
                         </td>
@@ -432,6 +498,8 @@ function ApprovalSummary(props) {
                 </Table>
               </Col>
             </Row>
+            {/* THIS SHOULD BE COMMENTED IN MINDA */}
+            {/* 
             <Row className="mb-3">
               <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
@@ -446,8 +514,8 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-            {/* THIS SHOULD BE COMMENTED IN MINDA */}
-            {/* {fgWiseAcc && <Row className="mb-3">
+           
+           {fgWiseAcc && <Row className="mb-3">
               <Col md="12">
                 <Fgwiseimactdata
                   headerName={headerName}
@@ -457,7 +525,37 @@ function ApprovalSummary(props) {
                   approvalSummaryTrue={true}
                 />
               </Col>
-            </Row>} */}
+                    }
+                  
+                  */}
+
+            {approvalDetails.TypeOfCosting === VBC && <>
+              <Row className="mb-3">
+                <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                <Col md="6">
+                  <div className={'right-details'}>
+                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                      {lastRevisionDataAcc ? (
+                        <i className="fa fa-minus"></i>
+                      ) : (
+
+                        <i className="fa fa-plus"></i>
+
+                      )}
+                    </button>
+                  </div>
+                </Col>
+                <div className="accordian-content w-100 px-3 impacted-min-height">
+                  {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                  <div align="center">
+                    {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                  </div>
+                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
+                    <NoContentFound title={"There is no data for the Last Revision."} />
+                  </div>} */}
+                </div>
+              </Row>
+            </>}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>
@@ -476,6 +574,7 @@ function ApprovalSummary(props) {
             </Row>
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
+                {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
                 {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
               </Col>
             </Row>
@@ -499,14 +598,6 @@ function ApprovalSummary(props) {
                     <div className={'save-icon'}></div>
                     {'Approve'}
                   </button>
-                  {/* {
-                    showFinalLevelButtons &&
-                    <button
-                      type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
-                      <div className={'save-icon'}></div>
-                      {'Approve & Push'}
-                    </button>
-                  } */}
                 </Fragment>
 
               </div>
@@ -537,7 +628,7 @@ function ApprovalSummary(props) {
           approvalData={[approvalData]}
           anchor={'right'}
           reasonId={approvalDetails.ReasonId}
-          IsFinalLevel={!showFinalLevelButtons}
+          IsFinalLevel={!finalLevelUser}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           showFinalLevelButtons={showFinalLevelButtons}

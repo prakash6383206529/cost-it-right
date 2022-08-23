@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
+import { EMPTY_DATA, EMPTY_GUID, VBC, ZBC } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import { Checkbox } from "@material-ui/core";
 import NoContentFound from "../../../common/NoContentFound";
@@ -24,12 +24,13 @@ function GroupProcess(props) {
 
     useEffect(() => {
         let data = {
-            VendorId: costData.VendorId,
-            TechnologyId: Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting) ? String(`${costData.ETechnologyType},${MACHINING}`) : `${costData.ETechnologyType}`,
+            VendorId: costData.VendorType === VBC ? costData.VendorId : EMPTY_GUID,
+            TechnologyId: Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting) ? String(`${costData?.TechnologyId},${MACHINING}`) : `${costData?.TechnologyId}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+            DestinationPlantId: costData.VendorType === VBC ? getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID : EMPTY_GUID,
             CostingId: costData.CostingId,
             EffectiveDate: CostingEffectiveDate,
+            PlantId: costData.VendorType === ZBC ? costData.PlantId : EMPTY_GUID
         }
         setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
@@ -114,11 +115,13 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) &&
-                                            <label className="custom-checkbox" > {item.GroupName}
+                                        <label className="custom-checkbox" > {item.GroupName} {!findGroupCode(item, selectedProcessGroupId) &&
+                                            <>
                                                 <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />
                                                 <span className="before-box" />
-                                            </label>}
+                                            </>
+                                        }
+                                        </label>
                                     </span>
                                     </td>
                                     <td>{item.Technology}</td>

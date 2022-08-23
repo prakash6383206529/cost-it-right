@@ -21,13 +21,18 @@ import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import Downloadxls from './Downloadxls';
+import Downloadxls, { checkLabourRateConfigure, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
+import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
+import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticVBC, RMDomesticZBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { checkForSameFileUpload } from '../../helper';
 
 class BulkUpload extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef()
+        this.fileUploadRef = React.createRef();
         this.state = {
             cols: [],
             rows: [],
@@ -83,7 +88,9 @@ class BulkUpload extends Component {
     * @description Used for Costing head check
     */
     onPressHeads = (costingHeadFlag) => {
-        this.setState({ costingHead: costingHeadFlag, });
+        setTimeout(() => {
+            this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+        }, 300);
     }
 
     /**
@@ -91,17 +98,16 @@ class BulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
-
         let fileObj = event.target.files[0];
+        console.log('event.target.files: ', event.target.files);
         let fileHeads = [];
-        let uploadfileName = fileObj.name;
-        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
+        let uploadfileName = fileObj?.name;
+        let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
         } else {
-
             let data = new FormData()
             data.append('file', fileObj)
 
@@ -109,16 +115,115 @@ class BulkUpload extends Component {
                 if (err) {
 
                 } else {
-
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    switch (String(this.props.fileName)) {
+                        case String(RMDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC), fileHeads)
+                            }
+                            break;
+                        case String(RMIMPORTBULKUPLOAD):
 
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC), fileHeads)
+                            }
+                            break;
+                        case String(RMSPECIFICATION):
+                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
+                            break;
+                        case String(BOPDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'VBC') {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC), fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads)
+                            }
+                            break;
+                        case String(BOPIMPORTBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT), fileHeads)
+                            }
+                            break;
+                        case String(BOMBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
+                            break;
+                        case String(PARTCOMPONENTBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
+                            break;
+                        case String(PRODUCTCOMPONENTBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
+                            break;
+                        case String(MACHINEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC), fileHeads)
+                            }
+                            else if (this.state.costingHead === 'VBC') {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC), fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads)
+                            }
+                            break;
+                        case String(VENDORBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Vendor, fileHeads)
+                            break;
+                        case String(LABOURBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
+                            break;
+                        case String(OPERAIONBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperation), fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperation), fileHeads)
+                            }
+                            break;
+                        case String(FUELBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
+                            break;
+                        case String(INTERESTRATEBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
+                            break;
+                        case String(ACTUALVOLUMEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_ZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), fileHeads)
+                            }
+                            break;
+                        case String(BUDGETEDVOLUMEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_ZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC), fileHeads)
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        if (index > 0) {
-
+                        if (index > 0 && val?.length > 0) {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
                             if (i !== -1) {
@@ -127,8 +232,8 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
-                                if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
-                                    el = DayTime(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string') {
+                                    el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
@@ -144,7 +249,6 @@ class BulkUpload extends Component {
                             })
                             fileData.push(obj)
                             obj = {}
-
                         }
                         return null;
                     })
@@ -371,13 +475,13 @@ class BulkUpload extends Component {
     }
 
     /**
-    * @method render
-    * @description Renders the component
-    */
+     * @method render
+     * @description Renders the component
+     */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
-
+        console.log(' ref={this.dropzone}', this.fileUploadRef.current);
         if (faildRecords) {
             return <Downloadxls
                 isFailedFlag={true}
@@ -386,7 +490,6 @@ class BulkUpload extends Component {
                 costingHead={costingHead}
             />
         }
-
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}
@@ -413,7 +516,7 @@ class BulkUpload extends Component {
                             <Row className="pl-3">
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
-                                        {fileName != 'InterestRate' &&
+                                        {fileName !== 'InterestRate' &&
                                             <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
@@ -459,9 +562,11 @@ class BulkUpload extends Component {
                                     <div className="file-uploadsection">
                                         <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../assests/images/uploadcloud.png')} ></img> </label>
                                         <input
+                                            ref={this.fileUploadRef}
                                             type="file"
                                             name="File"
                                             onChange={this.fileHandler}
+                                            onClick={(event) => { event.target.value = [] }}
                                             //accept="xls/*"
                                             className="" placeholder="bbb" />
                                         <p> {this.state.uploadfileName}</p>
@@ -545,4 +650,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,
+    touchOnChange: true
 })(BulkUpload));

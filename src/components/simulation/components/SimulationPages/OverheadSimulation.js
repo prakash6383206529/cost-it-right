@@ -17,6 +17,7 @@ import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyOverheadSimulation } from '../../actions/Simulation';
 import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 const gridOptions = {};
 
@@ -662,8 +663,7 @@ function OverheadSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -981,14 +981,7 @@ function OverheadSimulation(props) {
 
 
                                         </AgGridReact>
-
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 

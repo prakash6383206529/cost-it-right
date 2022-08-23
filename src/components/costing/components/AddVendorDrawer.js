@@ -6,7 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { checkVendorPlantConfigurable, getConfigurationKey, getVendorCode, } from '../../../helper';
+import { getConfigurationKey, getVendorCode, } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
@@ -15,7 +15,6 @@ function AddVendorDrawer(props) {
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
-  const [vendorPlant, setVendorPlant] = useState([]);
   const [data, setData] = useState({});
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [DestinationPlant, setDestinationPlant] = useState([]);
@@ -55,12 +54,13 @@ function AddVendorDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
+    // label=>PlantName
     props.closeDrawer('',
       {
         ...data,
-        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
+        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
         DestinationPlant: DestinationPlant,
       })
   };
@@ -82,19 +82,10 @@ function AddVendorDrawer(props) {
       return temp;
     }
 
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
     if (label === 'DestinationPlant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
         return null
       })
       return temp
@@ -107,10 +98,9 @@ function AddVendorDrawer(props) {
   * @description  USED TO HANDLE VENDOR CHANGE
   */
   const handleVendorChange = (newValue) => {
+
     if (newValue && newValue !== '') {
       setVendor(newValue)
-      reset({ VendorPlant: '' })
-      setVendorPlant([])
       setData({})
 
       //IF VENDOR PLANT IS CONFIGURABLE
@@ -133,40 +123,18 @@ function AddVendorDrawer(props) {
 
     } else {
       setVendor([])
-      setVendorPlant([])
       setData({})
     }
   }
 
+
   /**
-* @method handleDestinationPlantChange
-* @description  USED TO HANDLE DESTINATION PLANT CHANGE
-*/
+  * @method handleDestinationPlantChange
+  * @description  USED TO HANDLE DESTINATION PLANT CHANGE
+  */
   const handleDestinationPlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setDestinationPlant(newValue)
-    }
-  }
-
-  /**
-  * @method handleChangeVendorPlant
-  * @description  USED TO HANDLE CHANGE
-  */
-  const handleChangeVendorPlant = (newValue) => {
-    if (newValue && newValue !== '') {
-      setVendorPlant(newValue)
-      let data = {
-        VendorId: vendor.value,
-        VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
-      }
-      dispatch(getVBCDetailByVendorId(data, (res) => {
-
-        if (res && res.data && res.data.Data) {
-          setData(res.data.Data)
-        }
-      }))
-    } else {
-      setVendorPlant([])
     }
   }
 
@@ -181,7 +149,8 @@ function AddVendorDrawer(props) {
   const onSubmit = data => {
     toggleDrawer('')
   }
-
+  const VendorLoaderObj = { isLoader: VendorInputLoader }
+  const plantLoaderObj = { isLoader: inputLoader }
   /**
   * @method render
   * @description Renders the component
@@ -210,7 +179,6 @@ function AddVendorDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
                 <Col md="12">
-                  {VendorInputLoader && <LoaderCustom customClass="vendor-input-loader-first-col" />}
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
@@ -224,13 +192,13 @@ function AddVendorDrawer(props) {
                     mandatory={true}
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
+                    isLoading={VendorLoaderObj}
                   />
                 </Col>
 
                 {initialConfiguration?.IsDestinationPlantConfigure &&
 
                   <Col md="12">
-                    {inputLoader && <LoaderCustom customClass="vendor-input-loader-first-col" />}
                     <SearchableSelectHookForm
                       label={"Destination Plant"}
                       name={"DestinationPlant"}
@@ -244,24 +212,8 @@ function AddVendorDrawer(props) {
                       mandatory={true}
                       handleChange={handleDestinationPlantChange}
                       errors={errors.DestinationPlant}
-                    />
-                  </Col>}
-
-                {initialConfiguration?.IsVendorPlantConfigurable &&
-                  <Col md="12">
-                    <SearchableSelectHookForm
-                      label={"Vendor Plant"}
-                      name={"VendorPlant"}
-                      placeholder={"-Select-"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={vendorPlant.length !== 0 ? vendorPlant : ""}
-                      options={renderListing("VendorPlant")}
-                      mandatory={true}
-                      handleChange={handleChangeVendorPlant}
-                      errors={errors.VendorPlant}
+                      disabled={vendor.length === 0 ? true : false}
+                      isLoading={plantLoaderObj}
                     />
                   </Col>}
               </Row>

@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
-import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
-import OperationApproval from './OperationApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { OPERATIONS_ID } from '../../../config/constants';
+import CommonApproval from '../material-master/CommonApproval';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -26,7 +23,8 @@ class OperationsMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             data: {},
-            isOperationAssociated: false
+            isOperationAssociated: false,
+            stopAPICall: false
         }
     }
 
@@ -34,8 +32,11 @@ class OperationsMaster extends Component {
         this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
-    hideForm = () => {
-        this.setState({ isOperation: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isOperation: false, data: {}, stopAPICall: false })
+        if (type === 'Cancel') {
+            this.setState({ stopAPICall: true })
+        }
     }
 
     getDetails = (data, isOperationAssociate) => {
@@ -49,7 +50,8 @@ class OperationsMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -115,17 +117,19 @@ class OperationsMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 isMasterSummaryDrawer={false}
                                                 selectionForListingMasterAPI='Master'
+                                                stopAPICall={this.state.stopAPICall}
                                             />
                                         </TabPane>}
 
 
                                     {Number(this.state.activeTab) === 2 &&
                                         <TabPane tabId="2">
-                                            <OperationApproval
+                                            <CommonApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                MasterId={OPERATIONS_ID}
                                             />
                                         </TabPane>}
 

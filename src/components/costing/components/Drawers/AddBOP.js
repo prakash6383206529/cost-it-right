@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -17,6 +17,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { PaginationWrapper } from '../../../common/commonPagination';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -65,31 +66,23 @@ function AddBOP(props) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  const onRowSelect = () => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    // } else {
-    //   const BoughtOutPartId = row.BoughtOutPartId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
-    //   setSelectedRowData(tempArr)
-    // }
-
+  const onRowSelect = (event) => {
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (selectedRows?.length === 0) {
+      setSelectedRowData([])
+    } else {
+      setSelectedRowData(selectedRows)
+    }
   }
 
-
   const netLandedFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+    return checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice)
   }
 
   const netLandedConversionFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.Currency !== '-' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData.NetLandedCostCurrency !== '-' ? checkForDecimalAndNull(rowData.NetLandedCostCurrency, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -107,7 +100,7 @@ function AddBOP(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -214,6 +207,7 @@ function AddBOP(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
@@ -229,8 +223,7 @@ function AddBOP(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -307,7 +300,7 @@ function AddBOP(props) {
                         // columnDefs={c}
                         rowData={bopDrawerList}
                         pagination={true}
-                        paginationPageSize={10}
+                        paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         loadingOverlayComponent={'customLoadingOverlay'}
@@ -319,7 +312,7 @@ function AddBOP(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
@@ -331,17 +324,11 @@ function AddBOP(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
-                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
+                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>
                 </Col>

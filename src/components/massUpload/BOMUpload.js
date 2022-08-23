@@ -9,6 +9,8 @@ import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
+import cloudImg from '../../assests/images/uploadcloud.png';
+import DayTime from '../common/DayTimeWrapper';
 
 class BOMUpload extends Component {
   constructor(props) {
@@ -32,12 +34,12 @@ class BOMUpload extends Component {
     this.props.onCancel();
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, isCancel) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
-    this.props.closeDrawer('')
+    this.props.closeDrawer(isCancel)
   };
 
   /**
@@ -47,7 +49,7 @@ class BOMUpload extends Component {
   cancel = () => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer('')
+    this.toggleDrawer(true)
   }
 
   /**
@@ -90,6 +92,9 @@ class BOMUpload extends Component {
 
               let obj = {}
               val.map((el, i) => {
+                if ((fileHeads[i] === 'EffectiveDate') && typeof el === 'string') {
+                  el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+                }
                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                   el = getJsDateFromExcel(el)
                 }
@@ -119,7 +124,7 @@ class BOMUpload extends Component {
     if (res && res.data.Result === true) {
       Toaster.success(`BOM uploaded successfully.`)
     }
-    this.toggleDrawer('')
+    this.toggleDrawer(false)
   }
 
   /**
@@ -179,7 +184,7 @@ class BOMUpload extends Component {
                     <h3>{`${messageLabel} Upload `}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(e)}
+                    onClick={(e) => this.toggleDrawer(true)}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -219,7 +224,7 @@ class BOMUpload extends Component {
                     type="submit"
                     className="submit-button save-btn" >
                     <div className={"save-icon"}></div>
-                     {isEditFlag ? 'Update' : 'Save'}
+                    {isEditFlag ? 'Update' : 'Save'}
                   </button>
                 </div>
               </Row>
@@ -252,4 +257,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMUpload',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMUpload));

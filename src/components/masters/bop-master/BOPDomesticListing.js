@@ -2,29 +2,30 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import {
-    getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
-    getPlantSelectList, getPlantSelectListByVendor,
+    getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
-import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
+import WarningMessage from '../../common/WarningMessage';
+import { hyphenFormatter } from '../masterUtil';
+import _ from 'lodash';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -52,7 +53,21 @@ class BOPDomesticListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
-            isFinalApprovar: false
+            isFinalApprovar: false,
+            disableFilter: true,
+            disableDownload: false,
+
+            //states for pagination purpose
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            warningMessage: false,
+            filterModel: {},
+            pageNo: 1,
+            pageNoNew: 1,
+            totalRecordCount: 0,
+            isFilterButtonClicked: false,
+            currentRowIndex: 0,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize
         }
     }
 
@@ -61,36 +76,47 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-
-
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList()
-        let obj = {
-            MasterId: BOP_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                let obj = {
+                    MasterId: BOP_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
             }
-        })
+        }, 300);
+    }
 
+    componentWillUnmount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.props.setSelectedCostingListSimualtion([])
+            }
+        }, 300);
     }
 
     /**
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
             vendor_id: vendorId,
             plant_id: plantId,
+            ListFor: this.props.ListFor,
+            StatusId: statusString
         }
         const { isMasterSummaryDrawer } = this.props
 
@@ -102,12 +128,15 @@ class BOPDomesticListing extends Component {
             })
         } else {
 
-            this.setState({ isLoader: true })
+            this.setState({ isLoader: isPagination ? true : false })
             if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(false)
                 }
-                this.props.getBOPDomesticDataList(filterData, (res) => {
+
+                let constantFilterData = this.state.filterModel
+                let obj = { ...this.state.floatingFilterData }
+                this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
                     if (this.props.isSimulation) {
                         this.props?.changeTokenCheckBox(true)
@@ -120,7 +149,91 @@ class BOPDomesticListing extends Component {
                     } else {
                         this.setState({ tableData: [] })
                     }
+
+                    if (res && isPagination === false) {
+                        this.setState({ disableDownload: false })
+                        setTimeout(() => {
+                            let button = document.getElementById('Excel-Downloads-bop-domestic')
+                            button && button.click()
+                        }, 500);
+                    }
+
+                    if (res) {
+                        if (res && res.data && res.data.DataList.length > 0) {
+                            this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                        }
+                        let isReset = true
+                        setTimeout(() => {
+
+                            for (var prop in obj) {
+                                if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                    if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                        isReset = false
+                                    }
+
+                                } else {
+                                    if (obj[prop] !== "") {
+                                        isReset = false
+                                    }
+                                }
+                            }
+                            // Sets the filter model via the grid API
+                            isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+
+                        }, 300);
+
+                        setTimeout(() => {
+                            this.setState({ warningMessage: false })
+                        }, 335);
+
+                        setTimeout(() => {
+                            this.setState({ isFilterButtonClicked: false })
+                        }, 600);
+                    }
                 })
+            } else {
+                this.setState({ isLoader: false })
+            }
+        }
+    }
+
+
+    onFloatingFilterChanged = (value) => {
+        this.setState({ disableFilter: false })
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
+    }
+
+    onSearch = () => {
+        onSearch(gridOptions, this, "BOP", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+    }
+
+    resetState = () => {
+        resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
+        this.props.setSelectedCostingListSimualtion([])
+    }
+
+    onBtPrevious = () => {
+        onBtPrevious(this, "BOP")       //COMMON PAGINATION FUNCTION
+    }
+
+    onBtNext = () => {
+        onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
+
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+
+        onPageSizeChanged(this, newPageSize, "BOP", this.state.currentRowIndex)  // COMMON PAGINATION FUNCTION
+    };
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.currentRowIndex !== this.state.currentRowIndex) {
+            // Now fetch the new data here.
+
+            if (this.props.bopDomesticList?.length > 0) {
+
+                this.setState({ totalRecordCount: this.props.bopDomesticList[0].TotalRecordCount })
+
             }
         }
     }
@@ -140,7 +253,6 @@ class BOPDomesticListing extends Component {
     }
 
 
-
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -158,7 +270,7 @@ class BOPDomesticListing extends Component {
         this.props.deleteBOP(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
         this.setState({ showPopup: false })
@@ -176,7 +288,7 @@ class BOPDomesticListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getDataList()
+            this.resetState()
         })
     }
 
@@ -276,6 +388,33 @@ class BOPDomesticListing extends Component {
         )
     };
 
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+    /**
+    * @method commonCostFormatter
+    * @description Renders buttons
+    */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
+
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -288,7 +427,18 @@ class BOPDomesticListing extends Component {
         } else if (cellValue === false) {
             cellValue = 'Zero Based'
         }
-        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.BoughtOutPartId === props.node.data.BoughtOutPartId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
 
     }
 
@@ -313,33 +463,37 @@ class BOPDomesticListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
+
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-bop-domestic')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getDataList("", 0, "", "", 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
 
     onBtExport = () => {
         let tempArr = []
-        if (this.props.isSimulation === true) {
-            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => (
-                tempArr.push(item.data)
-            )))
-        } else {
-            tempArr = this.props.bopDomesticList && this.props.bopDomesticList
-        }
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this?.props?.selectedCostingListSimulation
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allBopDataList ? this.props.allBopDataList : [])
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -375,20 +529,6 @@ class BOPDomesticListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
-    getFilterBOPData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
-        }
-        else {
-            return this.props.bopDomesticList
-        }
-    }
     /**
     * @method render
     * @description Renders the component
@@ -397,16 +537,48 @@ class BOPDomesticListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
 
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+
+        }
+
 
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
 
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            if (this.props?.isMasterSummaryDrawer) {
                 return false
+            } else {
+                return thisIsFirstColumn;
             }
 
         }
@@ -415,92 +587,138 @@ class BOPDomesticListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
             checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
+            hyphenFormatter: hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
+            commonCostFormatter: this.commonCostFormatter
         };
 
-        const onRowSelect = () => {
+        const onRowSelect = (event) => {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
-            if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
+
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+                selectedRows = this.props.selectedCostingListSimulation
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+                let finalData = []
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
             }
 
+
+            let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            let finalArr = selectedRows
+            let length = finalArr?.length
+            let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
+
+            if (this.props.isSimulation) {
+
+                this.props.apply(uniqueArray, length)
+            }
             this.setState({ selectedRowData: selectedRows })
-
         }
-
 
         return (
 
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
-                        <Col md="6" lg="6">
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                        <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="mb-3">
+                        <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <>
-                                        </>
-                                    )}
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                        <div className="cancel-icon-white"></div></button>
+                                ) : (
+                                    <>
+                                    </>
+                                )}
 
-                                            <ExcelFile filename={'Insert Domestic'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                    <div className="warning-message d-flex align-items-center">
+                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    </div>
+                                }
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
-                                        </>
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
+                                }
+
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.formToggle}
+                                        title="Add"
+                                    >
+                                        <div className={"plus mr-0"}></div>
+                                        {/* ADD */}
                                     </button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                </div>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
+
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>
+
+                                                <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+
+                                            </>
+
+                                        }
+                                    </>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+
                             </div>
                         </Col>
                     </Row>
@@ -510,15 +728,15 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper  ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.getFilterBOPData()}
+                                    rowData={this.props.bopDomesticList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -528,9 +746,11 @@ class BOPDomesticListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
+                                    //onSelectionChanged={onRowSelect}
+                                    onRowSelected={onRowSelect}
+                                    onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
-
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
@@ -539,21 +759,26 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost"></AgGridColumn>
+                                    <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
+                                <div className={`button-wrapper ${this.props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
+                                    {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
+                                    {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                        <div className="d-flex pagination-button-container">
+                                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                            {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                            {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                            {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                            <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
-
                     </Col>
                 </Row>
                 {
@@ -581,12 +806,12 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
-    const { rmSpecificationDetail, filterRMSelectList, rmSpecificationList } = material;
+function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList, allBopDataList } = boughtOutparts;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration }
+    const { selectedCostingListSimulation } = simulation;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**
@@ -598,14 +823,13 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
 export default connect(mapStateToProps, {
     getBOPDomesticDataList,
     deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
-    masterFinalLevelUser
+    masterFinalLevelUser,
+    setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(BOPDomesticListing));

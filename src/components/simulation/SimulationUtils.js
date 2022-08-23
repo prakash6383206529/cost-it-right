@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
@@ -6,8 +5,6 @@ import { useDispatch } from 'react-redux';
 import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
-import { Link } from 'react-scroll';
-
 
 export const SimulationUtils = (TempData) => {
 
@@ -36,6 +33,22 @@ export const SimulationUtils = (TempData) => {
     });
 
     return TempData
+}
+
+
+export const getMaxDate = (arr) => {
+
+    // ✅ Get Max date
+    let maxDate = new Date(
+        Math.max(
+            ...arr.map(element => {
+                return new Date(element.EffectiveDate);
+            }),
+        ),
+    );
+
+    return maxDate
+
 }
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
@@ -116,7 +129,6 @@ export const impactmasterDownload = (impactedMasterData) => {
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
-
         tempObj.push(item.OperationName)
         tempObj.push(item.OperationCode)
         tempObj.push(item.UOM)
@@ -124,6 +136,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewOperationRate)
         tempObj.push(item.EffectiveDate)
         operationArraySet.push(tempObj)
+        return null
     })
 
     impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
@@ -146,6 +159,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.RMShearingCost)
         tempObj.push(item.EffectiveDate)
         rmArraySet.push(tempObj)
+        return null
     })
 
     impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
@@ -161,6 +175,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewPOPrice)
         tempObj.push(item.EffectiveDate)
         bopArraySet.push(tempObj)
+        return null
     })
     impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -175,6 +190,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.OldExchangeRate)
         tempObj.push(item.EffectiveDate)
         erArraySet.push(tempObj)
+        return null
     })
 
     const multiDataSet = [
@@ -197,25 +213,32 @@ export const impactmasterDownload = (impactedMasterData) => {
     ];
     return multiDataSet
 }
+
+
+// **START** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
 export const ErrorMessage = (props) => {
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
+    const [ammendmentStatus, setAmmendmentStatus] = useState('');
     const [noContent, setNoContent] = useState(false)
     const [status, setStatus] = useState('')
-    const [toggleSeeData1, setToggleSeeData1] = useState(true)
-    const [toggleSeeData2, setToggleSeeData2] = useState(true)
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-    const [showErrorMessage, setShowErrorMessage] = useState(false)
-    const [errorStatus, setErrorStatus] = useState('')
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
+    const [showbutton, setShowButton] = useState(false)
+    const [ammendentButton, setAmmendmentButton] = useState(false)
+    const [amendentStatus, setAmendentstatus] = useState('')
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
     const { approvalNumber } = props
     const dispatch = useDispatch()
 
-    const funcForSuccessBoxButton = () => {
-        const statusWithButton = <><p className={`${toggleSeeData1 ? 'status-overflow' : ''} `}><span>{status}</span></p>{<Link to="success-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData1(!toggleSeeData1) }}>Show {toggleSeeData1 ? 'all' : 'less'} data</button> </Link>}</>
+    const funcForErrorBoxButton = () => {
+
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
-    const funcForErrorBoxButton = () => {
-        const statusWithButton = <><p className={`${toggleSeeData2 ? 'status-overflow' : ''} `}><span>{errorStatus}</span></p>{<Link to="error-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData2(!toggleSeeData2) }}>Show {toggleSeeData2 ? 'all' : 'less'} data</button> </Link>}</>
+    const funcForErrorBoxButtonForAmmendment = () => {
+
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
     useEffect(() => {
@@ -223,14 +246,21 @@ export const ErrorMessage = (props) => {
             approvalTokenNumber: approvalNumber
         }
         dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res.status === 204 ? true : false)
+            setNoContent(res?.status === 204 ? true : false)
 
-            if (res.status !== 204) {
-                const { Status, ErrorStatus } = res.data.DataList[0]
-                setStatus(Status)
-                setErrorStatus(ErrorStatus);
-                setShowSuccessMessage(Status.length > 245 ? true : false)
-                setShowErrorMessage(ErrorStatus.length > 245 ? true : false)
+            if (res?.status !== 204) {
+                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
+                setStatus(RecordInsertStatus)
+                setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                setAmmendmentStatus(AmmendentStatus);
+                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
+                if (IsAmmendentDone) {
+                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                } else {
+                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                        } `)
+                }
+                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
             }
         }))
     }, [])
@@ -241,44 +271,51 @@ export const ErrorMessage = (props) => {
         setAmendmentStatusBox(false)
     }
 
-    const errorBoxClass = () => {
-        let temp = ''
-        if (errorStatus === '' || errorStatus === undefined || errorStatus === null) {
+    const errorBoxClassForAmmendent = () => {
+        let temp
+        if (ammendmentStatus.startsWith('E')) {
+            temp = 'error';
+        }
+        else if (ammendmentStatus.startsWith('S')) {
+            temp = 'success';
+        }
+        else {
             temp = 'd-none'
         }
         return temp
     }
-    const successBoxClass = () => {
-        let temp = 'success'
-        if (status === '' || status === undefined || status === null) {
-            temp = 'd-none'
-        }
+    const errorBoxClassForStatus = () => {
+        let temp;
+
+        temp = (noContent || status === null || status === '' || status === undefined) ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
+
         return temp
     }
     return (<>
         {recordInsertStatusBox &&
             <div className="error-box-container">
-                <Errorbox goToTopID={'success-box'} customClass={successBoxClass()} errorText={showSuccessMessage ? funcForSuccessBoxButton() : status} />
+                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : status} />
                 <img
                     className="float-right"
                     alt={""}
                     onClick={deleteInsertStatusBox}
-                    src={successBoxClass() === 'd-none' ? '' : successBoxClass() === "success" ? imgGreencross : imgRedcross}
+                    src={errorBoxClassForStatus() === 'd-none' ? '' : errorBoxClassForStatus() === "success" ? imgGreencross : imgRedcross}
                 ></img>
             </div>
         }
 
         {amendmentStatusBox &&
             <div className="error-box-container">
-                <Errorbox goToTopID={'error-box'} customClass={errorBoxClass()} errorText={showErrorMessage ? funcForErrorBoxButton() : errorStatus} />
+                <Errorbox customClass={errorBoxClassForAmmendent()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
                 <img
                     className="float-right"
                     alt={""}
                     onClick={deleteAmendmentStatusBox}
-                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
+                    src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
                 ></img>
             </div>
 
         }
     </>)
 }
+// **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE

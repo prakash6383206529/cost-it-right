@@ -10,10 +10,11 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
+import { VBC } from '../../../config/constants';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, TypeOfCosting } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -45,6 +46,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -64,11 +66,13 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && simulationId !== undefined) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBC || TypeOfCosting === 1)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
-      dispatch(getImpactedMasterData(simulationId, () => { }))
+      if (simulationId !== undefined) {
+        dispatch(getImpactedMasterData(simulationId, () => { }))
+      }
     }
 
   }, [EffectiveDate, vendorIdState, simulationId])
@@ -121,6 +125,12 @@ function VerifyImpactDrawer(props) {
                       <span class="grey-text d-block">Effective Date:</span>
                       <span>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                     </span>
+
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Impact for Quarter(INR):</span>
+                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : amendmentDetails.TotalImpactPerQuarter}</span>
+                    </span>
+
                   </div>
                 </Col>
               </Row>}
@@ -200,30 +210,31 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-
-              <Row className="mb-3 pr-0 mx-0">
-                <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
-                <Col md="6">
-                  <div className={'right-details'}>
-                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
-                      {lastRevisionDataAcc ? (
-                        <i className="fa fa-minus"></i>
-                      ) : (
-                        <i className="fa fa-plus"></i>
-                      )}
-                    </button>
-                  </div>
-                </Col>
-                <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAcc && !costingDrawer && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
-                  <div align="center">
-                    {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
-                  </div>
-                  {costingDrawer && lastRevisionDataAcc && <div align="center">
+              {(TypeOfCosting === VBC || TypeOfCosting === 1) && <>
+                <Row className="mb-3 pr-0 mx-0">
+                  <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
+                  <Col md="6">
+                    <div className={'right-details'}>
+                      <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                        {lastRevisionDataAcc ? (
+                          <i className="fa fa-minus"></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </div>
+                  </Col>
+                  <div className="accordian-content w-100 px-3 impacted-min-height">
+                    {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                    <div align="center">
+                      {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                    </div>
+                    {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
                     <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>}
-                </div>
-              </Row>
+                  </div>} */}
+                  </div>
+                </Row>
+              </>}
             </form>
           </div>
         </Container>

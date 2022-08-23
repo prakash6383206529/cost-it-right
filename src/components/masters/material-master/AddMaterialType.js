@@ -9,8 +9,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import { debounce } from 'lodash';
 
 class AddMaterialType extends Component {
@@ -42,18 +40,18 @@ class AddMaterialType extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.props.getMaterialTypeDataAPI('', res => { });
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   };
 
   /**
@@ -61,14 +59,14 @@ class AddMaterialType extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { reset, ID, isEditFlag, DataToChange, initialValues } = this.props;
+    const { reset, ID, isEditFlag, initialValues } = this.props;
 
     if (isEditFlag) {
 
 
 
-      if (initialValues.CalculatedDensityValue == values.CalculatedDensityValue && initialValues.MaterialType == values.MaterialType) {
-        this.cancel()
+      if (initialValues.CalculatedDensityValue === values.CalculatedDensityValue && initialValues.MaterialType === values.MaterialType) {
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -87,7 +85,7 @@ class AddMaterialType extends Component {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('', updateData)
+          this.toggleDrawer('', updateData, 'submit')
         }
       })
 
@@ -106,7 +104,7 @@ class AddMaterialType extends Component {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       });
     }
@@ -202,7 +200,7 @@ class AddMaterialType extends Component {
                                                 className="submit-button mr5 save-btn"
                                             /> */}
                       <button
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn"
@@ -264,4 +262,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddMaterialType',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddMaterialType));

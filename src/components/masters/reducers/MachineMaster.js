@@ -7,6 +7,7 @@ import {
     GET_MACHINE_TYPE_DATALIST_SUCCESS,
     GET_MACHINE_TYPE_DATA_SUCCESS,
     GET_MACHINE_DATALIST_SUCCESS,
+    GET_ALL_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_DATA_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
@@ -19,7 +20,8 @@ import {
 
 const initialState = {
     processGroupApiData: [],
-    processIdList: []
+    processIdList: [],
+    machineDatalist: []
 };
 
 export default function MachineReducer(state = initialState, action) {
@@ -68,11 +70,30 @@ export default function MachineReducer(state = initialState, action) {
                 machineTypeData: action.payload
             };
         case GET_MACHINE_DATALIST_SUCCESS:
+            let arr = []
+            action.payload && action.payload.map((item) => {
+                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
+                arr.push(item)
+                return null
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                machineDatalist: action.payload
+                machineDatalist: arr
+            };
+        case GET_ALL_MACHINE_DATALIST_SUCCESS:
+            let arry = []
+            action.payload && action.payload.map((item) => {
+                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
+                arry.push(item)
+                return null
+            })
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allMachineDataList: arry
             };
         case GET_MACHINE_DATA_SUCCESS:
             return {

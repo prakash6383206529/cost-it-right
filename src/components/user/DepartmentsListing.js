@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Row, Col, Button, Table
+  Row, Col
 } from 'reactstrap';
-import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const gridOptions = {};
 
@@ -141,7 +142,7 @@ class DepartmentsListing extends Component {
       if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
         this.getDepartmentListData();
-      } else if (res.data.Result === false && res.statusText == "Found") {
+      } else if (res.data.Result === false && res.statusText === "Found") {
         Toaster.warning(res.data.Message)
       }
     });
@@ -178,8 +179,7 @@ class DepartmentsListing extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   onFilterTextBoxChanged(e) {
@@ -198,16 +198,6 @@ class DepartmentsListing extends Component {
   */
   render() {
     const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={EMPTY_DATA} />,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
 
     const defaultColDef = {
       resizable: true,
@@ -262,7 +252,7 @@ class DepartmentsListing extends Component {
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
@@ -275,16 +265,10 @@ class DepartmentsListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
-                    {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
+                    <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Department Code'}></AgGridColumn>
                     <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
-                  <div className="paging-container d-inline-block float-right">
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
+                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
               </div>
 

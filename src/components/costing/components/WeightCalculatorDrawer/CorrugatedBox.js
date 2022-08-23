@@ -9,9 +9,11 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../common/Toaster'
 import HeaderTitle from '../../../common/HeaderTitle'
+import { debounce } from 'lodash'
 
 function CorrugatedBox(props) {
     const [dataSend, setDataSend] = useState({})
+    const [isDisable, setIsDisable] = useState(false)
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, CostingViewMode, item } = props
@@ -160,7 +162,8 @@ function CorrugatedBox(props) {
         }
     }
 
-    const onSubmit = (Values) => {
+    const onSubmit = debounce(handleSubmit((Values) => {
+        setIsDisable(true)
         let data = {
             CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
@@ -188,13 +191,14 @@ function CorrugatedBox(props) {
         }
 
         dispatch(saveRawMaterialCalculationForCorrugatedBox(data, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', data)
             }
         }))
-    }
+    }), 100);
     const cancel = () => {
         props.toggleDrawer('')
     }
@@ -204,12 +208,11 @@ function CorrugatedBox(props) {
             e.preventDefault();
         }
     };
-
     return (
         <>
             <div className="user-page p-0">
                 <div>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                    <form noValidate className="form"
                         onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
@@ -233,7 +236,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -256,7 +259,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -281,7 +284,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -334,7 +337,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -358,7 +361,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -384,7 +387,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -409,7 +412,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
 
@@ -465,7 +468,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -491,7 +494,7 @@ function CorrugatedBox(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -516,7 +519,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -539,7 +542,7 @@ function CorrugatedBox(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -564,7 +567,7 @@ function CorrugatedBox(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -597,7 +600,7 @@ function CorrugatedBox(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -620,8 +623,9 @@ function CorrugatedBox(props) {
                                 <div className={'cancel-icon'}></div> {'Cancel'}
                             </button>
                             <button
-                                type={'submit'}
-                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                type="button"
+                                onClick={onSubmit}
+                                disabled={props.CostingViewMode || isDisable ? true : false}
                                 className="submit-button save-btn">
                                 <div className={'save-icon'}></div>
                                 {'Save'}

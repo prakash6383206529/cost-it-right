@@ -87,10 +87,10 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
         if (isAPICall) {
             const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, config());
             request.then((response) => {
-                if (response && response.data.Result === true) {
+                if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
                         type: GET_FUEL_DATALIST_SUCCESS,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     });
                     callback(response);
                 }
@@ -98,7 +98,8 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
                 dispatch({ type: GET_FUEL_FAILURE });
                 callback(error);
             });
-        } else {
+        }
+        else {
             dispatch({
                 type: GET_FUEL_DATALIST_SUCCESS,
                 payload: [],
@@ -395,10 +396,10 @@ export function getPowerDetailDataList(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_POWER_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }
@@ -612,5 +613,23 @@ export function deleteVendorPowerDetail(Id, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getFuelComboData
+ * @description USED TO GET FUEL COMBO DATA
+ */
+export function getUOMByFuelId(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getUOMByFuelId}?fuelId=${data}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

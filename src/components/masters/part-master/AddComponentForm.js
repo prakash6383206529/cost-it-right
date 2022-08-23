@@ -5,11 +5,11 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
-import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
+import { onFocus } from '../../../helper';
 
 class AddComponentForm extends Component {
   static contextType = PartEffectiveDate
@@ -23,7 +23,8 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
-      isLoader: false
+      isLoader: false,
+      showErrorOnFocus: false
     }
   }
 
@@ -88,7 +89,7 @@ class AddComponentForm extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { componentPartSelectList } = this.props;
+    const { componentPartSelectList, partAssembly } = this.props;
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -101,8 +102,7 @@ class AddComponentForm extends Component {
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
-
-        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value) || (partAssembly && (item.Value === partAssembly.value))) return false;
         // 
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -216,11 +216,23 @@ class AddComponentForm extends Component {
           <Row>
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
-              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
-              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
-              <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
-              {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-
+              <div className='p-relative'>
+                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                <AsyncSelect
+                  name="PartNumber"
+                  ref={this.myRef}
+                  key={this.state.updateAsyncDropdown}
+                  cacheOptions
+                  loadOptions={promiseOptions}
+                  onChange={(e) => this.handlePartChange(e)}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the part numbers' : "No results found"}
+                  onFocus={() => onFocus(this)}
+                  onKeyDown={(onKeyDown) => {
+                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  }}
+                />
+                {((this.state.showErrorOnFocus && this.state.part.length === 0) || this.state.isPartNoNotSelected) && <div className='text-help'>This field is required.</div>}
+              </div>
             </Col>
             <Col md="6">
               <Field
@@ -242,7 +254,7 @@ class AddComponentForm extends Component {
                 name={"PartDescription"}
                 type="text"
                 placeholder={""}
-                validate={[acceptAllExceptSingleSpecialCharacter]}
+                validate={[]}
                 component={renderText}
                 className=""
                 customClassName={"withBorder"}
@@ -390,4 +402,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddComponentForm',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddComponentForm));

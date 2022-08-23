@@ -1260,23 +1260,24 @@ button.user-btn.pull-right {
     @extend .Close;
   }
 }
-
-.process-name {
-  @extend .part-name;
-
-  .Open,
-  .Close {
-    right: 8px;
-    top: 46%;
-    left: unset;
-  }
-
-  &.text-overflow {
-    padding-left: 25px !important;
+table.table {
+  .process-name {
+    @extend .part-name;
 
     .Open,
     .Close {
-      left: 5px;
+      right: 8px;
+      top: 46%;
+      left: unset;
+    }
+
+    &.text-overflow {
+      padding-left: 25px !important;
+
+      .Open,
+      .Close {
+        left: 5px;
+      }
     }
   }
 }
@@ -1346,15 +1347,8 @@ sans-serif;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          background-color: #fff;
           padding: 9px 5px;
           min-width: 186px;
-
-          &:hover {
-            overflow: visible;
-            min-width: fit-content;
-            z-index: 1;
-          }
         }
       }
     }
@@ -1383,6 +1377,39 @@ sans-serif;
         color: #3D4465;
       }
     }
+  }
+  .header-name {
+    max-width: 384px;
+    .header-name-button-container {
+      display: flex;
+      justify-content: space-between;
+      .action {
+        min-width: fit-content;
+      }
+      .element.d-inline-flex {
+        min-width: 0;
+      }
+      .checkbox-text {
+        padding-bottom: 0;
+        padding-top: 0;
+        .sub-heading {
+          display: block;
+          font-size: 11px;
+          margin-bottom: 0 !important;
+        }
+      }
+    }
+    .pdf-header {
+      @extend .header-name-button-container;
+      justify-content: flex-end;
+      .checkbox-text {
+        min-width: fit-content !important;
+      }
+      .sub-heading {
+        text-align: left !important;
+      }
+    }
+   
   }
 }
 
@@ -1540,6 +1567,7 @@ sans-serif;
       top: unset;
       max-height: calc(100vh - 100px);
       height: fit-content;
+      min-height: 230px;
       padding-bottom: 10px;
     .container {
       max-width: 100%;
@@ -2089,10 +2117,13 @@ html {
   font-size: 13px;
   font-weight: 400;
 }
+.css-107lb6w-singleValue {
+  color: #616366 !important;
+}
 
 .select--is-disabled {
   .css-12jo7m5 {
-    color: hsl(0, 0%, 60%);
+    color: #616366;
     font-size: 13px;
   }
 }
@@ -2328,20 +2359,16 @@ input:disabled {
   }
 }
 
-.shadow-lgg {
-  .form {
-    .sf-btn-footer {
-      margin: 0 -30px -15px;
-    }
-  }
-}
 
 .bottom-footer {
   margin: 0 -30px -15px;
 }
 
 .add-min-height {
-  min-height: calc(100vh - 268px);
+  min-height: calc(100vh - 263px);
+  &.mb-3.sm-edit-page {
+    min-height: calc(100vh - 374px);
+  }
 }
 
 .role-permision-page {
@@ -2498,7 +2525,7 @@ button:disabled {
 
 //=============== costing details page only
 .react-datepicker-popper {
-  z-index: 9;
+  z-index: 21;
 }
 
 .costing-details-page {
@@ -2561,7 +2588,7 @@ button:disabled {
   .costing-table-next {
     tbody {
       td {
-        word-break: break-all;
+        word-break: break-word;
 
         .mb-15 {
           margin-bottom: 0px;
@@ -2998,6 +3025,11 @@ button:disabled,
       min-width: 350px;
       left: -165px;
     }
+    &.max225 {
+      min-width: 225px;
+      left: -103px;
+      text-align: right;
+    }
   }
 
   .tooltip-icon {
@@ -3034,10 +3066,16 @@ button:disabled,
       min-width: 230px;
       margin-bottom: 3px;
       right: 100px;
-      left: -180px;
+      left: -178px;
       &::after {
         left: 155px;
       }
+    }
+  }
+  &.st-tooltip {
+    .tooltiptext {
+      min-width: 330px;
+      left: -154px;
     }
   }
 }
@@ -3190,7 +3228,7 @@ button:disabled,
 
     td,
     th {
-      padding: 0.71rem 30px;
+      padding: 0.71rem 15px;
     }
   }
 
@@ -3239,6 +3277,9 @@ button:disabled,
       }
     }
   }
+}
+.costing-details-page .table td.overhead-profit-container.cr-innerwrap-td {
+  padding: 0.71rem 15px 0 15px !important;
 }
 
 .costing-page-tabs {
@@ -3487,7 +3528,7 @@ body {
 .costing-details-page {
   .accordian-row {
     >td {
-      padding: 15px 30px;
+      padding: 15px;
     }
   }
 }
@@ -3741,7 +3782,7 @@ body {
 
 .css-4ljt47-MenuList {
   >div {
-    word-break: break-all;
+    word-break: break-word;
   }
 }
 
@@ -3754,8 +3795,12 @@ body {
 }
 
 .hide-text-help-mb-0 {
+  label {
+    display: none !important;
+  }
   .form-group {
     margin-bottom: 0px;
+    
   }
 }
 
@@ -4269,7 +4314,7 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 500;
-  &.assembly-viw-bom-wrapper {
+  &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
      @media screen and (max-width: 1680px) {
@@ -4277,6 +4322,15 @@ body {
       }
    }
   }
+  &.date {
+    img {
+      margin-bottom: 20px;
+      @media screen and (max-width: 1440px) {
+        margin-bottom: 40px;
+       }
+    }
+  }
+
 }
 
 .warning-row {
@@ -4382,10 +4436,6 @@ body {
   .empty-table-paecholder {
     min-height: calc(100vh - 350px);
 
-    @media screen and (max-width:$miniDesktop) {
-      min-height: calc(100vh - 300px);
-
-    }
   }
 
   .filter-row-large {
@@ -4410,7 +4460,7 @@ body {
 .bulk-upload-row {
   label {
     text-align: right;
-    padding-right: 10px;
+    padding-right: 5px;
     margin-bottom: 0 !important;
     white-space: nowrap;
   }
@@ -4418,7 +4468,8 @@ body {
   .form-control {
     max-width: 75px;
     height: 32px;
-    padding: 6px 10px !important;
+    padding: 6px !important;
+    min-width: 50px;
   }
 
   margin-top: -40px;
@@ -4660,7 +4711,7 @@ body {
   font-size: 16px;
   width: 100%;
   display: inline-block;
-  word-break: break-all;
+  word-break: break-word;
 
   &.success {
     background-color: #DBF4E2;
@@ -4712,6 +4763,7 @@ body {
   display: inline-block;
   vertical-align: middle;
   height: 24px;
+  width: fit-content;
 }
 
 .surface-treatment-btn {
@@ -4722,6 +4774,11 @@ body {
   .add-min-height {
     min-height: auto !important;
     height: auto !important;
+    .ag-grid-header.justify-content-between {
+      input.form-control.mr-1 {
+        min-width: 245px;
+      }
+    }
   }
 }
 
@@ -4730,6 +4787,11 @@ body {
     img {
       margin-top: 25px;
       ;
+    }
+  }
+  .filter-block {
+    &::before {
+      display: none;
     }
   }
 }
@@ -4812,7 +4874,7 @@ body {
 
       td,
       th {
-        padding: 0.71rem 15px;
+        padding: 0.71rem 10px !important;
         font-size: 14px;
       }
     }
@@ -4863,6 +4925,14 @@ body {
 
           >th:nth-child(9) {
             width: 165px !important;
+          }
+        }
+      }
+      tr.accordian-row {
+        td {
+          min-width: 108px;
+          &:first-child {
+            min-width: 150px !important;
           }
         }
       }
@@ -5213,7 +5283,7 @@ body {
 
   // left side menu
   .left-side-menu {
-    width: calc(205px * 80 / 100);
+    width: calc(230px * 80 / 100);
 
     .mb5 {
       margin-bottom: calc(5px * 80 / 100);
@@ -5526,9 +5596,6 @@ body {
         margin-bottom: calc(14px * 80 / 100);
       }
 
-      .nav-item {
-        margin-right: calc(30px * 80 /100);
-      }
 
       .nav-tabs {
         a.nav-link {
@@ -6800,7 +6867,7 @@ body {
 }
 
 .imagClass {
-  margin-top: 30px;
+  margin-top: 45px !important;
 }
 
 .imagClass.power-listing {
@@ -6915,6 +6982,7 @@ body {
   .toggle-button-per-and-fix {
     margin-top: 0.5rem;
     display: flex !important;
+    justify-content: space-between;
 
     .form-group.inputbox.withBorder {
       min-width: 12rem;
@@ -6991,6 +7059,16 @@ body {
       }
     }
   }
+  &.dynamic-border {
+    min-height: 225px;
+    position: relative;
+    .loader_container {
+      top: 47px;
+    }
+    .loaderinner {
+      max-height: 160px;
+    }
+   }
 }
 
 // FG-Wise table css End
@@ -7210,7 +7288,7 @@ body {
 }
 
 .verify-simulation-overlay {
-  padding-top: 105px;
+  padding-top: 50px;
 }
 
 .mb-width {
@@ -7248,12 +7326,6 @@ body {
 
 // <--------END costing tooltip css -------->
 @media screen and (max-width:$miniDesktop) {
-  .app-wrapper {
-    .user-page {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  }
 
   .cr-bg-tbl {
     span {
@@ -7275,11 +7347,26 @@ body {
       min-width: 1140px;
     }
   }
+  .tool-cost-container {
+    .sticky-btn-footer {
+      margin: 0 -10px -12px !important;
+      .bluefooter-butn {
+       padding: 0 15px !important;
+      }
+    }
+  }
 }
 
 .view-rm-cost {
   .container {
     max-width: 1280px;
+  }
+}
+.tool-cost-container {
+  .sticky-btn-footer {
+    .bluefooter-butn {
+      padding: 0 15px !important;
+    }
   }
 }
 
@@ -7356,6 +7443,9 @@ body {
     line-height: calc(14px * 80 / 100) !important;
     height: calc(32px * 80 / 100) !important;
     width: auto !important;
+    &.pull-right.w-100 {
+      width: 100% !important;
+    }
   }
 
   .edit-icon,
@@ -7401,10 +7491,10 @@ body {
   transform: translateY(-13px);
 }
 
-.btn-stciky-container {
+.btn-sticky-container {
   position: sticky;
   bottom: 0;
-  padding: 0 28px !important;
+  padding: 0 16px !important;
 }
 
 .rmcc-main-headings {
@@ -7470,7 +7560,7 @@ body {
   font-size: 16px;
 }
 
-git .sticky-btn-footer {
+ .sticky-btn-footer {
   position: sticky !important;
   bottom: 0;
 
@@ -7519,15 +7609,7 @@ git .sticky-btn-footer {
 }
 
 //END error box delete icon spacing css
-.ag-pinned-right-header {
-  .ag-header-row-column-group {
-    border-right: solid #e5eaf9;
-  }
-}
 
-.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
-  border-left: 1px solid #e5eaf9;
-}
 
 //START Radio hook custom css//
 .label-container {
@@ -7627,11 +7709,6 @@ git .sticky-btn-footer {
   }
 }
 
-.simulation-edit {
-  .height-width-wrapper {
-    min-height: calc(100vh - 308px) !important;
-  }
-}
 
 // <----Overhead and profit css----->
 .tooltip-container {
@@ -7738,12 +7815,17 @@ git .sticky-btn-footer {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 419px) !important;
+  min-height: calc(100vh - 404px) !important;
+  .min-height {
+    min-height: auto !important;
+  }
+  .simulation-Loader {
+    bottom: -5px;
+    right: -30px;
+    left: -30px;
+  }
 }
 
-.other-costing-simulation {
-  min-height: calc(100vh - 308px);
-}
 
 // <-------------START Hover text overflow and show on hover css----------->
 @mixin overflow($maxWidth:140px, $minWidth:75px, $ResponsiveWith:$maxWidth, $lineClamp:1, $whiteSpace:nowrap) {
@@ -7757,7 +7839,7 @@ git .sticky-btn-footer {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     white-space: $whiteSpace;
-    word-break: break-all;
+    word-break: break-word;
   }
 
   @media (min-width:$middleDesktop) {
@@ -7884,8 +7966,11 @@ git .sticky-btn-footer {
 
 // <-----START Loader center--->
 .max-loader-height {
-  max-height: 32vh;
+  max-height: 34vh;
   overflow-x: hidden;
+  @media screen and (min-height: 892px) {
+    max-height: 62vh;
+  }
 }
 
 // <-----END Loader center--->
@@ -7919,6 +8004,9 @@ git .sticky-btn-footer {
 .master-summary-drawer {
   .ag-grid-wrapper {
     min-height: auto !important;
+  }
+  .button-wrapper {
+    margin-top: -44px!important;
   }
 }
 
@@ -7968,22 +8056,24 @@ git .sticky-btn-footer {
       .table-responsive {
         overflow: unset !important;
       }
-
+      
       table {
         min-width: 100%;
+      }
+      .approval-summary-headers,  .header-name, .header-name-left
+      {
+        background-color: #ececec !important;
       }
     }
   }
 
   .remove-space-border {
     .table-responsive {
-      .header-name-left {
+      .header-name-left, .header-name {
         border-right: none !important;
+        background-color: #ececec !important;
       }
 
-      .header-name {
-        border-left: none !important;
-      }
     }
 
     .background-light-blue {
@@ -8233,7 +8323,7 @@ git .sticky-btn-footer {
 }
 
 .process-group-wrapper {
-  margin-top: 1.8rem;
+  margin-top: 1.76rem;
   padding-left: 2rem;
 
   .process-group {
@@ -8247,7 +8337,9 @@ git .sticky-btn-footer {
     display: flex;
     flex-wrap: wrap;
     grid-gap: 3px;
-
+    &.disabled {
+      background-color: #e6e6e6;
+    }
     .process-name {
       background-color: rgb(224, 224, 224);
       border-radius: 3px;
@@ -8348,5 +8440,189 @@ table.group-process-table {
   .tooltip-inner {
     max-width: 350px;
     text-align: left;
+  }
+}
+.currency-symbol {
+  font-weight: 600;
+  margin-right: 1px;
+}
+
+.costing-summary-warning-mesaage {
+ display: flex !important;
+ align-items: center;
+padding-bottom: 3px;
+ span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+ } 
+}
+.inputbox.date-section.verfiy-page {
+  max-width: 146px;
+  height: auto;
+  position: relative;
+  input {
+    height: 32px !important;
+    min-height: 32px;
+    border: 1px solid #256bd1 !important;
+    @media screen and (max-width:$max1367) {
+      height: calc(32px * 80 / 100) !important;
+      min-height:calc(32px * 80 / 100) ;
+    }
+  }
+  .error-message {
+    bottom: -8px;
+    left: -4px;
+    span {
+      text-align: left;
+      white-space: nowrap;
+    }
+  }
+}
+.min-height100vh {
+   min-height: calc(100vh - 270px);
+}
+
+ .ag-cell-inline-editing {
+  max-height: 100%!important;
+}
+
+.st-operation .before-box {
+  padding-left: 0;
+}
+.UOM-label-container {
+  .form-group.inputbox.withBorder, .dropdown-flex {
+    label {
+      display: flex;
+      margin-bottom: 7px !important;
+    }
+  }
+}
+.inputbox, .ag-react-container {
+  .p-relative {
+    padding-right: 8px;
+    .unit-text:last-child {
+      position: absolute;
+      top: -4px;
+    }
+  }
+}
+.encrpt-pwd {
+  font-size: 26px;
+  line-height: 0.7;
+  letter-spacing: -2px;
+  font-weight: 700;
+  user-select: none;
+}
+.zoomclass1{
+  transform: scale(0.1)!important;
+}
+.zoomclass2{
+  transform: scale(0.2)!important;
+}
+.zoomclass3{
+  transform: scale(0.3)!important;
+}
+.zoomclass4{
+  transform: scale(0.4)!important;
+}
+.zoomclass5{
+  transform: scale(0.5)!important;
+}
+.zoomclass6{
+  transform: scale(0.6)!important;
+}
+.zoomclass7{
+  transform: scale(0.7)!important;
+}
+.zoomclass8{
+  transform: scale(0.8)!important;
+}
+.zoomclass9{
+  transform: scale(0.9)!important;
+}
+.zoomclass10{
+  transform: scale(1)!important;
+}
+.dashboard-height {
+  min-height: 350px;
+}
+.zoom-container {
+  position: absolute;
+  z-index: 1;
+  bottom: 80px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  button {
+   max-width: 24px;
+   height: 24px;
+   &:focus {
+    box-shadow: none !important;
+  }
+  &.secondary-btn {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    height: 24px !important;
+    width: 24px !important;
+  }
+ }
+}
+.variable-cost {
+  .col-md-1 {
+    .inputbox.withBorder {
+      padding-top: 21px;
+    }
+  }
+}
+.costing-process-cost-section {
+  .text-help {
+    position:absolute;
+  }
+}
+.text-error-title {
+  position: relative;
+ .text-help {
+   max-width: 100%;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   position: absolute;
+   white-space: nowrap;
+   margin-top: 0px;
+   height: 2em;
+   
+ }
+ .error-overflow {
+   visibility: hidden;
+   position: absolute;
+   // top: 6px;
+ }
+ &:hover {
+   color: transparent;
+   transition-delay: 0.6s;
+   overflow: visible;
+   .error-overflow {
+   transition-delay: 0.6s;
+   visibility: visible;
+   min-width: fit-content;
+   position: absolute;
+   background: white;
+   border: 1px solid #dc35457a;
+   padding: 4px 7px;
+   z-index: 4;
+   color: #dc3545;
+   font-size: 12px;
+   top: 2px;
+  }
+ }
+}
+.role-department-container {
+  display: flex;
+  .departments {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    white-space: nowrap;
   }
 }

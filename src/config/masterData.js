@@ -495,6 +495,7 @@ export const ZBCOperation = [
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -510,6 +511,7 @@ export const ZBCOperationTempData = [
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
+        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
@@ -526,7 +528,7 @@ export const VBCOperation = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
@@ -545,7 +547,7 @@ export const VBCOperationTempData = [
         'VendorCode': 'Vendor123',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
-        'VendorPlantCode': 'VP01',
+        // 'VendorPlantCode': 'VP01',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -610,7 +612,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Contractual',
         'VendorName': 'Tata Steel',
         'VendorCode': 'VC123',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
@@ -621,7 +623,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Employed',
         'VendorName': 'Reliance',
         'VendorCode': 'VC124',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
@@ -644,8 +646,8 @@ export const Fuel = [
 export const FuelTempData = [
     {
         'FuelName': 'Petrol',
-        'UOM': 'Mililitre',
-        'State': 'MP',
+        'UOM': 'Millilitre',
+        'State': 'Madhya Pradesh',
         'Rate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
@@ -677,7 +679,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -691,7 +693,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
-        'VendorName': 'Systematix',
+        'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -711,7 +713,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -734,7 +736,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorName': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -754,7 +756,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -771,7 +773,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -791,12 +793,12 @@ export const BOP_VBC_IMPORT = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'VendorPlant', value: 'VendorPlant' },
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlant', value: 'VendorPlant' },
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -813,12 +815,12 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         'VendorName': 'Systematix',
         'VendorCode': 'Sys01',
-        'VendorPlant': 'VPlant',
-        'VendorPlantCode': 'VPlant01',
-        'VendorSourceName': 'TATA Steel',
-        'VendorSourceLocation': 'Jamshedpur',
+        // 'VendorPlant': 'VPlant',
+        // 'VendorPlantCode': 'VPlant01',
+        'SourceVendorName': 'TATA Steel',
+        'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -831,7 +833,6 @@ export const BOP_VBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -842,9 +843,8 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part 2',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'ActualQuantity': 100,
     }
@@ -854,12 +854,10 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -868,14 +866,12 @@ export const VOLUME_ACTUAL_VBC = [
 
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
         'PartNo': 'Screw Jack',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'ActualQuantity': 50,
     }
@@ -887,7 +883,6 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -898,9 +893,8 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'BudgetedQuantity': 10,
     }
@@ -910,12 +904,10 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -924,14 +916,12 @@ export const VOLUME_BUDGETED_VBC = [
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'BudgetedQuantity': 25,
     }
@@ -1027,6 +1017,7 @@ export const Power = [
 */
 export const MachineZBC = [
     { label: 'Technology', value: 'Technology', }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -1043,7 +1034,8 @@ export const MachineZBC = [
 export const MachineZBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'PlantCode': '1001',
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -1062,6 +1054,7 @@ export const MachineZBCTempData = [
 */
 export const MHRMoreZBC = [
     { label: "Technology", value: "Technology", }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode", }, //*
     { label: "MachineNo", value: "MachineNo", }, //*
     { label: "MachineName", value: "MachineName", }, //*
@@ -1116,12 +1109,12 @@ export const MHRMoreZBC = [
 ]
 
 export const CLIENT_DOWNLOAD_EXCEl = [
-    { label: "CompanyName", value: "CompanyName", },
-    { label: "ClientName", value: "ClientName", },
-    { label: "ClientEmailId", value: "ClientEmailId", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "Company Name", value: "CompanyName", },
+    { label: "Contact Name", value: "ClientName", },
+    { label: "Email Id", value: "ClientEmailId", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
 ]
 
 
@@ -1131,7 +1124,8 @@ export const CLIENT_DOWNLOAD_EXCEl = [
 export const MHRMoreZBCTempData = [
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-001",
         "MachineName": "Power Press",
         "MachineSpec": "Machine Specification",
@@ -1185,7 +1179,8 @@ export const MHRMoreZBCTempData = [
     },
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
         "MachineSpec": "Machine Specification",
@@ -1248,7 +1243,6 @@ export const MachineVBC = [
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
     { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'Description', },
     { label: 'MachineName', value: 'MachineName', }, //*
@@ -1268,7 +1262,6 @@ export const MachineVBCTempData = [
         'VendorCode': '10222',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': '1032',
-        'VendorPlantCode': 'VPlant01',
         'MachineNo': 'SM101',
         'Description': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -1295,7 +1288,6 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
-    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const PartComponentTempData = [
@@ -1309,7 +1301,6 @@ export const PartComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
-        "ProductGroupCode": "VB"
     }
 ]
 
@@ -1425,7 +1416,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: 'ProductGroupCode', value: "ProductGroupCode" }
+    { label: 'TechnologyName', value: "Technology" }
 ]
 
 export const BOMUploadTempData = [
@@ -2415,7 +2406,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
+export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9']
@@ -2425,7 +2416,8 @@ export const CostingSimulationDownloadRM = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
@@ -2447,6 +2439,8 @@ export const CostingSimulationDownloadRM = [
     { label: "Old RM Cost/Pc", value: "OldRMPrice" },
     { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2472,7 +2466,8 @@ export const CostingSimulationDownloadST = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -2482,9 +2477,11 @@ export const CostingSimulationDownloadST = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
-    { label: "SurfaceArea", value: "SurfaceArea" },
+    { label: "OldSTCost", value: "OldSTCost" },
+    { label: "NewSTCost", value: "NewSTCost" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -2492,6 +2489,8 @@ export const CostingSimulationDownloadST = [
     { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2517,7 +2516,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -2529,13 +2529,17 @@ export const CostingSimulationDownloadOperation = [
 
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "OperationVariance", value: "OperationVariance" },
-    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OldNetOperationCost", value: "OldNetOperationCost" },
+    { label: "NewNetOperationCost", value: "NewNetOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2561,7 +2565,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -2573,13 +2578,17 @@ export const CostingSimulationDownloadBOP = [
 
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
-    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
-    { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
+    { label: "OldBOPRate", value: "OldBOPRate" },
+    { label: "NewBOPRate", value: "NewBOPRate" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
+    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
+    { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2620,6 +2629,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2645,6 +2655,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2669,6 +2680,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2693,99 +2705,98 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "InsertPartNumber", value: "BoughtOutPartNumber", },
-    { label: "InsertPartName", value: "BoughtOutPartName", },
-    { label: "InsertCategory", value: "BoughtOutPartCategory", },
+    { label: "Insert Part Number", value: "BoughtOutPartNumber", },
+    { label: "Insert Part Name", value: "BoughtOutPartName", },
+    { label: "Insert Category", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant(Code)", value: "Plants", },
-    { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "BasicRate", value: "BasicRate", },
-    { label: "NetCost", value: "NetLandedCost", },
-    { label: "EffectiveDate", value: "EffectiveDate", }
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Net Cost", value: "NetLandedCost", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "BOP Part No.", value: "BoughtOutPartNumber" },
+    { label: "BOP Part Name", value: "BoughtOutPartName" },
+    { label: "BOP Category", value: "BoughtOutPartCategory" },
     { label: "UOM", value: "UOM" },
     { label: "Currency", value: "Currency" },
     { label: "Specification", value: "Specification" },
     { label: "Plant(Code)", value: "Plants" },
     { label: "Vendor(Code)", value: "Vendor" },
-    { label: "BasicRate", value: "BasicRate" },
-    { label: "NetCost(Currency)", value: "NetLandedCost" },
-    { label: "NetCost(INR)", value: "NetLandedCostConversion" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Basic Rate", value: "BasicRate" },
+    { label: "Net Cost(Currency)", value: "NetLandedCost" },
+    { label: "Net Cost(INR)", value: "NetLandedCostConversion" },
+    { label: "Effective Date", value: "EffectiveDate" },
 ]
 
 export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "BOP Part No.", value: "BoughtOutPartNumber", },
+    { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "BOP Category", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
-    { label: "NoOfVendors", value: "NoOfVendors", },
-    { label: "Plant", value: "Plant", },
-    { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
-    { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
+    { label: "No. of Vendors", value: "NoOfVendors", },
+    { label: "Plant(Code)", value: "Plant", },
+    { label: "Total SOB(%)", value: "ShareOfBusinessPercentage", },
+    { label: "Weighted Net Cost(INR)", value: "WeightedNetLandedCost", },
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Currency", value: "Currency", },
-    { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate", },
-    { label: "BankRate", value: "BankRate", },
-    { label: "BankCommissionPercentage", value: "BankCommissionPercentage", },
-    { label: "CustomRate", value: "CustomRate", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "DateOfModification", value: "DateOfModification", },
+    { label: "Exchange Rate(INR)", value: "CurrencyExchangeRate", },
+    { label: "Bank Rate(INR)", value: "BankRate", },
+    { label: "Bank Commission(%)", value: "BankCommissionPercentage", },
+    { label: "Custom Rate(INR)", value: "CustomRate", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Date of Modification", value: "DateOfModification", },
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "Mode", value: "Mode", },
-    { label: "VendorName", value: "VendorName", },
-    { label: "SourceCity", value: "SourceCity", },
-    { label: "DestinationCity", value: "DestinationCity", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Source City", value: "SourceCity", },
+    { label: "Destination City", value: "DestinationCity", },
 ]
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [
-    { label: "FuelName", value: "FuelName", },
-    { label: "UnitOfMeasurementName", value: "UnitOfMeasurementName", },
-    { label: "StateName", value: "StateName", },
-    { label: "Rate", value: "Rate", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "ModifiedDate", value: "ModifiedDate", },
+    { label: "Fuel", value: "FuelName", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "State", value: "StateName", },
+    { label: "Rate(INR)", value: "Rate", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Date of Modification", value: "ModifiedDate", },
 ]
 
 export const POWERLISTING_DOWNLOAD_EXCEl = [
-    { label: "StateName", value: "StateName", },
-    { label: "PlantName", value: "PlantName", },
-    { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit", }
+    { label: "State Name", value: "StateName", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
-    { label: "VendorName", value: "VendorName" },
-    { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "VendorName", value: "VendorName", },
-    { label: "ICCApplicability", value: "ICCApplicability", },
-    { label: "ICCPercent", value: "ICCPercent", },
-    { label: "PaymentTermApplicability", value: "PaymentTermApplicability", },
-    { label: "RepaymentPeriod", value: "RepaymentPeriod", },
-    { label: "PaymentTermPercent", value: "PaymentTermPercent", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "PlantName", value: "PlantName" }
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "ICC Applicability", value: "ICCApplicability", },
+    { label: "Annual ICC(%)", value: "ICCPercent", },
+    { label: "Payment Term Applicability", value: "PaymentTermApplicability", },
+    { label: "Repayment Period(Days)", value: "RepaymentPeriod", },
+    { label: "Payment Term Interest Rate(%)", value: "PaymentTermPercent", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const LABOUR_DOWNLOAD_EXCEl = [
@@ -2793,253 +2804,249 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "Vendor(Code)", value: "Vendor", },
     { label: "Plant(Code)", value: "Plant", },
     { label: "State", value: "State", },
-    { label: "MachineType", value: "MachineType", },
-    { label: "LabourType", value: "LabourType", },
-    { label: "LabourRate", value: "LabourRate", },
-    { label: "EffectiveDate", value: "EffectiveDate", }
+    { label: "Machine Type", value: "MachineType", },
+    { label: "Labour Type", value: "LabourType", },
+    { label: "Rate Per Person/Annum", value: "LabourRate", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "Technologies", value: "Technologies", },
+    { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Plant(Code)", value: "Plants", },
-    { label: "DestinationPlant(Code)", value: "DestinationPlant", },
-    { label: "MachineNumber", value: "MachineNumber", },
-    { label: "MachineTypeName", value: "MachineTypeName", },
-    { label: "MachineTonnage", value: "MachineTonnage", },
-    { label: "ProcessName", value: "ProcessName", },
-    { label: "MachineRate", value: "MachineRate", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Machine Name", value: "MachineName" },
+    { label: "Machine Number", value: "MachineNumber", },
+    { label: "Machine Type", value: "MachineTypeName", },
+    { label: "Machine Tonnage", value: "MachineTonnage", },
+    { label: "Process Name", value: "ProcessName", },
+    { label: "Machine Rate", value: "MachineRate", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const PROCESSLISTING_DOWNLOAD_EXCEl = [
-    { label: "ProcessName", value: "ProcessName", },
-    { label: "ProcessCode", value: "ProcessCode", },
+    { label: "Process Name", value: "ProcessName", },
+    { label: "Process Code", value: "ProcessCode", },
 ]
 
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "RawMaterial", value: "RawMaterial", },
-    { label: "RMGrade", value: "RMGrade", },
-    { label: "RMSpec", value: "RMSpec", },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
-    { label: "MaterialType", value: "MaterialType", },
+    { label: "Technology", value: "TechnologyName", },
+    { label: "Raw Material", value: "RawMaterial", },
+    { label: "RM Grade", value: "RMGrade", },
+    { label: "RM Specs", value: "RMSpec", },
+    { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category", },
-    { label: "TechnologyName", value: "TechnologyName", },
+    { label: "Material Type", value: "MaterialType", },
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "UOM", value: "UOM", },
-    { label: "BasicRate", value: "BasicRate", },
-    { label: "FreightCost", value: "RMFreightCost", },
-    { label: "ShearingCost", value: "RMShearingCost", },
-    { label: "ScrapRate", value: "ScrapRate", },
-    { label: "NetCost", value: "NetLandedCost", },
-    { label: "CutOffPrice", value: "CutOffPrice", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
-
-
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Scrap Rate", value: "ScrapRate", },
+    { label: "Net Cost", value: "NetLandedCost", },
+    { label: "Cut Off Price", value: "CutOffPrice", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "RawMaterial", value: "RawMaterial", },
-    { label: "RMGrade", value: "RMGrade", },
-    { label: "RMSpec", value: "RMSpec", },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
-    { label: "MaterialType", value: "MaterialType", },
+    { label: "Technology", value: "TechnologyName", },
+    { label: "Raw Material", value: "RawMaterial", },
+    { label: "RM Grade", value: "RMGrade", },
+    { label: "RM Specs", value: "RMSpec", },
+    { label: "Code", value: "RawMaterialCode", },
+    { label: "Material Type", value: "MaterialType", },
     { label: "Category", value: "Category", },
-    { label: "TechnologyName", value: "TechnologyName", },
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
-    { label: "BasicRate", value: "BasicRate", },
-    { label: "FreightCost", value: "RMFreightCost", },
-    { label: "ShearingCost", value: "RMShearingCost", },
-    { label: "ScrapRate", value: "ScrapRate", },
-    { label: "NetLandedCost", value: "NetLandedCost", },
-    { label: "CutOffPrice", value: "CutOffPrice", },
-    { label: "NetCost(INR)", value: "NetLandedCostConversion", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Scrap Rate", value: "ScrapRate", },
+    { label: "Net Cost(Currency)", value: "NetLandedCost", },
+    { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
+    { label: "Effective Date", value: "EffectiveDate", },
 
 ]
 
 export const RMLISTING_DOWNLOAD_EXCEl = [
-    { label: "RawMaterial", value: "RawMaterial", },
+    { label: "Material", value: "RawMaterial", },
     { label: "Density", value: "Density", },
-    { label: "RMName", value: "RMName", },
-    { label: "RMGrade", value: "RMGrade", },
+    { label: "RM Name", value: "RMName", },
+    { label: "RM Grade", value: "RMGrade", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
-    { label: "RMName", value: "RMName", },
-    { label: "RMGrade", value: "RMGrade", },
-    { label: "RMSpec", value: "RMSpec", },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
+    { label: "RM Name", value: "RMName", },
+    { label: "RM Grade", value: "RMGrade", },
+    { label: "RM Spec", value: "RMSpec", },
+    { label: "Code", value: "RawMaterialCode", },
 ]
 
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technology", },
-    { label: "OperationName", value: "OperationName", },
-    { label: "OperationCode", value: "OperationCode", },
+    { label: "Operation Name", value: "OperationName", },
+    { label: "Operation Code", value: "OperationCode", },
     { label: "Plant(Code)", value: "Plants", },
-    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "VendorName", },
-    { label: "UnitOfMeasurement", value: "UnitOfMeasurement", },
+    { label: "UOM", value: "UnitOfMeasurement", },
     { label: "Rate", value: "Rate", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "TypeOfHead", },
     { label: "Vendor(Code)", value: "VendorName", },
-    { label: "ClientName", value: "ClientName", },
-    { label: "ModelType", value: "ModelType", },
-    { label: "OverheadApplicabilityType", value: "OverheadApplicabilityType", },
-    { label: "OverheadPercentage", value: "OverheadPercentage", },
-    { label: "OverheadRMPercentage", value: "OverheadRMPercentage", },
-    { label: "OverheadBOPPercentage", value: "OverheadBOPPercentage", },
-    { label: "OverheadMachiningCCPercentage", value: "OverheadMachiningCCPercentage", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "PlantName", value: "PlantName" }
+    { label: "Client Name", value: "ClientName", },
+    { label: "Model Type", value: "ModelType", },
+    { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
+    { label: "Overhead Applicability(%)", value: "OverheadPercentage", },
+    { label: "Overhead on RM(%)", value: "OverheadRMPercentage", },
+    { label: "Overhead on BOP(%)", value: "OverheadBOPPercentage", },
+    { label: "Overhead on CC(%)", value: "OverheadMachiningCCPercentage", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
-    { label: "BOMNumber", value: "BOMNumber", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "NumberOfParts", value: "NumberOfParts", },
-    { label: "BOMLevelCount", value: "BOMLevelCount", },
-    { label: "ECNNumber", value: "ECNNumber", },
-    { label: "RevisionNumber", value: "RevisionNumber", },
-    { label: "DrawingNumber", value: "DrawingNumber", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "BOM No.", value: "BOMNumber", },
+    { label: "Part No.", value: "PartNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "No.of Child Parts", value: "NumberOfParts", },
+    { label: "BOM Level Count", value: "BOMLevelCount", },
+    { label: "ECN No.", value: "ECNNumber", },
+    { label: "Revision No.", value: "RevisionNumber", },
+    { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "ECNNumber", value: "ECNNumber", },
-    { label: "RevisionNumber", value: "RevisionNumber", },
-    { label: "DrawingNumber", value: "DrawingNumber", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Part No.", value: "PartNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "ECN No.", value: "ECNNumber", },
+    { label: "Revision No.", value: "RevisionNumber", },
+    { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
-    { label: "ProductNumber", value: "ProductNumber" },
-    { label: "ProductName", value: "ProductName" },
-    { label: "ProductGroupCode", value: "ProductGroupCode" },
-    { label: "ECNNumber", value: "ECNNumber" },
-    { label: "RevisionNumber", value: "RevisionNumber" },
-    { label: "DrawingNumber", value: "DrawingNumber" },
-    { label: "IsConsideredForMBOM", value: "IsConsideredForMBOM" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Product No.", value: "ProductNumber" },
+    { label: "Name", value: "ProductName" },
+    { label: "Group Code", value: "ProductGroupCode" },
+    { label: "ECN No.", value: "ECNNumber" },
+    { label: "Revision No.", value: "RevisionNumber" },
+    { label: "Drawing No.", value: "DrawingNumber" },
+    { label: "Preferred for Impact Calculation", value: "IsConsideredForMBOM" },
+    { label: "Effective Date", value: "EffectiveDate" },
 ]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
-    { label: "VendorName", value: "VendorName", },
-    { label: "PlantName", value: "PlantName", },
-    { label: "PlantCode", value: "PlantCode", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant Code", value: "PlantCode", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
 ]
 
 export const REASON_DOWNLOAD_EXCEl = [
     { label: "Reason", value: "Reason", },
+    { label: "Status", value: "status", }
+
 ]
 
 export const VENDOR_DOWNLOAD_EXCEl = [
-    { label: "VendorType", value: "VendorType", },
-    { label: "VendorName", value: "VendorName", },
-    { label: "VendorCode", value: "VendorCode", },
+    { label: "Vendor Type", value: "VendorType", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor Code", value: "VendorCode", },
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "Status", value: "status", }
 ]
 
 export const UOM_DOWNLOAD_EXCEl = [
     { label: "Unit", value: "Unit", },
-    { label: "UnitSymbol", value: "UnitSymbol", },
-    { label: "UnitType", value: "UnitType", },
+    { label: "Unit Symbol", value: "UnitSymbol", },
+    { label: "Unit Type", value: "UnitType", },
 ]
 
 export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
-    { label: "VendorName", value: "VendorName", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Part Number", value: "PartNumber", },
+    { label: "Part Name", value: "PartName", },
     { label: "Plant", value: "Plant", },
-    { label: "DestinationPlant", value: "DestinationPlant", },
-    { label: "BudgetedQuantity", value: "BudgetedQuantity", },
-    { label: "ApprovedQuantity", value: "ApprovedQuantity", },
+    { label: "Budgeted Quantity", value: "BudgetedQuantity", },
+    { label: "Approved Quantity", value: "ApprovedQuantity", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "TypeOfHead", },
     { label: "Vendor(code)", value: "VendorName", },
-    { label: "ClientName", value: "ClientName", },
-    { label: "ModelType", value: "ModelType", },
-    { label: "ProfitApplicabilityType", value: "ProfitApplicabilityType", },
-    { label: "ProfitPercentage", value: "ProfitPercentage", },
-    { label: "ProfitRMPercentage", value: "ProfitRMPercentage", },
-    { label: "ProfitBOPPercentage", value: "ProfitBOPPercentage", },
-    { label: "ProfitMachiningCCPercentage", value: "ProfitMachiningCCPercentage", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Client Name", value: "ClientName", },
+    { label: "Model Type", value: "ModelType", },
+    { label: "Profit Applicability", value: "ProfitApplicabilityType", },
+    { label: "Profit Applicability(%)", value: "ProfitPercentage", },
+    { label: "Profit on RM(%)", value: "ProfitRMPercentage", },
+    { label: "Profit on BOP(%)", value: "ProfitBOPPercentage", },
+    { label: "Profit on CC(%)", value: "ProfitMachiningCCPercentage", },
+    { label: "Effective Date", value: "EffectiveDate", },
 ]
 export const ZBCPLANT_DOWNLOAD_EXCEl = [
-    { label: "PlantName", value: "PlantName", },
-    { label: "PlantCode", value: "PlantCode", },
-    { label: "CompanyName", value: "CompanyName", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant Code", value: "PlantCode", },
+    { label: "Company Name", value: "CompanyName", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
+    { label: "Status", value: "status", },
 ]
 
 export const REPORT_DOWNLOAD_EXCEl = [
-    { label: "CostingNumber", value: "CostingNumber", },
-    { label: "TechnologyName", value: "TechnologyName" },
-    { label: "CreatedDate", value: "CreatedDate", },
-    { label: "NetPOPrice", value: "NetPOPrice", },
-    { label: "VendorName", value: "VendorName", },
-    { label: "VendorCode", value: "VendorCode", },
-    { label: "PlantName", value: "PlantName", },
-    { label: "PlantCode", value: "PlantCode", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "ECN", value: "ECNNumber", },
-    { label: "PartType", value: "PartType", },
-    { label: "DepartmentCode", value: "DepartmentCode", },
-    { label: "DepartmentName", value: "DepartmentName", },
-    { label: "Rev", value: "RevisionNumber", },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
-    { label: "RawMaterialName", value: "RawMaterialName", },
-    { label: "RMGrade", value: "RawMaterialGrade", },
-    { label: "RMSpecification", value: "RawMaterialSpecification", },
-    { label: "RawMaterialRate", value: "RawMaterialRate", },
-    { label: "GrossWeight", value: "RawMaterialGrossWeight", },
-    { label: "FinishWeight", value: "RawMaterialFinishWeight", },
-    { label: "ScrapWeight", value: "RawMaterialScrapWeight", },
-    { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
-    { label: "NetInsertCost", value: "NetBoughtOutPartCost", },
-    { label: "NetProcessCost", value: "NetProcessCost", },
-    { label: "NetOperationCost", value: "NetOperationCost", },
-    { label: "SurfaceTreatmentCost", value: "SurfaceTreatmentCost", },
+    { label: "Costing Version", value: "CostingNumber", },
+    { label: "Technology", value: "TechnologyName" },
+    { label: "Vendor", value: "VendorName", },
+    { label: "Vendor(Code)", value: "VendorCode", },
+    { label: "Plant", value: "PlantName", },
+    { label: "Plant(Code)", value: "PlantCode", },
+    { label: "Part No.", value: "PartNumber", },
+    { label: "Part Name", value: "PartName", },
+    { label: "ECN No.", value: "ECNNumber", },
+    { label: "Part Type", value: "PartType", },
+    { label: "Department Code", value: "DepartmentCode", },
+    { label: "Department Name", value: "DepartmentName", },
+    { label: "Revision No.", value: "RevisionNumber", },
+    { label: "RM Code", value: "RawMaterialCode", },
+    { label: "RM Name", value: "RawMaterialName", },
+    { label: "RM Grade", value: "RawMaterialGrade", },
+    { label: "RM Specs", value: "RawMaterialSpecification", },
+    { label: "RM Rate", value: "RawMaterialRate", },
+    { label: "Gross Weight", value: "RawMaterialGrossWeight", },
+    { label: "Finish Weight", value: "RawMaterialFinishWeight", },
+    { label: "Scrap Weight", value: "RawMaterialScrapWeight", },
+    { label: "Net RM Cost", value: "NetRawMaterialsCost", },
+    { label: "Net Insert Cost", value: "NetBoughtOutPartCost", },
+    { label: "Net Process Cost", value: "NetProcessCost", },
+    { label: "Net Operation Cost", value: "NetOperationCost", },
+    { label: "Surface Treatment Cost", value: "SurfaceTreatmentCost", },
     { label: "Extra Cost", value: "TransportationCost", },
-    { label: "NetSurfaceTreatmentCost", value: "NetSurfaceTreatmentCost", },
-    { label: "NetConversionCost", value: "NetConversionCost", },
-    { label: "ModelTypeForOverheadAndProfit", value: "ModelTypeForOverheadAndProfit", },
+    { label: "Net Surface Treatment Cost", value: "NetSurfaceTreatmentCost", },
+    { label: "Net Conversion Cost", value: "NetConversionCost", },
+    { label: "Model Type", value: "ModelTypeForOverheadAndProfit", },
     { label: "Overhead Applicability", value: "OverheadApplicability", },
     { label: "Overhead Percentage", value: "OverheadPercentage", },
     { label: "Overhead Combined Cost", value: "OverheadCombinedCost", },
     { label: "Profit Applicability", value: "ProfitApplicability", },
-    { label: "Profit Percentage", value: "ProfitPercentage", },
+    { label: "Profit Percentage(Overall)", value: "ProfitPercentage", },
     { label: "Profit Cost", value: "ProfitCost", },
     { label: "Net Overhead And Profit Cost", value: "NetOverheadAndProfitCost", },
     { label: "Rejection Applicability", value: "RejectionApplicability", },
@@ -3069,14 +3076,14 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Hundi/DiscountValue", value: "HundiOrDiscountValue", },
     { label: "ToolCost", value: "ToolCost", },
     { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
-    { label: "ToolMaintenanceCost", value: "ToolMaintenanceCost", },
-    { label: "NetToolCost", value: "NetToolCost", },
-    { label: "OtherCostPercentage", value: "OtherCostPercentage", },
-    { label: "AnyOtherCost", value: "AnyOtherCost", },
+    { label: "Tool Maintenance Cost", value: "ToolMaintenanceCost", },
+    { label: "Net Tool Cost", value: "NetToolCost", },
+    { label: "Other Cost Percentage", value: "OtherCostPercentage", },
+    { label: "Any Other Cost", value: "AnyOtherCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
     { label: "Currency", value: "Currency", },
-    { label: "NetPOPriceOtherCurrency", value: "NetPOPriceOtherCurrency", },
-    { label: "NetPOPrice(INR)", value: "NetPOPriceINR", },
+    { label: "Net POPrice Other Currency", value: "NetPOPriceOtherCurrency", },
+    { label: "Net POPrice(INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     { label: 'SANumber', value: 'SANumber' },
     { label: 'LineNumber', value: 'LineNumber' },
@@ -3120,7 +3127,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
-    { label: "IsActive", value: "IsActive", }
+    { label: "Status", value: "status", }
 
 ]
 
@@ -3159,11 +3166,11 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
-    { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
-    { label: "BOP Quantity", value: "BOPVariance" },
+
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
@@ -3180,7 +3187,8 @@ export const InitialGridForToken = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -3192,6 +3200,7 @@ export const InitialGridForToken = [
 ]
 
 export const LastGridForToken = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -3224,6 +3233,7 @@ export const InitialGridForTokenSummary = [
 ]
 
 export const LastGridForTokenSummary = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
@@ -3343,7 +3353,8 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Old Exchange Rate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
     { label: "PO Price", value: "OldPOPrice" },
-    { label: "Variance", value: "Variance" }
+    { label: "Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 ]
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 

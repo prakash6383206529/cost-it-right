@@ -49,3 +49,5 @@ export function getConfigurationKey() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey
 }
+
+

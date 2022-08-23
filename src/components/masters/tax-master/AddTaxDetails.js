@@ -153,9 +153,7 @@ class AddTaxDetails extends Component {
     /** Update detail of TAX  */
     if (this.props.isEditFlag) {
 
-
-
-      if (DataToCheck.TaxName == values.TaxName && DataToCheck.Rate == values.Rate && DropdownChanged) {
+      if (DataToCheck.TaxName === values.TaxName && DataToCheck.Rate === values.Rate && DropdownChanged) {
 
         this.toggleDrawer('')
         return false
@@ -327,9 +325,6 @@ class AddTaxDetails extends Component {
                         }}
                         disabled={isEditFlag ? true : false}
                         component={renderDatePicker}
-                        disabled={isEditFlag ? true : false
-                        }
-                        required={true}
                         className="form-control"
                       //minDate={moment()}
                       />
@@ -403,4 +398,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddTaxDetails',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddTaxDetails));

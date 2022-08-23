@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -186,6 +186,7 @@ function CostingDetailStepTwo(props) {
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+
       dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -246,7 +247,14 @@ function CostingDetailStepTwo(props) {
       const RMCC = checkForNull(headCostData.NetRawMaterialsCost) + ConversionCostForCalculation;
       const BOPCC = checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
-      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(data.NetPackagingAndFreight) + checkForNull(data.ToolCost)
+      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
+
+
+
+
+
+
+
 
       let totalCost = ''
       switch (Text) {
@@ -277,6 +285,7 @@ function CostingDetailStepTwo(props) {
         default:
           break;
       }
+
       return totalCost
     }
   }
@@ -372,6 +381,9 @@ function CostingDetailStepTwo(props) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
+    dispatch(savePartNumber(''))
+    dispatch(setPartNumberArrayAPICALL([]))
+    dispatch(saveBOMLevel(''))
 
     props.backBtn()
   }
@@ -399,10 +411,12 @@ function CostingDetailStepTwo(props) {
                     <tbody>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No.</span><span className="dark-blue"> {partInfo.RevisionNumber !== null ? partInfo.RevisionNumber : '-'}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
                       {costingData.IsVendor && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue" title={vendorNameWithCode}> {vendorNameWithCode}</span></p></div></td>}
-                      {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue " title={costingData.DestinationPlantName}> {costingData.DestinationPlantName}</span></p></div></td>}
-                      {!costingData.IsVendor && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue " title={`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
+                      {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}(${costingData.DestinationPlantCode})`}</span></p></div></td>}
+                      {!costingData.IsVendor && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue "
+                        title={`${costingData.PlantName}(${costingData.PlantCode})`}>
+                        {`${costingData.PlantName}(${costingData.PlantCode})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>

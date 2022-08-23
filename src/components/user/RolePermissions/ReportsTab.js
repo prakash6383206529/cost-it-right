@@ -8,7 +8,7 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { REPORTS_AND_ANALYTICS, } from "../../../config/constants";
-import Switch from "react-switch";
+import { renderActionCommon } from "../userUtil"
 
 class ReportsTab extends Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class ReportsTab extends Component {
       Modules: [],
       actionData: [],
       actionSelectList: [],
-      checkBox: true
+      checkBox: false
 
     }
   }
@@ -41,6 +41,13 @@ class ReportsTab extends Component {
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
+      })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Reports And Analytics') {
+          this.setState({ checkBox: ele.IsChecked })
+        }
+        return null
       })
     }
   }
@@ -73,7 +80,7 @@ class ReportsTab extends Component {
     let actionNames = actionData && actionData.find(el => el.ModuleName === REPORTS_AND_ANALYTICS)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
           return (
             <th className="crud-label">
@@ -82,6 +89,7 @@ class ReportsTab extends Component {
             </th>
           )
         }
+        return null
       })
     }
   }
@@ -92,7 +100,7 @@ class ReportsTab extends Component {
   */
   moduleHandler = (index) => {
     //alert('hi')
-    const { Modules, checkedAll } = this.state;
+    const { Modules } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
 
     let actionArray = [];
@@ -107,7 +115,7 @@ class ReportsTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       actionArray = actionRow && actionRow.map((item, index) => {
         item.IsChecked = true;
@@ -116,7 +124,7 @@ class ReportsTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
@@ -136,7 +144,7 @@ class ReportsTab extends Component {
   * @description used to select module's action row (Horizontally)
   */
   isCheckAll = (parentIndex, actionData) => {
-    const { Modules, actionSelectList } = this.state;
+    const { Modules } = this.state;
 
     let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
     if (actionData && actionData !== undefined) {
@@ -145,7 +153,7 @@ class ReportsTab extends Component {
   }
 
   selectAllHandler = (parentIndex, actionRows) => {
-    const { Modules, actionSelectList } = this.state;
+    const { Modules } = this.state;
     //const { actionSelectList } = this.props;
 
     let checkedActions = actionRows.filter(item => item.IsChecked === true)
@@ -159,28 +167,30 @@ class ReportsTab extends Component {
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       let actionArray = actionRows && actionRows.map((item, index) => {
         item.IsChecked = true;
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
+
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
-    let tempArray = [];
-    let isCheckedSelectAll = checkBox
+    let isCheckedSelectAll = !booleanVal
+
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
+        return null
       })
       item.IsChecked = isCheckedSelectAll
       return actionRows;
@@ -193,35 +203,9 @@ class ReportsTab extends Component {
   * @description used to render row of actions
   */
   renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.state;
 
-    return actionSelectList && actionSelectList.map((el, i) => {
-      if (el.Value == 0) return false;
-      return actions && actions.map((item, index) => {
-        if (el.Value !== item.ActionId) return false;
-        return (
-          <td className="text-center">
-            {
-              <label htmlFor="normal-switch" className="normal-switch">
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
+    return renderActionCommon(actions, parentIndex, this, REPORTS_AND_ANALYTICS)
+
   }
 
   /**
@@ -260,17 +244,6 @@ class ReportsTab extends Component {
     this.props.permissions(Modules, REPORTS_AND_ANALYTICS)
   }
 
-  /**
-  * @method cancel
-  * @description used to cancel role edit
-  */
-  cancel = () => {
-
-  }
-
-  clearForm = () => {
-
-  }
 
   render() {
     const { actionSelectList } = this.state;
@@ -282,20 +255,12 @@ class ReportsTab extends Component {
               <thead>
                 <tr>
                   <th>{`Module`}</th>
-                  <th className=" pr-2">
+                  <th className="select-all-block pr-2">
                     <label className="custom-checkbox align-middle text-left">
                       <input
                         type="checkbox"
                         value={"All"}
-                        // className={
-                        //     this.isCheckAll(item, item)
-                        //         ? "selected-box"
-                        //         : "not-selected-box"
-                        // }
-                        // checked={this.isCheckAll(
-                        //     index,
-                        //     item.Actions
-                        // )}
+                        checked={this.state.checkBox}
                         onClick={() =>
                           this.selectAllHandlerEvery()
                         }

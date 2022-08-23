@@ -1,21 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId } from '../../../helper/auth'
-import { Badge } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
-import { GridTotalFormate } from '../../common/TableGridFunctions'
-import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull } from '../../../helper'
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import { getSimulationHistory } from '../actions/History'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
+import { PaginationWrapper } from '../../common/commonPagination'
 
 function SimulationHistory(props) {
 
@@ -25,27 +19,6 @@ function SimulationHistory(props) {
 
   const dispatch = useDispatch()
 
-  const simulatedOnFormatter = (cell, row, enumObject, rowIndex) => {
-    //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-    return cell != null ? cell : '';
-  }
-
-  const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-    //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-    return cell != null ? cell : '';
-  }
-
-  const linkableFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div onClick={() => { }} className={'link'}>{cell}</div>
-  }
-
-  const buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <button className="View" type={'button'} onClick={() => { }} />
-      </>
-    )
-  }
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
@@ -70,58 +43,13 @@ function SimulationHistory(props) {
     customNoRowsOverlay: NoContentFound,
   };
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
-  const statusFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div className={cell}>{row.DisplayCostingStatus}</div>
-  }
-
-  const renderVendorName = () => {
-    return <>Vendor Name</>
-  }
-  const renderImpactCosting = () => {
-    return <>Impacted Costing </>
-  }
-  const renderImpactParts = () => {
-    return <>Impacted Parts </>
-  }
-  const renderSimulatedBy = () => {
-    return <>Simulated By </>
-  }
-  const renderSimulatedOn = () => {
-    return <>Simulated On </>
-  }
-  const renderApprovedOn = () => {
-    return <>Approved On </>
-  }
-  const renderApprovedBy = () => {
-    return <>Approved By </>
-  }
 
   useEffect(() => {
     dispatch(getSimulationHistory(() => { }))
   }, [])
 
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-    //exportCSVText: 'Download Excel',
-    //onExportToCSV: this.onExportToCSV,
-    //paginationShowsTotal: true,
-    //paginationShowsTotal: this.renderPaginationShowsTotal,
-
-  }
   return (
     <div className="container-fluid simulation-history-page">
       <Row>
@@ -143,7 +71,7 @@ function SimulationHistory(props) {
               // columnDefs={c}
               rowData={simulationHistory}
               pagination={true}
-              paginationPageSize={10}
+              paginationPageSize={defaultPageSize}
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               loadingOverlayComponent={'customLoadingOverlay'}
@@ -170,13 +98,7 @@ function SimulationHistory(props) {
               <AgGridColumn field="CostingStatus" headerName="Status"></AgGridColumn>
               <AgGridColumn field="SimulationId" headerName="Actions"></AgGridColumn>
             </AgGridReact>
-            <div className="paging-container d-inline-block float-right">
-              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                <option value="10" selected={true}>10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
+            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
       </div>

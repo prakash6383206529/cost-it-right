@@ -48,6 +48,11 @@ class Role extends Component {
 
 	componentDidMount() {
 
+		const { data } = this.props;
+		if (data && data.isEditFlag) {
+		} else {
+			this.props.change("RoleName", "")
+		}
 	}
 
 	/**
@@ -96,11 +101,31 @@ class Role extends Component {
 	moduleDataHandler = (data, ModuleName) => {
 		const { Modules } = this.state;
 		let oldData = data;
+		let isSelectAll = true
 
 		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
+
+		if (ModuleName === "Costing" || ModuleName === "Simulation") {
+			oldData && oldData.map((ele, index) => {
+				if (ele.Sequence !== 0) {
+					if (ele.IsChecked === false) {
+						isSelectAll = false
+					}
+				}
+				return null
+			})
+		} else {
+			oldData && oldData.map((ele, index) => {
+				if (ele.IsChecked === false) {
+					isSelectAll = false
+				}
+				return null
+			})
+		}
+
 		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
 		if (isAvailable !== -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
+			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
 			this.setState({ Modules: tempArray })
 		}
 	}
@@ -234,7 +259,7 @@ class Role extends Component {
 											<div className="col-md-6 ">
 												<div className="d-flex">
 
-													<div class="header-title  Personal-Details pr-3"><h5>Role Name:</h5></div>
+													<div class="header-title d-flex Personal-Details pr-3"><h5>Role Name:</h5><span className="asterisk-required">*</span></div>
 
 													<Field
 														name={"RoleName"}
@@ -242,8 +267,6 @@ class Role extends Component {
 														placeholder={'Enter'}
 														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength26]}
 														component={renderText}
-														required={true}
-														//maxLength={26}
 														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
 												</div>

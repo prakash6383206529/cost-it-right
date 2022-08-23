@@ -52,11 +52,13 @@ export function getAllReasonAPI(isAPICall, callback) {
             dispatch({ type: API_REQUEST });
             axios.get(API.getAllReasonAPI, config())
                 .then((response) => {
-                    dispatch({
-                        type: GET_REASON_DATA_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
+                    if (response.data.Result || response.status === 204) {
+                        dispatch({
+                            type: GET_REASON_DATA_SUCCESS,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        });
+                        callback(response);
+                    }
                 }).catch((error) => {
                     dispatch({ type: API_FAILURE });
                     callback(error);

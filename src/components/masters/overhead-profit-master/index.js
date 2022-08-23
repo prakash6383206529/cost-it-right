@@ -23,6 +23,7 @@ class OverheadProfit extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
+      stopApiCallOnCancel: false
     }
   }
 
@@ -66,7 +67,8 @@ class OverheadProfit extends Component {
   toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
+        activeTab: tab,
+        stopApiCallOnCancel: false
       });
     }
   }
@@ -79,8 +81,12 @@ class OverheadProfit extends Component {
     this.setState({ isProfitForm: true, isOverheadForm: false, })
   }
 
-  hideForm = () => {
-    this.setState({ isOverheadForm: false, isProfitForm: false, data: {} })
+  hideForm = (type) => {
+    this.setState({ isOverheadForm: false, isProfitForm: false, data: {}, stopApiCallOnCancel: false })
+    if (type === 'cancel') {
+      this.setState({ stopApiCallOnCancel: true })
+
+    }
   }
 
   getOverHeadDetails = (data) => {
@@ -154,7 +160,7 @@ class OverheadProfit extends Component {
                 </Nav>
 
                 <TabContent activeTab={this.state.activeTab}>
-                  {this.state.activeTab == 1 && (
+                  {this.state.activeTab === '1' && (
                     <TabPane tabId="1">
                       <OverheadListing
                         formToggle={this.displayOverheadForm}
@@ -164,11 +170,12 @@ class OverheadProfit extends Component {
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
                         ViewAccessibility={this.state.ViewAccessibility}
+                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       />
                     </TabPane>
                   )}
 
-                  {this.state.activeTab == 2 && (
+                  {this.state.activeTab === '2' && (
                     <TabPane tabId="2">
                       <ProfitListing
                         formToggle={this.displayProfitForm}
@@ -178,7 +185,7 @@ class OverheadProfit extends Component {
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
                         ViewAccessibility={this.state.ViewAccessibility}
-
+                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       />
                     </TabPane>
                   )}

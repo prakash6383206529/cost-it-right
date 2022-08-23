@@ -13,6 +13,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import WarningMessage from '../../../../common/WarningMessage';
+import { debounce } from 'lodash';
 
 function Tool(props) {
 
@@ -167,7 +168,7 @@ function Tool(props) {
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      dispatch(isToolDataChange(true))
+      // dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
@@ -270,13 +271,13 @@ function Tool(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
 
     if (applicability.label !== "Fixed" && percentageLimit) {
       return false
     }
     props.saveCosting(values)
-  }
+  }), 500);
 
   /**
 * @method renderListing
@@ -516,7 +517,7 @@ function Tool(props) {
     }
 
     let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-    dispatch(isToolDataChange(true))
+    // dispatch(isToolDataChange(true))
     setTimeout(() => {
       setGridData(tempArr)
     }, 200)
@@ -530,10 +531,10 @@ function Tool(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page tool-cost-container p-0">
         <div>
 
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+          <form noValidate className="form" >
             <Row>
 
               {/* BELOW CONDITION RENDER WHEN APPLICABILITY IS PROCESS WISE */}
@@ -823,7 +824,8 @@ function Tool(props) {
               <div className="col-sm-12 text-right bluefooter-butn">
 
                 {!CostingViewMode && <button
-                  type={'submit'}
+                  type={'button'}
+                  onClick={onSubmit}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}

@@ -6,7 +6,6 @@ import { Container, Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
-import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
@@ -30,10 +29,6 @@ class SimulationUploadDrawer extends Component {
         }
     }
 
-    // specify upload params and url for your files
-    getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post' }
-    }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
 
@@ -600,6 +595,7 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'SimulationUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(SimulationUploadDrawer));
 
 // export default SimulationUploadDrawer;

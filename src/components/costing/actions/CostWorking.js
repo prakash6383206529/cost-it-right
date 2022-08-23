@@ -100,6 +100,7 @@ export function saveRawMaterialCalculationForSheetMetal(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -139,6 +140,7 @@ export function saveRawMaterialCalculationForForging(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -180,6 +182,7 @@ export function saveRawMaterialCalculationForFerrous(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -221,6 +224,7 @@ export function saveRawMaterialCalculationForPlastic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -261,6 +265,7 @@ export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -302,6 +307,7 @@ export function saveRawMaterialCalculationForDieCasting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -340,6 +346,7 @@ export function saveRawMaterialCalculationForRubber(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -979,53 +986,6 @@ export function saveCostingAsDraft(data, callback) {
   };
 }
 
-/**
- * @method getRawMaterialCalculationByTechnology
- * @description Get raw materical calculator data by technology
-*/
-
-export function getRawMaterialCalculationByTechnology(costingId, rawMaterialId, weightCalculationId, technologyId, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}`
-    const request = axios.get(`${API.getRawMaterialCalculationByTechnology}?${queryParams}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_RAW_MATERIAL_CALCI_INFO,
-          payload: response.data.Data,
-        });
-        callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-
-export function saveRawMaterialCalciData(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalciData, data, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        // dispatch({
-        //   type: SAVE_COSTING_AS_DRAFT_SUCCESS,
-        // });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({
-        type: API_FAILURE
-      });
-      apiErrors(error);
-    });
-  }
-}
 
 /**
  * @method getCostingBulkUploadList
@@ -1188,8 +1148,8 @@ export function saveDefaultProcessCostCalculationData(data, callback) {
 }
 
 /**
- * @method getRawMaterialCalculationByTechnology
- * @description Get raw materical calculator data by technology
+ * @method getProcessCalculation
+ * @description Get Process Calculation
 */
 
 export function getProcessCalculation(costingId, processId, processCalculationId, technologyId, processType, callback) {

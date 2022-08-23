@@ -12,6 +12,7 @@ import {
     GET_BOP_SOB_VENDOR_DATA_SUCCESS,
     GET_INITIAL_SOB_VENDORS_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
+    GET_ALL_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
     GET_BOP_APPROVAL_LIST,
     config,
@@ -20,6 +21,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper';
 import Toaster from '../../common/Toaster';
+import { bopQueryParms } from '../masterUtil';
 
 // const config() = config
 
@@ -65,22 +67,31 @@ export function createBOPImport(data, callback) {
  * @method getBOPDomesticDataList
  * @description get all BOP Domestic Data list.
  */
-export function getBOPDomesticDataList(data, callback) {
+export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         // dispatch({ type: API_REQUEST});
-        dispatch({
-            type: GET_BOP_DOMESTIC_DATA_LIST,
-            payload: undefined
-        })
-        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, config());
+        if (isPagination === true) {
+            dispatch({
+                type: GET_BOP_DOMESTIC_DATA_LIST,
+                payload: undefined
+            })
+        }
+        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
+        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-
-                dispatch({
-                    type: GET_BOP_DOMESTIC_DATA_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -95,17 +106,25 @@ export function getBOPDomesticDataList(data, callback) {
  * @method getBOPImportDataList
  * @description get all BOP Import Data list.
  */
-export function getBOPImportDataList(data, callback) {
+export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, config());
+        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}`
+        const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
+        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_BOP_IMPORT_DATA_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_BOP_IMPORT_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -346,9 +365,6 @@ export function getPlantSelectListByVendor(VendorId, callback) {
  */
 export function fileUploadBOPDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadBOPDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -508,11 +524,12 @@ export function getManageBOPSOBDataList(data, callback) {
  * @method getManageBOPSOBById
  * @description GET MANAGE BOP SOB BY ID
  */
-export function getManageBOPSOBById(bopId, callback) {
+export function getManageBOPSOBById(boughtOutPartNumber, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (bopId !== '') {
-            axios.get(`${API.getManageBOPSOBById}/${bopId}`, config())
+        if (boughtOutPartNumber !== '') {
+            const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`
+            axios.get(`${API.getManageBOPSOBById}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
