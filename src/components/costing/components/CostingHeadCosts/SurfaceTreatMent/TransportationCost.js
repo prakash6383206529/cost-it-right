@@ -15,17 +15,11 @@ function TransportationCost(props) {
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
-  const defaultValues = {
-    UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
-    Rate: data && data.Rate !== undefined ? data.Rate : 0,
-    Quantity: data && data.Quantity !== undefined ? data.Quantity : 0,
-    TransportationCost: data && data.TransportationCost !== undefined ? data.TransportationCost : 0,
-  }
+
 
   const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
   });
 
   const [uom, setUOM] = useState([])
@@ -40,10 +34,7 @@ function TransportationCost(props) {
 
   const dispatch = useDispatch()
 
-  // const fieldValues = useWatch({
-  //   control,
-  //   name: ['TransportationCost'],
-  // });
+
 
   useEffect(() => {
 
@@ -75,6 +66,7 @@ function TransportationCost(props) {
       Quantity: getValues('Quantity'),
       TransportationCost: transportCost,
     }
+
     const Params = {
       index: props.index,
       BOMLevel: props.item.BOMLevel,
@@ -182,17 +174,31 @@ function TransportationCost(props) {
 
   const reCalculation = () => {
 
+    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM !== 'Fixed') {
+      setValue('UOM', {})
+      setValue('Rate', '')
+      setValue('Quantity', '')
+    } else {
+      setValue('UOM', { label: data.UOM, value: data.UOMId })
+      setValue('Rate', checkForNull(data.Rate))
+      setValue('Quantity', checkForNull(data.Quantity))
+    }
     if (data.UOM === 'Rate') {
-      const cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(data.Rate) * checkForNull(data.Quantity);
       setTransportCost(cost)
       setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
     } else if (data.UOM === 'Fixed') {
       setTransportCost(data.TransportationCost)
       setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
     } else if (data.UOM === 'Percentage') {
-      setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate))))
-      setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
-      setRate(data.Rate)
+      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
+      setTransportCost(cost)
+      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+      setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate)
+    } else {
+      setTransportCost(0)
+      setRate(0)
+      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
     }
   }
 

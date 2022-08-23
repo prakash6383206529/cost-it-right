@@ -12,6 +12,7 @@ import {
     GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
     GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_ALL_SUPPLIER_DATALIST_SUCCESS,
     GET_VENDOR_TYPE_BOP_SELECTLIST,
     config
 } from '../../../config/constants';
@@ -19,7 +20,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createSupplierAPI
@@ -30,7 +31,7 @@ export function createSupplierAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createSupplierAPI, data, headers);
+        const request = axios.post(API.createSupplierAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -61,18 +62,25 @@ export function createSupplierAPI(data, callback) {
 export function getSupplierDataList(skip, obj, take, isPagination, callback) {
     return (dispatch) => {
 
-
         var queryParams = `isApplyPagination=${isPagination}`;
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
         const QueryParams = `vendorType=${obj.VendorType !== null && obj.VendorType !== undefined ? obj.VendorType : ""}&vendorName=${obj.VendorName != null && obj.VendorName !== undefined ? obj.VendorName : ""}&country=${obj.Country != null || obj.Country !== "" ? obj.Country : ""}&vendorCode=${obj.VendorCode !== null || obj.VendorCode !== "" ? obj.VendorCode : ""}&city=${obj.City !== null || obj.City !== "" ? obj.City : ""}&state=${obj.State !== null || obj.State !== "" ? obj.State : ""} `
-        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, headers);
+        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_SUPPLIER_DATALIST_SUCCESS,
-                    payload: response.status === 204 ? [] : response.data.DataList,
-                });
+
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_SUPPLIER_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList,
+                    });
+                } else {
+                    dispatch({
+                        type: GET_ALL_SUPPLIER_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList,
+                    });
+                }
             }
             callback(response)
 
@@ -94,7 +102,7 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getSupplierAPI}/${supplierId}`, headers)
+            axios.get(`${API.getSupplierAPI}/${supplierId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -127,7 +135,7 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
 export function deleteSupplierAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteSupplierAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteSupplierAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -144,7 +152,7 @@ export function deleteSupplierAPI(Id, callback) {
 export function updateSupplierAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateSupplierAPI}`, requestData, headers)
+        axios.put(`${API.updateSupplierAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -161,7 +169,7 @@ export function updateSupplierAPI(requestData, callback) {
  */
 export function getRadioButtonSupplierType() {
     return (dispatch) => {
-        const request = axios.get(API.getRadioButtonSupplierType, headers);
+        const request = axios.get(API.getRadioButtonSupplierType, config());
         request.then((response) => {
             dispatch({
                 type: GET_RADIO_SUPPLIER_TYPE_SUCCESS,
@@ -182,7 +190,7 @@ export function getRadioButtonSupplierType() {
 export function activeInactiveVendorStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveVendorStatus}`, requestData, headers)
+        axios.put(`${API.activeInactiveVendorStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -199,7 +207,7 @@ export function activeInactiveVendorStatus(requestData, callback) {
  */
 export function vendorBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.vendorBulkUpload, data, headers);
+        const request = axios.post(API.vendorBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -218,7 +226,7 @@ export function vendorBulkUpload(data, callback) {
  */
 export function getVendorTypesSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getVendorTypesSelectList, headers);
+        const request = axios.get(API.getVendorTypesSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
@@ -237,7 +245,7 @@ export function getVendorTypesSelectList() {
  */
 export function getAllVendorSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
@@ -257,7 +265,7 @@ export function getAllVendorSelectList() {
 export function getVendorsByVendorTypeID(VendorID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
+        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, config())
             .then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -279,7 +287,7 @@ export function getVendorsByVendorTypeID(VendorID, callback) {
  */
 export function getVendorTypeByVendorSelectList(VendorId) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorTypeByVendorSelectList}/${VendorId}`, headers);
+        const request = axios.get(`${API.getVendorTypeByVendorSelectList}/${VendorId}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
@@ -298,7 +306,7 @@ export function getVendorTypeByVendorSelectList(VendorId) {
  */
 export function getVendorWithVendorCodeSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -319,7 +327,7 @@ export function getVendorWithVendorCodeSelectList(callback) {
 export function getVendorTypeBOPSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getVendorTypeBOPSelectList}`, headers);
+        const request = axios.get(`${API.getVendorTypeBOPSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

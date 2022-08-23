@@ -17,7 +17,7 @@ function AddToComparisonDrawer(props) {
 
   const { editObject, isEditFlag, viewMode } = props
 
-  const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
+  const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
 
 
@@ -236,7 +236,7 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-  
+
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
@@ -376,7 +376,9 @@ function AddToComparisonDrawer(props) {
           obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
           // //For Drawer Edit
-          obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
+          obj.partId = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartId ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
+          obj.partNumber = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartNumber ? dataFromAPI.CostingPartDetails.PartNumber : '-'
+
           obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
           obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
           obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
@@ -404,11 +406,14 @@ function AddToComparisonDrawer(props) {
           obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
           obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
           obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
-          obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
           obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
           //MASTER BATCH OBJECT
           obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
-
+          obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
+          // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
+          obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+          obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
+          obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -425,16 +430,16 @@ function AddToComparisonDrawer(props) {
               setIsVbcSelected(false)
               setisCbcSelected(false)
             } else {
-              if(isVbcSelected){
+              if (isVbcSelected) {
 
                 setIsVbcSelected(true)
                 setIsZbcSelected(false)
                 setisCbcSelected(false)
-              }else if(isZbcSelected){
+              } else if (isZbcSelected) {
                 setIsVbcSelected(false)
                 setIsZbcSelected(true)
                 setisCbcSelected(false)
-              }else{
+              } else {
                 setIsVbcSelected(false)
                 setIsZbcSelected(false)
                 setisCbcSelected(true)
@@ -549,7 +554,7 @@ function AddToComparisonDrawer(props) {
     if (label === 'costing') {
       if (viewMode === true) {
         costingSelectList && costingSelectList.map((item) => {
-          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY ||item.Status === APPROVED_BY_SIMULATION) {
+          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY || item.Status === APPROVED_BY_SIMULATION) {
             temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
             return null
           }
@@ -564,8 +569,8 @@ function AddToComparisonDrawer(props) {
     }
     if (label === 'DestinationPlant') {
       DestinationplantSelectList && DestinationplantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp

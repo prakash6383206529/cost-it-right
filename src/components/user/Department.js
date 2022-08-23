@@ -11,7 +11,7 @@ import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import DayTime from "../common/DayTimeWrapper"
-import { getConfigurationKey, userDetails } from "../../helper";
+import { getConfigurationKey, loggedInUserId } from "../../helper";
 
 
 class Department extends Component {
@@ -88,24 +88,17 @@ class Department extends Component {
 				IsActive: true,
 				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
+				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
 				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
-			}
-			let comObj = {
-				CompanyId: departmentDetail.CompanyId,
-				LoggedInUserId: userDetails().LoggedInUserId,
-				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
 			this.setState({ isLoader: true })
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
 					if (this.state.isCompanyConfigurable) {
-						this.props.updateCompanyAPI(comObj, () => {
-							Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
-						})
-					} else {
+						Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
+					}
+					else {
 						// IF COMPANY CONFIGURABLE IS FALSE
 						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
 					}
@@ -116,56 +109,31 @@ class Department extends Component {
 			})
 
 		} else {
-			let obj = {
-				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
-				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
+
+			let depObj = {
+				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
+				CompanyId: '',
+				LoggedInUserId: loggedInUserId()
 			}
-			// IF COMPANY CONFIGURABLE KEY IS TRUE
-			if (this.state.isCompanyConfigurable) {
-
-				// ADD NEW COMPANY VIA DEPARTMENT
-				this.props.addCompanyAPI(obj, (res) => {
-					if (res && res.data && res.data.Result) {
-						const id = res.data.Identity
-						let formReq = {
-							DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-							DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
-							CompanyId: id
-						}
-						this.props.addDepartmentAPI(formReq, (res) => {
-
-							if (res && res.data && res.data.Result) {
-								Toaster.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
-								reset();
-								this.toggleDrawer('')
-							}
-						})
-					}
-				})
-			} else {
-				// IF COMPANY CONFIGURABLE KEY IS FALSE
-				let depObj = {
-					DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-					DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
-					CompanyId: ''
+			this.props.addDepartmentAPI(depObj, (res) => {
+				if (res && res.data && res.data.Result) {
+					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+					reset();
+					this.toggleDrawer('')
 				}
-				this.props.addDepartmentAPI(depObj, (res) => {
-					if (res && res.data && res.data.Result) {
-						Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
-						reset();
-						this.toggleDrawer('')
-					}
-				})
-			}
-
-
+			})
 		}
+
+
+
+
 
 	}
 
 	render() {
-		const { handleSubmit, pristine, reset, submitting, isEditFlag } = this.props;
-		const { isLoader, isSubmitted } = this.state;
+		const { handleSubmit, isEditFlag } = this.props;
+		const { isSubmitted } = this.state;
 
 		return (
 			<div>
@@ -205,11 +173,11 @@ class Department extends Component {
 											/>
 										</div>
 										{
-											this.state.isCompanyConfigurable &&
+
 											<div className="input-group col-md-12 input-withouticon" >
 												<Field
 													label="Code"
-													name={"CompanyCode"}
+													name={"DepartmentCode"}
 													type="text"
 													placeholder={''}
 													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
@@ -274,10 +242,10 @@ const mapStateToProps = ({ auth }) => {
 	const { departmentDetail } = auth;
 	let initialValues = {};
 
-	if (departmentDetail && departmentDetail != undefined) {
+	if (departmentDetail && departmentDetail !== undefined) {
 		initialValues = {
 			DepartmentName: departmentDetail.DepartmentName,
-			CompanyCode: departmentDetail.DepartmentCode,
+			DepartmentCode: departmentDetail.DepartmentCode,
 			Description: departmentDetail.Description,
 		}
 	}

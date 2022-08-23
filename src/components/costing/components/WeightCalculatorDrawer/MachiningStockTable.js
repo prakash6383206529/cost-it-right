@@ -455,7 +455,7 @@ function MachiningStockTable(props) {
           <>
             <Col md="2" className='forging-length-wrapper'>
               <NumberFieldHookForm
-                label={`Length (mm)`}
+                label={`Length(mm)`}
                 name={'Length'}
                 Controller={Controller}
                 control={control}
@@ -465,7 +465,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                 }}
@@ -485,7 +485,7 @@ function MachiningStockTable(props) {
             {!showLabel && (
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Major Diameter (mm)`}
+                  label={`Major Diameter(mm)`}
                   name={'majorDiameter'}
                   Controller={Controller}
                   control={control}
@@ -495,7 +495,7 @@ function MachiningStockTable(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      message: 'Maximum length for integer is 3 and for decimal is 5',
                     },
 
                   }}
@@ -511,7 +511,7 @@ function MachiningStockTable(props) {
             {!showLabel && (
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Minor Diameter (mm)`}
+                  label={`Minor Diameter(mm)`}
                   name={'minorDiameter'}
                   Controller={Controller}
                   control={control}
@@ -521,7 +521,7 @@ function MachiningStockTable(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      message: 'Maximum length for integer is 3 and for decimal is 5',
                     },
 
                     // maxLength: 4,
@@ -575,7 +575,7 @@ function MachiningStockTable(props) {
 
             <Col md="2">
               <NumberFieldHookForm
-                label={`Height (mm)`}
+                label={`Height(mm)`}
                 name={'Height'}
                 Controller={Controller}
                 control={control}
@@ -585,7 +585,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                   // maxLength: 4,
@@ -636,7 +636,7 @@ function MachiningStockTable(props) {
 
             <Col md="2">
               <NumberFieldHookForm
-                label={`Breadth (mm)`}
+                label={`Breadth(mm)`}
                 name={'Breadth'}
                 Controller={Controller}
                 control={control}
@@ -646,7 +646,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                   // maxLength: 4,
                 }}
@@ -660,7 +660,7 @@ function MachiningStockTable(props) {
             </Col>
             <Col md="2">
               <NumberFieldHookForm
-                label={`Height (mm)`}
+                label={`Height(mm)`}
                 name={'Height'}
                 Controller={Controller}
                 control={control}
@@ -670,7 +670,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                 }}
@@ -732,7 +732,7 @@ function MachiningStockTable(props) {
         </Col>
         <Col md="3">
           <NumberFieldHookForm
-            label={`Gross Weight (kg)`}
+            label={`Gross Weight(kg)`}
             name={'grossWeight'}
             Controller={Controller}
             control={control}
@@ -815,11 +815,12 @@ function MachiningStockTable(props) {
                         <td>{checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
 
-                        <td>
-                          {checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}
+                        <td className='number-overflow'>
+                          <span title={checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}</span>
+
                         </td>
-                        <td>
-                          {checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
+                        <td className='number-overflow'>
+                          <span title={checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}</span>
                         </td>
                         <td>
                           {

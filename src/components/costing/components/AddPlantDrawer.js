@@ -53,8 +53,8 @@ function AddPlantDrawer(props) {
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0' || selectedPlants.includes(item.Value)) return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -135,7 +135,7 @@ function AddPlantDrawer(props) {
                   <h3>{"Add Plant"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>

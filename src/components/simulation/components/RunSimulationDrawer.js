@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting,runSimulationOnSelectedOverheadProfitCosting,runSimulationOnSelectedProfitCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -16,12 +16,12 @@ import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
+import DatePicker from "react-datepicker";
 
 function RunSimulationDrawer(props) {
-    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
+    const { objs, masterId, date } = props
 
-
-    const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
+    const { register, control, formState: { errors }, handleSubmit, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -34,7 +34,6 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
-    const [selectedDate, setSelectedDate] = useState('')
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
@@ -44,12 +43,7 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
     const [toggleSwitchAdditionalOtherCOst, setToggleSwitchAdditionalOtherCOst] = useState(false)
     const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
-
-
-    const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
     const [runSimulationDisable, setRunSimulationDisable] = useState(false)
-
-
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -58,8 +52,6 @@ function RunSimulationDrawer(props) {
     }, [])
 
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
-    const { TokensList } = useSelector(state => state.simulation)
-
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -92,69 +84,27 @@ function RunSimulationDrawer(props) {
         setSelectedData(temp1)
         setIsOpposite(!opposite)
 
-
-
-
         if (elementObj.Text === "Discount And Other Cost") {
-
             setDisableAdditionalDiscount(!disableAdditionalDiscount)
             setDisableAdditionalOtherCost(!disableAdditionalOtherCost)
-
         }
 
 
         if (elementObj.Text === "Additional Other Cost") {
-
             setInputOtherCost(!inputOtherCost)
             //sethideDiscountAndOtherCost(!hideDiscountAndOtherCost)
         }
 
-
         if (elementObj.Text === "Additional Discount") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
-
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
         }
-
     }
 
     const Provision = (string) => {
-
         if (string) {
             setProvisionalCheck(!provisionalCheck)
-
         }
-    }
-
-
-    const handleGradeChange = (value) => {
-
-        setLinkingTokenNumber(value)
-
-    }
-
-    const renderListing = () => {
-        let temp = []
-
-        // TokensList && TokensList.map((item) => {
-
-        //     if (item.Value === '0') return false
-        //     temp.push({ label: item.Text, value: item.Value })
-        //     return null
-
-
-        // })
-        // return temp
-        // if (label && label !== '') {
-        //     if (label === 'technology') {
-        //         technologySelectList && technologySelectList.map((item) => {
-        //             if (item.Value === '0') return false
-        //             temp.push({ label: item.Text, value: item.Value })
-        //             return null
-        //         })
-        //         return temp
-        //     }
-        // }
     }
 
     const IsAvailable = (id) => { }
@@ -204,55 +154,55 @@ function RunSimulationDrawer(props) {
         temp.push(obj)
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
 
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             case Number(OPERATIONS):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             case Number(MACHINERATE):
-                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
             case Number(BOPDOMESTIC):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             case Number(BOPIMPORT):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 break;
             // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
             //         checkForResponse(res)
             //     }))
             //     runSimulationCosting()
             //     break;
             // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
             //         checkForResponse(res)
             //     }))
             //     runSimulationCosting()
@@ -282,20 +232,6 @@ function RunSimulationDrawer(props) {
         // }
     }), 500)
 
-    const onSubmit = () => {
-        // 
-        // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
-        //     if (res.data.Result) {
-        //         Toaster.success('Simulation process has been run successfully.')
-        //         runSimulationCosting()
-        //     }
-        // }))
-    }
-
-
-    const handleEffectiveDateChange = (date) => {
-        setSelectedDate(date)
-    }
     const onChange = () => {
         setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
 
@@ -598,43 +534,25 @@ function RunSimulationDrawer(props) {
 
                                             <Row>
                                                 <Col md="12" className="inputbox date-section">
-                                                    <DatePickerHookForm
-                                                        name={`EffectiveDate`}
-                                                        label={'Effective Date'}
-                                                        selected={selectedDate}
-                                                        handleChange={(date) => {
-                                                            handleEffectiveDateChange(date);
-                                                        }}
-                                                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                                        rules={{ required: true }}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
+                                                    <DatePicker
+                                                        selected={DayTime(date).isValid() ? new Date(date) : ''}
+                                                        dateFormat="dd/MM/yyyy"
                                                         showMonthDropdown
                                                         showYearDropdown
-                                                        dateFormat="aa/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        customClassName="withBorder"
-                                                        className="withBorder"
-                                                        autoComplete={"off"}
+                                                        readonly="readonly"
+                                                        onBlur={() => null}
+                                                        autoComplete={'off'}
                                                         disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                        mandatory={true}
-                                                        errors={errors.EffectiveDate}
+                                                        disabled={true}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-4 pt-1 warning-text-container">
+                                                <Col md="12" className="mt-n1 warning-text-container">
                                                     <div className="warning-text">
-                                                        <WarningMessage dClass="mr-3 pt-2" message={"Unselected norms won't be applied in future revisions"} />
+                                                        <WarningMessage dClass="mr-3 " message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>
-
                                         </Col>
-
                                     </Row>
 
 

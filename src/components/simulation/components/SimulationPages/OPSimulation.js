@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { runSimulationOnSelectedOverheadProfitCosting } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -19,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 const gridOptions = {
 
@@ -30,10 +30,10 @@ function OPSImulation(props) {
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [titleObj, setTitleObj] = useState({})
     const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
         {
             applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'],
@@ -69,6 +69,7 @@ function OPSImulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
         setTableData(list)
     }, [])
@@ -163,7 +164,7 @@ function OPSImulation(props) {
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
@@ -468,25 +469,6 @@ function OPSImulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
     const applicabilityCellEditor = (params) => {
         const selectedCountry = params.data?.OverheadApplicabilityType;
         const allowedCities = valuesForDropdownInAgGrid.applicability;
@@ -496,15 +478,7 @@ function OPSImulation(props) {
             formatValue: (value) => `${value} (${selectedCountry})`,
         };
     };
-    const modelTypeCellEditor = (params) => {
-        const selectedCountry = params.data?.ModelType;
-        const allowedCities = valuesForDropdownInAgGrid.modelType;
 
-        return {
-            values: allowedCities,
-            formatValue: (value) => `${value} (${selectedCountry})`,
-        };
-    };
     const cancel = () => {
         // props.cancelEditPage()
         setShowMainSimulation(true)
@@ -533,8 +507,7 @@ function OPSImulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -924,18 +897,19 @@ function OPSImulation(props) {
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <div className="ag-grid-header d-flex justify-content-between">
+                                        <input type="text" className="form-control table-search mr-1" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     {
                                         isbulkUpload &&
                                         <div className='d-flex justify-content-end bulk-upload-row'>
                                             <div className="d-flex align-items-center">
-                                                <label>No of rows with changes:</label>
+                                                <label>Rows with changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfCorrectRow'}
                                                     Controller={Controller}
+                                                    title={titleObj.rowWithChanges}
                                                     control={control}
                                                     register={register}
                                                     rules={{ required: false }}
@@ -949,10 +923,11 @@ function OPSImulation(props) {
                                                 />
                                             </div>
                                             <div className="d-flex align-items-center">
-                                                <label>No of rows without changes:</label>
+                                                <label>Rows without changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfRowsWithoutChange'}
+                                                    title={titleObj.rowWithoutChanges}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
@@ -977,7 +952,7 @@ function OPSImulation(props) {
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -1034,14 +1009,7 @@ function OPSImulation(props) {
 
 
                                         </AgGridReact>
-
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 

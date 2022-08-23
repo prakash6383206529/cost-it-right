@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
-import { useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
-import OtherVerifySimulation from '../OtherVerifySimulation';
+import VerifySimulation from '../VerifySimulation';
 import { debounce } from 'lodash'
+import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
 
 const gridOptions = {
 
@@ -30,6 +32,9 @@ function ERSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -149,13 +154,18 @@ function ERSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -175,11 +185,16 @@ function ERSimulation(props) {
     }
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
 
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one costing.')
             return false
         }
+
         setIsDisable(true)
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
@@ -196,13 +211,13 @@ function ERSimulation(props) {
 
             return null;
         })
-
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
@@ -239,7 +254,7 @@ function ERSimulation(props) {
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -269,13 +284,7 @@ function ERSimulation(props) {
 
                                         </AgGridReact>
 
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 
@@ -284,7 +293,25 @@ function ERSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
+
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
@@ -307,7 +334,7 @@ function ERSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isExchangeRate={true} token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation isExchangeRate={true} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

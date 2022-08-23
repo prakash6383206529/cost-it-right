@@ -12,7 +12,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW, CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE,
   IS_COSTING_EFFECTIVE_DATE_DISABLED, CLOSE_OPEN_ACCORDION, BOP_DRAWER_LIST, SET_CUTOFF_RMC, GET_COSTING_SPECIFIC_TECHNOLOGY, SET_PLASTIC_ARR, SET_ASSEM_BOP_CHARGE,
   CHECK_IS_DATA_CHANGE, SET_ARRAY_FOR_COSTING, CHECK_IS_DISCOUNT_DATA_CHANGE, CHECK_IS_TOOL_DATA_CHANGE, CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE, CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
-  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT
 } from '../../../config/constants';
 
 const initialState = {
@@ -38,8 +38,16 @@ const initialState = {
   checkIsToolTabChange: false,
   masterBatchObj: {},
   selectedIdsOfOperationAndOtherOperation: [],
-  selectedIdsOfOperation: []
-
+  selectedIdsOfOperation: [],
+  selectedProcessAndGroup: [],
+  selectedProcessId: [],
+  selectedProcessGroupId: [],
+  checkIsDataChange: false,
+  partNumberAssembly: '',
+  partNumberArrayAPICall: [],
+  messageForAssembly: '',
+  processGroupGrid: [],
+  bomLevel: ''
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -397,10 +405,16 @@ export default function costingReducer(state = initialState, action) {
         ComponentItemDiscountData: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
+      let temp = [...action.payload]
+      let arrayRM = temp && temp.map((item) => {
+        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
+        return item
+      })
       return {
         ...state,
         loading: false,
-        rmDrawerList: action.payload
+        rmDrawerList: arrayRM
       }
     case GET_PROCESS_DRAWER_DATA_LIST:
       return {
@@ -475,10 +489,16 @@ export default function costingReducer(state = initialState, action) {
         CloseOpenAccordion: action.payload
       }
     case BOP_DRAWER_LIST:
+      let tempBOP = [...action.payload]
+      let arrayBOP = tempBOP && tempBOP.map((item) => {
+        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
+        return item
+      })
       return {
         ...state,
         loading: false,
-        bopDrawerList: action.payload
+        bopDrawerList: arrayBOP
       }
     case IS_COSTING_EFFECTIVE_DATE_DISABLED:
       return {
@@ -566,6 +586,56 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         selectedIdsOfOperation: action.payload
+      }
+    case SELECTED_PROCESS_AND_GROUPCODE:
+      return {
+        ...state,
+        selectedProcessAndGroup: action.payload
+      }
+    case SET_PROCESS_ID:
+      return {
+        ...state,
+        selectedProcessId: action.payload
+      }
+    case SET_PROCESSGROUP_ID:
+      return {
+        ...state,
+        selectedProcessGroupId: action.payload
+      }
+    case GET_FG_WISE_IMPACT_DATA_FOR_COSTING:
+      return {
+        ...state,
+        getFgWiseImpactData: action.payload
+      }
+    case SAVE_PART_NUMBER_STOP_API_CALL:
+      return {
+        ...state,
+        loading: false,
+        partNumberAssembly: action.payload
+      }
+    case SET_PART_NUMBER_ARRAY_API_CALL:
+      return {
+        ...state,
+        loading: false,
+        partNumberArrayAPICall: action.payload
+      }
+    case SET_MESSAGE_FOR_ASSEMBLY:
+      return {
+        ...state,
+        loading: false,
+        messageForAssembly: action.payload
+      }
+    case SET_PROCESS_GROUP_GRID:
+      return {
+        ...state,
+        loading: false,
+        processGroupGrid: action.payload
+      }
+    case SAVE_BOM_LEVEL_STOP_API_CALL:
+      return {
+        ...state,
+        loading: false,
+        bomLevel: action.payload
       }
 
     default:

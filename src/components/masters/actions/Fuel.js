@@ -20,7 +20,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config;
+// const config() = config;
 
 /**
  * @method createFuel
@@ -28,7 +28,7 @@ const headers = config;
  */
 export function createFuel(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFuel, data, headers);
+        const request = axios.post(API.createFuel, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -46,7 +46,7 @@ export function createFuel(data, callback) {
  */
 export function createFuelDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFuelDetail, data, headers);
+        const request = axios.post(API.createFuelDetail, data, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 callback(response);
@@ -65,7 +65,7 @@ export function createFuelDetail(data, callback) {
  */
 export function updateFuelDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateFuelDetail, data, headers);
+        const request = axios.put(API.updateFuelDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -85,12 +85,12 @@ export function updateFuelDetail(data, callback) {
 export function getFuelDetailDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
-            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, headers);
+            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, config());
             request.then((response) => {
-                if (response && response.data.Result === true) {
+                if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
                         type: GET_FUEL_DATALIST_SUCCESS,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     });
                     callback(response);
                 }
@@ -98,7 +98,8 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
                 dispatch({ type: GET_FUEL_FAILURE });
                 callback(error);
             });
-        } else {
+        }
+        else {
             dispatch({
                 type: GET_FUEL_DATALIST_SUCCESS,
                 payload: [],
@@ -113,7 +114,7 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
  */
 export function getFuelAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getAllFuelAPI, headers);
+        const request = axios.get(API.getAllFuelAPI, config());
         request.then((response) => {
             dispatch({
                 type: GET_FUEL_DETAIL_SUCCESS,
@@ -134,7 +135,7 @@ export function getFuelUnitAPI(fuelId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (fuelId !== '') {
-            axios.get(`${API.getFuelAPI}/${fuelId}`, headers)
+            axios.get(`${API.getFuelAPI}/${fuelId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -166,7 +167,7 @@ export function getFuelDetailData(fuelId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (fuelId !== '') {
-            axios.get(`${API.getFuelDetailData}/${fuelId}`, headers)
+            axios.get(`${API.getFuelDetailData}/${fuelId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -196,7 +197,7 @@ export function getFuelDetailData(fuelId, callback) {
 export function deleteFuelDetailAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFuelDetailAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteFuelDetailAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -213,7 +214,7 @@ export function deleteFuelDetailAPI(Id, callback) {
 export function deleteFuelTypeAPI(index, Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFuelAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteFuelAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -230,7 +231,7 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 export function getFuelComboData(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboData}`, headers);
+        const request = axios.get(`${API.getFuelComboData}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -253,7 +254,7 @@ export function getFuelComboData(callback) {
 export function getStateListByFuel(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getStateListByFuel}/${ID}`, headers);
+        const request = axios.get(`${API.getStateListByFuel}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -276,7 +277,7 @@ export function getStateListByFuel(ID, callback) {
 export function getFuelListByState(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelListByState}/${ID}`, headers);
+        const request = axios.get(`${API.getFuelListByState}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -298,7 +299,7 @@ export function getFuelListByState(ID, callback) {
  */
 export function fuelBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fuelBulkUpload, data, headers);
+        const request = axios.post(API.fuelBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -315,7 +316,7 @@ export function fuelBulkUpload(data, callback) {
  */
 export function createPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPowerDetail, data, headers);
+        const request = axios.post(API.createPowerDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -334,7 +335,7 @@ export function createPowerDetail(data, callback) {
  */
 export function createVendorPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createVendorPowerDetail, data, headers);
+        const request = axios.post(API.createVendorPowerDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -353,7 +354,7 @@ export function createVendorPowerDetail(data, callback) {
  */
 export function updatePowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updatePowerDetail, data, headers);
+        const request = axios.put(API.updatePowerDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -372,7 +373,7 @@ export function updatePowerDetail(data, callback) {
  */
 export function updateVendorPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateVendorPowerDetail, data, headers);
+        const request = axios.put(API.updateVendorPowerDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -393,12 +394,12 @@ export function getPowerDetailDataList(data, callback) {
     let plantID = data && data.plantID === undefined ? null : data.plantID;
     let stateID = data && data.stateID === undefined ? null : data.stateID;
     return (dispatch) => {
-        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, headers);
+        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_POWER_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }
@@ -418,7 +419,7 @@ export function getVendorPowerDetailDataList(data, callback) {
     let vendorID = data && data.vendorID === undefined ? null : data.vendorID;
     let plantID = data && data.plantID === undefined ? null : data.plantID;
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorPowerDetailDataList}?vendorId=${vendorID}&plantId=${plantID}`, headers);
+        const request = axios.get(`${API.getVendorPowerDetailDataList}?vendorId=${vendorID}&plantId=${plantID}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 dispatch({
@@ -443,7 +444,7 @@ export function getPlantListByState(ID, callback) {
     return (dispatch) => {
         if (ID !== '') {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getPlantListByState}/${ID}`, headers);
+            const request = axios.get(`${API.getPlantListByState}/${ID}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -471,7 +472,7 @@ export function getPlantListByState(ID, callback) {
  */
 export function getDieselRateByStateAndUOM(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getDieselRateByStateAndUOM}/${data.StateID}/${data.UOMID}`, headers);
+        const request = axios.get(`${API.getDieselRateByStateAndUOM}/${data.StateID}/${data.UOMID}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -491,7 +492,7 @@ export function getDieselRateByStateAndUOM(data, callback) {
 export function getZBCPlantList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getZBCPlantList}`, headers);
+        const request = axios.get(`${API.getZBCPlantList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -514,7 +515,7 @@ export function getZBCPlantList(callback) {
 export function getStateSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getStateSelectList}`, headers);
+        const request = axios.get(`${API.getStateSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -538,7 +539,7 @@ export function getPowerDetailData(PowerId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (PowerId !== '') {
-            axios.get(`${API.getPowerDetailData}/${PowerId}`, headers)
+            axios.get(`${API.getPowerDetailData}/${PowerId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -569,7 +570,7 @@ export function getPowerDetailData(PowerId, callback) {
 export function getVendorPowerDetailData(PowerId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getVendorPowerDetailData}/${PowerId}`, headers)
+        axios.get(`${API.getVendorPowerDetailData}/${PowerId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -588,7 +589,7 @@ export function getVendorPowerDetailData(PowerId, callback) {
 export function deletePowerDetail(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePowerDetail}/${Id}`, headers)
+        axios.delete(`${API.deletePowerDetail}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -605,12 +606,30 @@ export function deletePowerDetail(Id, callback) {
 export function deleteVendorPowerDetail(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteVendorPowerDetail}/${Id}`, headers)
+        axios.delete(`${API.deleteVendorPowerDetail}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getFuelComboData
+ * @description USED TO GET FUEL COMBO DATA
+ */
+export function getUOMByFuelId(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getUOMByFuelId}?fuelId=${data}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

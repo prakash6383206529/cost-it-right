@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -18,6 +18,10 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
+import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -34,6 +38,11 @@ function BDSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [maxDate, setMaxDate] = useState('');
+    const [titleObj, setTitleObj] = useState({})
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -50,6 +59,7 @@ function BDSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
 
@@ -59,10 +69,17 @@ function BDSimulation(props) {
             if (isImpactedMaster) {
                 gridRef.current.api.sizeColumnsToFit();
             }
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
 
     const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+
         let basicRateCount = 0
 
         list && list.map((li) => {
@@ -89,6 +106,7 @@ function BDSimulation(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.EffectiveDate = effectiveDate
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         // }
@@ -108,10 +126,11 @@ function BDSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
@@ -149,6 +168,7 @@ function BDSimulation(props) {
             </>
         )
     }
+
     const oldBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -158,7 +178,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldBOPRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -220,23 +240,6 @@ function BDSimulation(props) {
         }
     }
 
-
-    const runSimulation = () => {
-        let basicRateCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-
-            if (basicRateCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
-
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -259,14 +262,14 @@ function BDSimulation(props) {
     };
 
     const onGridReady = (params) => {
+        window.screen.width >= 1440 && params.api.sizeColumnsToFit()
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -287,6 +290,13 @@ function BDSimulation(props) {
             gridRef.current.api.sizeColumnsToFit();
         }
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -296,7 +306,7 @@ function BDSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
-        oldBasicRateFormatter: oldBasicRateFormatter,
+        oldBasicRateFormatter: oldBasicRateFormatter
     };
 
     return (
@@ -320,11 +330,12 @@ function BDSimulation(props) {
                                         isbulkUpload && <>
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -338,10 +349,11 @@ function BDSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
+                                                        title={titleObj.rowWithoutChanges}
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
@@ -368,7 +380,7 @@ function BDSimulation(props) {
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -387,7 +399,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant" minWidth={140}></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
 
@@ -403,13 +415,7 @@ function BDSimulation(props) {
 
                                         </AgGridReact>
 
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 
@@ -418,7 +424,25 @@ function BDSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            minDate={new Date(maxDate)}
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
@@ -445,7 +469,7 @@ function BDSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

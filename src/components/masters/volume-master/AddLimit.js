@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col } from "reactstrap";
 import Drawer from "@material-ui/core/Drawer";
 
-import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../../costing/actions/Costing";
-import axios from "axios";
+import { getCostingSpecificTechnology } from "../../costing/actions/Costing";
 import { NumberFieldHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { loggedInUserId } from "../../../helper";
 
@@ -15,18 +14,11 @@ const AddLimit = (props) => {
         handleSubmit,
         formState: { errors },
         setValue,
-        getValues,
         reset,
         control,
     } = useForm();
 
     const [technology, setTechnology] = useState([]);
-    const [data, setData] = useState([]);
-    const [regularization, setRegularization] = useState([]);
-    const [deviation, setDeviation] = useState([]);
-
-
-    const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
 
     const dispatch = useDispatch();
     const technologySelectList = useSelector(
@@ -85,7 +77,7 @@ const AddLimit = (props) => {
         //     setDeviation,
         // }
         // axios.post(``, postData).then(res => {
-        //     console.log(res);
+        //     
         // });
     };
 

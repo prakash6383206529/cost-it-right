@@ -45,6 +45,10 @@
 .View { @include icons("../../assests/images/Group-8858.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
  @include extra-icon-styles;
 }
+.add-process { @include icons("../../assests/images/process-add.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
+    border-radius: 4px;
+ @include extra-icon-styles;
+}
 .hirarchy-btn { @include icons("../../assests/images/hirarchy-btn.svg", $background-size:none, $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
@@ -81,7 +85,9 @@
 
 .plus {@include icons("../../assests/images/Path 15286.svg", 12px,12px); }
 
-.swap {@include icons("../../assests/images/swap-logo.svg", 18px, 18px); }
+.swap {@include icons("../../assests/images/swap.svg", 18px, 18px); }
+
+.swap-hover {@include icons("../../assests/images/swap-hover.svg", 18px, 18px); }
 
 .go-to-top { @include icons("../../assests/images/go-to-top.svg", 22px, 22px); }
 
@@ -140,6 +146,10 @@
 .hirarchy-icon { @include icons("../../assests/images/hirarchy-icon.svg", 18px , 12px);
     margin-right: 5px;
 }
+.group-process { @include icons("../../assests/images/group-process.svg");
+    margin-right: 5px;
+    border-radius: 4px
+}
 .trashred-icon {  @include icons("../../assests/images/trash-red.svg", 11px, 14px);
     margin-right: 5px;
 }
@@ -160,7 +170,7 @@
 }
 .Copy.All { @include icons("../../assests/images/Copy.svg", $shadowColor:#f8a000, $borderColor:#feeccc);
     @include extra-icon-styles;
-    margin: 0;
+    
 }
 .Create { @include icons("../../assests/images/Create.svg");
     @include extra-icon-styles;
@@ -188,6 +198,15 @@
     background-position: center;
     display: inline-block;
 }
+.zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
+.zoom-in {@include icons("../../assests/images/zoom-in.svg",  10px, 10px)}
+.zoom-out {@include icons("../../assests/images/zoom-out.svg", 14px, 14px)}
+.zoom-out-hover {@include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)}
+
+.link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
+
+.broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
+
 .CalculatorIcon:disabled, .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled {
     border: none !important;
     opacity: 0.5;
@@ -233,8 +252,8 @@
 }
 .previous-btn {
     font-family: "agGridMaterial";
-    font-size: 22px;
-    line-height: 22px;
+    font-size: 20px;
+    line-height: 20px;
     font-style: normal;
     font-weight: normal;
     font-feature-settings: normal;
@@ -283,19 +302,63 @@
     grid-gap: 5px;
     justify-content: end;
     button {
-        margin-right: 0;
-        margin-left: 0;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
 }
 
-  .rm-popup-content {
-    @media screen and (max-width:$max1367) {
+.rm-popup-content {
+    @media screen and (max-width: $max1367) {
       left: 1114px !important;
-        >div {
-             left: 74% !important;
-            }
-            .row {
-                left: unset !important;
-            }
-        }
+      > div {
+        left: 74% !important;
+      }
+      .row {
+        left: unset !important;
+      }
     }
+  }
+  .actions-wrapper {
+    .ag-react-container {
+      display: flex;
+      justify-content: end;
+      grid-gap: 5px;
+      align-items: center;
+      button {
+        margin: 0;
+      }
+    }
+    .ag-cell-wrapper {
+      @extend .ag-react-container;
+    }
+  }
+  
+  .link-icon-container {
+    position: relative !important;
+    .link-icon,
+    .broken-link-icon {
+      position: absolute;
+      top: 32%;
+      left: 14px;
+    }
+  }
+  .logo-container {
+    display: flex;
+    .border-left {
+      border-left: 1px solid #959cb6 !important;
+      margin-right: 15px;
+      margin-left: 15px;
+    }
+    button {
+      padding-top: 0.3125rem;
+      padding-bottom: 0.3125rem;
+    }
+  }
+  .btn-no-border {
+    padding: 0;
+    &:focus {
+      border-color: transparent !important;
+      box-shadow: none !important;
+      transition: none !important;
+    }
+  }

@@ -17,7 +17,9 @@ import {
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
+    SET_OPERATION_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -132,6 +134,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 operationList: action.payload
             }
+        case GET_ALL_OPERATION_COMBINED_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                allOperationList: action.payload
+            }
 
         case GET_OPERATION_APPROVAL_LIST:
             return {
@@ -139,6 +147,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 OperationApprovalList: action.payload
+            }
+        case SET_OPERATION_DATA:
+            return {
+                ...state,
+                loading: false,
+                operationDataHold: action.payload
             }
 
         default:

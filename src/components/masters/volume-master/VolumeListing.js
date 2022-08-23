@@ -5,10 +5,9 @@ import { Row, Col } from 'reactstrap'
 import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
-import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
-import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getVolumeDataList, deleteVolume, } from '../actions/Volume'
 import { getVendorListByVendorType } from '../actions/Material'
 import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
@@ -24,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
 import AddLimit from './AddLimit'
+import { PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -135,15 +135,13 @@ class VolumeListing extends Component {
       deletedId: '',
       isLoader: false,
       limit: false,
+      selectedRowData: false
     }
   }
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.props.getPlantSelectList(() => { })
-    this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -193,7 +191,7 @@ class VolumeListing extends Component {
     this.props.getVolumeDataList(filterData, (res) => {
       this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
         this.setState({
@@ -223,8 +221,8 @@ class VolumeListing extends Component {
    * @method deleteItem
    * @description confirm delete Item.
    */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+  deleteItem = (obj) => {
+    this.setState({ showPopup: true, deletedId: obj })
   }
 
   /**
@@ -253,12 +251,16 @@ class VolumeListing extends Component {
   buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
+    let obj = {}
+    obj.volumeId = rowData.VolumeId
+    obj.volumeApprovedId = rowData.VolumeApprovedId
+    obj.volumeBudgetedId = rowData.VolumeBudgetedId
 
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
@@ -353,13 +355,15 @@ class VolumeListing extends Component {
    * @method hideForm
    * @description HIDE FORM
    */
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        this.getTableListData()
+        if (type === 'submit')
+          this.getTableListData()
       },
     )
+
   }
 
   /**
@@ -376,12 +380,19 @@ class VolumeListing extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.volumeDataList ? this.props.volumeDataList : [])
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -410,6 +421,7 @@ class VolumeListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -448,26 +460,22 @@ class VolumeListing extends Component {
       DownloadAccessibility,
       limit
     } = this.state
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
+    const ExcelFile = ReactExport.ExcelFile;
 
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
     }
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
+
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
@@ -589,7 +597,7 @@ class VolumeListing extends Component {
                 rowData={this.props.volumeDataList}
                 pagination={true}
                 editable={true}
-                paginationPageSize={10}
+                paginationPageSize={defaultPageSize}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -597,26 +605,22 @@ class VolumeListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'plantFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
-              <div className="paging-container d-inline-block float-right">
-                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                  <option value="10" selected={true}>10</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-              </div>
+              {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
             </div>
           </div>
 
@@ -668,7 +672,7 @@ class VolumeListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ comman, material, volume, auth }) {
-  const { loading, plantSelectList, vendorWithVendorCodeSelectList } = comman
+  const { loading, plantSelectList } = comman
   const { vendorListByVendorType, } = material
   const { financialYearSelectList, volumeDataList } = volume
   const { leftMenuData, topAndLeftMenuData } = auth
@@ -679,7 +683,6 @@ function mapStateToProps({ comman, material, volume, auth }) {
     financialYearSelectList,
     leftMenuData,
     volumeDataList,
-    vendorWithVendorCodeSelectList,
     topAndLeftMenuData,
   }
 }
@@ -691,12 +694,9 @@ function mapStateToProps({ comman, material, volume, auth }) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   getVendorListByVendorType,
   getVolumeDataList,
   deleteVolume,
-  getFinancialYearSelectList,
-  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'VolumeListing',
@@ -704,5 +704,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(VolumeListing),
 )

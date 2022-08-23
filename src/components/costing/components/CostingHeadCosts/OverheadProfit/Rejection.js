@@ -55,19 +55,19 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-     
+
 
     }, [rejectionFieldValues]);
 
 
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
-                "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
+                "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ?rejectionObj.RejectionTotalCost : '',
+                "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
 
@@ -75,7 +75,7 @@ function Rejection(props) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    },[rejectionObj])
+    }, [rejectionObj])
 
 
     /**
@@ -87,7 +87,7 @@ function Rejection(props) {
 
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value === '0' || item.Text ==='Net Cost') return false;
+                if (item.Value === '0' || item.Text === 'Net Cost') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -223,7 +223,6 @@ function Rejection(props) {
             }
         }
 
-        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -242,6 +241,7 @@ function Rejection(props) {
             setApplicability([])
             checkRejectionApplicability('')
         }
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     return (
@@ -285,7 +285,7 @@ function Rejection(props) {
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                                 max: { value: 100, message: 'Percentage cannot be greater than 100' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -305,7 +305,7 @@ function Rejection(props) {
                                 required: false,
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}

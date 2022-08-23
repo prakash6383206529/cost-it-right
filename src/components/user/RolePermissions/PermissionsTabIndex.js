@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Loader } from "../../common/Loader";
 import "../UserRegistration.scss";
 import {
     getActionHeadsSelectList, getModuleActionInit, getModuleActionInitNew
@@ -19,6 +18,7 @@ import SimulationTab from "./SimulationTab";
 import UsersTab from "./UsersTab";
 import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
+import LoaderCustom from "../../common/LoaderCustom";
 
 class PermissionsTabIndex extends Component {
     constructor(props) {
@@ -43,6 +43,7 @@ class PermissionsTabIndex extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
+        this.setState({ isLoader: true });
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
@@ -73,8 +74,10 @@ class PermissionsTabIndex extends Component {
     * @description get updated data after updatesuccess
     */
     getUpdatedData = (data) => {
+        this.setState({ isLoader: true })
         setTimeout(() => {
             this.updateTabs(data)
+            this.setState({ isLoader: false })
         }, 2000)
     }
 
@@ -138,7 +141,7 @@ class PermissionsTabIndex extends Component {
 
         return (
             <div>
-                {isLoader && <Loader />}
+                {isLoader && <LoaderCustom customClass="attachment-loader" />}
                 <div className="login-container signup-form ">
                     <div className="row mb-30">
                         <div className="col-md-12">

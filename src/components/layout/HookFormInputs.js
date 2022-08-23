@@ -3,6 +3,8 @@ import Select from "react-select";
 import "./formInputs.css";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
+import LoaderCustom from "../common/LoaderCustom";
+import { SPACEBAR } from "../../config/constants";
 
 export const TextFieldHooks = (input) => {
 
@@ -36,11 +38,13 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
+  let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
 
   return (
     <>
@@ -62,25 +66,28 @@ export const TextFieldHookForm = (field) => {
           hidden={hidden}
           render={({ field: { onChange, onBlur, value } }) => {
             return (
-              <input
-                {...field}
-                {...register}
-                name={name}
-                className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-                hidden={hidden}
-              />
+              <div className={`${isLoader ? "p-relative" : ''}`}>
+                <input
+                  {...field}
+                  {...register}
+                  name={name}
+                  className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                  hidden={hidden}
+                />
+                {isLoader && <LoaderCustom customClass={`input-loader ${loaderClass}`} />}
+              </div>
             )
           }
           }
         />
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
       </div>
     </>
   )
@@ -127,7 +134,7 @@ export const NumberFieldHookForm = (field) => {
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
       </div>
     </>
   )
@@ -137,7 +144,7 @@ export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading, customClassName, isMulti } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
-  let isLoader = (isLoading && isLoading === true) ? true : false;
+  let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
 
   return (
@@ -154,25 +161,31 @@ export const SearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
           return (
-            <Select
-              {...field}
-              {...register}
-              name={name}
-              placeholder={placeholder}
-              isDisabled={isDisable}
-              onChange={(e, action) => {
-                handleChange(e, action);
-                onChange(e)
+            <div className={`${isLoader ? 'p-relative' : ''}`}>
+              <Select
+                {...field}
+                {...register}
+                name={name}
+                placeholder={placeholder}
+                isDisabled={isDisable}
+                onChange={(e, action) => {
+                  handleChange(e, action);
+                  onChange(e)
 
-              }}
-              menuPlacement="auto"
-              options={options}
-              onBlur={onBlur}
-              selected={value}
-              value={value}
-              isLoading={isLoader}
-              isMulti={isMultiple}
-            />
+                }}
+                menuPlacement="auto"
+                options={options}
+                onBlur={onBlur}
+                selected={value}
+                value={value}
+                isLoading={isLoader}
+                isMulti={isMultiple}
+                onKeyDown={(onKeyDown) => {
+                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                }}
+              />
+              {isLoader && <LoaderCustom customClass={"input-loader"} />}
+            </div>
           )
         }}
       />
@@ -402,7 +415,8 @@ export const AsyncSearchableSelectHookForm = (field) => {
 
 
   let isDisable = (disabled && disabled === true) ? true : false;
-  let isLoader = (isLoading && isLoading === true) ? true : false;
+  let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
+  let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
 
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
@@ -419,24 +433,30 @@ export const AsyncSearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name } }) => {
           return (
-            <AsyncSelect
-              {...field}
-              {...register}
-              name={name}
-              placeholder={placeholder}
-              isDisabled={disabled}
-              onChange={(e) => {
-                handleChange(e);
-                onChange(e)
-              }}
-              menuPlacement="auto"
-              loadOptions={asyncOptions}
-              onBlur={onBlur}
-              selected={value}
-              value={value}
-              isLoading={isLoader}
-              noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
-            />
+            <div className={`${isLoader ? "p-relative" : ''}`}>
+              <AsyncSelect
+                {...field}
+                {...register}
+                name={name}
+                placeholder={placeholder}
+                isDisabled={disabled}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+                menuPlacement="auto"
+                loadOptions={asyncOptions}
+                onBlur={onBlur}
+                selected={value}
+                value={value}
+                isLoading={isLoader}
+                noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
+                onKeyDown={(onKeyDown) => {
+                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                }}
+              />
+              {isLoader && <LoaderCustom customClass={`input-loader ${isLoaderClass}`} />}
+            </div>
           )
 
         }}

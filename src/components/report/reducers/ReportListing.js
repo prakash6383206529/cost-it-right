@@ -43,12 +43,13 @@
 
 
 import {
-    API_REQUEST, CREATED_BY_ASSEMBLY, GET_REPORT_LIST,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST,
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 
 const initialState = {
-    reportListing: []
+    reportListing: [],
+    allReportListing: []
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -77,6 +78,12 @@ export default function ReportListingReducers(state = initialState, action) {
                 ...state,
                 loading: false,
                 reportListing: arr1
+            }
+        case GET_ALL_REPORT_LIST:
+            return {
+                ...state,
+                loading: false,
+                allReportListing: action.payload
             }
 
         default:

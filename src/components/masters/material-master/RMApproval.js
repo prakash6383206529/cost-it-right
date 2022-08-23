@@ -8,7 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper'
-import { EMPTY_DATA, PENDING } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, PENDING } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -17,6 +17,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 
@@ -221,13 +222,13 @@ function RMApproval(props) {
    */
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData()
+        // setLoader(true)
+        // getTableData()
     }
     const closeApprovalDrawer = (e = '') => {
         setApprovalDrawer(false)
-        setLoader(true)
-        getTableData()
+        // setLoader(true)
+        // getTableData()
     }
 
     const onRowSelect = () => {
@@ -316,7 +317,7 @@ function RMApproval(props) {
     }
 
     return (
-        <div>
+        <div className='min-height100vh'>
             {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="6" lg="6" className="search-user-block mb-3">
@@ -326,7 +327,12 @@ function RMApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="Send For Approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
+                            <button
+                                title="Send For Approval"
+                                class="user-btn approval-btn"
+                                onClick={sendForApproval}
+                                disabled={approvalList && (approvalList.length === 0 || isFinalApprover) ? true : false}
+                            >
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
@@ -348,7 +354,7 @@ function RMApproval(props) {
                                     domLayout='autoHeight'
                                     rowData={approvalList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={defaultPageSize}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -386,14 +392,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
-
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                 <div className="text-right pb-3">
                                     <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>

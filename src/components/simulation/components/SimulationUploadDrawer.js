@@ -6,7 +6,6 @@ import { Container, Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
-import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
@@ -30,10 +29,6 @@ class SimulationUploadDrawer extends Component {
         }
     }
 
-    // specify upload params and url for your files
-    getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post' }
-    }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
 
@@ -333,10 +328,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -361,10 +356,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -600,6 +595,7 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'SimulationUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(SimulationUploadDrawer));
 
 // export default SimulationUploadDrawer;

@@ -2,12 +2,13 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { clampingTime, feedByMin, totalMachineTime } from './CommonFormula'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { debounce } from 'lodash'
 
 function Drilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -48,6 +49,7 @@ function Drilling(props) {
   const { calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
+  const [isDisable, setIsDisable] = useState(false)
 
 
   const onSpeedChange = () => {
@@ -78,8 +80,8 @@ function Drilling(props) {
     setValue('clampingValue', checkForDecimalAndNull(clampingValue, trim))
     setTotalMachiningTime(totalMachiningTime)
   }
-  const onSubmit = (value) => {
-
+  const onSubmit = debounce(handleSubmit((value) => {
+    setIsDisable(true)
     let obj = {}
     obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -113,13 +115,14 @@ function Drilling(props) {
     obj.MachineRate = props.calculatorData.MHR
     obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
-  }
+  }), 500);
   const onCancel = () => {
 
     calculateMachineTime('0.00')
@@ -128,7 +131,7 @@ function Drilling(props) {
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form">
             <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
@@ -137,7 +140,7 @@ function Drilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Drilling Diameter(mm)`}
                         name={'turningDiameter'}
                         Controller={Controller}
@@ -162,7 +165,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Turning/Drilling Length(mm)`}
                         name={'turningLength'}
                         Controller={Controller}
@@ -187,7 +190,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
                         Controller={Controller}
@@ -212,7 +215,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
                         Controller={Controller}
@@ -245,7 +248,7 @@ function Drilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
                         Controller={Controller}
@@ -270,7 +273,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
                         Controller={Controller}
@@ -286,7 +289,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
                         Controller={Controller}
@@ -310,7 +313,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
                         Controller={Controller}
@@ -334,7 +337,7 @@ function Drilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
                         Controller={Controller}
@@ -350,7 +353,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
                         Controller={Controller}
@@ -375,7 +378,7 @@ function Drilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
                         Controller={Controller}
@@ -403,7 +406,11 @@ function Drilling(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn" >
                 <div className={'cancel-icon'}></div> CANCEL </button>
-              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false} >
+              <button type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
+                className="btn-primary save-btn"
+              >
                 <div className={'save-icon'}></div> {'SAVE'}
               </button>
             </div>

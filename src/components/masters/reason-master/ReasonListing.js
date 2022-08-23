@@ -7,12 +7,12 @@ import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { ADDITIONAL_MASTERS, REASON, Reasonmaster } from '../../../config/constants';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
@@ -24,8 +24,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
+import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -44,6 +44,7 @@ class ReasonListing extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
+      ActivateAccessibility: false,
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
@@ -52,7 +53,9 @@ class ReasonListing extends Component {
       isLoader: false,
       renderState: true,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false,
+      showPopupToggle: false
     }
   }
 
@@ -62,7 +65,7 @@ class ReasonListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
       this.getTableListData()
     }, 2000);
@@ -91,6 +94,7 @@ class ReasonListing extends Component {
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
           DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+          ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
         })
       }
 
@@ -112,14 +116,14 @@ class ReasonListing extends Component {
   getTableListData = () => {
     this.setState({ isLoader: true })
     this.props.getAllReasonAPI(true, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data }, () => this.setState({ renderState: !this.state.renderState }))
+        this.setState({ tableData: Data, isLoader: false }, () => this.setState({ renderState: !this.state.renderState }))
       } else {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       }
     })
   }
@@ -128,8 +132,13 @@ class ReasonListing extends Component {
    * @method editItemDetails
    * @description confirm edit item
    */
-  editItemDetails = (Id) => {
-    this.setState({ isEditFlag: true, isOpenDrawer: true, ID: Id })
+  editItemDetails = (cellValue, rowData) => {
+    if (rowData.IsActive === false) {
+      Toaster.warning('You can not edit inactive reason')
+    }
+    else {
+      this.setState({ isEditFlag: true, isOpenDrawer: true, ID: rowData.ReasonId })
+    }
   }
 
   /**
@@ -159,6 +168,10 @@ class ReasonListing extends Component {
   }
   closePopUp = () => {
     this.setState({ showPopup: false })
+    this.setState({ showPopupToggle: false })
+  }
+  onPopupConfirmToggle = () => {
+    this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
   }
   /**
   * @method buttonFormatter
@@ -171,7 +184,7 @@ class ReasonListing extends Component {
     const { EditAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
       </>
     )
@@ -184,18 +197,24 @@ class ReasonListing extends Component {
   statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const { ActivateAccessibility } = this.state;
+    if (rowData.UserId === loggedInUserId()) return null;
+    showTitleForActiveToggle(props?.rowIndex)
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
+          {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}
+            disabled={!ActivateAccessibility}
             background="#ff6600"
             onColor="#4DC771"
             onHandleColor="#ffffff"
             offColor="#FC5774"
             id="normal-switch"
             height={24}
+            className={cellValue ? "active-switch" : "inactive-switch"}
           />
         </label>
       </>
@@ -208,9 +227,12 @@ class ReasonListing extends Component {
       LoggedInUserId: loggedInUserId(),
       IsActive: !cell, //Status of the Reason.
     }
-    this.props.activeInactiveReasonStatus(data, (res) => {
+    this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
+  }
+  confirmDeactivateItem = (data, cell) => {
+    this.props.activeInactiveReasonStatus(data, res => {
       if (res && res.data && res.data.Result) {
-        if (cell == true) {
+        if (cell === true) {
           Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
           Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
@@ -218,8 +240,8 @@ class ReasonListing extends Component {
         this.getTableListData()
       }
     })
+    this.setState({ showPopupToggle: false })
   }
-
   /**
    * @method indexFormatter
    * @description Renders serial number
@@ -249,7 +271,7 @@ class ReasonListing extends Component {
     this.setState({ isOpenDrawer: true })
   }
 
-  closeVendorDrawer = (e = '') => {
+  closeVendorDrawer = (e = '', type) => {
     this.setState(
       {
         isOpenDrawer: false,
@@ -257,9 +279,13 @@ class ReasonListing extends Component {
         ID: '',
       },
       () => {
-        this.getTableListData()
+        if (type === 'submit') {
+          this.getTableListData()
+        }
+
       },
     )
+
   }
 
   onGridReady = (params) => {
@@ -270,12 +296,16 @@ class ReasonListing extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
-    let tempArr = this.props.reasonDataList && this.props.reasonDataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.reasonDataList ? this.props.reasonDataList : [])
     return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -291,6 +321,11 @@ class ReasonListing extends Component {
       } else if (item.Technology === '-') {
         item.Technology = ' '
       }
+      // if (item.IsActive === true) {
+      //   item.IsActive = 'Active'
+      // } else if (item.IsActive === false) {
+      //   item.IsActive = 'In Active'
+      // }
       return item
     })
     return (
@@ -306,6 +341,7 @@ class ReasonListing extends Component {
 
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -317,25 +353,21 @@ class ReasonListing extends Component {
    */
   render() {
     const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
 
     }
-
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -393,7 +425,7 @@ class ReasonListing extends Component {
               </div>
             </Col>
           </Row>
-          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
@@ -405,31 +437,31 @@ class ReasonListing extends Component {
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
-                paginationPageSize={10}
+                paginationPageSize={defaultPageSize}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
+                  imagClass: 'imagClass pt-3'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
                 <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                 <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
-              <div className="paging-container d-inline-block float-right">
-                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                  <option value="10" selected={true}>10</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-              </div>
+              {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
             </div>
           </div>
 
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`} />
+          }
+          {
+            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.REASON_DEACTIVE_ALERT : MESSAGES.REASON_ACTIVE_ALERT}`} />
           }
         </div>
         {isOpenDrawer && (
@@ -475,5 +507,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(ReasonListing),
 )

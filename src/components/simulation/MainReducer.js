@@ -1,9 +1,8 @@
 import SimulationHistoryReducer from './reducers/History'
 import SimulationReducer from './reducers/Simulation'
 
-
-
-export default {
+const mainReducer = {
     history: SimulationHistoryReducer,
     simulation: SimulationReducer
 }
+export default mainReducer

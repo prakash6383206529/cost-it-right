@@ -2,20 +2,12 @@ import React from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { yupResolver } from '@hookform/resolvers';
-import * as yup from "yup";
-
-const schema = yup.object().shape({
-    quantity: yup.string().matches(/^[0-9][0-9]*$/, 'Please enter valid number').required('this field is required'),
-    //firstName: yup.string().matches(/^[A-Za-z ]*$/, 'Please enter valid name').required('this field is required'),
-});
-
+import { NumberFieldHookForm } from '../../layout/HookFormInputs';
+// import { yupResolver } from '@hookform/resolvers';
 
 export default function VishualAdDrawer(props) {
-    const { partType } = props
 
-    const { register, handleSubmit, watch, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, formState: { errors }, control } = useForm({
         // resolver: yupResolver(schema),
         mode: 'onChange',
         reValidateMode: 'onChange',

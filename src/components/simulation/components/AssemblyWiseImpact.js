@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import 'react-input-range/lib/css/index.css'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -14,6 +14,7 @@ import { checkForDecimalAndNull } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -25,7 +26,6 @@ function AssemblyWiseImpact(props) {
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
-    const [showTableData, setShowTableData] = useState(false);
     const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const dispatch = useDispatch();
@@ -54,16 +54,7 @@ function AssemblyWiseImpact(props) {
                 })
             }
             setCount(1)
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-
-                if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                    setShowTableData(true)
-                }
-                else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                    setShowTableData(false)
-                }
-            }))
-
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
         }
         setloader(false)
 
@@ -120,8 +111,7 @@ function AssemblyWiseImpact(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const resetState = () => {
@@ -182,7 +172,7 @@ function AssemblyWiseImpact(props) {
                                 domLayout='autoHeight'
                                 rowData={simulationAssemblyList}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={defaultPageSize}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -201,13 +191,7 @@ function AssemblyWiseImpact(props) {
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </Col>

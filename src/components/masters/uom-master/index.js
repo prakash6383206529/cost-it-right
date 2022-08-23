@@ -5,7 +5,7 @@ import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
@@ -22,6 +22,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PaginationWrapper } from '../../common/commonPagination';
+import { displayUOM } from '../../../helper/util';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,7 +39,6 @@ class UOMMaster extends Component {
       isEditFlag: false,
       uomId: '',
       dataList: [],
-
       ViewAccessibility: false,
       AddAccessibility: false,
       EditAccessibility: false,
@@ -50,8 +51,8 @@ class UOMMaster extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader:false
-
+      isLoader: false,
+      selectedRowData: false
     }
   }
 
@@ -65,9 +66,9 @@ class UOMMaster extends Component {
   }
 
   getUOMDataList = () => {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.getUnitOfMeasurementAPI(res => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
         this.setState({ dataList: Data })
@@ -187,7 +188,6 @@ class UOMMaster extends Component {
   buttonFormatter = (props) => {
     const { EditAccessibility } = this.state;
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     return (
       <>
@@ -197,10 +197,13 @@ class UOMMaster extends Component {
     )
   }
 
-  // unitFormatter = (cell, row, enumObject, rowIndex) => {
-  //   return 
-  // }
-
+  unitSymbol = (props) => {
+    const cellValue = props?.value;
+    return (
+      <div>{displayUOM(cellValue)}
+      </div>
+    )
+  }
   /**
   * @method statusButtonFormatter
   * @description Renders buttons
@@ -256,12 +259,16 @@ class UOMMaster extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
-    let tempArr = this.state.dataList && this.state.dataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.unitOfMeasurementList ? this.props.unitOfMeasurementList : [])
     return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -289,24 +296,9 @@ class UOMMaster extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-  }
-
-
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
-  }
-
-  resetState() {
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-  }
-
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
   }
 
   /**
@@ -330,15 +322,24 @@ class UOMMaster extends Component {
 
     };
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
-
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
+      unitSymbol: this.unitSymbol
     };
 
     return (
@@ -388,7 +389,7 @@ class UOMMaster extends Component {
           <Row>
             <Col>
 
-              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <=0 ?"overlay-contain": ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
@@ -400,27 +401,23 @@ class UOMMaster extends Component {
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
-                      imagClass:'imagClass'
+                      imagClass: 'imagClass'
                     }}
+                    rowSelection={'multiple'}
+                    onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
-                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol"></AgGridColumn>
+                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
                     <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
                   </AgGridReact>
-                  <div className="paging-container d-inline-block float-right">
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
+                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
               </div>
 

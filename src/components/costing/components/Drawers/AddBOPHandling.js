@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
@@ -14,6 +14,7 @@ import { isDataChange } from '../../actions/Costing';
 function AddBOPHandling(props) {
   const { item } = props
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const dispatch = useDispatch()
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
@@ -30,9 +31,9 @@ function AddBOPHandling(props) {
       }
       return BOPSum
     })
-    setValue('BOPCost', BOPSum)
+    setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
     let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
-    setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability) : BOPSum)
+    setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
     setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
     setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
   }, [])
@@ -79,17 +80,14 @@ function AddBOPHandling(props) {
 
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
+      <Drawer anchor={props.anchor} open={props.isOpen}>
         < div className={`ag-grid-react`}>
           <Container className="add-bop-drawer">
             <div className={'drawer-wrapper'}>
-
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Insert Handling Charge'}</h3>
+                    <h3>{'Add Insert Handling Charge'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -97,9 +95,7 @@ function AddBOPHandling(props) {
                   </div>
                 </Col>
               </Row>
-
-              < form onSubmit={() => { }} noValidate >
-
+              <form onSubmit={() => { }} noValidate >
                 <div className="filter-row">
                   <Row>
                     <Col md="12">
@@ -119,7 +115,6 @@ function AddBOPHandling(props) {
                         disabled={true}
                       />
                     </Col>
-
                     <Col md="12" >
                       <TextFieldHookForm
                         label="Percentage"
@@ -147,11 +142,9 @@ function AddBOPHandling(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.BOPHandlingPercentage}
-                        disabled={CostingViewMode ? true : false}
+                        disabled={(CostingViewMode || IsLocked) ? true : false}
                       />
                     </Col>
-
-
                     <Col md="12">
                       <TextFieldHookForm
                         label="Handling Charges"
@@ -169,22 +162,14 @@ function AddBOPHandling(props) {
                         disabled={true}
                       />
                     </Col>
-
-
-
-
-
                   </Row>
                 </div>
-
               </form >
-
-
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn">
                   <button
                     type={'button'}
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                     className="submit-button mr5 save-btn"
                     onClick={saveHandleCharge} >
                     <div className={"save-icon"}></div>
@@ -199,7 +184,6 @@ function AddBOPHandling(props) {
                   </button>
                 </div>
               </Row>
-
             </div>
           </Container>
         </div>

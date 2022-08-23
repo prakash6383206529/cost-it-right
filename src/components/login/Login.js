@@ -86,7 +86,7 @@ class Login extends Component {
 
         })
         departmentList = dept.join(',')
-        reactLocalStorage.setObject("userDetail", userDetail);
+        localStorage.setItem("userDetail", JSON.stringify(userDetail))
         reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
           this.setState({ inputLoader: false })
@@ -178,7 +178,7 @@ class Login extends Component {
                   </div>
 
                   <div className="text-center p-relative">
-                    {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader" />}
+                    {this.state.inputLoader && <LoaderCustom customClass="login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}

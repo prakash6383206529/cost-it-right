@@ -3,7 +3,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import "./formInputs.css";
-import { Children } from "react";
+import { SPACEBAR } from "../../config/constants";
 
 /*
 @method: renderLoginTextInputField
@@ -227,6 +227,7 @@ export function renderPasswordInputField(field) {
 */
 export function renderMultiSelectField(field) {
   const {
+    input,
     isTouched,
     meta: { touched, error, active },
   } = field;
@@ -248,8 +249,9 @@ export function renderMultiSelectField(field) {
           ""
         )}
       </label>
-      <div className={inputbox} onClick={field.onTouched}>
+      <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
         <Select
+          {...input}
           className={InputClassName}
           getOptionLabel={optionLabel}
           getOptionValue={optionValue}
@@ -261,6 +263,9 @@ export function renderMultiSelectField(field) {
           closeMenuOnSelect="false"
           onChange={field.selectionChanged}
           placeholder={placeholder}
+          onKeyDown={(onKeyDown) => {
+            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+          }}
         />
       </div>
       <div className="text-help mb-2">
@@ -453,7 +458,7 @@ export function renderNumberInputField(field) {
       <div className="input-group">
         <input
           {...others}
-          type="number"
+          type={'number'}
           className={InputClassName}
           maxLength={field.maxLength}
           value={field.Value}
@@ -674,10 +679,10 @@ export const searchableSelect = ({
   multi,
   className,
   children,
+  onKeyDown
 }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = disabled && disabled === true ? true : false;
-  //let isClear = (isClearable === undefined) ? true : false;
   return (
     <div className="w-100 form-group-searchable-select">
       {label && (
@@ -691,18 +696,21 @@ export const searchableSelect = ({
         </label>
       )}
       <Select
+        {...input}
         isClearable={false}
         options={options}
         onChange={handleChangeDescription}
-        //onCreateOption={handleCreate}
         value={valueDescription}
         isDisabled={isDisable}
         placeholder={placeholder}
         menuPlacement={menuPlacement}
         className={"searchable"}
+        onKeyDown={(onKeyDown) => {
+          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+        }}
       />
       {children}
-      <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2 mb-2">{touched && error ? error : ""}</div>
     </div>
   );
 };
@@ -723,6 +731,7 @@ export const RFReactSelect = ({
   meta: { touched, error },
   multi,
   className,
+  onKeyDown
 }) => {
   const { name, value, required, onBlur, onChange, onFocus } = input;
   const transformedValue = transformValue(value, options, multi, valueKey);
@@ -763,6 +772,9 @@ export const RFReactSelect = ({
         onBlur={() => onBlur(value)}
         onFocus={onFocus}
         className={className}
+        onKeyDown={(onKeyDown) => {
+          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+        }}
       />
       {touched && error}
     </div>

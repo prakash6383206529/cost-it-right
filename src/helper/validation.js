@@ -13,9 +13,14 @@ export const maxLength = max => value =>
 export const minValue = min => value =>
     value && value < min ? `Min value must be ${min}.` : undefined;
 
+//THIS IS FOR MAX VALUE
+export const maxValue = max => value =>
+    value && value > max ? `Maximum no of days should be ${max}.` : undefined;
+
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
+export const maxValue366 = maxValue(366)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -39,8 +44,9 @@ export const maxLength18 = maxLength(18);
 export const maxLength12 = maxLength(12);
 export const maxLength25 = maxLength(25);
 export const maxLength20 = maxLength(20);
-export const maxLength26 = maxLength(25);
+export const maxLength26 = maxLength(26);
 export const maxLength30 = maxLength(30);
+export const maxLength32 = maxLength(32);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
 export const maxLength70 = maxLength(70);
@@ -109,8 +115,10 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-
-    return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
+    return value && (value.startsWith(' ') || value.endsWith(' ')) ? 'Text should not start and end with space.' : undefined;
+}
+export const checkSpacesInString = value => {
+    return value && value.includes('  ') ? 'The field should not contain more than one space.' : undefined;
 }
 
 export const number = value =>
@@ -124,6 +132,10 @@ export const postiveNumber = value =>
 export const positiveAndDecimalNumber = value =>
     value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)
         ? 'This field is invalid.' : undefined;
+
+export const decimalNumberLimit = value =>
+    value && !/^\d{0,6}(\.\d{0,4})?$/.test(value)
+        ? 'Maximum length for integer is 6 and for decimal is 4' : undefined;
 
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
@@ -197,22 +209,22 @@ export const decimalNumber13 = value =>
 //     : undefined;
 
 export const decimalLength = max => value =>
-    value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{1,2})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength3 = max => value =>
-    value && !/^[0-9]\d{0,15}(\.\d{1,3})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,3})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength4 = max => value =>
-    value && !/^[0-9]\d{0,15}(\.\d{1,4})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,4})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength6 = max => value =>
-    value && !/^[0-9]\d{0,12}(\.\d{1,6})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,6})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 export const decimalLength2 = decimalLength(2);
@@ -355,4 +367,7 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     return !IsSelected;
 }
 
-
+export const strongPassword = value =>
+    value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
+        ? ""
+        : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';

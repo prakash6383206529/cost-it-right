@@ -102,19 +102,6 @@ function ViewDrawer(props) {
                   })}
               </div>
             }
-            {/* </Row> */}
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={toggleDrawer}
-                >
-                  <div className={'cancel-icon'}></div>{' '}
-                  {'Cancel'}
-                </button>
-              </div>
-            </Row>
           </div>
         </div>
         {/* </Container> */}

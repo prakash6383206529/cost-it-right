@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -19,21 +19,29 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
+import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, setSelectionForListingMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [selectedRowData, setSelectedRowData] = useState([]);
-    const [tableData, setTableData] = useState([])
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [maxDate, setMaxDate] = useState('');
+    const [titleObj, setTitleObj] = useState({})
+
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -59,40 +67,17 @@ function OperationSTSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
     useEffect(() => {
         if (list && list.length >= 0) {
             gridRef.current.api.sizeColumnsToFit();
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
-    const oldCPFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let valueShow
-        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        if (lastRevision) {
-            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
-                valueShow = row.OldSurfaceTreatmentRatePerUOM
-            }
-            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
-                valueShow = row.OldOperationBasicRate
-            }
-        } else {
-            valueShow = row.OldOperationRate
-        }
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        valueShow :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
-                }
 
-            </>
-        )
-    }
 
     const newRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -103,8 +88,7 @@ function OperationSTSimulation(props) {
         if (lastRevision) {
             if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
                 valueShow = row.NewSurfaceTreatmentRatePerUOM
-            }
-            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+            } else if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
                 valueShow = row.NewOperationBasicRate
             }
         } else {
@@ -121,6 +105,34 @@ function OperationSTSimulation(props) {
             </>
         )
     }
+
+    const oldRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let valueShow
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.OldSurfaceTreatmentRatePerUOM
+            } else if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.OldOperationBasicRate
+            }
+        } else {
+            valueShow = row.OldOperationRate
+        }
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        valueShow :
+                        <span>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                }
+
+            </>
+        )
+    }
+
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -179,13 +191,13 @@ function OperationSTSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
+        params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
 
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
 
@@ -208,25 +220,32 @@ function OperationSTSimulation(props) {
         return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
         newRateFormatter: newRateFormatter,
-        oldCPFormatter: oldCPFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
-        OldcostFormatter: OldcostFormatter
+        OldcostFormatter: OldcostFormatter,
+        oldRateFormatter: oldRateFormatter
     };
 
-    const onRowSelect = () => {
-        var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
-    }
+
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
-
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
         let Count = 0
         let tempData = list
         let arr = []
@@ -268,7 +287,7 @@ function OperationSTSimulation(props) {
         })
 
         obj.SimulationIds = tokenForMultiSimulation
-
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
@@ -307,11 +326,12 @@ function OperationSTSimulation(props) {
                                             isbulkUpload &&
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -325,11 +345,12 @@ function OperationSTSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithoutChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -354,7 +375,7 @@ function OperationSTSimulation(props) {
                                                 // columnDefs={c}
                                                 rowData={list}
                                                 pagination={true}
-                                                paginationPageSize={10}
+                                                paginationPageSize={defaultPageSize}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 // loadingOverlayComponent={'customLoadingOverlay'}
@@ -365,8 +386,7 @@ function OperationSTSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
-                                                // frameworkComponents={frameworkComponents}
-                                                onSelectionChanged={onRowSelect}
+                                            // frameworkComponents={frameworkComponents}
                                             >
                                                 {!isImpactedMaster && <>
                                                     <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
@@ -378,21 +398,14 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
-
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
 
@@ -401,7 +414,26 @@ function OperationSTSimulation(props) {
                             {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date(maxDate)}
+                                                dropdownMode="select"
+                                                placeholderText="Select effective date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+                                            />
+                                            {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                        </div>
+
                                         <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}
@@ -425,11 +457,11 @@ function OperationSTSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

@@ -14,9 +14,9 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange,
 } from '../../actions/Costing';
-import { checkForNull, loggedInUserId } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
@@ -24,13 +24,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import WarningMessage from '../../../common/WarningMessage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
+    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -138,9 +139,9 @@ function CostingHeaderTabs(props) {
           callAssemblyAPi(3)
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
+          dispatch(isOverheadProfitDataChange(false))
         }))
       } else {
-
         dispatch(saveComponentOverheadProfitTab(reqData, res => {
           callAssemblyAPi(3)
           dispatch(setComponentOverheadItemData({}, () => { }))
@@ -262,13 +263,14 @@ function CostingHeaderTabs(props) {
   * @description toggling the tabs
   */
   const toggle = (tab) => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+
     if (activeTab !== tab) {
       setActiveTab(tab);
 
       if (tab === '1') {
         setIsCalledAPI(true)
       }
-
     }
   }
 
@@ -293,10 +295,7 @@ function CostingHeaderTabs(props) {
     setIsOpenViewHirarchy(false)
   }
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
+  const warningMessage = <span className='part-flow'>Child Parts (<span title={messageForAssembly}>{messageForAssembly}</span>) costing is under approval flow</span>
   return (
     <>
       <div className="user-page p-0">
@@ -335,10 +334,14 @@ function CostingHeaderTabs(props) {
               <button
                 type="button"
                 onClick={() => setIsOpenViewHirarchy(true)}
-                class="btn-primary btn btn-lg mt-2">
+                class="btn-primary btn btn-lg mt-2 float-right">
                 <div className="hirarchy-icon"></div>
                 <span>View BOM</span>
               </button>
+              {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
+              {messageForAssembly !== '' && <div className='mb-n2'>
+                <WarningMessage message={warningMessage} />
+              </div>}
             </Col>}
         </Row>
 

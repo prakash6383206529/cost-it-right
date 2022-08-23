@@ -1,5 +1,6 @@
 import React from 'react';
 import { defaultPageSize } from '../../config/constants'
+import { getConfigurationKey } from '../../helper';
 export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
@@ -27,9 +28,16 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
                 thisReference.setState({ warningMessage: false })
                 for (var prop in thisReference.state.floatingFilterData) {
 
-                    if (prop !== "DepartmentCode") {
+                    if (thisReference.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+
+                        if (prop !== "DepartmentName") {
+                            thisReference.state.floatingFilterData[prop] = ""
+                        }
+
+                    } else {
                         thisReference.state.floatingFilterData[prop] = ""
                     }
+
                 }
                 thisReference.setState({ floatingFilterData: thisReference.state.floatingFilterData })
             }
@@ -47,7 +55,7 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
 export const onSearch = (gridOptions, thisReference, master, globalTake) => {
 
-    thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
+    thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
 
     switch (master) {
@@ -80,12 +88,16 @@ export const resetState = (gridOptions, thisReference, master) => {
     var obj = thisReference.state.floatingFilterData
 
     for (var prop in obj) {
-        if (prop !== "DepartmentCode") {
+        if (thisReference.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+            if (prop !== "DepartmentName") {
+                obj[prop] = ""
+            }
+        } else {
             obj[prop] = ""
         }
     }
 
-    thisReference.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
+    thisReference.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 })
 
     switch (master) {
         case "BOP":
@@ -113,9 +125,14 @@ export const resetState = (gridOptions, thisReference, master) => {
 
 
 export const onBtPrevious = (thisReference, master) => {
+
+    if (thisReference.state.pageNo === 1) {
+        return false
+    }
+
     if (thisReference.state.currentRowIndex >= 10) {
 
-        thisReference.setState({ pageNo: thisReference.state.pageNo - 1 })
+        thisReference.setState({ pageNo: thisReference.state.pageNo - 1, pageNoNew: thisReference.state.pageNo - 1 })
         const previousNo = thisReference.state.currentRowIndex - 10;
 
         switch (master) {
@@ -157,7 +174,7 @@ export const onBtNext = (thisReference, master) => {
 
     if (thisReference.state.currentRowIndex < (thisReference.state.totalRecordCount - 10)) {
 
-        thisReference.setState({ pageNo: thisReference.state.pageNo + 1 })
+        thisReference.setState({ pageNo: thisReference.state.pageNo + 1, pageNoNew: thisReference.state.pageNo + 1 })
         const nextNo = thisReference.state.currentRowIndex + 10;
 
         switch (master) {
@@ -215,7 +232,7 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
         }
 
 
-        thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false }, globalTake: 10 })
+        thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false }, globalTake: 10, pageNo: thisReference.state.pageNoNew })
 
     }
     else if (Number(newPageSize) === 50) {
@@ -223,18 +240,48 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
         switch (master) {
             case "BOP":
                 thisReference.getDataList("", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
+                    thisReference.getDataList("", 0, "", "", 0, 50, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Machine":
                 thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+
+                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
+                    thisReference.getDataList("", 0, "", 0, "", "", 0, 50, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+
+                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
+                    thisReference.getTableListData(null, null, null, null, 0, 50, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Part":
                 thisReference.ApiActionCreator(currentRowIndex, 50, thisReference.state.floatingFilterData, true)
+
+                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
+                    thisReference.ApiActionCreator(0, 50, thisReference.state.floatingFilterData, true)
+                }
                 break;
             case "Vendor":
                 thisReference.getTableListData(currentRowIndex, '', "", "", 50, thisReference.state.floatingFilterData, true)
+
+                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
+                    thisReference.getTableListData(0, '', "", "", 50, thisReference.state.floatingFilterData, true)
+                }
                 break;
 
             default:
@@ -242,24 +289,53 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
 
 
         thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false }, globalTake: 50 })
+
+        setTimeout(() => {
+            thisReference.setState({ warningMessage: false })
+        }, 1000);
     }
     else if (Number(newPageSize) === 100) {
 
         switch (master) {
             case "BOP":
                 thisReference.getDataList("", 0, "", "", currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 100) })
+                    thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Machine":
                 thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 100) })
+                    thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 100) })
+                    thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
+                }
                 break;
             case "Part":
                 thisReference.ApiActionCreator(currentRowIndex, 100, thisReference.state.floatingFilterData, true)
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 100) })
+                    thisReference.ApiActionCreator(0, 100, thisReference.state.floatingFilterData, true)
+                }
                 break;
             case "Vendor":
                 thisReference.getTableListData(currentRowIndex, '', "", "", 100, thisReference.state.floatingFilterData, true)
+
+                if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+                    thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 100) })
+                    thisReference.getTableListData(0, '', "", "", 100, thisReference.state.floatingFilterData, true)
+                }
                 break;
 
             default:
@@ -267,6 +343,10 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
 
 
         thisReference.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true }, globalTake: 100 })
+
+        setTimeout(() => {
+            thisReference.setState({ warningMessage: false })
+        }, 1600);
 
     }
     thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));

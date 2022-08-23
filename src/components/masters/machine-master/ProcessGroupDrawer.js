@@ -1,7 +1,7 @@
 
 import { Drawer } from '@material-ui/core';
 import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import { ProcessGroup } from '../masterUtil';
 
 function ProcessGroupDrawer(props) {
@@ -20,13 +20,13 @@ function ProcessGroupDrawer(props) {
         //         </Container>
         //     </Drawer>
         // </div>
-        <Drawer className="top-drawer approval-workflow-drawer" anchor={props.anchor} open={props.isOpen} >
+        <Drawer className="top-drawer process-group-drawer" anchor={props.anchor} open={props.isOpen} >
             {/* <Container > */}
             <div className="container-fluid ">
                 <div className={'drawer-wrapper drawer-full-width'}>
 
                     <Row className="drawer-heading sticky-top-0">
-                        <Col>
+                        <Col className='px-0'>
                             <div className={'header-wrapper left'}>
                                 <h3>{`Process Group`}</h3>
                             </div>
@@ -43,7 +43,7 @@ function ProcessGroupDrawer(props) {
 
                     {/* </Row> */}
                     <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn pr-0">
                             <button
                                 type={'button'}
                                 className="reset mr15 cancel-btn"

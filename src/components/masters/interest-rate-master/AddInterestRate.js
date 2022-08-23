@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
-import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
@@ -18,8 +18,9 @@ import { ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import { SPACEBAR } from '../../../config/constants';
+import { onFocus } from '../../../helper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -48,6 +49,8 @@ class AddInterestRate extends Component {
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
 
     }
   }
@@ -56,8 +59,8 @@ class AddInterestRate extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getVendorListByVendorType(true, () => { })
-
+    if (!(this.props.data.isEditFlag || this.state.isViewMode))
+      this.props.getVendorListByVendorType(true, () => { })
   }
 
   /**
@@ -65,10 +68,17 @@ class AddInterestRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.props.getICCAppliSelectList(() => { })
-    this.props.getPaymentTermsAppliSelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+    }
     this.getDetail()
+    if (!this.state.isViewMode) {
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+    }
+
   }
 
   componentDidUpdate(prevProps) {
@@ -96,6 +106,7 @@ class AddInterestRate extends Component {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -103,6 +114,7 @@ class AddInterestRate extends Component {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -110,14 +122,15 @@ class AddInterestRate extends Component {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
     if (label === 'plant') {
       plantSelectList &&
         plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
+          if (item.PlantId === '0') return false
+          temp.push({ label: item.PlantName, value: item.PlantId })
           return null
         })
       return temp
@@ -257,21 +270,17 @@ class AddInterestRate extends Component {
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
-
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorIdRef)
+            const { paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
-
             this.setState({
               isEditFlag: true,
               IsVendor: Data.IsVendor,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              plant: Data.PlantName !== undefined ? { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data.PlantId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -290,7 +299,7 @@ class AddInterestRate extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -298,7 +307,7 @@ class AddInterestRate extends Component {
       isEditFlag: false,
     })
     this.props.getInterestRateData('', () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   handleKeyDown = function (e) {
@@ -315,7 +324,7 @@ class AddInterestRate extends Component {
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
         this.setState({ showPopup: false })
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -348,7 +357,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermPercent === values.PaymentTermPercent &&
         Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false;
       }
       else {
@@ -419,7 +428,7 @@ class AddInterestRate extends Component {
         if (res?.data?.Result) {
           // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
           Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
-          this.cancel();
+          this.cancel('submit');
 
         }
       });
@@ -476,11 +485,7 @@ class AddInterestRate extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
-                      <h1>
-                        {this.state.isEditFlag
-                          ? "Update Interest Rate"
-                          : "Add Interest Rate"}
-                      </h1>
+                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest Rate</h1>
                     </div>
                   </div>
                 </div>
@@ -514,46 +519,52 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
-                      {this.state.IsVendor && (
-                        <>
+                      <>
+                        {this.state.IsVendor && (
                           <Col md="3" className='mb-4'>
 
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-col`} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
+                            <div className='p-relative'>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
+                              />
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                            </div>
                           </Col>
-                          <Col md="3" >
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label={"Plant"}
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("plant")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.plant == null ||
-                                  this.state.plant.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handlePlant}
-                              valueDescription={this.state.plant}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
-                        </>
-                      )}
+                        )}
+                        <Col md="3" >
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label={"Plant"}
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.plant == null ||
+                                this.state.plant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handlePlant}
+                            valueDescription={this.state.plant}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      </>
                     </Row>
 
                     <Row>
@@ -566,7 +577,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="ICC Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
                           validate={
                             this.state.ICCApplicability == null ||
@@ -590,10 +601,10 @@ class AddInterestRate extends Component {
                             label={`Annual ICC (%)`}
                             name={"ICCPercent"}
                             type="text"
-                            placeholder={"Enter"}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                             max={100}
-                            component={renderText}
+                            component={renderNumberInputField}
                             required={true}
                             onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
                             disabled={isViewMode}
@@ -615,7 +626,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="Payment Terms Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("PaymentTerms")}
                           validate={
                             this.state.PaymentTermsApplicability == null ||
@@ -642,9 +653,9 @@ class AddInterestRate extends Component {
                               label={`Repayment Period (Days)`}
                               name={"RepaymentPeriod"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[postiveNumber, maxLength10]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
@@ -657,9 +668,9 @@ class AddInterestRate extends Component {
                               label={`Payment Term (%)`}
                               name={"PaymentTermPercent"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthThree]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               max={100}
                               required={false}
                               onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
@@ -708,19 +719,21 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
+                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
+                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>
                   </div>
 
-                  <Row className="sf-btn-footer no-gutters justify-content-between">
+                  <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
                         type={"button"}
                         className=" mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -797,5 +810,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddInterestRate));
 

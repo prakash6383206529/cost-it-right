@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD } from '../../../config/constants';
-import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, } from '../../../config/constants';
+import { getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
-import { getPlantSelectListByType } from '../../../actions/Common';
-import { ZBC } from '../../../config/constants';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
+import { PaginationWrapper } from '../../common/commonPagination';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -24,8 +22,7 @@ const gridOptions = {};
 function VerifySimulation(props) {
     const { cancelVerifyPage, token } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const [selectedIds, setSelectedIds] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
@@ -45,6 +42,11 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
+    const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
+
+    const gridRef = useRef();
+
+    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -53,8 +55,7 @@ function VerifySimulation(props) {
         if (token) {
             verifyCostingList()
         }
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
+
     }, [token])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
@@ -74,7 +75,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -92,7 +93,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -110,6 +111,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -127,6 +129,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -143,6 +146,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -159,6 +163,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -175,6 +180,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -214,18 +220,30 @@ function VerifySimulation(props) {
             //         }
             //     }))
             //     break;
+
+            case Number(EXCHNAGERATE):
+
+                dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationExchangeRateImpactedCostings.length === 0) {
+                            Toaster.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
+                    }
+                }))
+                break;
             default:
                 break;
         }
-        // }
-
-
-
-
     }
-
-
-    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     const newBRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -265,7 +283,6 @@ function VerifySimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-
     }
 
     const renderVendor = (props) => {
@@ -280,11 +297,15 @@ function VerifySimulation(props) {
         return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
+    const newExchangeRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
-        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
     }
 
@@ -301,12 +322,17 @@ function VerifySimulation(props) {
             if (node.rowIndex !== rowIndex) {
                 if (node.data.CostingNumber === costingNumber) {
                     node.setSelected(type);
-
                 }
             }
         });
         setSelectedRowData(selectedRows)
     }
+
+    useEffect(() => {
+        if (verifyList && verifyList.length > 0) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [verifyList])
 
     const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
@@ -317,6 +343,7 @@ function VerifySimulation(props) {
         obj.SimulationId = simulationId
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
+
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
@@ -351,14 +378,28 @@ function VerifySimulation(props) {
                 })
                 break;
 
+            case Number(EXCHNAGERATE):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+
+                break;
+
             default:
                 break;
         }
 
-
-        obj.RunSimualtionCostingInfo = tempArr
-        setObj(obj)
-        setSimulationDrawer(true)
+        if (!isExchangeRate) {
+            obj.RunSimualtionCostingInfo = tempArr
+            setObj(obj)
+            setSimulationDrawer(true)
+        }
 
     }, 500)
 
@@ -390,12 +431,11 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -403,8 +443,11 @@ function VerifySimulation(props) {
     }
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridApi.setQuickFilter(null);
+        document.getElementById("filter-text-box").value = "";
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
 
     }
 
@@ -419,7 +462,8 @@ function VerifySimulation(props) {
         newSRFormatter: newSRFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        poPriceFormatter: poPriceFormatter
+        poPriceFormatter: poPriceFormatter,
+        newExchangeRateFormatter: newExchangeRateFormatter
     };
 
     return (
@@ -430,7 +474,7 @@ function VerifySimulation(props) {
                 <>
                     <Row>
                         <Col sm="12">
-                            <h1 class="mb-0">Token No:{tokenNo}</h1>
+                            <h3 class="mb-0">Token No:{tokenNo}</h3>
                         </Col>
                     </Row>
                     <Row className="filter-row-large pt-4 blue-before">
@@ -445,117 +489,84 @@ function VerifySimulation(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <Col>
-                                <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-grid-header">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-                                        </div>
-                                        <div
-                                            className="ag-theme-material">
-                                            <AgGridReact
-                                                defaultColDef={defaultColDef}
-                                                floatingFilter={true}
-                                                domLayout='autoHeight'
-                                                // columnDefs={c}
-                                                rowData={verifyList}
-                                                pagination={true}
-                                                paginationPageSize={10}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                    imagClass: "verify-simulation-overlay"
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                                // suppressRowClickSelection={true}
-                                                rowSelection={'multiple'}
-                                                onRowSelected={onRowSelected}
-                                                // frameworkComponents={frameworkComponents}
-                                                onSelectionChanged={onRowSelect}
+                            <div className={`ag-grid-react`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
+                                    </div>
+                                    <div
+                                        className="ag-theme-material">
+                                        <AgGridReact
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
+                                            rowData={verifyList}
+                                            ref={gridRef}
+                                            pagination={true}
+                                            paginationPageSize={defaultPageSize}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            loadingOverlayComponent={'customLoadingOverlay'}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: "verify-simulation-overlay"
+                                            }}
+                                            frameworkComponents={frameworkComponents}
+                                            rowSelection={'multiple'}
+                                            onRowSelected={onRowSelected}
+                                            onSelectionChanged={onRowSelect}
 
-                                            >
-                                                <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                                <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor(Code)"></AgGridColumn>
-                                                <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant(Code)"></AgGridColumn>
-                                                <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
-                                                <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                                <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
+                                        >
+                                            <AgGridColumn field="CostingId" hide ></AgGridColumn>
+                                            <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                            <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor(Code)"></AgGridColumn>
+                                            <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant(Code)"></AgGridColumn>
+                                            <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
+                                            <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
+                                            <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                            <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
 
-                                                {isSurfaceTreatmentOrOperation === true &&
-                                                    <>
-                                                        <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>
-                                                    </>
-                                                }
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
 
-                                                {isBOPDomesticOrImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                    </>
-                                                }
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
 
-                                                {/* {isBOPDomesticOrImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
-                                                             </>
-                                                } */}
-                                                {isMachineRate &&
-                                                    <>
-                                                        <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>
-                                                    </>
-                                                }
-                                                {isRMDomesticOrRMImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
-                                                        <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
-                                                    </>
-                                                }
+                                            {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>}
 
-                                                {isOverHeadProfit === true &&
-                                                    <>
-                                                        <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>
-                                                    </>
-                                                }
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
-                                            </AgGridReact>
+                                            {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
 
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
-                                        </div>
+
+                                            {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
+                                        </AgGridReact>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
-                            </Col>
-
-
-                        </Col>
-                    </Row>
+                            </div>
+                        </Col >
+                    </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
@@ -563,7 +574,7 @@ function VerifySimulation(props) {
                                 {"CANCEL"}
                             </button>
                             {/* {!isAssemblyCosting && */}
-                            <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
@@ -592,6 +603,7 @@ function VerifySimulation(props) {
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
+                    date={effectiveDate}
                     objs={objs}
                     anchor={"right"}
                 />

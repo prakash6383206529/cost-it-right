@@ -1,19 +1,19 @@
 import React from 'react';
 import { useState, useEffect, } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import 'react-input-range/lib/css/index.css'
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import _ from 'lodash'
 import { checkForDecimalAndNull } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -21,28 +21,24 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer } = props;
+    const { impactType } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
-    const [loader, setloader] = useState(false);
-    const [showTableData, setShowTableData] = useState(false);
-    const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
-    const dispatch = useDispatch();
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { initialConfiguration } = useSelector(state => state.auth)
 
-    useEffect(() => {
-        setloader(true)
-        if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
-            let requestData = []
-            let isAssemblyInDraft = false
+    // useEffect(() => {
+    //     setloader(true)
+    //     if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
+    //         let requestData = []
+    //         let isAssemblyInDraft = false
 
-        }
-        setloader(false)
+    //     }
+    //     setloader(false)
 
-    }, [dataForAssemblyImpact])
+    // }, [dataForAssemblyImpact])
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -53,8 +49,7 @@ function AssemblyWiseImpactSummary(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const resetState = () => {
@@ -123,7 +118,7 @@ function AssemblyWiseImpactSummary(props) {
             <Row>
                 <Col className="mb-3">
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control mr-1 table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
@@ -140,7 +135,6 @@ function AssemblyWiseImpactSummary(props) {
             </Row>
             <Row>
                 <Col>
-                    {(loader) && <LoaderCustom />}
                     <div className={`ag-grid-wrapper height-width-wrapper ${simulationAssemblyListSummary && simulationAssemblyListSummary?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div
                             className="ag-theme-material"
@@ -152,7 +146,7 @@ function AssemblyWiseImpactSummary(props) {
                                 domLayout='autoHeight'
                                 rowData={simulationAssemblyListSummary}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={defaultPageSize}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -171,13 +165,7 @@ function AssemblyWiseImpactSummary(props) {
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </Col>

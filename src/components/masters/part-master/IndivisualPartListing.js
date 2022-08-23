@@ -20,11 +20,11 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
 import DayTime from '../../common/DayTimeWrapper';
+import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
+import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -50,6 +50,7 @@ class IndivisualPartListing extends Component {
             endIndexCurrentPage: 9,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
             warningMessage: false,
@@ -60,15 +61,14 @@ class IndivisualPartListing extends Component {
             deletedId: '',
             globalTake: defaultPageSize,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            disableFilter: true,
+            disableDownload: false
         }
     }
 
 
-
-
     ApiActionCreator(skip, take, obj, isPagination) {
-        this.setState({ isLoader: true })
-
+        this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
@@ -94,6 +94,14 @@ class IndivisualPartListing extends Component {
                 })
             }
 
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-component-part')
+                    button && button.click()
+                }, 500);
+            }
+
             if (res) {
                 if (res && res.data && res.data.DataList.length > 0) {
                     this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
@@ -108,12 +116,15 @@ class IndivisualPartListing extends Component {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
 
                 }, 300);
 
                 setTimeout(() => {
                     this.setState({ warningMessage: false })
-                }, 330);
+                }, 335);
 
                 setTimeout(() => {
                     this.setState({ isFilterButtonClicked: false })
@@ -122,6 +133,11 @@ class IndivisualPartListing extends Component {
 
         })
 
+    }
+
+
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
     }
 
     onFloatingFilterChanged = (value) => {
@@ -137,6 +153,7 @@ class IndivisualPartListing extends Component {
     }
 
     resetState = () => {
+        this.props.setSelectedCostingListSimualtion([])
         resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
 
     }
@@ -158,18 +175,24 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
-
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+            }
+        }, 200);
     }
 
 
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState(() => {
-            this.getTableListData()
-        })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState(() => {
+                    this.getTableListData()
+                })
+            }
+        }, 200);
     }
 
     /**
@@ -241,14 +264,13 @@ class IndivisualPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -258,8 +280,25 @@ class IndivisualPartListing extends Component {
      */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.PartId === props.node.data.PartId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        } else {
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        }
     }
+
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -329,6 +368,26 @@ class IndivisualPartListing extends Component {
         return serialNumber;
     }
 
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -356,15 +415,12 @@ class IndivisualPartListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false })
-        this.onSearchExit(this)
+        this.resetState()
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
-
-
-
 
 
     onGridReady = (params) => {
@@ -384,24 +440,33 @@ class IndivisualPartListing extends Component {
         //if resolution greater than 1920 table listing fit to 100%
     };
 
-    // onPageSizeChanged = (newPageSize) => {
-    //     var value = document.getElementById('page-size').value;
-    //     this.state.gridApi.paginationSetPageSize(Number(value));
 
-    //     if (Number(newPageSize) === 10) {
-    //         this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    //     }
-    //     else if (Number(newPageSize) === 50) {
-    //         this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-    //     }
-    //     else if (Number(newPageSize) === 100) {
-    //         this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-    //     }
-    // };
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-component-part')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
 
     onBtExport = () => {
-        let tempArr = this.props.newPartsListing && this.props.newPartsListing
 
+        let tempArr = []
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this.props.selectedCostingListSimulation
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -428,8 +493,6 @@ class IndivisualPartListing extends Component {
     }
 
 
-
-
     /**
     * @method render
     * @description Renders the component
@@ -437,40 +500,96 @@ class IndivisualPartListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+
         }
 
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
-        };
+        }
+
+        const onRowSelect = (event) => {
+
+            var selectedRows = this.state.gridApi.getSelectedRows();
+
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+                selectedRows = this.props.selectedCostingListSimulation
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+                let finalData = []
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].PartId === event.data.PartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
+            }
+
+
+            let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ selectedRowData: selectedRows })
+        }
+
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
         return (
             <>
-                <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
                         <Col md="12" className="search-user-block pr-0">
@@ -478,8 +597,8 @@ class IndivisualPartListing extends Component {
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
-                                <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
+                                <div className='d-flex'>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -502,15 +621,21 @@ class IndivisualPartListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
+                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                            </button></div> :
 
-                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                                <>
+                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-
+                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -536,6 +661,8 @@ class IndivisualPartListing extends Component {
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
+                                rowSelection={'multiple'}
+                                onRowSelected={onRowSelect}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -550,7 +677,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
+                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}  ></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
@@ -590,11 +717,12 @@ class IndivisualPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, auth }) {
-    const { newPartsListing } = part
+function mapStateToProps({ part, auth, simulation }) {
+    const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
+    const { selectedCostingListSimulation } = simulation;
 
-    return { newPartsListing, initialConfiguration };
+    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation };
 }
 
 /**
@@ -609,4 +737,5 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
+    setSelectedCostingListSimualtion
 })(IndivisualPartListing);

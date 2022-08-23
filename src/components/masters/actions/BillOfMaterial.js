@@ -14,7 +14,7 @@ import { apiErrors } from '../../helper/util';
 
 import Toaster from '../../common/Toaster';
 
-const headers = config;
+// const config() = config;
 
 /**
 * @method createBOMAPI
@@ -25,7 +25,7 @@ export function createBOMAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOMAPI, data, headers);
+        const request = axios.post(API.createBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -55,7 +55,7 @@ export function createBOMAPI(data, callback) {
 export function createNewBOMAPI(data, callback) {
     return (dispatch) => {
         // dispatch({ type:  API_REQUEST });
-        const request = axios.post(API.createNewBOMAPI, data, headers);
+        const request = axios.post(API.createNewBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -86,7 +86,7 @@ export function getBOMDetailAPI(flag, PartId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (flag) {
-            const request = axios.get(`${API.getBOMByPartAPI}/${PartId}`, headers);
+            const request = axios.get(`${API.getBOMByPartAPI}/${PartId}`, config());
             request.then((response) => {
                 dispatch({
                     type: GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
@@ -115,7 +115,7 @@ export function getBOMDetailAPI(flag, PartId, callback) {
 export function getAllBOMAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllBOMAPI}`, headers);
+        const request = axios.get(`${API.getAllBOMAPI}`, config());
         request.then((response) => {
             //if (response.data.Result) {
             dispatch({
@@ -140,7 +140,7 @@ export function getAllBOMAPI(callback) {
 */
 export function uploadBOMxlsAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.uploadBOMAPI, data, headers);
+        const request = axios.post(API.uploadBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -170,7 +170,7 @@ export function uploadBOMxlsAPI(data, callback) {
 export function deleteBOMAPI(BomId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOMAPI}/${BomId}`, headers)
+        axios.delete(`${API.deleteBOMAPI}/${BomId}`, config())
             .then((response) => {
                 // getUserProfileAPIForUpdatingProps(dispatch, id, () => {
                 callback(response);
@@ -189,7 +189,7 @@ export function deleteBOMAPI(BomId, callback) {
 */
 export function checkCostingExistForPart(PartId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkCostingExistForPart}/${PartId}`, headers);
+        const request = axios.post(`${API.checkCostingExistForPart}/${PartId}`, config());
         request.then((response) => {
             //callback(response);
         }).catch((error) => {
@@ -206,7 +206,7 @@ export function checkCostingExistForPart(PartId, callback) {
 */
 export function deleteExisCostingByPartID(PartId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.deleteExisCostingByPartID}/${PartId}`, headers);
+        const request = axios.post(`${API.deleteExisCostingByPartID}/${PartId}`, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {

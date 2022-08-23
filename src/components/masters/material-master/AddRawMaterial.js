@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddRawMaterial extends Component {
   constructor(props) {
@@ -39,17 +37,18 @@ class AddRawMaterial extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
+
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   };
 
   /**
@@ -70,7 +69,7 @@ class AddRawMaterial extends Component {
       this.props.updateRawMaterialChildName(formData, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          this.toggleDrawer('', values)
+          this.toggleDrawer('', values, 'submit')
         }
       })
 
@@ -80,7 +79,7 @@ class AddRawMaterial extends Component {
       this.props.createRawMaterialNameChild(values, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          this.toggleDrawer('', values)
+          this.toggleDrawer('', values, 'submit')
         }
       });
     }
@@ -123,7 +122,7 @@ class AddRawMaterial extends Component {
                       </h3>
                     </div>
                     <div
-                      onClick={(e) => this.toggleDrawer(e)}
+                      onClick={(e) => { this.toggleDrawer(e, '', 'cancel') }}
                       className={"close-button right"}
                     ></div>
                   </Col>
@@ -134,8 +133,8 @@ class AddRawMaterial extends Component {
                       label={`Name`}
                       name={"RawMaterialName"}
                       type="text"
-                      placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                      placeholder={"Enter"}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=" "
@@ -148,7 +147,7 @@ class AddRawMaterial extends Component {
                   <div className="col-md-12 pl-3 pr-3">
                     <div className="text-right ">
                       <button
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         type="submit"
                         value="CANCEL"
                         className=" mr15 cancel-btn"
@@ -208,4 +207,5 @@ export default connect(mapStateToProps,
   })(reduxForm({
     form: 'AddRawMaterial',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddRawMaterial));

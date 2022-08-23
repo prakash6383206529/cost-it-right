@@ -11,6 +11,7 @@ import { TIME } from '../../../../../config/constants'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData, item } = props
+
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const calculateMachineTime = (time, formValue) => {
 
@@ -58,6 +59,7 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
+
     if (technology === MACHINING) {
       return (
         <SheetMetalBaicDrawer
@@ -69,6 +71,7 @@ function VariableMhrDrawer(props) {
       )
 
     } else if (technology === SHEETMETAL) {
+
       switch (process) {
         case 'Facing':
           return (

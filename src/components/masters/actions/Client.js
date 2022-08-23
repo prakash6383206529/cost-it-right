@@ -9,7 +9,7 @@ import {
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-const headers = config
+// const config() = config
 
 /**
  * @method createClient
@@ -18,7 +18,7 @@ const headers = config
 export function createClient(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createClient, data, headers);
+        const request = axios.post(API.createClient, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -37,7 +37,7 @@ export function createClient(data, callback) {
 export function updateClient(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateClient}`, requestData, headers)
+        axios.put(`${API.updateClient}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -56,7 +56,7 @@ export function getClientData(ClientId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ClientId !== '') {
-            axios.get(`${API.getClientData}/${ClientId}`, headers)
+            axios.get(`${API.getClientData}/${ClientId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -86,7 +86,7 @@ export function getClientDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const QueryParams = `clientName=${filterData.clientName}&companyName=${filterData.companyName}`
-        axios.get(`${API.getClientDataList}?${QueryParams}`, headers)
+        axios.get(`${API.getClientDataList}?${QueryParams}`, config())
             .then((response) => {
                 if (response.status === 204 && response.data === '') {
                     dispatch({
@@ -118,7 +118,7 @@ export function getClientDataList(filterData, callback) {
 export function deleteClient(ID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteClient}/${ID}`, headers)
+        axios.delete(`${API.deleteClient}/${ID}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -137,7 +137,7 @@ export function deleteClient(ID, callback) {
 export function getClientSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getClientSelectList}`, headers);
+        const request = axios.get(`${API.getClientSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

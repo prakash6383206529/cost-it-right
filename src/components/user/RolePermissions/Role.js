@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, alphabetsOnlyForName, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, } from "../../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength26, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import "../UserRegistration.scss";
 import {
@@ -14,7 +14,6 @@ import { MESSAGES } from "../../../config/message";
 import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
-import ConfirmComponent from "../../../helper/ConfirmComponent";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 
 class Role extends Component {
@@ -49,6 +48,11 @@ class Role extends Component {
 
 	componentDidMount() {
 
+		const { data } = this.props;
+		if (data && data.isEditFlag) {
+		} else {
+			this.props.change("RoleName", "")
+		}
 	}
 
 	/**
@@ -96,20 +100,32 @@ class Role extends Component {
 
 	moduleDataHandler = (data, ModuleName) => {
 		const { Modules } = this.state;
-		let tempArray = [];
 		let oldData = data;
-		let isAnyChildChecked = data && data.map((item, i) => {
-			let index = item.Actions.findIndex(el => el.IsChecked === true)
-			if (index !== -1) {
-				oldData[i].IsChecked = true;
-				tempArray.push(index)
-			}
-		})
+		let isSelectAll = true
 
 		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
+
+		if (ModuleName === "Costing" || ModuleName === "Simulation") {
+			oldData && oldData.map((ele, index) => {
+				if (ele.Sequence !== 0) {
+					if (ele.IsChecked === false) {
+						isSelectAll = false
+					}
+				}
+				return null
+			})
+		} else {
+			oldData && oldData.map((ele, index) => {
+				if (ele.IsChecked === false) {
+					isSelectAll = false
+				}
+				return null
+			})
+		}
+
 		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
 		if (isAvailable !== -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
+			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
 			this.setState({ Modules: tempArray })
 		}
 	}
@@ -243,16 +259,14 @@ class Role extends Component {
 											<div className="col-md-6 ">
 												<div className="d-flex">
 
-													<div class="header-title  Personal-Details pr-3"><h5>Role Name:</h5></div>
+													<div class="header-title d-flex Personal-Details pr-3"><h5>Role Name:</h5><span className="asterisk-required">*</span></div>
 
 													<Field
 														name={"RoleName"}
 														type="text"
 														placeholder={'Enter'}
-														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength26]}
 														component={renderText}
-														required={true}
-														maxLength={26}
 														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
 												</div>
