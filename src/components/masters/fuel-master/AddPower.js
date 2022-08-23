@@ -44,7 +44,7 @@ class AddPower extends Component {
       isVendorNameNotSelected: false,
 
       selectedPlants: [],
-      effectiveDate: new Date(),
+      effectiveDate: '',
 
       powerGridEditIndex: '',
       powerGrid: [],
@@ -1466,7 +1466,7 @@ class AddPower extends Component {
                                     <div className="inputbox date-section">
                                       <DatePicker
                                         name="EffectiveDate"
-                                        selected={new Date(this.state.effectiveDate)}
+                                        selected={this.state.effectiveDate !== '' ? new Date(this.state.effectiveDate) : this.state.effectiveDate}
                                         onChange={this.handleEffectiveDateChange}
                                         showMonthDropdown
                                         showYearDropdown
