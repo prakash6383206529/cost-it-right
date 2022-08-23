@@ -83,7 +83,7 @@ class BOMUpload extends Component {
 
           resp.rows.map((val, index) => {
             if (val === []) return false
-            if (index > 0) {
+            if (index > 0 && val?.length > 0) {
 
               // BELOW CODE FOR HANDLE EMPTY CELL VALUE
               const i = val.findIndex(e => e === undefined);

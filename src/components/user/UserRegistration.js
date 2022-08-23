@@ -103,10 +103,6 @@ class UserRegistration extends Component {
     })
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
-
-    setTimeout(() => {
-      this.props.reset()
-    }, 380);
   }
 
   /**
@@ -1377,6 +1373,7 @@ class UserRegistration extends Component {
                               required={true}
                               // maxLength={26}
                               isEyeIcon={true}
+                              autoComplete={"new-password"}
                               customClassName={'withBorderPWD'}
                             />
                           </div>
