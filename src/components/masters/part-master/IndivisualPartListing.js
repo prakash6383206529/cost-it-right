@@ -494,6 +494,7 @@ class IndivisualPartListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
             date: "",
