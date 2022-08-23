@@ -26,14 +26,6 @@ function IsolateReRender(control) {
   return values;
 }
 
-function IsolateReRender(control) {
-  const values = useWatch({
-    control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
-  });
-
-  return values;
-}
 
 function Pipe(props) {
 
