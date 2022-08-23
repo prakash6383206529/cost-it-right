@@ -194,11 +194,7 @@ class VolumeListing extends Component {
         this.setState({ tableData: [], isLoader: false })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({
-          tableData: Data.sort((a, b) => a.Sequence - b.Sequence).sort(
-            (a, b) => a.Index - b.Index,
-          ),
-        })
+        this.setState({ tableData: Data })
       } else {
         this.setState({ tableData: [] })
       }
