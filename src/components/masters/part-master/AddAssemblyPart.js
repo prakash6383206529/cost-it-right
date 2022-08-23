@@ -64,7 +64,7 @@ class AddAssemblyPart extends Component {
       updatedObjDraft: {},
       setDisable: false,
       disablePopup: false,
-      TechnologySelected: {},
+      TechnologySelected: [],
       isBomEditable: false,
       isDisableBomNo: false,
       minEffectiveDate: '',

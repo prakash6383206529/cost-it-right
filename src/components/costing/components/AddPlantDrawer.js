@@ -118,7 +118,7 @@ function AddPlantDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

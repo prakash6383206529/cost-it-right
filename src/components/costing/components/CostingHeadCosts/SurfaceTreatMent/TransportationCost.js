@@ -257,7 +257,7 @@ function TransportationCost(props) {
                 <SearchableSelectHookForm
                   label={'Type'}
                   name={'UOM'}
-                  placeholder={'-Select-'}
+                  placeholder={'Select'}
                   Controller={Controller}
                   control={control}
                   rules={{ required: true }}

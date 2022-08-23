@@ -220,7 +220,7 @@ function AddTool(props) {
                     <SearchableSelectHookForm
                       label={'Process/Operation'}
                       name={'ProcessOrOperation'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -238,7 +238,7 @@ function AddTool(props) {
                     <SearchableSelectHookForm
                       label={'Tool Category'}
                       name={'ToolCategory'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
