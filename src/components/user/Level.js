@@ -232,7 +232,7 @@ class Level extends Component {
       this.props.getSimulationTechnologySelectList(() => { })
     }
     this.setState({ levelType: label });
-    this.setState({ technology: { label: "", value: "" }, level: { label: "", value: "" } });
+    this.setState({ technology: [], level: [] });
   };
 
   /**
@@ -644,6 +644,7 @@ class Level extends Component {
                             handleChangeDescription={this.levelHandler}
                             valueDescription={this.state.level}
                           />
+                          {console.log(this.state.level, "this.state.level")}
                         </div>
                         <div className="text-right mt-0 col-md-12">
                           <button
