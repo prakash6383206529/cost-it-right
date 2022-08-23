@@ -26,6 +26,7 @@ class BOMViewer extends Component {
       EditIndex: '',
       updatedQuantity: '',
       BOPUom: '',
+      BOPUomCreateMode: '',
       isOpenVisualDrawer: false,
       selected_point: null,
       flowpoints: [],
@@ -140,7 +141,8 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
-    this.setState({ isOpenChildDrawer: false }, () => {
+
+    this.setState({ isOpenChildDrawer: false, BOPUomCreateMode: childData?.UnitOfMeasurementType }, () => {
       this.setChildPartsData(childData)
     })
   }
@@ -478,7 +480,7 @@ class BOMViewer extends Component {
                                     <button
                                       className="Edit"
                                       onClick={() =>
-                                        this.editLevelOne(i, el.Quantity, el.PartType, el.BoughtOutPartUOM)
+                                        this.editLevelOne(i, el.Quantity, el.PartType, el.BoughtOutPartUOMType)
                                       }
                                     />
                                   </span>
@@ -551,7 +553,7 @@ class BOMViewer extends Component {
                 anchor={"right"}
                 updatedQuantity={this.state.updatedQuantity}
                 partType={this.state.partType}
-                BOPUom={this.state.BOPUom}
+                BOPUom={this.state.BOPUom ? this.state.BOPUom : this.state.BOPUomCreateMode}
               />
             )}
           </>
