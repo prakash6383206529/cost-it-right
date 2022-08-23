@@ -607,7 +607,7 @@ class MachineRateListing extends Component {
             }
 
 
-            let uniqeArray = _.uniqBy(selectedRows, "MachineId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
             this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
             this.setState({ selectedRowData: selectedRows })
 
