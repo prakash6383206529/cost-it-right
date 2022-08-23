@@ -150,7 +150,7 @@ class AddMoreDetails extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
-    // this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
+    this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
     this.props.getFuelComboData(() => { })
     if (!this.props?.editDetails?.isEditFlag) {
 
