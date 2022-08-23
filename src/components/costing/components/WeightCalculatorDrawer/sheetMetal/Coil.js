@@ -412,7 +412,7 @@ function Coil(props) {
                                     <SearchableSelectHookForm
                                         label={'Weight Unit'}
                                         name={'UOMDimension'}
-                                        placeholder={'-Select-'}
+                                        placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}

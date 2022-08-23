@@ -595,7 +595,7 @@ function Tool(props) {
                     <SearchableSelectHookForm
                       label={"Tool Maintenance Applicability"}
                       name={"toolCostType"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: false }}

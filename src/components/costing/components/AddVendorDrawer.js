@@ -182,7 +182,7 @@ function AddVendorDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

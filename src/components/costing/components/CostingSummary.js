@@ -460,6 +460,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.PartName}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -479,6 +480,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.Description}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -496,6 +498,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ECNNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -513,6 +516,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.DrawingNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -530,6 +534,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.RevisionNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -547,6 +552,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ShareOfBusiness}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -564,7 +570,7 @@ function CostingSummary(props) {
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText="-"
                               className="withBorder"
                               autoComplete={'off'}
                               disabledKeyboardNavigation

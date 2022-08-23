@@ -154,7 +154,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -170,7 +170,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: false }}

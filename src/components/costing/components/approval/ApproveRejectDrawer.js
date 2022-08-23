@@ -623,7 +623,7 @@ function ApproveRejectDrawer(props) {
                       <SearchableSelectHookForm
                         label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                         name={"dept"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -640,7 +640,7 @@ function ApproveRejectDrawer(props) {
                       <SearchableSelectHookForm
                         label={'Approver'}
                         name={'approver'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -663,7 +663,7 @@ function ApproveRejectDrawer(props) {
                       <SearchableSelectHookForm
                         label={"Purchase Group"}
                         name={"dept"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -680,7 +680,7 @@ function ApproveRejectDrawer(props) {
                       <SearchableSelectHookForm
                         label={'Approver'}
                         name={'approver'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -699,7 +699,7 @@ function ApproveRejectDrawer(props) {
                           <SearchableSelectHookForm
                             label={'Reason'}
                             name={'reason'}
-                            placeholder={'-Select-'}
+                            placeholder={'Select'}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
