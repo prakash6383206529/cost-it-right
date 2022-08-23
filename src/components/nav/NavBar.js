@@ -468,7 +468,7 @@ class SideBar extends Component {
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -497,6 +497,25 @@ class SideBar extends Component {
                 />
                 <span>Report</span>
               </Link>
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  {
+                    el && el.Pages && el.Pages.map((item, i) => {
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+              </div>
             </li>
           );
         }
