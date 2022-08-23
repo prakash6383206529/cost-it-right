@@ -22,6 +22,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config
 
@@ -481,10 +482,10 @@ export function getLabourCost(data, callback) {
  * @method getPowerCostUnit
  * @description GET POWER COST UNIT
  */
-export function getPowerCostUnit(plantId, callback) {
+export function getPowerCostUnit(plantId, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, config())
+        axios.get(`${API.getPowerCostUnit}?PlantId=${plantId}&EffectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

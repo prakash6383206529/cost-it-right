@@ -18,6 +18,7 @@ import {
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 
 // const config() = config;
@@ -535,11 +536,12 @@ export function getStateSelectList(callback) {
  * @method getPowerDetailData
  * @description GET POWER DETAIL DATA
  */
-export function getPowerDetailData(PowerId, callback) {
+export function getPowerDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (PowerId !== '') {
-            axios.get(`${API.getPowerDetailData}/${PowerId}`, config())
+        let queryParams = `powerId=${data?.Id}&plantId=${data?.plantId}`
+        if (data !== '') {
+            axios.get(`${API.getPowerDetailData}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -588,8 +590,9 @@ export function getVendorPowerDetailData(PowerId, callback) {
  */
 export function deletePowerDetail(Id, callback) {
     return (dispatch) => {
+        const QueryParams = `PowerId=${Id.PowerId}&PlantId=${Id.PlantId}&LoggedInUserId=${userDetails().LoggedInUserId}`
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePowerDetail}/${Id}`, config())
+        axios.delete(`${API.deletePowerDetail}?${QueryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

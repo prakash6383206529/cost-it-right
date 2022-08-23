@@ -4,8 +4,19 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { NumberFieldHookForm } from '../../layout/HookFormInputs';
 // import { yupResolver } from '@hookform/resolvers';
+import * as yup from "yup";
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import { DIMENSIONLESS } from '../../../config/constants';
+
+const schema = yup.object().shape({
+    quantity: yup.string().matches(/^[0-9][0-9]*$/, 'Please enter valid number').required('this field is required'),
+    //firstName: yup.string().matches(/^[A-Za-z ]*$/, 'Please enter valid name').required('this field is required'),
+});
+
 
 export default function VishualAdDrawer(props) {
+    const { partType, BOPUom } = props
 
     const { register, handleSubmit, formState: { errors }, control } = useForm({
         // resolver: yupResolver(schema),
@@ -40,7 +51,8 @@ export default function VishualAdDrawer(props) {
     * @description Renders the component
     */
     return (
-        <div>
+
+        < div >
             <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
@@ -61,6 +73,7 @@ export default function VishualAdDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
+                                { }
                                 <Col md="12">
                                     <NumberFieldHookForm
                                         label="Quantity"
@@ -71,13 +84,13 @@ export default function VishualAdDrawer(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: props.partType === 'BoughtOutPart' ? /^\d*\.?\d*$/ : /^[1-9]\d*$/,
+                                                value: props.partType === 'BoughtOutPart' ? (BOPUom === DIMENSIONLESS ? /^\d*\.?\d*$/ : /^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/) : /^[1-9]\d*$/,
                                                 //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                                 message: 'Invalid Number.',
                                             },
                                             min: {
-                                                value: 1,
-                                                message: 'Quantity should not be less than 1.'
+                                                value: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 0.1 : 1,
+                                                message: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 'Quantity should not be less than 0.1' : 'Quantity should not be less than 1.',
                                             },
 
                                         }}
@@ -113,7 +126,7 @@ export default function VishualAdDrawer(props) {
                     </div>
                 </Container>
             </Drawer>
-        </div>
+        </div >
     );
 }
 
