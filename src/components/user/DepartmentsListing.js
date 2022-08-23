@@ -89,9 +89,11 @@ class DepartmentsListing extends Component {
    * @method closeDrawer
    * @description  used to cancel filter form
    */
-  closeDrawer = (e = '') => {
+  closeDrawer = (e = '', type) => {
     this.setState({ isOpen: false }, () => {
-      this.getDepartmentListData()
+      if (type === 'submit') {
+        this.getDepartmentListData()
+      }
     })
   }
 
