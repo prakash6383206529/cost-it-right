@@ -322,7 +322,7 @@ class AddPower extends Component {
         PowerDetailID: data.Id,
       })
 
-      this.props.getPowerDetailData(data.Id, res => {
+      this.props.getPowerDetailData(data, res => {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
@@ -1175,6 +1175,7 @@ class AddPower extends Component {
         this.setState({ setDisable: true })
         let requestData = {
           PowerId: PowerDetailID,
+          PlantId: plantArray && plantArray[0]?.PlantId,
           IsVendor: IsVendor,
           Plants: plantArray,
           StateId: StateName.value,
@@ -1182,6 +1183,7 @@ class AddPower extends Component {
           IsActive: true,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
+          EffectiveDate: effectiveDate,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1196,7 +1198,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: effectiveDate,
+              // EffectiveDate: effectiveDate,
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -1239,6 +1241,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
+          EffectiveDate: effectiveDate,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1253,7 +1256,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: effectiveDate,
+              // EffectiveDate: effectiveDate,
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -1453,6 +1456,34 @@ class AddPower extends Component {
                               </div>
                             </Col>
 
+                            <Col md="auto">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
+                                <div className="fullinput-icon">
+                                  <div className="form-group">
+                                    <label>Effective Date{/* <span className="asterisk-required">*</span> */}</label>
+                                    <div className="inputbox date-section">
+                                      <DatePicker
+                                        name="EffectiveDate"
+                                        selected={new Date(this.state.effectiveDate)}
+                                        onChange={this.handleEffectiveDateChange}
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dateFormat="dd/MM/yyyy"
+                                        maxDate={new Date()}
+                                        dropdownMode="select"
+                                        placeholderText="Select date"
+                                        className="withBorder"
+                                        autoComplete={'off'}
+                                        disabledKeyboardNavigation
+                                        onChangeRaw={(e) => e.preventDefault()}
+                                        disabled={isEditFlag ? true : false}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+
                           </Row>
 
                           <Row className='child-form-container'>
@@ -1639,33 +1670,7 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            <Col md="auto">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
-                                <div className="fullinput-icon">
-                                  <div className="form-group">
-                                    <label>Effective Date{/* <span className="asterisk-required">*</span> */}</label>
-                                    <div className="inputbox date-section">
-                                      <DatePicker
-                                        name="EffectiveDate"
-                                        selected={new Date(this.state.effectiveDate)}
-                                        onChange={this.handleEffectiveDateChange}
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()}
-                                        dropdownMode="select"
-                                        placeholderText="Select date"
-                                        className="withBorder"
-                                        autoComplete={'off'}
-                                        disabledKeyboardNavigation
-                                        onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={isEditFlag ? true : false}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
+
                             <Col md="auto" className="d-flex">
 
                               <div className="machine-rate-filed pr-3">

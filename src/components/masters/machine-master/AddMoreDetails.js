@@ -95,6 +95,7 @@ class AddMoreDetails extends Component {
 
       remarks: '',
       files: [],
+      powerId: '',
 
       manufactureYear: new Date(),
 
@@ -352,6 +353,7 @@ class AddMoreDetails extends Component {
               }
             })
 
+
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -379,6 +381,7 @@ class AddMoreDetails extends Component {
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
+              powerId: Data?.PowerId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
@@ -507,31 +510,34 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    const { IsUsesSolarPower, machineFullValue } = this.state;
+    const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
     const { initialConfiguration, editDetails } = this.props
     let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
 
     if (!editMode) {
       if (newValue && newValue !== '') {
         this.setState({ selectedPlants: newValue, })
-        this.props.getPowerCostUnit(newValue.value, res => {
-          let Data = res?.data?.DynamicData;
-          if (res && res.data && res.data.Message !== '') {
-            Toaster.warning(res.data.Message)
-            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
-          } else {
-            //  if(IsUsesSolarPower)
-            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
-          }
-        })
+
+        if (effectiveDate) {
+          this.props.getPowerCostUnit(newValue.value, effectiveDate, res => {
+            let Data = res?.data?.DynamicData;
+            if (res && res.data && res.data.Message !== '') {
+              Toaster.warning(res.data.Message)
+              machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+              })
+              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            } else {
+              //  if(IsUsesSolarPower)
+              machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+              })
+              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            }
+          })
+        }
       } else {
         this.setState({ selectedPlants: [] })
       }
@@ -742,6 +748,32 @@ class AddMoreDetails extends Component {
       effectiveDate: date,
       isDateChange: true,
     });
+
+    const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
+    const { initialConfiguration, editDetails } = this.props
+
+    if (Object.keys(selectedPlants)?.length > 0) {
+      this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let Data = res?.data?.DynamicData;
+        if (res && res.data && res.data.Message !== '') {
+          Toaster.warning(res.data.Message)
+          machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+          })
+          this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+          //  if(IsUsesSolarPower)
+          machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+          })
+          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        }
+      })
+    }
+
+
   };
   /**
    * @method handleChange
@@ -805,7 +837,10 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
+      this.props.getFuelComboData(() => { })
+      this.setState({ fuelType: [] })
     }
+
     this.setState({
       IsUsesFuel: !this.state.IsUsesFuel,
     });
@@ -817,10 +852,10 @@ class AddMoreDetails extends Component {
    */
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
-      const { IsUsesSolarPower, selectedPlants, machineFullValue } = this.state;
+      const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
-        this.props.getPowerCostUnit(selectedPlants.value, res => {
+        this.props.getPowerCostUnit(selectedPlants.value, effectiveDate, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -1509,7 +1544,7 @@ class AddMoreDetails extends Component {
     let tempData = processGrid[processGridEditIndex];
     tempData = {
       processName: processName.label,
-      processId: processName.value,
+      ProcessId: processName.value,
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
@@ -1564,7 +1599,7 @@ class AddMoreDetails extends Component {
     this.setState({
       processGridEditIndex: index,
       isEditIndex: true,
-      processName: { label: tempData.processName, value: tempData.processId },
+      processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
@@ -1752,7 +1787,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1811,12 +1846,12 @@ class AddMoreDetails extends Component {
       OtherYearlyCost: values.OtherYearlyCost,
       TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
       IsUsesFuel: IsUsesFuel,
-      PowerId: '',
+      PowerId: powerId ? powerId : "",
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-      IsUsesSolarPower: IsUsesSolar,
+      IsUsesSolarPower: IsUsesSolarPower,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
       FuelEntryId: this.state.FuelEntryId,
@@ -1944,12 +1979,12 @@ class AddMoreDetails extends Component {
         OtherYearlyCost: values.OtherYearlyCost,
         TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
         IsUsesFuel: IsUsesFuel,
-        PowerId: '',
+        PowerId: powerId ? powerId : "",
         UtilizationFactorPercentage: values.UtilizationFactorPercentage,
         PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
         TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-        IsUsesSolarPower: IsUsesSolar,
+        IsUsesSolarPower: IsUsesSolarPower,
         FuleId: fuelType ? fuelType.value : '',
         FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
         ConsumptionPerYear: values.ConsumptionPerYear,
@@ -3109,7 +3144,7 @@ class AddMoreDetails extends Component {
                                 onChange={this.onPressUsesFuel}
                                 checked={this.state.IsUsesFuel}
                                 id="normal-switch"
-                                disabled={isEditFlag || disableAllForm ? true : false}
+                                disabled={disableAllForm ? true : false}
                                 background="#4DC771"
                                 onColor="#4DC771"
                                 onHandleColor="#ffffff"
@@ -3137,7 +3172,7 @@ class AddMoreDetails extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleFuelType}
                                   valueDescription={this.state.fuelType}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                 />
                               </Col>
                               <Col md="3">
@@ -3209,7 +3244,7 @@ class AddMoreDetails extends Component {
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                   component={renderText}
                                   //required={true}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                   className=" "
                                   customClassName="withBorder"
                                 />
@@ -3222,7 +3257,7 @@ class AddMoreDetails extends Component {
                                     onChange={this.onPressUsesSolarPower}
                                     checked={this.state.IsUsesSolarPower}
                                     id="normal-switch"
-                                    disabled={isEditFlag || disableAllForm ? true : false}
+                                    disabled={disableAllForm ? true : false}
                                     background="#4DC771"
                                     onColor="#4DC771"
                                     onHandleColor="#ffffff"

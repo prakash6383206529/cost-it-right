@@ -27,6 +27,7 @@ class AddProcessDrawer extends Component {
       isLoader: false,
       setDisable: false,
       DataToChange: [],
+      processName: "",
 
     }
   }
@@ -79,14 +80,39 @@ class AddProcessDrawer extends Component {
   checkProcessCode = (e) => {
     const { fieldsObj } = this.props
     const value = e.target.value
+    let obj = {
+      processName: value,
+      processCode: ""
+
+    }
+    this.setState({ processName: value })
+
     if (fieldsObj === undefined) {
-      this.props.getProcessCode(value, (res) => {
+      this.props.getProcessCode(obj, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DynamicData
           this.props.change('ProcessCode', Data.ProcessCode)
         }
       })
     }
+  }
+
+  checkProcessCodeUnique = (e) => {
+    const value = e.target.value
+    let obj = {
+      processName: this.state.processName,
+      processCode: value
+
+    }
+    this.props.getProcessCode(obj, (res) => {
+
+      let Data = res.data.DynamicData
+      if (Data?.IsExist) {
+        Toaster.warning(res.data.Message);
+        this.props.change('ProcessCode', "")
+      }
+    })
+
   }
 
   /**
@@ -259,6 +285,7 @@ class AddProcessDrawer extends Component {
                       required={true}
                       className=" "
                       customClassName=" withBorder"
+                      onChange={this.checkProcessCodeUnique}
                       disabled={isEditFlag || initialConfiguration?.IsProcessCodeConfigure ? true : false}
                     />
                   </Col>
