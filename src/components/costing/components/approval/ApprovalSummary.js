@@ -650,7 +650,6 @@ function ApprovalSummary(props) {
       )}
       {pushButton && (
         <PushButtonDrawer
-          dataSend={dataSend}
           isOpen={pushButton}
           closeDrawer={closePushButton}
           dataSend={[approvalDetails, partDetail]}

@@ -949,7 +949,7 @@ function SimulationApprovalSummary(props) {
                 <>
                     <CalculatorWrapper />
                     {!loader && <LoaderCustom />}
-                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         <ErrorMessage approvalNumber={approvalNumber} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
@@ -1045,7 +1045,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Quarter(INR):`}</span>
-                                                <span className="d-block">{simulationDetail && (simulationDetail?.TotalImpactPerQuarter)}</span>
+                                                <span className="d-block">{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? simulationDetail?.TotalImpactPerQuarter : '-')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
