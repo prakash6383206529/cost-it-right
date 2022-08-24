@@ -208,6 +208,10 @@ class AddMoreDetails extends Component {
           if (fieldsObj?.EffectiveDate) {
             this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
           }
+          if (machineType?.length === 0) {
+          } else {
+            this.handleMachineType(machineType)
+          }
         }, 200);
       }, 1500);
 
