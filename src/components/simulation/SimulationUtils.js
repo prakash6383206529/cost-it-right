@@ -249,15 +249,15 @@ export const ErrorMessage = (props) => {
             setNoContent(res?.status === 204 ? true : false)
 
             if (res?.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
+                const { RecordInsertStatus, IsSuccessfullyInsert, ErrorStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
                 setStatus(RecordInsertStatus)
                 setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                setAmmendmentStatus(AmmendentStatus);
+                setAmmendmentStatus(ErrorStatus);
                 setShowButton(RecordInsertStatus?.length > 245 ? true : false)
                 if (IsAmmendentDone) {
-                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${ErrorStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                    setAmendentstatus(`Amendment Status: \u00A0 ${(ErrorStatus && ErrorStatus !== null && ErrorStatus !== "") ? ErrorStatus : "-"
                         } `)
                 }
                 setAmmendmentButton(amendentStatus.length > 245 ? true : false)
