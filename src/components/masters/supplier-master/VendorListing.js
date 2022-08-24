@@ -532,7 +532,6 @@ class VendorListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
-
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -572,105 +571,72 @@ class VendorListing extends Component {
 
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-
                 <ScrollToTop pointProp="go-to-top" />
-                <form
-
-                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    noValidate
-                >
-                    <Row>
-                        <Col md="12" className="d-flex justify-content-between">
-                            <h1 className="mb-0">Vendor Master</h1>
-                        </Col>
-                    </Row>
-                    {this.state.isLoader && <LoaderCustom />}
-                    <Row className="pt-2 align-items-center">
-                        {this.state.shown && (
-                            <Col md="12" lg="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-                                        <button
-                                            type="button"
-
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
-
-                        <Col md="12">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div className="warning-message d-flex align-items-center">
-                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                </div>
-                                <div className='d-flex'>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                            </button></div> :
-                                                <>
-                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    </button>
-
-                                                    <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                        <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
-                                                        </button>}>
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
-                                                </>
-                                            }
-                                        </>
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                </div>
+                <Row>
+                    <Col md="12" className="d-flex justify-content-between">
+                        <h1 className="mb-0">Vendor Master</h1>
+                    </Col>
+                </Row>
+                {this.state.isLoader && <LoaderCustom />}
+                <Row className="pt-4 no-filter-row">
+                    <Col md="12">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            <div className="warning-message d-flex align-items-center">
+                                {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                        </Col>
-                    </Row>
-                </form>
-                <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className='d-flex'>
+                                <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.formToggle}
+                                        title="Add"
+                                    >
+                                        <div className={"plus mr-0"}></div>
+                                        {/* ADD */}
+                                    </button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                </button>
+
+                                                <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+                                        }
+                                    </>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className="ag-grid-header col-md-4 pl-0">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                    </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         <AgGridReact
                             defaultColDef={defaultColDef}

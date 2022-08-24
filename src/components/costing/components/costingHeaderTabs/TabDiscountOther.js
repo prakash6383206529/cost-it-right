@@ -768,7 +768,7 @@ function TabDiscountOther(props) {
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
                         name={"OtherCostType"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
@@ -787,7 +787,7 @@ function TabDiscountOther(props) {
                         <SearchableSelectHookForm
                           label={'Other Cost Applicability'}
                           name={'OtherCostApplicability'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -883,7 +883,7 @@ function TabDiscountOther(props) {
                       <SearchableSelectHookForm
                         label={"Discount Type"}
                         name={"HundiDiscountType"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
@@ -902,7 +902,7 @@ function TabDiscountOther(props) {
                         <SearchableSelectHookForm
                           label={'Discount Applicability'}
                           name={'DiscountCostApplicability'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -1019,7 +1019,7 @@ function TabDiscountOther(props) {
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}

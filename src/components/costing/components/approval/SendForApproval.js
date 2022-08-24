@@ -518,7 +518,7 @@ const SendForApproval = (props) => {
                               label={"Reason"}
                               // name={"reason"}
                               name={`${reasonField}reason[${index}]`}
-                              placeholder={"-Select-"}
+                              placeholder={"Select"}
                               Controller={Controller}
                               control={control}
                               rules={{ required: true }}
@@ -682,7 +682,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                             name={"dept"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
@@ -699,7 +699,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={"Approver"}
                             name={"approver"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}

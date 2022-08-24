@@ -1120,7 +1120,7 @@ function OverheadProfit(props) {
                 <SearchableSelectHookForm
                   label={'Model Type for Overheads/Profits'}
                   name={'ModelType'}
-                  placeholder={'-Select-'}
+                  placeholder={'Select'}
                   Controller={Controller}
                   control={control}
                   rules={{ required: false }}
