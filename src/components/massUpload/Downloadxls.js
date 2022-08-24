@@ -10,7 +10,7 @@ import {
     Overhead, OverheadTempData, Profit, ProfitTempData,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
-    PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData,
+    PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData, BOMUploadTempData, BOMUpload,
     BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
@@ -81,7 +81,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(PartComponent, PartComponentTempData);
             case 'ProductComponent':
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
-
+            case 'BOM':
+                return this.returnExcelColumn(BOMUpload, BOMUploadTempData);
             default:
                 return 'foo';
         }
