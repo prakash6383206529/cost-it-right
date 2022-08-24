@@ -6920,12 +6920,12 @@ body {
   }
 }
 
-@media (max-width:$miniDesktop) {
+@media (max-width:$middleDesktop ) {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 223px;
-        max-width: 223px;
+        min-width: 214px;
+        max-width: 214px;
         width: auto;
       }
     }
@@ -8282,12 +8282,14 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
+  display: flex;
+  align-items: center;
   .flex-fills.label {
     min-width: fit-content !important;
   }
 }
 
-@media screen and (min-width:$middleDesktop) {
+@media screen and (min-width:$miniDesktop) {
   .freight-drawer {
     width: 485px !important;
   }
