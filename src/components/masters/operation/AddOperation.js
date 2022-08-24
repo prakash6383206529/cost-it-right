@@ -80,7 +80,9 @@ class AddOperation extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      operationName: '',
+      operationCode: ''
     }
   }
 
@@ -367,7 +369,8 @@ class AddOperation extends Component {
   }
 
   checkUniqCode = (e) => {
-    this.props.checkAndGetOperationCode(e.target.value, '', res => {
+    this.setState({ operationCode: e.target.value })
+    this.props.checkAndGetOperationCode(e.target.value, this.state.operationName, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
         this.props.change('OperationCode', "")
@@ -375,9 +378,9 @@ class AddOperation extends Component {
     })
   }
   checkUniqCodeByName = (e) => {
-    this.props.checkAndGetOperationCode('', e.target.value, res => {
+    this.setState({ operationName: e.target.value })
+    this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-
         Toaster.warning(res.data.Message);
       } else {
         this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
