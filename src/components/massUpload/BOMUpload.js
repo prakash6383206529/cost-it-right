@@ -11,8 +11,11 @@ import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
 import DayTime from '../common/DayTimeWrapper';
+import { BOMBULKUPLOAD } from '../../config/constants';
+import { checkForSameFileUpload } from '../../helper';
+import { BOMUpload } from '../../config/masterData';
 
-class BOMUpload extends Component {
+class BOMUploadDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,9 +81,19 @@ class BOMUpload extends Component {
 
           fileHeads = resp.rows[0];
           // fileHeads = ["SerialNumber", "BillNumber"]
-
+          let checkForFileHead
           let fileData = [];
-
+          switch (String(this.props.fileName)) {
+            case String(BOMBULKUPLOAD):
+              checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
+              break;
+            default:
+              break;
+          }
+          if (!checkForFileHead) {
+            Toaster.warning('Please select file of same Master')
+            return false
+          }
           resp.rows.map((val, index) => {
             if (val === []) return false
             if (index > 0 && val?.length > 0) {
@@ -121,8 +134,7 @@ class BOMUpload extends Component {
   }
 
   responseHandler = (res) => {
-    const { messageLabel, } = this.props;
-    if (res && res.data.Result === true) {
+    if (res && res.Result === true) {
       Toaster.success(`BOM uploaded successfully.`)
     }
     this.toggleDrawer(false)
@@ -259,4 +271,4 @@ export default connect(mapStateToProps, {
   form: 'BOMUpload',
   enableReinitialize: true,
   touchOnChange: true
-})(BOMUpload));
+})(BOMUploadDrawer));

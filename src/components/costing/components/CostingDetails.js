@@ -23,7 +23,8 @@ import {
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
-import BOMUpload from '../../massUpload/BOMUpload';
+import BOMUploadDrawer from '../../massUpload/BOMUpload';
+
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
@@ -2399,15 +2400,25 @@ function CostingDetails(props) {
         )
       }
 
-      {
-        IsBulkOpen && <BOMUpload
-          isOpen={IsBulkOpen}
-          closeDrawer={closeBulkUploadDrawer}
+      {IsBulkOpen && <BOMUploadDrawer
+        isOpen={IsBulkOpen}
+        closeDrawer={closeBulkUploadDrawer}
+        isEditFlag={false}
+        fileName={'BOM'}
+        messageLabel={'BOM'}
+        anchor={'right'}
+      />}
+
+      {clientDrawer && (
+        <Clientbasedcostingdrawer
+          isOpen={clientDrawer}
+          closeDrawer={closeCLientCostingDrawer}
           isEditFlag={false}
           fileName={'BOM'}
           messageLabel={'BOM'}
           anchor={'right'}
         />
+      )
       }
 
       {
