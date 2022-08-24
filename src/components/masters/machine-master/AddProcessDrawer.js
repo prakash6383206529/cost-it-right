@@ -102,14 +102,18 @@ class AddProcessDrawer extends Component {
     let obj = {
       processName: this.state.processName,
       processCode: value
-
     }
     this.props.getProcessCode(obj, (res) => {
 
       let Data = res.data.DynamicData
       if (Data?.IsExist) {
-        Toaster.warning(res.data.Message);
-        this.props.change('ProcessCode', "")
+
+        if (this.state.processName) {
+          this.props.change('ProcessCode', Data.ProcessCode)
+        } else {
+          Toaster.warning(res.data.Message);
+          this.props.change('ProcessCode', "")
+        }
       }
     })
 
