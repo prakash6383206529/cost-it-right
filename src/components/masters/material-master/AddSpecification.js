@@ -34,7 +34,11 @@ class AddSpecification extends Component {
       isOpenMaterialDrawer: false,
       DropdownChanged: true,
       DataToChange: [],
-      setDisable: false
+      setDisable: false,
+      rawMaterialId: '',
+      rmGradeId: '',
+      rmSpecification: '',
+      rmCode: '',
     }
   }
 
@@ -98,12 +102,12 @@ class AddSpecification extends Component {
       });
     } else {
       this.props.getRMSpecificationDataAPI('', res => { });
-      if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && isEditFlag === false) {
-        this.props.checkAndGetRawMaterialCode('', (res) => {
-          let Data = res.data.DynamicData;
-          this.props.change('Code', Data.RawMaterialCode)
-        })
-      }
+      // if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && isEditFlag === false) {
+      //   this.props.checkAndGetRawMaterialCode('', (res) => {
+      //     let Data = res.data.DynamicData;
+      //     this.props.change('Code', Data.RawMaterialCode)
+      //   })
+      // }
     }
   }
 
@@ -112,10 +116,23 @@ class AddSpecification extends Component {
   * @description  used to raw material change
   */
   handleRawMaterial = (newValue, actionMeta) => {
+
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value }, () => {
         const { RawMaterial } = this.state;
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+        if (this.state.rmGradeId && this.state.rmSpecification) {
+          let obj = {
+            materialNameId: newValue.value,
+            materialGradeId: this.state.rmGradeId,
+            materialSpec: this.state.rmSpecification,
+            materialCode: this.state.rmCode
+          }
+          this.props.checkAndGetRawMaterialCode(obj, (res) => {
+            let Data = res.data.DynamicData;
+            this.props.change('Code', Data.RawMaterialCode)
+          })
+        }
       });
     } else {
       this.setState({ RawMaterial: [], RMGrade: [], });
@@ -153,8 +170,23 @@ class AddSpecification extends Component {
   * @description  used to handle type of listing change
   */
   handleGrade = (newValue, actionMeta) => {
+
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue });
+      this.setState({ RMGrade: newValue, rmGradeId: newValue.value });
+
+      if (this.state.rawMaterialId && this.state.rmSpecification) {
+        let obj = {
+          materialNameId: newValue.value,
+          materialGradeId: this.state.rmGradeId,
+          materialSpec: this.state.rmSpecification,
+          materialCode: this.state.rmCode
+        }
+        this.props.checkAndGetRawMaterialCode(obj, (res) => {
+          let Data = res.data.DynamicData;
+          this.props.change('Code', Data.RawMaterialCode)
+        })
+      }
+
     } else {
       this.setState({ RMGrade: [], });
     }
@@ -240,7 +272,8 @@ class AddSpecification extends Component {
             let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
             this.setState({
               RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-              RMGrade: []
+              RMGrade: [],
+              rawMaterialId: tempObj1?.Value
             })
 
           }
@@ -270,6 +303,7 @@ class AddSpecification extends Component {
             let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
             this.setState({
               RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+              rmGradeId: tempObj3?.Value
             })
           }
         });
@@ -366,13 +400,41 @@ class AddSpecification extends Component {
   };
 
   checkUniqCode = debounce((e) => {
+    this.setState({ rmCode: e.target.value })
+    let obj = {
+      materialNameId: this.state.rawMaterialId,
+      materialGradeId: this.state.rmGradeId,
+      materialSpec: this.state.rmSpecification,
+      materialCode: e.target.value
+    }
 
-    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+    this.props.checkAndGetRawMaterialCode(obj, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
         this.props.change('Code', "")
+      } else {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
       }
     })
+  }, 600)
+
+
+  onSpecificationChange = debounce((e) => {
+
+    this.setState({ rmSpecification: e.target.value })
+    if (this.state.rawMaterialId && this.state.rmGradeId) {
+      let obj = {
+        materialNameId: this.state.rawMaterialId,
+        materialGradeId: this.state.rmGradeId,
+        materialSpec: e.target.value,
+        materialCode: this.state.rmCode
+      }
+      this.props.checkAndGetRawMaterialCode(obj, (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
   }, 600)
 
   /**
@@ -548,6 +610,7 @@ class AddSpecification extends Component {
                         validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
+                        onChange={this.onSpecificationChange}
                         className=" "
                         customClassName=" withBorder"
                       />
