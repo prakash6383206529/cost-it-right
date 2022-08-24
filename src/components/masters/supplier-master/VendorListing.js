@@ -635,7 +635,7 @@ class VendorListing extends Component {
                     </Col>
                 </Row>
                 <div className={`ag-grid-wrapper height-width-wrapper ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
+                    <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
