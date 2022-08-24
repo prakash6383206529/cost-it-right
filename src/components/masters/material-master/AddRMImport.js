@@ -994,7 +994,7 @@ class AddRMImport extends Component {
       }
       else {
         if (JSON.stringify(files) === JSON.stringify(DataToChange.FileList) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate)) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
           ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-')) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
           && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
@@ -1067,7 +1067,7 @@ class AddRMImport extends Component {
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate)) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
           String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
             values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
