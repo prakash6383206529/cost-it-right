@@ -51,7 +51,8 @@ class AddFuel extends Component {
         state: false,
         rate: false,
         effectiveDate: false
-      }
+      },
+      isGridEdit: false
     }
   }
 
@@ -65,12 +66,11 @@ class AddFuel extends Component {
       this.props.fetchStateDataAPI(countryId, () => { })
     })
     this.getDetails(data);
+    this.props.getFuelComboData(() => { })
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getFuelComboData(() => { })
       this.props.getUOMSelectList(() => { })
-      this.props.getFuelComboData(() => { })
     }
-
   }
 
   /**
@@ -167,6 +167,20 @@ class AddFuel extends Component {
     return true;
   }
 
+  checkDuplicateRateGrid = (rateGrid, StateName, effectiveDate) => {
+    let countForGrid = 0
+    rateGrid && rateGrid.map((item) => {
+      if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY')))) {
+        countForGrid++
+      }
+      return null
+    })
+
+    if (countForGrid !== 0) {
+      Toaster.warning('Rate for this State and Effective Date already exist')
+    }
+    return countForGrid
+  }
 
   rateTableHandler = () => {
     const { StateName, rateGrid, effectiveDate, } = this.state;
@@ -207,9 +221,9 @@ class AddFuel extends Component {
           return false;
         }
       }
-
-
-
+      if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
+        return false
+      }
       tempArray.push(...rateGrid, {
         Id: '',
         StateLabel: StateName ? StateName.label : '',
@@ -236,7 +250,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: "",
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, isEditIndex: false })
 
   }
 
@@ -248,6 +262,9 @@ class AddFuel extends Component {
     const { StateName, rateGrid, effectiveDate, rateGridEditIndex } = this.state;
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
+    if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
+      return false
+    }
     let tempArray = [];
 
     if (fieldsObj === undefined || Number(fieldsObj) === 0) {
@@ -311,14 +328,19 @@ class AddFuel extends Component {
   */
   deleteItem = (index) => {
     const { rateGrid } = this.state;
+    this.setState({
+      rateGridEditIndex: '',
+      isEditIndex: false,
+      effectiveDate: '',
 
+      StateName: '',
+    }, () => this.props.change('Rate', 0))
     let tempData = rateGrid.filter((item, i) => {
       if (i === index) {
         return false;
       }
       return true;
     });
-
     this.setState({
       rateGrid: tempData
     })
@@ -369,6 +391,7 @@ class AddFuel extends Component {
       fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -376,6 +399,7 @@ class AddFuel extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -385,7 +409,7 @@ class AddFuel extends Component {
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
-
+        return null
       });
       return temp;
     }
@@ -401,7 +425,7 @@ class AddFuel extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -413,8 +437,10 @@ class AddFuel extends Component {
       rateGrid: [],
       isEditFlag: false,
     })
-    this.props.getFuelDetailData('', res => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getFuelDetailData('', res => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -425,7 +451,7 @@ class AddFuel extends Component {
     const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
-      Toaster.warning('Rate should not be empty.');
+      Toaster.warning("Please fill fuel's rate details for atleast one state");
       return false;
     }
 
@@ -458,7 +484,7 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
@@ -475,7 +501,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       })
 
@@ -493,7 +519,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -511,7 +537,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit } = this.state;
 
     return (
       <>
@@ -669,26 +695,35 @@ class AddFuel extends Component {
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    <div className={"cancel-icon"}></div>Cancel
+                                  </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  className={"user-btn mt30 pull-left"}
-                                  disabled={isViewMode}
-                                  onClick={this.rateTableHandler}
-                                >
-                                  <div className={"plus"}></div>ADD
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    className={"user-btn mt30 pull-left"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableHandler}
+                                  >
+                                    <div className={"plus"}></div>ADD
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    Reset
+                                  </button>
+                                </>
                               )}
-                              <button
-                                type="button"
-                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
-                                disabled={isViewMode}
-                                onClick={this.rateTableReset}
-                              >
-                                <div className={"cancel-icon"}></div>Cancel
-                              </button>
-
                             </div>
                           </Col>
                           <Col md="12">
@@ -726,7 +761,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Delete"
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated}
+                                            disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
@@ -754,7 +789,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -828,6 +863,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

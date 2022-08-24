@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { Link, } from "react-router-dom";
+import { reactLocalStorage } from "reactjs-localstorage";
 import "./Breadcrumb.scss";
 
 class Breadcrumb extends Component {

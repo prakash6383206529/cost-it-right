@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 import AddRMDomestic from './AddRMDomestic';
 import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
@@ -12,23 +11,14 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
 
-
-
-
 function RowMaterialMaster(props) {
 
-
-
-    const [isRMOpen, setisRMOpen] = useState(false);
-    const [isOpen, setisOpen] = useState(false);
-    const [isEditFlag, setisEditFlag] = useState(false);
-    const [isViewFlag, setisViewFlag] = useState(false);
-    const [Id, setId] = useState('');
+    const [stopApiCallOnCancel, setStopApiCallOnCancel] = useState(false);
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
 
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
@@ -45,7 +35,6 @@ function RowMaterialMaster(props) {
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
     const [isRMAssociated, setIsRMAssociated] = useState(false);
-    const dispatch = useDispatch()
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
 
@@ -116,6 +105,7 @@ function RowMaterialMaster(props) {
 
         if (activeTab !== tab) {
             setactiveTab(tab);
+            setStopApiCallOnCancel(false)
         }
     }
 
@@ -139,13 +129,14 @@ function RowMaterialMaster(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const hideForm = () => {
-
+    const hideForm = (type) => {
+        setStopApiCallOnCancel(false)
         setisRMDomesticForm(false);
         setisRMImportForm(false);
         setdata({});
-
-
+        if (type === 'cancel') {
+            setStopApiCallOnCancel(true)
+        }
     }
 
     /**
@@ -154,11 +145,9 @@ function RowMaterialMaster(props) {
     * @param DATA CONTAINS ID AND EDIT FLAG
     */
     const getDetails = (data, IsRMAssociated) => {
-
         setisRMDomesticForm(true);
         setdata(data);
         setIsRMAssociated(IsRMAssociated)
-
     }
 
 
@@ -183,8 +172,6 @@ function RowMaterialMaster(props) {
 
     // const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
     //     EditAccessibilityRMANDGRADE, } = this.state;
-
-    const history = History
 
     if (isRMDomesticForm === true) {
         return <AddRMDomestic
@@ -271,6 +258,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -287,6 +275,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -302,6 +291,8 @@ function RowMaterialMaster(props) {
                                         AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                                         EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
 
@@ -312,6 +303,8 @@ function RowMaterialMaster(props) {
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
                             {Number(activeTab) === 5 &&

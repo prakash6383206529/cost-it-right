@@ -188,7 +188,6 @@ class UOMMaster extends Component {
   buttonFormatter = (props) => {
     const { EditAccessibility } = this.state;
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     return (
       <>
@@ -312,7 +311,6 @@ class UOMMaster extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
     const frameworkComponents = {

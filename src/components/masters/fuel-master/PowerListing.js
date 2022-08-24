@@ -4,11 +4,10 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import {
-  getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
-  getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
+  getPowerDetailDataList, getVendorPowerDetailDataList, getPlantListByState,
+  deletePowerDetail, deleteVendorPowerDetail,
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -27,7 +26,6 @@ import { getConfigurationKey } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -60,10 +58,12 @@ class PowerListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getZBCPlantList(() => { })
-    this.props.getStateSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { });
-    this.getDataList()
+    setTimeout(() => {
+      if (!this.props.stopApiCallOnCancel) {
+        this.getDataList()
+      }
+    }, 300);
+
   }
 
   getDataList = () => {
@@ -172,7 +172,6 @@ class PowerListing extends Component {
   */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
@@ -322,17 +321,7 @@ class PowerListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
+    const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
 
@@ -346,7 +335,6 @@ class PowerListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
     const frameworkComponents = {
@@ -526,15 +514,12 @@ function mapStateToProps({ fuel, comman, supplier, auth }) {
 export default connect(mapStateToProps, {
   getPowerDetailDataList,
   getVendorPowerDetailDataList,
-  getFuelComboData,
   getPlantListByState,
-  getZBCPlantList,
-  getStateSelectList,
-  getVendorWithVendorCodeSelectList,
   getPlantBySupplier,
   deletePowerDetail,
   deleteVendorPowerDetail,
 })(reduxForm({
   form: 'PowerListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(PowerListing));

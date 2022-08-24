@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { AssemblyWiseImpactt, COSTINGSIMULATIONROUND, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
-import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { COMBINEDPROCESSSIMULATION, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, BOPGridForToken, ERGridForToken, CostingSimulationDownloadRM, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
+import { COMBINEDPROCESSSIMULATION, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, BOPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
-import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 
@@ -34,11 +32,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { getValues, setValue } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
-
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
@@ -47,7 +40,6 @@ function OtherCostingSimulation(props) {
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
-    const [id, setId] = useState('')
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
@@ -62,8 +54,6 @@ function OtherCostingSimulation(props) {
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [status, setStatus] = useState('')
-    const [noContent, setNoContent] = useState(false)
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     const [showBOPColumn, setShowBOPColumn] = useState(false);
@@ -219,8 +209,6 @@ function OtherCostingSimulation(props) {
 
     }, [costingList])
 
-
-
     const runCostingDetailSimulation = () => {
         setCostingDetailDrawer(true)
     }
@@ -239,7 +227,6 @@ function OtherCostingSimulation(props) {
             simulationId: simulationId,
             costingId: data.CostingId
         }
-        setId(id)
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
             CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
@@ -510,55 +497,6 @@ function OtherCostingSimulation(props) {
         return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-    const NewOverheadCostReducer = (array) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewOverheadCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewProfitCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewProfitCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewRejectionCost = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewRejectionCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewICCCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewICCCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewPaymentTermsCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewPaymentTermsCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewOtherCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewOtherCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewDiscountCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewDiscountCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewNetOverheadAndProfitCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewNetOverheadAndProfitCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-
     const oldRMCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -665,38 +603,6 @@ function OtherCostingSimulation(props) {
             <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
         );
     }
-
-    const returnExcelColumnCombine = (data = [], TempData) => {
-
-
-        TempData && TempData.map(item => {
-
-
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-
-            item.NewPOPrice = (item.NewPOPrice === 0 ? item.OldPOPrice : item.NewPOPrice)
-            item.NewNetCC = (item.NewNetCC === 0 ? item.OldNetCC : item.NewNetCC)
-            item.NewOverheadCost = (item.NewOverheadCost === 0 ? item.OldOverheadCost : item.NewOverheadCost)
-            item.NewProfitCost = (item.NewProfitCost === 0 ? item.OldProfitCost : item.NewProfitCost)
-            item.NewRejectionCost = (item.NewRejectionCost === 0 ? item.OldRejectionCost : item.NewRejectionCost)
-            item.NewICCCost = (item.NewICCCost === 0 ? item.OldICCCost : item.NewICCCost)
-            item.NewPaymentTermsCost = (item.NewPaymentTermsCost === 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost)
-            item.NewOtherCost = (item.NewOtherCost === 0 ? item.OldOtherCost : item.NewOtherCost)
-            item.NewDiscountCost = (item.NewDiscountCost === 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost)
-            item.NewNetOverheadAndProfitCost = (item.NewNetOverheadAndProfitCost === 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost)
-            return null
-        });
-
-        return (<ExcelSheet data={TempData} name={'Costing'}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
-    }
-
-
 
     const returnExcelColumnSecond = (data = []) => {
 

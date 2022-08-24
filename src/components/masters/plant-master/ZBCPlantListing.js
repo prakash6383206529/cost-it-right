@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -13,7 +13,6 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantZbc } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -55,10 +54,7 @@ class ZBCPlantListing extends Component {
     }
 
     componentDidMount() {
-
-        this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-
     }
 
     /**
@@ -136,8 +132,6 @@ class ZBCPlantListing extends Component {
   */
     buttonFormatter = (props) => {
         const cellValue = props?.value;
-        const rowData = props?.data;
-
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
@@ -159,7 +153,7 @@ class ZBCPlantListing extends Component {
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
@@ -181,7 +175,7 @@ class ZBCPlantListing extends Component {
 
         const { ActivateAccessibility } = this.props;
         if (rowData.UserId === loggedInUserId()) return null;
-        showTitleForActiveToggle(props)
+        showTitleForActiveToggle(props?.rowIndex)
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
@@ -264,15 +258,17 @@ class ZBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            //this.getTableListData()
-            this.filterList()
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -308,11 +304,6 @@ class ZBCPlantListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.IsActive === true) {
-                item.IsActive = 'Active'
-            } else if (item.IsActive === false) {
-                item.IsActive = 'In Active'
-            }
             return temp;
         })
         return (
@@ -339,22 +330,9 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor, isDeletePopoup, isTogglePopup } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+        const { isEditFlag, isOpenVendor } = this.state;
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -367,7 +345,6 @@ class ZBCPlantListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
@@ -509,7 +486,6 @@ export default connect(mapStateToProps, {
     getPlantDataAPI,
     deletePlantAPI,
     activeInactiveStatus,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getFilteredPlantList,
@@ -519,4 +495,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ZBCPlantListing));

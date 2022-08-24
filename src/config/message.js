@@ -119,8 +119,8 @@ export const MESSAGES = {
   PLANT_DELETE_SUCCESSFULLY: 'Plant has been deleted successfully',
   PLANT_ACTIVE_SUCCESSFULLY: 'Plant has been activated successfully',
   PLANT_INACTIVE_SUCCESSFULLY: 'Plant has been de-activated successfully',
-  PLANT_DEACTIVE_ALERT: 'Are you sure you want to deactivate?',
-  PLANT_ACTIVE_ALERT: 'Are you sure you want to activate?',
+  PLANT_DEACTIVE_ALERT: 'Are you sure you want to de-activate this plant?',
+  PLANT_ACTIVE_ALERT: 'Are you sure you want to activate this plant?',
 
   //PROCESS
   DELETE_PROCESS_SUCCESS: 'Process deleted successfully',
@@ -142,6 +142,8 @@ export const MESSAGES = {
   //SUPPLIER OR VENDOR
   DELETE_SUPPLIER_SUCCESS: 'Vendor deleted successfully',
   UPDATE_SUPPLIER_SUCESS: 'Vendor updated successfully',
+  VENDOR_ACTIVE_ALERT: 'Are you sure you want to activate this vendor?',
+  VENDOR_DEACTIVE_ALERT: 'Are you sure you want to de-activate this vendor?',
   VENDOR_ACTIVE_SUCCESSFULLY: 'Vendor has been activated successfully',
   VENDOR_INACTIVE_SUCCESSFULLY: 'Vendor has been de-activated successfully',
 
@@ -194,6 +196,7 @@ export const MESSAGES = {
   DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully',
   MACHINE_DELETE_ALERT: 'Are you sure you want to delete this Machine?',
   UPDATE_MACHINE_SUCCESS: 'Machine has been updated successfully',
+  COPY_MACHINE_POPUP: "Are you sure you want to copy this Machine?",
   COPY_MACHINE_SUCCESS: 'Machine has been copied successfully',
 
   //MACHINE TYPE
@@ -212,14 +215,16 @@ export const MESSAGES = {
   DELETE_REASON_SUCCESSFULLY: 'Reason has been deleted successfully',
   REASON_ACTIVE_SUCCESSFULLY: 'Reason has been activated successfully',
   REASON_INACTIVE_SUCCESSFULLY: 'Reason has been de-activated successfully',
+  REASON_ACTIVE_ALERT: 'Are you sure you want to activate this reason?',
+  REASON_DEACTIVE_ALERT: 'Are you sure you want to de-activate this reason?',
 
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully',
   DELETE_USER_SUCCESSFULLY: 'User has been deleted successfully',
-  USER_ACTIVE_SUCCESSFULLY: 'User has been active successfully',
-  USER_INACTIVE_SUCCESSFULLY: 'User has been inactive successfully',
-  USER_DEACTIVE_ALERT: 'Are you sure you want to deactivate?',
-  USER_ACTIVE_ALERT: 'Are you sure you want to activate?',
+  USER_ACTIVE_SUCCESSFULLY: 'User has been activated successfully',
+  USER_INACTIVE_SUCCESSFULLY: 'User has been de-activated successfully',
+  USER_DEACTIVE_ALERT: 'Are you sure you want to de-activate this user?',
+  USER_ACTIVE_ALERT: 'Are you sure you want to activate this user?',
   USER_DELETE_ALERT: 'Are you sure you want to delete this User?',
   UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully',
   COSTING_REJECT_ALERT: "All costing's which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?",
@@ -230,6 +235,10 @@ export const MESSAGES = {
   DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully',
   ROLE_DELETE_ALERT: 'Are you sure you want to delete this role?',
   ROLE_UPDATE_ALERT: 'This will change the permissions for all the users associated with this role. Do you want to continue?',
+  ROLE_DEACTIVE_ALERT: 'Are you sure you want to de-activate this role?',
+  ROLE_ACTIVE_ALERT: 'Are you sure you want to activate this role?',
+  ROLE_ACTIVE_SUCCESSFULLY: 'Role has been activated successfully',
+  ROLE_INACTIVE_SUCCESSFULLY: 'Role has been de-activated successfully',
 
   //DEPARTMENT
   ADD_COMPANY_SUCCESSFULLY: 'Company has been added successfully',

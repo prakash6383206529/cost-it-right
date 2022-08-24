@@ -4,8 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
-import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
-import { getPlantSelectList, } from '../../../actions/Common';
+import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -15,7 +14,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
@@ -26,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -60,7 +58,7 @@ class BOPImportListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -84,41 +82,44 @@ class BOPImportListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
 
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+                if (this.props.isSimulation) {
+                    if (this.props.selectionForListingMasterAPI === 'Combined') {
+                        this.props?.changeSetLoader(true)
+                        this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
+                            this.props?.changeSetLoader(false)
 
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
-                    this.props?.changeSetLoader(false)
-
+                        })
+                    } else {
+                        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                    }
+                }
+                else {
+                    this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: BOP_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
                 })
-            } else {
-                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
             }
-        }
-        else {
-            this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: BOP_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
-
+        }, 300);
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.props.setSelectedCostingListSimualtion([])
+            }
+        }, 300);
     }
 
     /**
@@ -175,8 +176,15 @@ class BOPImportListing extends Component {
                 setTimeout(() => {
 
                     for (var prop in obj) {
-                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                            isReset = false
+
+                        if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                isReset = false
+                            }
+                        } else {
+                            if (obj[prop] !== "") {
+                                isReset = false
+                            }
                         }
                     }
                     // Sets the filter model via the grid API
@@ -345,9 +353,10 @@ class BOPImportListing extends Component {
         //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.BoughtOutPartId == props.node.data.BoughtOutPartId) {
+                if (item.BoughtOutPartId === props.node.data.BoughtOutPartId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return cellValue
         } else {
@@ -507,8 +516,8 @@ class BOPImportListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -677,6 +686,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
@@ -739,14 +749,12 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 export default connect(mapStateToProps, {
     getBOPImportDataList,
     deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
     getAllVendorSelectList,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(BOPImportListing));

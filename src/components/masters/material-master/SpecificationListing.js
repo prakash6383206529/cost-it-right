@@ -85,29 +85,13 @@ class SpecificationListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
+    closeDrawer = (e = '', data, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getSpecificationListData('', '');
+            if (type === 'submit')
+                this.getSpecificationListData('', '');
         })
+
     }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of row material
-    */
-
-
-    /**
-    * @method handleGrade
-    * @description  used to handle type of listing change
-    */
-
-
-    /**
-    * @method handleMaterialChange
-    * @description  used to material change and get grade's
-    */
-
 
     /**
     * @method editItemDetails
@@ -322,16 +306,6 @@ class SpecificationListing extends Component {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -344,7 +318,6 @@ class SpecificationListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 

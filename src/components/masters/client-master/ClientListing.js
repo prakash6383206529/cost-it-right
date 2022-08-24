@@ -23,15 +23,10 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class ClientListing extends Component {
     constructor(props) {
@@ -84,7 +79,6 @@ class ClientListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
-                console.log('permmisionData: ', permmisionData);
                 this.setState({
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
@@ -171,7 +165,6 @@ class ClientListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
@@ -239,13 +232,14 @@ class ClientListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData(null, null)
+            if (type === 'submit')
+                this.getTableListData(null, null)
         })
     }
 
@@ -315,20 +309,6 @@ class ClientListing extends Component {
         const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            // onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -341,7 +321,6 @@ class ClientListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
@@ -461,11 +440,10 @@ class ClientListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth, client }) {
-    const { loading, } = comman;
+function mapStateToProps({ auth, client }) {
     const { leftMenuData, topAndLeftMenuData } = auth;
     const { clientDataList } = client;
-    return { loading, leftMenuData, clientDataList, topAndLeftMenuData };
+    return { leftMenuData, clientDataList, topAndLeftMenuData };
 }
 
 /**
@@ -484,4 +462,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ClientListing));

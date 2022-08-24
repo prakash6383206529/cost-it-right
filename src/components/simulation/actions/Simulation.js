@@ -49,7 +49,6 @@ import {
     COMBINED_PROCESS,
     SET_ATTACHMENT_FILE_DATA,
     SET_TOKEN_CHECK_BOX,
-    SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_COSTING_LIST_SIMULATION,
@@ -161,7 +160,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
     };
 }
 
-export function getSimulationApprovalList(filterData, callback) {
+export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({
             type: GET_SIMULATION_APPROVAL_LIST,
@@ -172,7 +171,10 @@ export function getSimulationApprovalList(filterData, callback) {
             payload: [],
         })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
-        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, config())
+
+        const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&SimulationType=${obj.SimulationType !== undefined ? obj.SimulationType : ""}&AmedmentStatus=${obj.ProvisionalStatus !== undefined ? obj.ProvisionalStatus : ""}&LinkingTokenNo=${obj.LinkingTokenNo !== undefined ? obj.LinkingTokenNo : ""}&SimulationHead=${obj.SimulationTechnologyHead !== undefined ? obj.SimulationTechnologyHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&ImpactedCosting=${obj.ImpactCosting !== undefined ? obj.ImpactCosting : ""}&ImpactedParts=${obj.ImpactParts !== undefined ? obj.ImpactParts : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&InitiatedBy=${obj.SimulatedByName !== undefined ? obj.SimulatedByName : ""}&SimulatedOn=${obj.SimulatedOn !== undefined ? obj.SimulatedOn : ""}&LastApproval=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&SimulationStatus=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
+
         request.then((response) => {
             if (response.data.Result) {
                 if (filterData.isDashboard) {

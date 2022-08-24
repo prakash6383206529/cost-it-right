@@ -669,6 +669,7 @@ export const API = {
   updateRoleAPI: `${BASE_URL}/user-role/update-new`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
+  activeInactiveRole: `${BASE_URL}/user-role/active-inactive-role`,
 
   //DEPARTMENT'S API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,
@@ -1663,7 +1664,7 @@ export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
 export const COSTING_SUMMARY_ = 'Costing Summary'
-export const APPROVAL_APP = 'Approval'
+export const APPROVAL_APP = 'Approval Status'
 export const TAX = 'Tax'
 export const COSTING_DETAILS_REPORT = 'Costing Details'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
@@ -1870,6 +1871,11 @@ export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
+export const IMPORT = "Import"
+
+// SPACE KEY CODE
+export const SPACEBAR = 32
+
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
@@ -1927,10 +1933,13 @@ export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
+// TECHNOLOGY
+export const FERROUSCASTINGID = '6'
+
 // KEY AND IV
 export const KEY = 'ewswymuinfzfskjz';
 export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.410";
+export const VERSION = "V1.2.445.1";

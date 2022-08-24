@@ -5,14 +5,14 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { getLeftMenu, } from '../../actions/auth/AuthActions';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class User extends Component {
   constructor(props) {

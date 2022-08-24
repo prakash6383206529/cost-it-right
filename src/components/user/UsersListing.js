@@ -15,7 +15,6 @@ import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
-import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -114,22 +113,21 @@ class UsersListing extends Component {
 
 	}
 
+	onRowSelect = () => {
+		const selectedRows = this.state.gridApi?.getSelectedRows()
+		this.setState({ selectedRowData: selectedRows })
+	}
 
 	onBtExport = () => {
 		let tempArr = []
-
-		tempArr = this.props.userDataList
+		tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.userDataList ? this.props.userDataList : [])
 		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
 	returnExcelColumn = (data = [], TempData) => {
 		let temp = []
 		temp = TempData && TempData.map((item) => {
-			if (item.IsActive === true) {
-				item.IsActive = 'Active'
-			} else if (item.IsActive === false) {
-				item.IsActive = 'In Active'
-			}
 			return temp;
 		})
 		return (
@@ -315,24 +313,9 @@ class UsersListing extends Component {
 	}
 
 	handleChange = (cell, row) => {
-		let data = {
-			Id: row.UserId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-		this.setState({ showPopup: true, row: row, cell: cell })
-		const toastrConfirmOptions = {
 
-			onOk: () => {
-				this.confirmDeactivateItem(data, cell);
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />,
-		};
-		// return toastr.confirm(
-		// 	`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
-		// 	toastrConfirmOptions
-		// );
+		this.setState({ showPopup: true, row: row, cell: cell })
+
 	}
 
 	/**
@@ -362,7 +345,7 @@ class UsersListing extends Component {
 
 		const { ActivateAccessibility } = this.state;
 		if (rowData.UserId === loggedInUserId()) return null;
-		showTitleForActiveToggle(props)
+		showTitleForActiveToggle(props?.rowIndex)
 		return (
 			<>
 				<label htmlFor="normal-switch" className="normal-switch">
@@ -525,10 +508,19 @@ class UsersListing extends Component {
 		const { handleSubmit, initialConfiguration, } = this.props;
 		const { EditAccessibility, AddAccessibility } = this.state;
 
+		const isFirstColumn = (params) => {
+
+			var displayedColumns = params.columnApi.getAllDisplayedColumns();
+			var thisIsFirstColumn = displayedColumns[0] === params.column;
+			return thisIsFirstColumn;
+		}
+
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
 			sortable: true,
+			headerCheckboxSelectionFilteredOnly: true,
+			checkboxSelection: isFirstColumn
 
 		};
 
@@ -654,6 +646,9 @@ class UsersListing extends Component {
 									imagClass: 'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}
+								enableBrowserTooltips={true}
+								onSelectionChanged={this.onRowSelect}
+								rowSelection={'multiple'}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
@@ -663,7 +658,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								<AgGridColumn field="DepartmentName" headerName="Purchase Group"></AgGridColumn>
+								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Purchase Group"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

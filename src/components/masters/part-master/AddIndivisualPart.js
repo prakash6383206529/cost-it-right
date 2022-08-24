@@ -6,7 +6,6 @@ import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialC
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
-import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -20,6 +19,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -49,7 +49,8 @@ class AddIndivisualPart extends Component {
       isBomEditable: false,
       minEffectiveDate: '',
       disablePartName: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -184,14 +185,6 @@ class AddIndivisualPart extends Component {
 
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -207,7 +200,7 @@ class AddIndivisualPart extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -293,7 +286,6 @@ class AddIndivisualPart extends Component {
  * @description used to Reset form
  */
   cancel = (type) => {
-
     const { reset } = this.props;
     reset();
     this.setState({
@@ -330,7 +322,7 @@ class AddIndivisualPart extends Component {
         JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
         && String(DataToCheck.Remark) === String(values.Remark) && !isGroupCodeChange && uploadAttachements) {
-        this.cancel()
+        this.cancel('submit')
         return false;
       }
 
@@ -385,7 +377,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
 
@@ -413,7 +405,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -424,7 +416,7 @@ class AddIndivisualPart extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -525,6 +517,7 @@ class AddIndivisualPart extends Component {
                                 label="Group Code"
                                 name="ProductGroup"
                                 type="text"
+                                title={showDataOnHover(this.state.ProductGroup)}
                                 placeholder={isViewMode ? '-' : "Select"}
                                 selection={
                                   this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
@@ -617,8 +610,10 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
+                                  onFocus={() => onFocus(this, true)}
                                   disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
                                 />
+                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
@@ -653,7 +648,6 @@ class AddIndivisualPart extends Component {
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="*"
@@ -731,7 +725,7 @@ class AddIndivisualPart extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -797,7 +791,6 @@ function mapStateToProps({ comman, part, auth }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   createPart,
   updatePart,
   getPartData,

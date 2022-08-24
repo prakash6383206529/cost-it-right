@@ -201,22 +201,22 @@ class AddSpecification extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
       material: [],
       RMGrade: [],
     })
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
     this.props.getRMSpecificationDataAPI('', res => { });
   }
 
-  toggleDrawer = (event, data) => {
+  toggleDrawer = (event, data, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', data)
+    this.props.closeDrawer('', data, type)
   };
 
   rawMaterialToggler = (Id = '') => {
@@ -310,10 +310,8 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-
-
-      if (DataToChange.Specification == values.Specification && DropdownChanged) {
-        this.cancel()
+      if (DataToChange.Specification === values.Specification && DropdownChanged) {
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -335,7 +333,7 @@ class AddSpecification extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
-          this.toggleDrawer('', '')
+          this.toggleDrawer('', '', 'submit')
         }
       })
     } else {
@@ -353,7 +351,7 @@ class AddSpecification extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       });
     }
@@ -579,7 +577,7 @@ class AddSpecification extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>

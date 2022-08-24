@@ -13,7 +13,7 @@ import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { ZBC } from '../../../config/constants'
+import { SPACEBAR, ZBC } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const gridOptions = {};
 
@@ -118,7 +119,8 @@ class AddVolume extends Component {
       gridColumnApi: null,
       rowData: null,
       setDisable: false,
-      inputLoader: false
+      inputLoader: false,
+      showErrorOnFocus: false
     }
   }
 
@@ -289,7 +291,6 @@ class AddVolume extends Component {
    */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const rowIndex = props?.rowIndex
     return (
       <>
@@ -300,7 +301,6 @@ class AddVolume extends Component {
 
   budgetedQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -312,7 +312,6 @@ class AddVolume extends Component {
 
   actualQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const value = this.beforeSaveCell(cell)
 
     return (
@@ -401,8 +400,9 @@ class AddVolume extends Component {
 
                   return tableArray.sort()
                 }
-
+                return null
               })
+              return null
             })
 
           setTimeout(() => {
@@ -442,7 +442,7 @@ class AddVolume extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props
     const { tableData } = this.state
 
@@ -450,6 +450,7 @@ class AddVolume extends Component {
     tableData.map((item) => {
       item.BudgetedQuantity = 0;
       item.ApprovedQuantity = 0
+      return null
     })
 
     reset('AddVolume')
@@ -462,7 +463,7 @@ class AddVolume extends Component {
       },
       () => {
         this.props.getVolumeData('', () => { })
-        this.props.hideForm()
+        this.props.hideForm(type)
       },
     )
   }
@@ -546,7 +547,7 @@ class AddVolume extends Component {
     if (this.state.isEditFlag) {
 
       if (this.state.DataToChange) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -561,7 +562,7 @@ class AddVolume extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     } else {
@@ -597,7 +598,7 @@ class AddVolume extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     }
@@ -636,12 +637,6 @@ class AddVolume extends Component {
 
 
       });
-    const cellEditProp = {
-      mode: 'click',
-      blurToSave: true,
-      beforeSaveCell: this.beforeSaveCell,
-      afterSaveCell: this.afterSaveCell
-    };
 
     const defaultColDef = {
       resizable: true,
@@ -747,7 +742,12 @@ class AddVolume extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                    onKeyDown={(onKeyDown) => {
+                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
+                                    onFocus={() => onFocus(this)}
+                                  />
                                 </div>
                                 {!isEditFlag && (
                                   <div
@@ -756,7 +756,7 @@ class AddVolume extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
 
                           )}
@@ -875,7 +875,7 @@ class AddVolume extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>{" "}
@@ -963,5 +963,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddVolume',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddVolume),
 )

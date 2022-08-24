@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
@@ -9,17 +9,16 @@ import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
-import LoaderCustom from '../../common/LoaderCustom';
 
 function ManageSOBDrawer(props) {
 
-  const { ID, isEditFlag } = props;
+  const { ID } = props;
   const GridFields = 'GridFields';
   const defaultValues = {
     //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -30,8 +29,6 @@ function ManageSOBDrawer(props) {
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
-  const [dropdownChanged, setDropDownChanged] = useState(true)
-  const [isLoader, setIsLoader] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -134,44 +131,6 @@ function ManageSOBDrawer(props) {
     } else {
       //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
-    setDropDownChanged(false)
-  }
-
-  /**
-  * @method checkIsSOBChanged
-  * @description HANDLE SOB CHANGE
-  */
-  const checkIsSOBChanged = (event, index) => {
-    let tempOldObj = GridDataOldArray[index];
-
-    if (index > GridDataOldArray.length - 1) {
-      return false;
-    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercentage) {
-      return false;
-    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercentage) {
-      return true;
-    }
-
-  }
-
-  /**
-  * @method warningMessageHandle
-  * @description VIEW COSTING DETAILS IN READ ONLY MODE
-  */
-  const warningMessageHandle = (warningType) => {
-    switch (warningType) {
-      case 'SOB_WARNING':
-        Toaster.warning('SOB Should not be greater than 100.');
-        break;
-      case 'VALID_NUMBER_WARNING':
-        Toaster.warning('Please enter a valid number.');
-        break;
-      case 'ERROR_WARNING':
-        Toaster.warning('Please enter a valid number.');
-        break;
-      default:
-        break;
-    }
   }
 
   /**
@@ -187,6 +146,7 @@ function ManageSOBDrawer(props) {
   * @description TOGGLE DRAWER
   */
   const toggleDrawer = (event) => {
+    console.log("COMING IN TOGGLE DRAWER");
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -240,7 +200,6 @@ function ManageSOBDrawer(props) {
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        {isLoader && <LoaderCustom />}
         <Container className="sob-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
@@ -321,7 +280,7 @@ function ManageSOBDrawer(props) {
                         GridData && <tr className="sob-background">
                           <td>{'BOP Cost'}</td>
                           <td>{''}</td>
-                          <td>{`Net Cost(Weighted Average):`}</td>
+                          <td>{`Net Cost (Weighted Average):`}</td>
                           <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }

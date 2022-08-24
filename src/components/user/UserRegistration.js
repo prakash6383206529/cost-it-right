@@ -16,7 +16,6 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
@@ -26,6 +25,7 @@ import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
+import { showDataOnHover } from "../../helper";
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
 
@@ -103,11 +103,6 @@ class UserRegistration extends Component {
     })
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
-
-    setTimeout(() => {
-      this.props.change('UserName', "")
-      this.props.change('Password', "")
-    }, 400);
   }
 
   /**
@@ -501,12 +496,14 @@ class UserRegistration extends Component {
             isSelectAll = false
           }
         }
+        return null
       })
     } else {
       temp111 && temp111.map((ele, index) => {
         if (ele.IsChecked === false) {
           isSelectAll = false
         }
+        return null
       })
     }
 
@@ -1376,6 +1373,7 @@ class UserRegistration extends Component {
                               required={true}
                               // maxLength={26}
                               isEyeIcon={true}
+                              autoComplete={"new-password"}
                               customClassName={'withBorderPWD'}
                             />
                           </div>
@@ -1484,6 +1482,7 @@ class UserRegistration extends Component {
                             <Field
                               name="DepartmentId"
                               type="text"
+                              title={showDataOnHover(this.state.department)}
                               label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               component={renderMultiSelectField}
                               placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
@@ -2042,4 +2041,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(UserRegistration));

@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
+import { getVendorPlantSelectList, getAllCities, getCityByCountry, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -16,6 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { showDataOnHover } from '../../../helper';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -51,9 +52,6 @@ class AddVendorDrawer extends Component {
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
-            this.props.fetchCountryDataAPI(() => { })
-            this.props.fetchStateDataAPI(0, () => { })
-            this.props.fetchCityDataAPI(0, () => { })
         }
     }
 
@@ -324,10 +322,10 @@ class AddVendorDrawer extends Component {
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
-            if (DropdownChanged && DataToCheck.Email == values.Email && DataToCheck.PhoneNumber == values.PhoneNumber &&
-                DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
-                DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
-                DataToCheck.AddressLine2 == values.AddressLine2) {
+            if (DropdownChanged && DataToCheck.Email === values.Email && DataToCheck.PhoneNumber === values.PhoneNumber &&
+                DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
+                DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
+                DataToCheck.AddressLine2 === values.AddressLine2) {
 
                 this.toggleDrawer('', 'cancel')
                 return false
@@ -395,7 +393,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, isVisible } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
         return (
             <div>
@@ -427,6 +425,7 @@ class AddVendorDrawer extends Component {
                                             label="Vendor Type"
                                             name="VendorType"
                                             placeholder="Select"
+                                            title={showDataOnHover(this.state.selectedVendorType)}
                                             selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
                                             selectionChanged={this.handleVendorType}
@@ -710,11 +709,7 @@ export default connect(mapStateToProps, {
     updateSupplierAPI,
     getSupplierByIdAPI,
     getRadioButtonSupplierType,
-    fetchCountryDataAPI,
-    fetchStateDataAPI,
-    fetchCityDataAPI,
     getAllCities,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getCityByCountry,

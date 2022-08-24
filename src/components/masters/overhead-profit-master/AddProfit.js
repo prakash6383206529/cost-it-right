@@ -15,13 +15,14 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, SPACEBAR } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -70,7 +71,9 @@ class AddProfit extends Component {
       minEffectiveDate: '',
       isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
-      vendorCode: ""
+      vendorCode: "",
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -524,14 +527,6 @@ class AddProfit extends Component {
     })
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -547,7 +542,7 @@ class AddProfit extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -632,7 +627,7 @@ class AddProfit extends Component {
   * @method cancel
   * @description used to Cancel form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -644,7 +639,7 @@ class AddProfit extends Component {
       profitAppli: [],
     })
     this.props.getProfitData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -687,7 +682,7 @@ class AddProfit extends Component {
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true, disablePopup: false })
@@ -751,7 +746,7 @@ class AddProfit extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -762,7 +757,7 @@ class AddProfit extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }
@@ -907,8 +902,13 @@ class AddProfit extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
+                              />
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </div>
                           </Col>
                         )}
@@ -1056,7 +1056,9 @@ class AddProfit extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
+                              onFocus={() => onFocus(this, true)}
                             />
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                           </div>
                         </Col>
                       </Row>
@@ -1091,7 +1093,6 @@ class AddProfit extends Component {
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
-                              getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               disabled={isViewMode}
@@ -1173,7 +1174,7 @@ class AddProfit extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>

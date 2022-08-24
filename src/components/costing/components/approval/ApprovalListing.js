@@ -343,7 +343,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${(row.NetPOPrice === 0 && row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
+        <img className={`${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
       </>
     )
@@ -814,7 +814,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
                           <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
-                          <AgGridColumn field="RequestedBy" headerName="Last Approval" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
+                          <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
                           {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                         </AgGridReact>

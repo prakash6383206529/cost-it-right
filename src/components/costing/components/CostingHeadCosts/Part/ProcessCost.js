@@ -990,10 +990,9 @@ function ProcessCost(props) {
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-            <td style={{ width: 350 }}>
+            <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
-                  {console.log(errors.SingleProcessGridField, "rtest")}
 
                   {
                     <NumberFieldHookForm
@@ -1007,7 +1006,7 @@ function ProcessCost(props) {
                         required: true,
                         pattern: {
                           value: /^\d{0,6}(\.\d{0,4})?$/i,
-                          message: 'Max. length for interger is 6 and for decimal is 4',
+                          message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
                       }}
                       errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[index] && errors.SingleProcessGridField[index][parentIndex] && errors.SingleProcessGridField[index][parentIndex].Quantity : ''}
@@ -1141,14 +1140,14 @@ function ProcessCost(props) {
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
-                    <th style={{ width: "150px" }}>{`Process`}</th>
+                    <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
-                    <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
-                    <th style={{ width: "220px" }}>{`Machine Rate`}</th>
-                    <th style={{ width: "220px" }}>{`UOM`}</th>
+                    <th style={{ width: "150px" }}>{`Machine Tonnage`}</th>
+                    <th style={{ width: "150px" }}>{`Machine Rate`}</th>
+                    <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
-                    <th style={{ width: "330px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
-                    <th style={{ width: "220px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
+                    <th style={{ width: "110px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -1158,7 +1157,7 @@ function ProcessCost(props) {
                       return (
                         <>
                           <tr key={index}>
-                            <td className='text-overflow process-name'>
+                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name'}`}>
                               {
                                 (item?.GroupName === '' || item?.GroupName === null) ? '' :
                                   <div onClick={() => {
@@ -1175,7 +1174,7 @@ function ProcessCost(props) {
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
                             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-                            <td style={{ width: 350 }}>
+                            <td >
                               {
 
                                 <div className='d-flex align-items-center'>
@@ -1192,7 +1191,7 @@ function ProcessCost(props) {
                                           required: true,
                                           pattern: {
                                             value: /^\d{0,6}(\.\d{0,4})?$/i,
-                                            message: 'Max. length for interger is 6 and for decimal is 4',
+                                            message: 'Maximum length for integer is 6 and for decimal is 4',
                                           },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
@@ -1224,7 +1223,7 @@ function ProcessCost(props) {
 
                               }
                             </td>
-                            <td style={{ width: 100 }}>
+                            <td>
                               {
                                 <TextFieldHookForm
                                   label=""
@@ -1311,6 +1310,7 @@ function ProcessCost(props) {
             setOperationCost={setOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
+            rmFinishWeight={rmFinishWeight}
           />
 
           <OperationCostExcludedOverhead
@@ -1318,6 +1318,7 @@ function ProcessCost(props) {
             setOtherOperationCost={setOtherOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
+            rmFinishWeight={rmFinishWeight}
           />
 
         </div>

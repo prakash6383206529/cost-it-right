@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getManageBOPSOBDataList, getInitialFilterData } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
+import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey } from '../../../helper';
@@ -305,19 +305,6 @@ class SOBListing extends Component {
     const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
 
-
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
-
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
       var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -329,7 +316,6 @@ class SOBListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 

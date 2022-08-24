@@ -107,7 +107,6 @@ class ViewUserDetails extends Component {
     this.props.getUsersMasterLevelAPI(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        console.log(Data, "data");
         let masterLevel = Data.MasterLevels;
         this.setState({
           MasterLevelGrid: masterLevel,
@@ -218,8 +217,7 @@ class ViewUserDetails extends Component {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
     const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen } = this.state;
 
-    const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "-"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "-"}, 
-    ${registerUserData.CityName ? registerUserData.CityName : "-"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "-"}` : '';
+    const departmentName = department ? department.join(", ") : '-';
     return (
       <>
         {(this.props.loading) && <Loader />}
@@ -301,8 +299,8 @@ class ViewUserDetails extends Component {
                         title={'Role & Purchasing Group:'}
                         customClass={'role-department-details'} />
                     </div>
-                    <div className={'right-details pt-2'}>
-                      {`${registerUserData ? registerUserData.RoleName : ''} (${department ? department : '-'})`}
+                    <div className={'right-details pt-2 role-department-container'}>
+                      <div>{registerUserData ? registerUserData.RoleName : ''}</div>(<div title={departmentName} className="departments">{departmentName}</div>)
                       {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>

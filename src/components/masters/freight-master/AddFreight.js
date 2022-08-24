@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from "reactstrap";
-import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
@@ -19,11 +19,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, SPACEBAR } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from "../../../helper";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -59,7 +59,8 @@ class AddFreight extends Component {
         criteria: false,
         rate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     };
   }
   /**
@@ -171,6 +172,7 @@ class AddFreight extends Component {
         vendorListByVendorType.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -179,6 +181,7 @@ class AddFreight extends Component {
         cityList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -187,6 +190,7 @@ class AddFreight extends Component {
         cityList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -195,6 +199,7 @@ class AddFreight extends Component {
         freightModeSelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -203,6 +208,7 @@ class AddFreight extends Component {
         freightFullTruckCapacitySelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -211,6 +217,7 @@ class AddFreight extends Component {
         freightRateCriteriaSelectList.map((item) => {
           if (item.Value === "0") return false;
           temp.push({ label: item.Text, value: item.Value });
+          return null
         });
       return temp;
     }
@@ -421,8 +428,9 @@ class AddFreight extends Component {
         RateCriteria: [],
         gridEditIndex: "",
         isEditIndex: false,
+        effectiveDate: ''
       },
-      () => this.props.change("Rate", 0)
+      () => this.props.change("Rate", '')
     );
   };
   /**
@@ -466,7 +474,7 @@ class AddFreight extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -476,7 +484,7 @@ class AddFreight extends Component {
       sourceLocation: [],
       destinationLocation: [],
     });
-    this.props.hideForm();
+    this.props.hideForm(type);
   };
   /**
    * @method onSubmit
@@ -486,8 +494,6 @@ class AddFreight extends Component {
     const {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
-    const { fieldsObj } = this.props;
-
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -498,15 +504,15 @@ class AddFreight extends Component {
     const userDetail = userDetails();
     if (isEditFlag) {
       if (
-        DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
-        DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
-        DataToChange.PartTruckLoadRatePerKilogram == values.PartTruckLoadRatePerKilogram
+        DataToChange.LoadingUnloadingCharges === values.LoadingUnloadingCharges &&
+        DataToChange.PartTruckLoadRatePerCubicFeet === values.PartTruckLoadRatePerCubicFeet &&
+        DataToChange.PartTruckLoadRatePerKilogram === values.PartTruckLoadRatePerKilogram
         &&
         (AddUpdate && HandleChanged) &&
         DeleteChanged
       ) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -524,7 +530,7 @@ class AddFreight extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
-          this.cancel();
+          this.cancel('submit');
         }
       });
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
@@ -547,7 +553,7 @@ class AddFreight extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -680,7 +686,12 @@ class AddFreight extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                    onKeyDown={(onKeyDown) => {
+                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
+                                    onFocus={() => onFocus(this)}
+                                  />
                                 </div>
                                 {!isEditFlag && (
                                   <div
@@ -689,7 +700,7 @@ class AddFreight extends Component {
                                   ></div>
                                 )}
                               </div>
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
                           )}
                           <Col md="3">
@@ -908,15 +919,24 @@ class AddFreight extends Component {
                                   </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  disabled={isViewMode}
-                                  className={"user-btn mt30 pull-left"}
-                                  onClick={this.gridHandler}
-                                >
-                                  <div className={"plus"}></div>
-                                  ADD
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isViewMode}
+                                    className={"user-btn mt30 pull-left"}
+                                    onClick={this.gridHandler}
+                                  >
+                                    <div className={"plus"}></div>
+                                    ADD
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={"reset-btn mt30 ml5 pull-left"}
+                                    onClick={this.resetGridData}
+                                  >
+                                    Reset
+                                  </button>
+                                </>
                               )}
                             </div>
                           </Col>
@@ -967,7 +987,7 @@ class AddFreight extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1062,5 +1082,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: "AddFreight",
     enableReinitialize: true,
+    touchOnChange: true
   })(AddFreight)
 );

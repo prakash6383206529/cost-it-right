@@ -26,14 +26,14 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
@@ -110,7 +110,9 @@ class AddRMImport extends Component {
       disablePopup: false,
       setDisable: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -144,7 +146,6 @@ class AddRMImport extends Component {
       this.props.getRawMaterialCategory(res => { });
       this.props.getRawMaterialNameChild('', () => { })
       this.setState({ inputLoader: true })
-      this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
@@ -631,8 +632,8 @@ class AddRMImport extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -765,7 +766,7 @@ class AddRMImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  clearForm = () => {
+  clearForm = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -788,15 +789,15 @@ class AddRMImport extends Component {
     })
     this.props.getRMImportDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -805,13 +806,6 @@ class AddRMImport extends Component {
   */
   resetForm = () => {
     this.clearForm()
-  }
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
   }
 
   /**
@@ -829,7 +823,7 @@ class AddRMImport extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -844,8 +838,9 @@ class AddRMImport extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -913,9 +908,9 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration, fieldsObj } = this.props;
+    const { fieldsObj } = this.props;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -943,18 +938,6 @@ class AddRMImport extends Component {
     }
 
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-
-    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-        values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-      && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-        (sourceLocationValue ? sourceLocationValue : '-'))) {
-      Toaster.warning('Please change data to send RM for approval')
-      return false
-    }
-    this.setState({ setDisable: true, disablePopup: false })
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
@@ -1002,42 +985,38 @@ class AddRMImport extends Component {
         }
 
       }
-
-
-      if (isSourceChange) {
-        this.props.updateRMImportAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
-
-          }
-        })
-      }
       else {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (JSON.stringify(files) === JSON.stringify(DataToChange.FileList) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          if (isSourceChange) {
+            this.props.updateRMImportAPI(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm('submit')
+
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+
+        }
+
       }
-
-
-      // else {
-      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-      //     this.cancel()
-      //     return false
-      //   }
-      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-      //     this.setState({ showPopup: true, updatedObj: requestData })
-      //   }
-
-
 
     } else {
 
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         RawMaterialId: RawMaterialID,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1067,7 +1046,7 @@ class AddRMImport extends Component {
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: false,
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         IsSendForApproval: false,
         VendorPlant: []
@@ -1078,6 +1057,16 @@ class AddRMImport extends Component {
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          Toaster.warning('Please change data to send RM for approval')
+          return false
+        }
+        // this.setState({ setDisable: true, disablePopup: false })
 
 
         if (IsFinancialDataChanged) {
@@ -1104,11 +1093,11 @@ class AddRMImport extends Component {
           if (isEditFlag) {
 
 
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
               Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
               String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
                 values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-              this.cancel()
+              this.cancel('submit')
               return false
             }
           }
@@ -1124,13 +1113,12 @@ class AddRMImport extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            this.clearForm();
+            this.clearForm('submit');
           }
         });
       }
     }
   }
-
 
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
@@ -1138,7 +1126,7 @@ class AddRMImport extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-        this.clearForm();
+        this.clearForm('submit');
       }
     })
   }
@@ -1362,6 +1350,7 @@ class AddRMImport extends Component {
                                 label="Plant"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
+                                title={showDataOnHover(this.state.selectedPlants)}
                                 selection={
                                   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
@@ -1441,12 +1430,17 @@ class AddRMImport extends Component {
                                   value={this.state.vendorName}
                                   placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
+                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
+                                  onFocus={() => onFocus(this)}
+                                  onKeyDown={(onKeyDown) => {
+                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                  }}
+                                />
 
                               </div>
                               {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
                             </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
@@ -1544,10 +1538,11 @@ class AddRMImport extends Component {
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
                                   placeholder="Select Date"
-
+                                  onFocus={() => onFocus(this, true)}
                                 />
                               </div>
                             </div>
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                           {/* NOT APPLICABLE FOR RE */}
                           {/* <Col md="3">
@@ -1695,7 +1690,6 @@ class AddRMImport extends Component {
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="*"
@@ -1772,7 +1766,7 @@ class AddRMImport extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1888,6 +1882,7 @@ class AddRMImport extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={true}
+                UOM={this.state.UOM}
               />
             )
           }
@@ -1980,4 +1975,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddRMImport));

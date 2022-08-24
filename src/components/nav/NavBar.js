@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
@@ -32,6 +31,7 @@ import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { VERSION, SIMULATION } from '../../config/constants';
 import _ from "lodash";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 class SideBar extends Component {
   constructor(props) {
@@ -114,6 +114,7 @@ class SideBar extends Component {
       let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
       let simulationArray = simulationPages && simulationPages.filter((item) => {
         if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
+        return null
       })
       if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
         localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
@@ -214,19 +215,11 @@ class SideBar extends Component {
     reactLocalStorage.set("ModuleId", ModuleId);
   };
 
-
-  setModuleId = (ModuleId) => {
-    reactLocalStorage.set('ModuleId', ModuleId)
-  }
-
   /**
   * @method setLeftMenu
   * @description Used to set left menu and Redirect to first menu.
   */
   SetMenu = (ModuleId) => {
-    if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
-      //this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
-    }
     reactLocalStorage.set("MenuModuleId", ModuleId);
   };
 
@@ -287,8 +280,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -386,8 +381,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -461,15 +458,17 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -498,6 +497,25 @@ class SideBar extends Component {
                 />
                 <span>Report</span>
               </Link>
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  {
+                    el && el.Pages && el.Pages.map((item, i) => {
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+              </div>
             </li>
           );
         }
@@ -582,8 +600,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -625,7 +645,7 @@ class SideBar extends Component {
                             onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: localStorage.getItem('ModuleId'), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
@@ -671,8 +691,10 @@ class SideBar extends Component {
             if (window.location.href.includes(item.NavigationURL)) {
               this.setLeftMenu(el.ModuleId)
             }
+            return null
           })
         }
+        return null
       })
 
     return (
@@ -765,24 +787,19 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 ">
-                <img
-                  src={Logo}
-                  // src={require("../../assests/images/sipl-logo.jpg")}
-                  alt="Systematix"
-                  height="40"
-                />
-              </a>
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={cirLogo} alt="Cost It Right" height="40" />
-              </a>
-              <button
-                className="navbar-toggler p-0 border-0"
-                type="button"
-                data-toggle="offcanvas"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </button>
+              <div className="logo-container">
+                <button className="btn btn-no-border" >
+                  <img
+                    src={Logo}
+                    alt="Royal Enfield"
+                    height="40"
+                  />
+                </button>
+                <div className="border-left"></div>
+                <button className="btn btn-no-border">
+                  <img src={cirLogo} alt="Cost It Right" height="40" />
+                </button>
+              </div>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
@@ -819,14 +836,14 @@ class SideBar extends Component {
                     </div>
                   </li>
                   {isLoggedIn ? (
-                    <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
+                    <li className="nav-item d-xl-inline-block cr-logout-btn ml-1">
+                      <button className="btn btn-no-border" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
-                          alt=""
+                          alt="logout"
                         />
-                      </a>
+                      </button>
                     </li>
                   ) : (
                     ""

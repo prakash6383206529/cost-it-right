@@ -12,7 +12,6 @@ import {
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
     getTechnologyListByVendor, getOperationListByVendor, setOperationList
 } from '../actions/OtherOperation';
-import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -31,9 +30,8 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedCostingListSimualtion, } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -69,7 +67,7 @@ class OperationListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -81,34 +79,32 @@ class OperationListing extends Component {
             globalTake: defaultPageSize
         }
     }
-
     componentDidMount() {
+
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
-
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            } else {
-                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-            }
-            let obj = {
-                MasterId: OPERATIONS_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            this.props.masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            if (!this.props.stopAPICall) {
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-            })
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
 
             if (this.props.stopAPICall === true) {
                 this.setState({ tableData: this.props.operationDataHold })
@@ -216,12 +212,21 @@ class OperationListing extends Component {
                 setTimeout(() => {
 
                     for (var prop in obj) {
-                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                            isReset = false
+                        if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                isReset = false
+                            }
+                        } else {
+                            if (obj[prop] !== "") {
+                                isReset = false
+                            }
                         }
                     }
                     // SETS  THE FILTER MODEL VIA THE GRID API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
                 }, 300);
 
                 setTimeout(() => {
@@ -387,15 +392,6 @@ class OperationListing extends Component {
         )
     };
 
-    handleChange = (cell, row) => {
-        let data = {
-            Id: row.VendorId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-
-    }
-
     /**
     * @method handleHeadChange
     * @description called
@@ -475,32 +471,6 @@ class OperationListing extends Component {
     };
 
     /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (
-            <>
-                <label htmlFor="normal-switch" className="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cellValue, rowData)}
-                        checked={cellValue}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
-    }
-
-    /**
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
@@ -525,9 +495,10 @@ class OperationListing extends Component {
         let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.OperationId == props.node.data.OperationId) {
+                if (item.OperationId === props.node.data.OperationId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return data
         } else {
@@ -654,7 +625,7 @@ class OperationListing extends Component {
     */
     render() {
         const { isSimulation } = this.props;
-        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, tableData } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -738,7 +709,12 @@ class OperationListing extends Component {
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
             var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
+
+            if (this.props?.isMasterSummaryDrawer) {
+                return false
+            } else {
+                return thisIsFirstColumn;
+            }
         }
 
         const defaultColDef = {
@@ -746,8 +722,8 @@ class OperationListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -756,7 +732,6 @@ class OperationListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
             commonCostFormatter: this.commonCostFormatter
         };
@@ -881,6 +856,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant(Code)" ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

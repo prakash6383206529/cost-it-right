@@ -73,7 +73,6 @@ export default function SimulationReducer(state = initialState, action) {
                     item.ProvisionalStatus = 'U'
                 }
                 return null;
-
             })
 
             return {

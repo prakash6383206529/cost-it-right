@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
@@ -16,7 +16,6 @@ import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
-
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
@@ -86,6 +85,13 @@ function MasterSendForApproval(props) {
         }))
 
     }, [])
+
+
+    const labelWithUOM = (value) => {
+        return <div>
+            <span className='d-flex'>Basic Rate/{displayUOM(value)} (INR)</span>
+        </div>
+    }
 
 
 
@@ -174,6 +180,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
@@ -198,6 +205,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
@@ -220,6 +228,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery ?? false, OperationRequest: approvalObj })
@@ -242,6 +251,7 @@ function MasterSendForApproval(props) {
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {} })
+                            return null
                         })
                     } else {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
@@ -430,7 +440,7 @@ function MasterSendForApproval(props) {
 
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
-                                                        label="Basic Rate"
+                                                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label)}
                                                         name={'basicRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -446,7 +456,7 @@ function MasterSendForApproval(props) {
                                                 </div>
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
-                                                        label="Scrap Rate"
+                                                        label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label)}
                                                         name={'scrapRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -462,7 +472,7 @@ function MasterSendForApproval(props) {
                                                 </div>
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
-                                                        label="RM Freight Cost"
+                                                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label)}
                                                         name={'freightCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -478,7 +488,7 @@ function MasterSendForApproval(props) {
                                                 </div>
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
-                                                        label="Shearing Cost"
+                                                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label)}
                                                         name={'shearingCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -494,7 +504,7 @@ function MasterSendForApproval(props) {
                                                 </div>
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
-                                                        label="Net Cost"
+                                                        label={labelWithUOMAndCurrency("Net Cost", props?.UOM?.label)}
                                                         name={'netCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -535,41 +545,80 @@ function MasterSendForApproval(props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label="Basic Rate"
-                                                        name={'basicRate'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        placeholder={'-'}
-                                                        register={register}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                        disabled={true}
-                                                    />
+                                                {props?.IsImportEntery ?
+                                                    <>
+                                                        <div className="input-group form-group col-md-6">
+                                                            <TextFieldHookForm
+                                                                label={`Basic Rate (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                                                                name={'basicRate'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                placeholder={'-'}
+                                                                register={register}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.basicRate}
+                                                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                                disabled={true}
+                                                            />
 
-                                                </div>
+                                                        </div>
 
+                                                        <div className="input-group form-group col-md-6">
+                                                            <TextFieldHookForm
+                                                                label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                                                                name={'netCost'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                placeholder={'-'}
+                                                                register={register}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.netCost}
+                                                                disabled={true}
+                                                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                            />
 
+                                                        </div>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <div className="input-group form-group col-md-6">
+                                                            <TextFieldHookForm
+                                                                label={labelWithUOM(props?.UOM?.label ? props?.UOM?.label : 'UOM')}
+                                                                name={'basicRate'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                placeholder={'-'}
+                                                                register={register}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.basicRate}
+                                                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                                disabled={true}
+                                                            />
 
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label="Net Cost"
-                                                        name={'netCost'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        placeholder={'-'}
-                                                        register={register}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.netCost}
-                                                        disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                    />
+                                                        </div>
 
-                                                </div>
+                                                        <div className="input-group form-group col-md-6">
+                                                            <TextFieldHookForm
+                                                                label="Net Cost (INR)"
+                                                                name={'netCost'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                placeholder={'-'}
+                                                                register={register}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.netCost}
+                                                                disabled={true}
+                                                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                            />
+
+                                                        </div>
+                                                    </>
+
+                                                }
 
                                             </>
                                         }
@@ -641,14 +690,13 @@ function MasterSendForApproval(props) {
                                                         />
                                                     </div>
                                                 </div>
-
                                                 <div className="input-group form-group col-md-12">
 
                                                     {approvalObj.MachineProcessRates && approvalObj.MachineProcessRates.map((item, index) => {
 
                                                         return (
                                                             <TextFieldHookForm
-                                                                label={`Process ${index + 1} Machine Rate`}
+                                                                label={`Process ${index + 1} Machine Rate (${item?.UnitOfMeasurement})`}
                                                                 name={`machine${index}`}
                                                                 Controller={Controller}
                                                                 control={control}

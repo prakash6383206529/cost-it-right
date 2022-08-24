@@ -1,37 +1,48 @@
 .sub-form-container {
     .text-help.mb-2 {
-        position: absolute;
+      position: absolute;
     }
-}
-.p-absolute {
+  }
+  .p-absolute {
     position: absolute;
-}
-.rate-form-container {
-    .p-absolute {
-        bottom: 7px;
+    &.right-22 {
+      right: 22px;
+      z-index: -1;
     }
-}
-.truck-load-form-container {
+    &.bottom-22 {
+      bottom: 22px;
+    }
+    &.bottom-7 {
+      bottom: 7px;
+    }
+  }
+  .rate-form-container {
     .p-absolute {
-        bottom: 22px;
-    } 
+      bottom: 7px;
+    }
+  }
+  .truck-load-form-container {
+    .p-absolute {
+      bottom: 22px;
+    }
     .bottom-7 {
-        bottom: 7px;
+      bottom: 7px;
     }
-}
-.child-form-container {
+  }
+  .child-form-container {
     @extend .truck-load-form-container;
     .bottom-37 {
-        bottom: 37px;
+      bottom: 37px;
     }
-}
-.table {
+  }
+  .table {
     .UOM-label-container {
-        span {
-            &:last-child {
-                position:absolute;
-                top: -5px;
-            }
+      span {
+        &:last-child {
+          position: absolute;
+          top: -5px;
         }
+      }
     }
-}
+  }
+  

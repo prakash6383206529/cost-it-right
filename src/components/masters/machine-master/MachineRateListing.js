@@ -51,14 +51,16 @@ class MachineRateListing extends Component {
             isBulkUpload: false,
             isLoader: false,
             showPopup: false,
+            showCopyPopup: false,
             deletedId: '',
+            copyId: '',
             isFinalApprovar: false,
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -77,31 +79,34 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
 
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
-                    this.props?.changeSetLoader(false)
+                if (this.props.isSimulation) {
+                    if (this.props.selectionForListingMasterAPI === 'Combined') {
+                        this.props?.changeSetLoader(true)
+                        this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                            this.props?.changeSetLoader(false)
 
+                        })
+                    }
+                }
+                if (this.props.selectionForListingMasterAPI === 'Master') {
+                    this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: MACHINE_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
                 })
             }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: MACHINE_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
-
+        }, 300);
     }
 
 
@@ -153,12 +158,22 @@ class MachineRateListing extends Component {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in obj) {
-                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                                isReset = false
+
+                            if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                    isReset = false
+                                }
+                            } else {
+                                if (obj[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                        setTimeout(() => {
+                            this.setState({ warningMessage: false })
+                        }, 23);
 
                     }, 300);
 
@@ -241,13 +256,16 @@ class MachineRateListing extends Component {
     * @method copyItem
     * @description edit material type
     */
-    copyItem = (Id) => {
+    confirmCopy = (Id) => {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
                 this.resetState()
             }
         });
+    }
+    copyItem = (Id) => {
+        this.setState({ showCopyPopup: true, copyId: Id })
     }
 
     /**
@@ -275,8 +293,13 @@ class MachineRateListing extends Component {
         this.setState({ showPopup: false })
 
     }
+    onCopyPopupConfirm = () => {
+        this.confirmCopy(this.state.copyId);
+        this.setState({ showCopyPopup: false })
+
+    }
     closePopUp = () => {
-        this.setState({ showPopup: false })
+        this.setState({ showPopup: false, showCopyPopup: false })
     }
     /**
     * @method renderPaginationShowsTotal
@@ -335,9 +358,10 @@ class MachineRateListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.MachineId == props.node.data.MachineId) {
+                if (item.MachineId === props.node.data.MachineId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
         } else {
@@ -527,19 +551,24 @@ class MachineRateListing extends Component {
             this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDateNew: date, newDate: date } })
         }
 
-
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
             var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
+
+            if (this.props?.isMasterSummaryDrawer) {
+                return false
+            } else {
+                return thisIsFirstColumn;
+            }
         }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -697,6 +726,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -738,6 +768,9 @@ class MachineRateListing extends Component {
                 }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
+                }
+                {
+                    this.state.showCopyPopup && <PopupMsgWrapper isOpen={this.state.showCopyPopup} closePopUp={this.closePopUp} confirmPopup={this.onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />
                 }
                 {
                     this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} isViewFlag={true} />
@@ -784,4 +817,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(MachineRateListing));

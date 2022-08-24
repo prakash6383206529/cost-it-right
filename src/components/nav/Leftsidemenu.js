@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { getLeftMenu, getModuleIdByPathName } from '../../actions/auth/AuthActions';
 import { loggedInUserId } from '../../helper/auth';
 import { Link } from "react-router-dom";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 class Leftmenu extends Component {
 	constructor(props) {

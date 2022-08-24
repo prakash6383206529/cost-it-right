@@ -89,7 +89,8 @@ function AttachmentSec(props) {
 
 
     // attacment section 
-    // specify upload params and url for your files
+    // specify upload params and url for your files   
+    // REMOVE GET UPLOAd PARAMS
     const getUploadParams = ({ file, meta }) => {
         return { url: 'https://httpbin.org/post', }
     }

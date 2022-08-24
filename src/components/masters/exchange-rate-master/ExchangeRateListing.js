@@ -3,18 +3,17 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -63,7 +62,6 @@ class ExchangeRateListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         this.setState({ isLoader: true })
         setTimeout(() => {
-            this.props.getCurrencySelectList(() => { })
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
@@ -72,10 +70,12 @@ class ExchangeRateListing extends Component {
                     })
                 }
                 if (this.props.selectionForListingMasterAPI === 'Master') {
+                    console.log('in api call 1');
                     this.getTableListData()
                 }
             }
             else {
+                console.log('in api call');
                 this.getTableListData()
             }
         }, 500);
@@ -105,17 +105,11 @@ class ExchangeRateListing extends Component {
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                }, () => {
-                    setTimeout(() => {
-                        this.props.getCurrencySelectList(() => { })
-                        this.getTableListData()
-                    }, 500);
-                })
+                },
+                )
             }
-
         }
     }
-
 
 
     /**
@@ -175,6 +169,7 @@ class ExchangeRateListing extends Component {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+                console.log('in api call 3');
                 this.getTableListData()
             }
         });
@@ -360,24 +355,7 @@ class ExchangeRateListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
-        };
-
-
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom customClass="simulation-Loader" /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
         };
 
         return (
@@ -496,8 +474,6 @@ function mapStateToProps({ exchangeRate, auth }) {
 export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
-    getCurrencySelectList,
-    getExchangeRateData,
     getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
@@ -505,4 +481,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ExchangeRateListing));

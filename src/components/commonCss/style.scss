@@ -2600,7 +2600,7 @@ button:disabled {
   .costing-table-next {
     tbody {
       td {
-        word-break: break-all;
+        word-break: break-word;
 
         .mb-15 {
           margin-bottom: 0px;
@@ -3801,7 +3801,7 @@ body {
 
 .css-4ljt47-MenuList {
   >div {
-    word-break: break-all;
+    word-break: break-word;
   }
 }
 
@@ -4741,7 +4741,7 @@ body {
   font-size: 16px;
   width: 100%;
   display: inline-block;
-  word-break: break-all;
+  word-break: break-word;
 
   &.success {
     background-color: #DBF4E2;
@@ -6920,12 +6920,12 @@ body {
   }
 }
 
-@media (max-width:$miniDesktop) {
+@media (max-width:$middleDesktop ) {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 223px;
-        max-width: 223px;
+        min-width: 214px;
+        max-width: 214px;
         width: auto;
       }
     }
@@ -7876,7 +7876,7 @@ body {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     white-space: $whiteSpace;
-    word-break: break-all;
+    word-break: break-word;
   }
 
   @media (min-width:$middleDesktop) {
@@ -8282,12 +8282,14 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
+  display: flex;
+  align-items: center;
   .flex-fills.label {
     min-width: fit-content !important;
   }
 }
 
-@media screen and (min-width:$middleDesktop) {
+@media screen and (min-width:$miniDesktop) {
   .freight-drawer {
     width: 485px !important;
   }
@@ -8697,5 +8699,16 @@ table.group-process-table {
       font-size: 12px;
       top: 2px;
     }
+  }
+}
+
+.role-department-container {
+  display: flex;
+
+  .departments {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    white-space: nowrap;
   }
 }

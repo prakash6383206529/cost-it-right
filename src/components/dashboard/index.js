@@ -89,6 +89,14 @@ function Dashboard(props) {
     }
   }
 
+  const isPageNoChange = () => {
+    setTimeout(() => {
+      document.getElementById('go-top-top').scrollIntoView({
+        behavior: 'auto'
+      });
+    }, 30);
+  }
+
   return (
     <>
       {
@@ -145,7 +153,7 @@ function Dashboard(props) {
               </Row>}
 
               {getConfigurationKey().IsMasterApprovalAppliedConfigure && (viewMastersObj.RM || viewMastersObj.BOP || viewMastersObj.operation || viewMastersObj.machine) &&
-                <Row className="m-0">
+                <Row className="m-0" id="go-top-top">
                   <div className="graph-box w-100">
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
@@ -186,19 +194,19 @@ function Dashboard(props) {
                       <TabContent activeTab={activeTab}>
                         {(Number(activeTab) === 1 && viewMastersObj.RM) &&
                           <TabPane tabId="1">
-                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 2 && viewMastersObj.BOP) &&
                           <TabPane tabId="2">
-                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 3 && viewMastersObj.operation) &&
                           <TabPane tabId="3">
-                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} />
+                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 4 && viewMastersObj.machine) &&
                           <TabPane tabId="4">
-                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                       </TabContent>
                     </>}
@@ -237,4 +245,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,
+  touchOnChange: true
 })(Dashboard));

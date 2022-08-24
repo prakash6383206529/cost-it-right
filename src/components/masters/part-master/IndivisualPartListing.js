@@ -25,7 +25,6 @@ import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -117,6 +116,9 @@ class IndivisualPartListing extends Component {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
 
                 }, 300);
 
@@ -173,18 +175,24 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
-
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+            }
+        }, 200);
     }
 
 
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState(() => {
-            this.getTableListData()
-        })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState(() => {
+                    this.getTableListData()
+                })
+            }
+        }, 200);
     }
 
     /**
@@ -256,7 +264,6 @@ class IndivisualPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
@@ -278,9 +285,10 @@ class IndivisualPartListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.PartId == props.node.data.PartId) {
+                if (item.PartId === props.node.data.PartId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
 
             return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
@@ -368,9 +376,10 @@ class IndivisualPartListing extends Component {
 
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
-                if (item.RawMaterialId == props.node.data.RawMaterialId) {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return cellValue
         } else {
@@ -491,6 +500,7 @@ class IndivisualPartListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
             date: "",
@@ -567,7 +577,6 @@ class IndivisualPartListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 

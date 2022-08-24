@@ -452,7 +452,7 @@ function LossStandardTable(props) {
 
   return (
     <Fragment>
-      <Row className={''}>
+      <Row className={`mb-3 ${isFerrous ? 'mx-0' : ''}`}>
         <Col md="12">
           <div className="header-title">
             <h5>{'Loss :'}</h5>
@@ -524,7 +524,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -549,7 +549,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -596,7 +596,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -619,7 +619,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -642,7 +642,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -703,7 +703,7 @@ function LossStandardTable(props) {
           />
         </Col>
         <Col md="3" className="pr-0">
-          <div>
+          <div className='mt5'>
             {isEdit ? (
               <>
                 <button

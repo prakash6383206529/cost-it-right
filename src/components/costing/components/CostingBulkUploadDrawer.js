@@ -65,11 +65,6 @@ class CostingBulkUploadDrawer extends Component {
         this.setState({ Technology: value })
     }
 
-    // specify upload params and url for your files
-    getUploadParams = ({ file, meta }) => {
-        this.setState({ attachmentLoader: true })
-        return { url: 'https://httpbin.org/post' }
-    }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
 
@@ -78,7 +73,7 @@ class CostingBulkUploadDrawer extends Component {
 
         let data = new FormData()
         data.append('file', fileObj)
-
+        this.setState({ attachmentLoader: true })
         if (status === 'removed') {
             const removedFileName = file.name
             let tempArr = files.filter(
@@ -271,7 +266,6 @@ class CostingBulkUploadDrawer extends Component {
                                             </div>
                                         ) : (
                                             <Dropzone
-                                                getUploadParams={this.getUploadParams}
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
                                                 onChange={this.fileHandler}
@@ -363,4 +357,5 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(CostingBulkUploadDrawer));

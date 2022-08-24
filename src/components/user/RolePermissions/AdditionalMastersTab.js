@@ -39,6 +39,7 @@ class AdditionalMastersTab extends Component {
                 if (ele.ModuleName === 'Additional Masters') {
                     this.setState({ checkBox: ele.IsChecked })
                 }
+                return null
             })
         }
     }
@@ -71,7 +72,7 @@ class AdditionalMastersTab extends Component {
         let actionNames = actionData && actionData.find(el => el.ModuleName === ADDITIONAL_MASTERS)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
-                if (item.Value == 0) return false;
+                if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                     return (
                         <th className="crud-label">
@@ -80,6 +81,7 @@ class AdditionalMastersTab extends Component {
                         </th>
                     )
                 }
+                return null
             })
         }
     }
@@ -90,7 +92,7 @@ class AdditionalMastersTab extends Component {
     */
     moduleHandler = (index) => {
         //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
@@ -167,7 +169,7 @@ class AdditionalMastersTab extends Component {
     }
 
     selectAllHandlerEvery = () => {
-        const { Modules, checkBox } = this.state;
+        const { Modules } = this.state;
 
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
@@ -177,6 +179,7 @@ class AdditionalMastersTab extends Component {
             actionRows = item
             item.Actions && item.Actions.map((item1, index) => {
                 item1.IsChecked = isCheckedSelectAll;
+                return null
             })
             item.IsChecked = isCheckedSelectAll
             return actionRows;

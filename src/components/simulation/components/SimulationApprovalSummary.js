@@ -5,22 +5,21 @@ import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
-import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
+    SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
     SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
-import {
-    EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT,
-    AssemblyWiseImpactt, MACHINERATE, ImpactMaster, defaultPageSize, VBC
-} from '../../../config/constants';
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
 import Toaster from '../../common/Toaster';
+import {
+    EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT,
+    AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC
+} from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -40,7 +39,7 @@ import ReactExport from 'react-export-excel';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import _ from 'lodash'
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'              //ERROR MESSAGE WILL USE IN FUTURE
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 
@@ -70,19 +69,17 @@ function SimulationApprovalSummary(props) {
     const [costingList, setCostingList] = useState([])
     const [simulationDetail, setSimulationDetail] = useState({})
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
-    const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
+    const [isApprovalDone, setIsApprovalDone] = useState(true) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('')
-    const [oldCostingList, setOldCostingList] = useState([])
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
-    const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -93,7 +90,6 @@ function SimulationApprovalSummary(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [dataForDownload, setDataForDownload] = useState([])
-    const [count, setCount] = useState(0);
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
     const [showBOPColumn, setShowBOPColumn] = useState(false);
     const [showRMColumn, setShowRMColumn] = useState(false);
@@ -108,49 +104,34 @@ function SimulationApprovalSummary(props) {
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
     const isRMDomesticOrRMImport = ((Number(SimulationTechnologyId) === Number(RMDOMESTIC)) || (Number(SimulationTechnologyId) === Number(RMIMPORT)));
     const isBOPDomesticOrImport = ((Number(SimulationTechnologyId) === Number(BOPDOMESTIC)) || (Number(SimulationTechnologyId) === Number(BOPIMPORT)))
-    const isMachineRate = Number(SimulationTechnologyId) === (Number(MACHINERATE));
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
-    const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
-    const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
     const [isDisabled, setIsDisabled] = useState(false);
 
     const dispatch = useDispatch()
 
-    const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const userList = useSelector(state => state.auth.userList)
-    const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
     const { keysForDownloadSummary } = useSelector(state => state.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const [editWarning, setEditWarning] = useState(false)
-    const [toggleSeeData, setToggleSeeData] = useState(true)
-    const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
-    const [showbutton, setShowButton] = useState(false)
-    const [ammendentButton, setAmmendmentButton] = useState(false)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
 
-    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-
-    const { setValue, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
     const userLoggedIn = loggedInUserId()
 
-
     useEffect(() => {
-        dispatch(getTechnologySelectList(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getTechnologySelectList(() => {
+        }))
+        dispatch(getPlantSelectListByType(ZBC, () => {
+        }))
 
         const reqParams = {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
+        setLoader(false)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
@@ -163,7 +144,6 @@ function SimulationApprovalSummary(props) {
 
             setCostingList(uniqueArr)
             setDataForDownload(SimulatedCostingList)
-            setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
 
@@ -179,7 +159,8 @@ function SimulationApprovalSummary(props) {
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
-            setShowPushButton(IsPushedButtonShow)
+            /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
+            // setShowPushButton(IsPushedButtonShow)
 
             // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
             if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
@@ -197,7 +178,8 @@ function SimulationApprovalSummary(props) {
                     return null
                 })
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+                }))
             }
 
             // const valueTemp = {
@@ -221,7 +203,6 @@ function SimulationApprovalSummary(props) {
                     setFinalLevelUser(res.data.Data.IsFinalApprover)
                 }
             }))
-
         }))
     }, [])
 
@@ -251,7 +232,7 @@ function SimulationApprovalSummary(props) {
 
         setTimeout(() => {
 
-            setLoader(false)
+            setLoader(true)
         }, 500);
 
     }
@@ -263,6 +244,7 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
+        setLoader(false)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
@@ -273,6 +255,7 @@ function SimulationApprovalSummary(props) {
                         BoughtOutPartImpactedMasterDataList: [],
                         CombinedProcessImpactedMasterDataList: [],
                     }
+
                     let masterId
                     let Data = []
                     if (Number(res?.status) === 204) {
@@ -281,7 +264,6 @@ function SimulationApprovalSummary(props) {
                         Data = res?.data?.Data
                         masterId = res?.data?.Data?.SimulationTechnologyId;
                     }
-
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)
                         setShowLastRevisionData(true)
@@ -291,7 +273,8 @@ function SimulationApprovalSummary(props) {
                 }))
                 // }
                 // if (simulationDetail.SimulationId) {
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => {
+                }))
             }
         }
 
@@ -304,7 +287,7 @@ function SimulationApprovalSummary(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
-
+            return null
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -319,6 +302,7 @@ function SimulationApprovalSummary(props) {
             setshowImpactedData(true)
         }
     }, [impactedMasterData])
+
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -347,8 +331,6 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-
-
     const DisplayCompareCosting = (el, data) => {
 
 
@@ -365,7 +347,6 @@ function SimulationApprovalSummary(props) {
             const obj2 = formViewData(Data.NewCosting, 'New Costing')
             const obj3 = formViewData(Data.Variance, 'Variance')
             const objj3 = [obj1[0], obj2[0], obj3[0]]
-            setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
         }))
@@ -388,8 +369,6 @@ function SimulationApprovalSummary(props) {
             <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
         );
     }
-
-
 
     const renderColumn = () => {
         let finalGrid = [], isTokenAPI = false, downloadGrid = []
@@ -478,10 +457,6 @@ function SimulationApprovalSummary(props) {
         </ExcelSheet>);
     }
 
-    const VerifyImpact = () => {
-        setIsVerifyImpactDrawer(true)
-    }
-
     const verifyImpactDrawer = (e = '', type) => {
         if (type === 'cancel') {
             setIsVerifyImpactDrawer(false);
@@ -490,13 +465,11 @@ function SimulationApprovalSummary(props) {
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
@@ -904,26 +877,25 @@ function SimulationApprovalSummary(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter
     };
 
+    // const rePush = debounce(() => {
+    //     setIsDisabled(true)
+    //     let pushObj = {}
+    //     let temp = []
+    //     let uniqueArr = _.uniqBy(costingList, function (o) {
+    //         return o.CostingId;
+    //     });
+    //     uniqueArr && uniqueArr.map(item => {
+    //         const vendor = item.VendorName.split('(')[1]
+    //         temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+    //     })
+    //     pushObj.LoggedInUserId = userLoggedIn
+    //     pushObj.AmmendentDataRequests = temp
+    //     dispatch(pushAPI(pushObj, () => { }))
+    //     Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
+    //     setShowListing(true)
+    //     setIsDisabled(false)
 
-    const rePush = debounce(() => {
-        setIsDisabled(true)
-        let pushObj = {}
-        let temp = []
-        let uniqueArr = _.uniqBy(costingList, function (o) {
-            return o.CostingId;
-        });
-        uniqueArr && uniqueArr.map(item => {
-            const vendor = item.VendorName.split('(')[1]
-            temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
-        })
-        pushObj.LoggedInUserId = userLoggedIn
-        pushObj.AmmendentDataRequests = temp
-        dispatch(pushAPI(pushObj, () => { }))
-        Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
-        setShowListing(true)
-        setIsDisabled(false)
-
-    }, 500)
+    // }, 500)
 
     // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
     const fgWiseAccDisable = (data) => {
@@ -935,8 +907,8 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     <CalculatorWrapper />
-                    {loader && <LoaderCustom />}
-                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
+                    {!loader && <LoaderCustom />}
+                    <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         <ErrorMessage approvalNumber={approvalNumber} />
 
                         <h2 className="heading-main">Approval Summary</h2>
@@ -1426,7 +1398,8 @@ function SimulationApprovalSummary(props) {
 
                     </div >
 
-                    {!isApprovalDone &&
+                    {
+                        !isApprovalDone && loader &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
@@ -1452,8 +1425,8 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>
                     }
-
-                    {
+                    {/* WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS */}
+                    {/* {
                         showPushButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
@@ -1465,7 +1438,7 @@ function SimulationApprovalSummary(props) {
                                 </Fragment>
                             </div>
                         </Row>
-                    }
+                    } */}
                 </>
                 // :
                 // <SimulationApprovalListing />

@@ -15,7 +15,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -24,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
@@ -78,7 +78,9 @@ class AddOperation extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -98,6 +100,7 @@ class AddOperation extends Component {
    */
   componentDidMount() {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      console.log("OMING HERE");
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
@@ -385,13 +388,6 @@ class AddOperation extends Component {
     })
   }
 
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -407,7 +403,7 @@ class AddOperation extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -423,8 +419,9 @@ class AddOperation extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -514,7 +511,9 @@ class AddOperation extends Component {
       isShowForm: false,
       isEditFlag: false,
     })
-    this.props.getOperationDataAPI('', () => { })
+    if (type === 'submit') {
+      this.props.getOperationDataAPI('', () => { })
+    }
     this.props.hideForm(type)
   }
 
@@ -524,8 +523,8 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedPlants, vendorName, files,
-      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
-    const { initialConfiguration, filedObj } = this.props;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+    const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
@@ -553,11 +552,6 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
-    if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-      && DataToChange.Description === values.Description && uploadAttachements) {
-      Toaster.warning('Please change data to send operation for approval')
-      return false
-    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -594,30 +588,55 @@ class AddOperation extends Component {
           return false
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
 
       }
+      else {
 
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          this.setState({ disablePopup: true })
+          this.props.updateOperationAPI(updateData
 
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-        this.setState({ setDisable: true })
-        return false
+            , (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                this.cancel('submit')
+              }
+            });
+        }
+
       }
+
+      // if (isEditFlag) {
+      //   this.setState({ showPopup: true, updatedObj: updateData })
+      //   this.setState({ setDisable: true })
+      //   return false
+      // }
 
 
     } else {/** Add new detail for creating operation master **/
 
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          Toaster.warning('Please change data to send operation for approval')
+          return false
+        }
         this.setState({ IsSendForApproval: true })
       } else {
         this.setState({ IsSendForApproval: false })
       }
+
 
       this.setState({ setDisable: true })
       let formData = {
@@ -664,8 +683,8 @@ class AddOperation extends Component {
         }
 
 
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && uploadAttachements) {
-          this.cancel('Cancel')
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          this.cancel('submit')
           return false
         } else {
           this.setState({ approveDrawer: true, approvalObj: formData })
@@ -722,7 +741,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup, selectedTechnology } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -743,12 +762,7 @@ class AddOperation extends Component {
 
 
       });
-    let temp = [];
-    selectedTechnology && selectedTechnology.map(item => {
-      temp.push(item.Text)
-    }
-    )
-    const technologyTitle = temp.join(",")
+
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -794,7 +808,7 @@ class AddOperation extends Component {
                     <Row>
                       <Col md="3">
                         <Field
-                          title={isEditFlag && technologyTitle}
+                          title={showDataOnHover(this.state.selectedTechnology)}
                           label="Technology"
                           name="technology"
                           placeholder={isEditFlag ? '-' : 'Select'}
@@ -866,6 +880,7 @@ class AddOperation extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
+                            title={showDataOnHover(this.state.selectedPlants)}
                             placeholder={isEditFlag ? '-' : 'Select'}
                             selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
@@ -893,7 +908,12 @@ class AddOperation extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
+                              />
                             </div>
                             {!isEditFlag && (
                               <div
@@ -902,7 +922,7 @@ class AddOperation extends Component {
                               ></div>
                             )}
                           </div>
-                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                          {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                         </Col>
 
                       )}
@@ -987,7 +1007,9 @@ class AddOperation extends Component {
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                             placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                            onFocus={() => onFocus(this, true)}
                           />
+                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
 
@@ -1045,7 +1067,6 @@ class AddOperation extends Component {
                         <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                           <Dropzone
                             ref={this.dropzone}
-                            getUploadParams={this.getUploadParams}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
                             disabled={isViewMode}
@@ -1105,7 +1126,7 @@ class AddOperation extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={() => { this.cancel('Cancel') }}
+                        onClick={() => { this.cancel('submit') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -1191,7 +1212,7 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'OperationCode', 'text');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
-  const { vendorWithVendorCodeSelectList } = supplier;
+  const { vendorWithVendorCodeSelectList } = supplier
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
 
@@ -1240,5 +1261,6 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
+  touchOnChange: true,
 })(AddOperation));
 

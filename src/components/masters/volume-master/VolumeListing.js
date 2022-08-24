@@ -7,8 +7,7 @@ import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
-import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
-import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getVolumeDataList, deleteVolume, } from '../actions/Volume'
 import { getVendorListByVendorType } from '../actions/Material'
 import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
@@ -142,10 +141,7 @@ class VolumeListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.props.getPlantSelectList(() => { })
-    this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -225,8 +221,8 @@ class VolumeListing extends Component {
    * @method deleteItem
    * @description confirm delete Item.
    */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+  deleteItem = (obj) => {
+    this.setState({ showPopup: true, deletedId: obj })
   }
 
   /**
@@ -255,12 +251,16 @@ class VolumeListing extends Component {
   buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
+    let obj = {}
+    obj.volumeId = rowData.VolumeId
+    obj.volumeApprovedId = rowData.VolumeApprovedId
+    obj.volumeBudgetedId = rowData.VolumeBudgetedId
 
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
         {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
@@ -355,13 +355,15 @@ class VolumeListing extends Component {
    * @method hideForm
    * @description HIDE FORM
    */
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        this.getTableListData()
+        if (type === 'submit')
+          this.getTableListData()
       },
     )
+
   }
 
   /**
@@ -471,7 +473,6 @@ class VolumeListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 
@@ -611,7 +612,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
@@ -670,7 +671,7 @@ class VolumeListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ comman, material, volume, auth }) {
-  const { loading, plantSelectList, vendorWithVendorCodeSelectList } = comman
+  const { loading, plantSelectList } = comman
   const { vendorListByVendorType, } = material
   const { financialYearSelectList, volumeDataList } = volume
   const { leftMenuData, topAndLeftMenuData } = auth
@@ -681,7 +682,6 @@ function mapStateToProps({ comman, material, volume, auth }) {
     financialYearSelectList,
     leftMenuData,
     volumeDataList,
-    vendorWithVendorCodeSelectList,
     topAndLeftMenuData,
   }
 }
@@ -693,13 +693,9 @@ function mapStateToProps({ comman, material, volume, auth }) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   getVendorListByVendorType,
   getVolumeDataList,
   deleteVolume,
-  getFinancialYearSelectList,
-  getLeftMenu,
-  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'VolumeListing',
@@ -707,5 +703,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(VolumeListing),
 )

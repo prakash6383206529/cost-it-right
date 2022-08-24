@@ -1766,3 +1766,20 @@ export function getUsersMasterLevelAPI(UserId, callback) {
         });
     };
 }
+/**
+ * @method activeInactiveRole
+ * @description active Inactive User
+ */
+export function activeInactiveRole(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.activeInactiveRole}`, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}

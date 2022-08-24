@@ -175,11 +175,21 @@ export default function authReducer(state = initialState, action) {
                 userList: action.payload
             };
         case GET_USER_DATA_SUCCESS:
+            let arr = []
+            arr = action.payload && action.payload.filter((el, i) => {
+                el.status = el.IsActive
+                if (el.status === true) {
+                    el.status = 'Active'
+                } else if (el.status === false) {
+                    el.status = 'In Active'
+                }
+                return true
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                userDataList: action.payload
+                userDataList: arr
             };
         case GET_USER_UNIT_DATA_SUCCESS:
             return {

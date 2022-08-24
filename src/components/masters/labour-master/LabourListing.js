@@ -8,15 +8,13 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
-import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
-import { getMachineTypeSelectList, } from '../actions/MachineMaster';
+import { getPlantListByState, } from '../actions/Fuel';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -71,9 +69,6 @@ class LabourListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getZBCPlantList(() => { })
-      this.props.getStateSelectList(() => { })
-      this.props.getMachineTypeSelectList(() => { })
       // this.getTableListData()
       this.filterList()
     }, 500);
@@ -187,52 +182,16 @@ class LabourListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-
     const cellValue = props?.value;
-    const rowData = props?.data;
-
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
         {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
         {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(props?.data?.LabourDetailsId)} />}
       </>
     )
   };
-
-  handleChange = (cell, row, enumObject, rowIndex) => {
-    let data = {
-      Id: row.VendorId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !cell, //Status of the user.
-    }
-
-  }
-
-
-  /**
-   * @method statusButtonFormatter
-   * @description Renders buttons
-   */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <label htmlFor="normal-switch" className="normal-switch">
-          <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-          />
-        </label>
-      </>
-    )
-  }
 
   /**
    * @method indexFormatter
@@ -330,16 +289,16 @@ class LabourListing extends Component {
    * @method hideForm
    * @description HIDE ADD FORM
    */
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState(
       {
         toggleForm: false,
         data: { isEditFlag: false, ID: '' },
       },
       () => {
-        // this.getTableListData()
-        this.filterList()
-      },
+        if (type === 'submit')
+          this.filterList()
+      }
     )
   }
 
@@ -441,16 +400,6 @@ class LabourListing extends Component {
     if (toggleForm) {
       return <AddLabour hideForm={this.hideForm} data={data} />
     }
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-    }
-
     const isFirstColumn = (params) => {
 
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -463,7 +412,6 @@ class LabourListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 
@@ -640,9 +588,6 @@ export default connect(mapStateToProps, {
   getLabourDataList,
   deleteLabour,
   getPlantListByState,
-  getZBCPlantList,
-  getStateSelectList,
-  getMachineTypeSelectList,
   getLabourTypeByPlantSelectList,
   getLeftMenu,
 })(
@@ -652,5 +597,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(LabourListing),
 )

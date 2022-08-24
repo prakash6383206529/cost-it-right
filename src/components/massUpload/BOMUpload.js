@@ -10,6 +10,7 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
+import DayTime from '../common/DayTimeWrapper';
 
 class BOMUpload extends Component {
   constructor(props) {
@@ -81,7 +82,8 @@ class BOMUpload extends Component {
           let fileData = [];
 
           resp.rows.map((val, index) => {
-            if (index > 0) {
+            if (val === []) return false
+            if (index > 0 && val?.length > 0) {
 
               // BELOW CODE FOR HANDLE EMPTY CELL VALUE
               const i = val.findIndex(e => e === undefined);
@@ -91,6 +93,9 @@ class BOMUpload extends Component {
 
               let obj = {}
               val.map((el, i) => {
+                if ((fileHeads[i] === 'EffectiveDate') && typeof el === 'string') {
+                  el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+                }
                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                   el = getJsDateFromExcel(el)
                 }
@@ -220,7 +225,7 @@ class BOMUpload extends Component {
                     type="submit"
                     className="submit-button save-btn" >
                     <div className={"save-icon"}></div>
-                     {isEditFlag ? 'Update' : 'Save'}
+                    {isEditFlag ? 'Update' : 'Save'}
                   </button>
                 </div>
               </Row>
@@ -253,4 +258,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMUpload',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMUpload));

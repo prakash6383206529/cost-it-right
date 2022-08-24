@@ -73,11 +73,12 @@ const handleHTTPStatus = (response) => {
       const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
       return toast.error(errMsg400)
     case 401:
+      toast.error('Authentication error. Please contact your IT Team.')
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
       reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
-      return toast.error('Authentication error. Please contact your IT Team.')
+      return false
     case 403:
       const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
       return toast.error(errMsg403)
@@ -956,7 +957,6 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   </div>
 }
 
-
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads) => {
   let checkForFileHead, array = []
@@ -968,11 +968,58 @@ export const checkForSameFileUpload = (master, fileHeads) => {
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (props) => {
+export const showTitleForActiveToggle = (index) => {
   setTimeout(() => {
-    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    let titleActive = document.getElementsByClassName("active-switch")[index];
+
+    if (titleActive === undefined || titleActive === null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleActive = document.getElementsByClassName("active-switch")[rowIndex];
+    }
+
     titleActive?.setAttribute('title', 'Active');
-    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    let titleInactive = document.getElementsByClassName("inactive-switch")[index];
+
+    if (titleInactive === undefined || titleInactive == null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
+    }
+
     titleInactive?.setAttribute('title', 'Inactive');
   }, 500);
+}
+
+// SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
+export const showDataOnHover = (value) => {
+  let temp = [];
+  value && value.map(item => temp.push(item.Text));
+  const data = temp.join(", ");
+  return data;
+}
+
+// SHOW ERROR ON TOUCH IN VENDOR DROPDOWN AND DATE
+export const onFocus = (thisRef, dateFocus) => {
+  const temp = thisRef.state.selectValue && thisRef.selectRef.current.inputRef.select();
+  if (dateFocus) {
+    thisRef.setState({ showErrorOnFocusDate: true })
+  } else {
+    thisRef.setState({ showErrorOnFocus: true })
+  }
+  return temp
 }
