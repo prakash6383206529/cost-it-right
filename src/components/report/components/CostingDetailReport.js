@@ -277,7 +277,7 @@ function ReportListing(props) {
                 > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div>} </> : '-';
     }
 
-    const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi, sapExcel, sapEncoded) => {
 
         if (isPagination === true) {
             setLoader(true)
@@ -323,7 +323,7 @@ function ReportListing(props) {
             if (res && isPagination === false) {  // CODE WRITTEN FOR EXCEL DOWNLOAD
                 setTimeout(() => {
                     setDisableDownload(false)
-                    let button = document.getElementById('Excel-Downloads')
+                    let button = document.getElementById(`${sapExcel ? 'Excel-DownloadsSap' : sapEncoded ? 'Excel-DownloadsEncoded' : 'Excel-Downloads'}`)
                     button.click()
                 }, 800);
             }
@@ -596,7 +596,45 @@ function ReportListing(props) {
             }, 400);
 
         } else {
-            getTableData(0, defaultPageSize, false, floatingFilterData, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+        }
+
+    }
+
+    const onExcelDownloadSap = () => {
+
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                // setDisableDownload(false)
+                let button = document.getElementById('Excel-DownloadsSap')
+                button.click()
+            }, 400);
+
+        } else {
+
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+        }
+
+    }
+
+    const onExcelDownloadEncoded = () => {
+
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                // setDisableDownload(false)
+                let button = document.getElementById('Excel-DownloadsEncoded')
+                button.click()
+            }, 400);
+
+        } else {
+
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
         }
 
     }
@@ -634,7 +672,7 @@ function ReportListing(props) {
         let tempData = []
 
         if (selectedRowData.length === 0) {
-            tempData = sapExcelDataFilter(reportListingData)
+            tempData = sapExcelDataFilter(allReportListingData)
         }
         else {
             tempData = selectedRowData
@@ -646,7 +684,7 @@ function ReportListing(props) {
     const renderColumnSAPEncoded = (fileName) => {
         let tempData = []
         if (selectedRowData.length === 0) {
-            tempData = sapExcelDataFilter(reportListingData)
+            tempData = sapExcelDataFilter(allReportListingData)
         }
         else {
             tempData = selectedRowData
@@ -726,13 +764,35 @@ function ReportListing(props) {
                                     </ExcelFile>
                                 </>
                             }
-                            <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
-                                {renderColumnSAP(ReportSAPMaster)}
-                            </ExcelFile>
 
-                            <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
-                                {renderColumnSAPEncoded(ReportSAPMaster)}
-                            </ExcelFile>
+
+                            {
+
+                                <>
+
+                                    <button type="button" onClick={onExcelDownloadSap} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        {/* DOWNLOAD */}
+                                    </button>
+
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} id={'Excel-DownloadsSap'}><div className="download"></div>SAP Excel Download</button>}>
+                                        {renderColumnSAP(ReportSAPMaster)}
+                                    </ExcelFile>
+                                </>
+                            }
+
+                            {
+                                <>
+
+                                    <button type="button" onClick={onExcelDownloadEncoded} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        {/* DOWNLOAD */}
+                                    </button>
+
+
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} id={'Excel-DownloadsEncoded'}><div className="download"></div>Encoded Download</button>}>
+                                        {renderColumnSAPEncoded(ReportSAPMaster)}
+                                    </ExcelFile>
+                                </>
+                            }
                         </div>
 
                     </Col>
