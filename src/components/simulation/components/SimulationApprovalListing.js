@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -255,7 +255,7 @@ function SimulationApprovalListing(props) {
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         getTableData(0, 10, true, floatingFilterData)
 
         setGlobalTake(10)

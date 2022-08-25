@@ -26,7 +26,7 @@ import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -111,7 +111,7 @@ class MachineRateListing extends Component {
 
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
 
@@ -200,7 +200,7 @@ class MachineRateListing extends Component {
     }
 
     resetState = () => {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
     }
 
@@ -356,8 +356,8 @@ class MachineRateListing extends Component {
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        if (this.props.selectedCostingListSimulation?.length > 0) {
-            this.props.selectedCostingListSimulation.map((item) => {
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
                 if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
                     props.node.setSelected(true)
                 }
@@ -480,7 +480,7 @@ class MachineRateListing extends Component {
         this.setState({ disableDownload: true })
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        let tempArr = this.props.selectedCostingListSimulation
+        let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -497,7 +497,7 @@ class MachineRateListing extends Component {
     onBtExport = () => {
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this.props.selectedCostingListSimulation
+        tempArr = this.props.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allMachineDataList ? this.props.allMachineDataList : [])
         return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
@@ -587,28 +587,28 @@ class MachineRateListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
 
             if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
-                selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+                selectedRows = this.props.selectedRowForPagination
+            } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
                 if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].MachineId === event.data.MachineId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                        if (this.props.selectedRowForPagination[i].MachineId === event.data.MachineId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
-                        finalData.push(this.props.selectedCostingListSimulation[i])
+                        finalData.push(this.props.selectedRowForPagination[i])
                     }
 
                 } else {
-                    finalData = this.props.selectedCostingListSimulation
+                    finalData = this.props.selectedRowForPagination
                 }
                 selectedRows = [...selectedRows, ...finalData]
             }
 
 
             let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
             this.setState({ selectedRowData: selectedRows })
 
 
@@ -791,12 +791,12 @@ function mapStateToProps(state) {
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist, allMachineDataList } = machine
-    const { selectedCostingListSimulation } = simulation;
+    const { selectedRowForPagination } = simulation;
 
     const { auth } = state;
     const { initialConfiguration } = auth;
 
-    return { technologySelectList, filterSelectList, machineDatalist, allMachineDataList, initialConfiguration, selectedCostingListSimulation }
+    return { technologySelectList, filterSelectList, machineDatalist, allMachineDataList, initialConfiguration, selectedRowForPagination }
 }
 
 /**
@@ -813,7 +813,7 @@ export default connect(mapStateToProps, {
     getListingForSimulationCombined,
     masterFinalLevelUser,
     getProcessGroupByMachineId,
-    setSelectedCostingListSimualtion
+    setSelectedRowForPagination
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

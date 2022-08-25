@@ -17,7 +17,7 @@ import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
 import _ from 'lodash';
 
@@ -53,7 +53,7 @@ function CommonApproval(props) {
     let master = props?.MasterId
 
     useEffect(() => {
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         getTableData(0, 10, true, floatingFilterData)
         let obj = {
@@ -70,7 +70,7 @@ function CommonApproval(props) {
 
         return () => {
             // Cleanup function
-            dispatch(setSelectedCostingListSimualtion([]))
+            dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
         }
 
@@ -223,7 +223,7 @@ function CommonApproval(props) {
         setPageNoNew(1)
         setCurrentRowIndex(0)
         getTableData(0, 10, true, floatingFilterData)
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -491,28 +491,28 @@ function CommonApproval(props) {
         switch (props?.MasterId) {
             case 1:
                 uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
                 break;
             case 2:
                 uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
                 break;
             case 3:
                 uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
                 break;
             case 4:
                 uniqeArray = _.uniqBy(selectedRows, "MachineId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
                 break;
             default:
                 // code block
                 uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
         }
     }

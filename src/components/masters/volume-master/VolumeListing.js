@@ -20,9 +20,8 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
 import AddLimit from './AddLimit'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { getConfigurationKey } from '../../../helper'
 import WarningMessage from '../../common/WarningMessage'
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation'
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -122,7 +121,7 @@ function VolumeListing(props) {
   const [limit, setLimit] = useState(false);
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
-  const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
+  const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
@@ -137,7 +136,7 @@ function VolumeListing(props) {
 
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
-  const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+  const { selectedRowForPagination } = useSelector((state => state.simulation))
 
   const dispatch = useDispatch();
 
@@ -145,7 +144,7 @@ function VolumeListing(props) {
     applyPermission(topAndLeftMenuData)
     getTableListData(0, defaultPageSize, true)
     return () => {
-      dispatch(setSelectedCostingListSimualtion([]))
+      dispatch(setSelectedRowForPagination([]))
     }
 
   }, [])
@@ -206,16 +205,8 @@ function VolumeListing(props) {
         let isReset = true
         setTimeout(() => {
           for (var prop in floatingFilterData) {
-
-            if (getConfigurationKey().IsCompanyConfigureOnPlant) {
-              if (floatingFilterData[prop] !== "") {
-                isReset = false
-              }
-            } else {
-
-              if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
-                isReset = false
-              }
+            if (floatingFilterData[prop] !== "") {
+              isReset = false
             }
           }
           // Sets the filter model via the grid API
@@ -259,7 +250,7 @@ function VolumeListing(props) {
     dispatch(deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
-        getTableListData()
+        getTableListData(0, globalTake, true)
       }
     }))
     setShowPopup(false)
@@ -293,36 +284,11 @@ function VolumeListing(props) {
   };
 
   /**
-   * @method costingHeadFormatter
-   * @description Renders Costing head
-   */
-  const costingHeadFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue
-  }
-
-  /**
   * @method hyphenFormatter
   */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-  }
-
-  /**
-  * @method plantFormatter
-  */
-  const plantFormatter = (props) => {
-    const rowData = props?.data;
-    let value = '-'
-    if (rowData?.CostingHead === "Vendor Based") {
-      value = rowData?.DestinationPlant
-      return value;
-    } else if (rowData?.CostingHead === "Zero Based") {
-      value = rowData?.Plant
-      return value;
-    }
-    return value;
   }
 
   /**
@@ -340,7 +306,7 @@ function VolumeListing(props) {
   const closeActualBulkUploadDrawer = () => {
     setIsActualBulkUpload(false)
     setTimeout(() => {
-      getTableListData()
+      getTableListData(0, globalTake, true)
     }, 200);
   }
 
@@ -359,7 +325,7 @@ function VolumeListing(props) {
   const closeBudgetedBulkUploadDrawer = () => {
     setIsBudgetedBulkUpload(false)
     setTimeout(() => {
-      getTableListData()
+      getTableListData(0, globalTake, true)
     }, 200);
   }
 
@@ -368,64 +334,32 @@ function VolumeListing(props) {
   }
 
   const returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-
-    temp = TempData && TempData.map((item) => {
-      if (item.CostingHead === true) {
-        item.CostingHead = 'Vendor Based'
-        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-
-      } else if (item.CostingHead === false) {
-        item.CostingHead = 'Zero Based'
-        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-
-      } else {
-        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-
-      }
-      return item
-    })
-
     return (
-
-      <ExcelSheet data={temp} name={VolumeMaster}>
+      <ExcelSheet data={TempData} name={VolumeMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
-
   const onRowSelect = (event) => {
-
     var selectedRows = gridApi && gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedCostingListSimulation
-    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
-
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
       let finalData = []
       if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-
-        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedCostingListSimulation[i])
+          finalData.push(selectedRowForPagination[i])
         }
-
       } else {
-        finalData = selectedCostingListSimulation
+        finalData = selectedRowForPagination
       }
       selectedRows = [...selectedRows, ...finalData]
-
     }
-
-
-    let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-    let finalArr = selectedRows
-    let length = finalArr?.length
-    let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
-
+    let uniqeArray = _.uniqBy(selectedRows, "VolumeId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
   }
 
 
@@ -452,7 +386,7 @@ function VolumeListing(props) {
   const onBtExport = () => {
     let tempArr = []
     //tempArr = gridApi && gridApi?.getSelectedRows()
-    tempArr = selectedCostingListSimulation
+    tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (volumeDataListForDownload ? volumeDataListForDownload : [])
     return returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr)
   };
@@ -466,7 +400,7 @@ function VolumeListing(props) {
     setData({ isEditFlag: false, ID: '' })
     setTimeout(() => {
       if (type === 'submit')
-        getTableListData()
+        getTableListData(0, globalTake, true)
     }, 200);
   }
 
@@ -575,15 +509,7 @@ function VolumeListing(props) {
         if (isFilterEmpty) {
           setWarningMessage(false)
           for (var prop in floatingFilterData) {
-
-            if (getConfigurationKey().IsCompanyConfigureOnPlant) {
-              if (prop !== "DepartmentName") {
-                floatingFilterData[prop] = ""
-              }
-
-            } else {
-              floatingFilterData[prop] = ""
-            }
+            floatingFilterData[prop] = ""
           }
           setFloatingFilterData(floatingFilterData)
         }
@@ -616,8 +542,8 @@ function VolumeListing(props) {
     setPageNo(1)
     setPageNoNew(1)
     setCurrentRowIndex(0)
-    getTableListData()
-    dispatch(setSelectedCostingListSimualtion([]))
+    getTableListData(0, 10, true)
+    dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
 
@@ -657,13 +583,25 @@ function VolumeListing(props) {
     checkboxSelection: isFirstColumn
   };
 
+  const checkBoxRenderer = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
+        if (item.VolumeId === props.node.data.VolumeId) {
+          props.node.setSelected(true)
+        }
+        return null
+      })
+      return cellValue
+    } else {
+      return cellValue
+    }
+  }
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
-    costingHeadRenderer: costingHeadFormatter,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
-    plantFormatter: plantFormatter
   };
 
   if (showVolumeForm) {
@@ -794,7 +732,7 @@ function VolumeListing(props) {
                   onFilterModified={onFloatingFilterChanged}
                   onRowSelected={onRowSelect}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
