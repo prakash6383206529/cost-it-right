@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { getVendorPlantSelectList, getAllCities, getCityByCountry, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
+import { getVendorPlantSelectList, getAllCities, getCityByCountry, fetchStateDataAPI, fetchCityDataAPI, fetchCountryDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -52,6 +52,9 @@ class AddVendorDrawer extends Component {
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
+            this.props.fetchCountryDataAPI(() => { })
+            this.props.fetchStateDataAPI(0, () => { })
+            this.props.fetchCityDataAPI(0, () => { })
         }
     }
 
@@ -715,6 +718,7 @@ export default connect(mapStateToProps, {
     getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
+    fetchCountryDataAPI
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
