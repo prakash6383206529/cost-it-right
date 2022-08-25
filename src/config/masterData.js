@@ -3027,7 +3027,7 @@ export const UOM_DOWNLOAD_EXCEl = [
 ]
 
 export const VOLUME_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
     { label: "Vendor Name", value: "VendorName", },
