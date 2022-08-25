@@ -10,8 +10,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddGrade extends Component {
   constructor(props) {
@@ -38,17 +36,17 @@ class AddGrade extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   };
 
 
@@ -73,7 +71,7 @@ class AddGrade extends Component {
       this.props.updateRMGradeAPI(formData, (res) => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       })
     } else {
@@ -85,7 +83,7 @@ class AddGrade extends Component {
       this.props.createRMGradeAPI(values, (res) => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
-          this.toggleDrawer('', values)
+          this.toggleDrawer('', values, 'submit')
         }
       });
     }
@@ -126,7 +124,7 @@ class AddGrade extends Component {
                       </h3>
                     </div>
                     <div
-                      onClick={(e) => this.toggleDrawer(e)}
+                      onClick={(e) => { this.toggleDrawer(e, '', 'cancel') }}
                       className={"close-button right"}
                     ></div>
                   </Col>
@@ -137,7 +135,7 @@ class AddGrade extends Component {
                     label={`RM Grade`}
                     name={"Grade"}
                     type="text"
-                    placeholder={""}
+                    placeholder={"Enter"}
                     validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                     component={renderText}
                     required={true}
@@ -151,7 +149,7 @@ class AddGrade extends Component {
                 <Row className="sf-btn-footer no-gutters justify-content-between m-0">
                   <div className="text-right w-100">
                     <button
-                      onClick={this.cancel}
+                      onClick={() => { this.cancel('cancel') }}
                       type="submit"
                       value="CANCEL"
                       className="reset mr15 cancel-btn"
@@ -214,4 +212,5 @@ export default connect(mapStateToProps,
   })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddGrade));

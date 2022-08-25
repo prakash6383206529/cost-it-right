@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
+import { renderText } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { } from '../../../actions/Common';
-import { BOUGHTOUTPART } from '../../../config/constants';
+import { BOUGHTOUTPART, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper';
 
 class AddBOPForm extends Component {
   static contextType = PartEffectiveDate
@@ -25,7 +25,9 @@ class AddBOPForm extends Component {
       titleObj: {},
       isLoader: false,
       updateAsyncDropdown: false,
-      isBOPNoNotSelected: false
+      isBOPNoNotSelected: false,
+      isDimensionless: false,
+      showErrorOnFocus: false,
     }
   }
 
@@ -63,7 +65,13 @@ class AddBOPForm extends Component {
     if (newValue && newValue !== '') {
       this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
         const { BOPPart } = this.state;
-        this.props.getDrawerBOPData(BOPPart.value, () => { })
+        this.props.getDrawerBOPData(BOPPart.value, (res) => {
+          if (res?.data?.Data?.UnitOfMeasurementType === DIMENSIONLESS) {
+            this.setState({ isDimensionless: true })
+          } else {
+            this.setState({ isDimensionless: false })
+          }
+        })
       });
     } else {
       this.setState({ BOPPart: [], });
@@ -222,8 +230,12 @@ class AddBOPForm extends Component {
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
                   noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  onFocus={() => onFocus(this)}
+                  onKeyDown={(onKeyDown) => {
+                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  }}
                 />
-                {this.state.isBOPNoNotSelected && <div className='text-help'>This field is required.</div>}
+                {((this.state.showErrorOnFocus && this.state.BOPPart.length === 0) || this.state.isBOPNoNotSelected) && <div className='text-help'>This field is required.</div>}
               </div>
             </Col>
             <Col md="6">
@@ -277,7 +289,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[positiveAndDecimalNumber, required]}
+                validate={[(this.state.isDimensionless ? postiveNumber : positiveAndDecimalNumber), required, decimalNumberLimit]}
                 component={renderText}
                 required={true}
                 className=""
@@ -353,4 +365,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddBOPForm',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddBOPForm));

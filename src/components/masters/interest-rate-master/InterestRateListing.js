@@ -7,16 +7,13 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
+import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -71,9 +68,6 @@ class InterestRateListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
     }, 500);
   }
@@ -196,7 +190,6 @@ class InterestRateListing extends Component {
   buttonFormatter = (props) => {
 
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
@@ -207,43 +200,6 @@ class InterestRateListing extends Component {
       </>
     )
   };
-
-  handleChange = (cell, row, enumObject, rowIndex) => {
-    let data = {
-      Id: row.VendorId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !cell, //Status of the user.
-    }
-
-  }
-
-
-
-  /**
-  * @method statusButtonFormatter
-  * @description Renders buttons
-  */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <label htmlFor="normal-switch" className="normal-switch">
-          {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-          />
-        </label>
-      </>
-    )
-  }
-
-
   /**
   * @method indexFormatter
   * @description Renders serial number
@@ -299,13 +255,15 @@ class InterestRateListing extends Component {
     this.setState({ toggleForm: true })
   }
 
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState({
       toggleForm: false,
       data: { isEditFlag: false, ID: '' }
     }, () => {
-      this.getTableListData()
-    })
+      if (type === 'submit')
+        this.getTableListData()
+    }
+    )
   }
 
   bulkToggle = () => {
@@ -412,7 +370,6 @@ class InterestRateListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 
@@ -584,14 +541,11 @@ export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
   getVendorListByVendorType,
-  getPaymentTermsAppliSelectList,
-  getICCAppliSelectList,
-  getLeftMenu,
-  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(InterestRateListing));

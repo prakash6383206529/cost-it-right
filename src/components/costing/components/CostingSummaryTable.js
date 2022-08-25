@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage, allEqual, getConfigurationKey, getCurrencySymbol } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -27,6 +27,7 @@ import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
+import _ from 'lodash'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -68,7 +69,6 @@ const CostingSummaryTable = (props) => {
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
   const [icons, setIcon] = useState(true);
   const [loader, setLoader] = useState(false);
-  const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [stepOne, setStepOne] = useState(true);
@@ -90,13 +90,12 @@ const CostingSummaryTable = (props) => {
   const [pdfName, setPdfName] = useState('')
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [viewBomPartId, setViewBomPartId] = useState("");
+  const [dataSelected, setDataSelected] = useState([]);
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
 
-  useEffect(() => {
-  }, [multipleCostings])
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -284,9 +283,6 @@ const CostingSummaryTable = (props) => {
 
 
   const viewAttachmentData = (index) => {
-
-
-    let data = viewCostingData[index]?.attachment
     setAttachment(true)
     setViewAttachment(index)
   }
@@ -509,66 +505,36 @@ const CostingSummaryTable = (props) => {
     setAttachment(false)
   }
 
-  const handleMultipleCostings = (checked, index) => {
-
-    let temp = multipleCostings
-    if (checked) {
-      temp.push(viewCostingData[index]?.costingId)
-      // setMultipleCostings(temp)
+  const checkWarning = (data) => {
+    let final = _.map(data, 'IsApprovalLocked')
+    if (final?.length === 0 || final.includes(true)) {
+      setIsWarningFlag(true)
     } else {
-      const ind = multipleCostings.findIndex((data) => data === viewCostingData[index]?.costingId,)
-      if (ind !== -1) {
-        temp.splice(ind, 1)
-      }
-      // setMultipleCostings(temp)
+      setIsWarningFlag(false)
     }
-
-    setMultipleCostings(temp)
-    setFlag(!flag)
-    // let data = viewCostingData[index]?.netBOPCostView;
-    // setViewBOPData(data)
   }
 
   const moduleHandler = (id, check, data) => {
-    if (check === 'top') {
+    if (check === 'top') {                                                            // WHEN USER CLICK ON TOP SEND FOR APPROVAL
       let temp = multipleCostings
-      if (temp.includes(id)) {
-        const ind = multipleCostings.findIndex((data) => data === id)
 
-        if (ind !== -1) {
-          temp.splice(ind, 1)
-        }
-
-        const checkInd = viewCostingData?.findIndex((data) => data?.costingId === id)
-        if (checkInd !== -1) {
-          if (viewCostingData[checkInd].IsApprovalLocked) {
-            setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
-          }
-        }
-
-      } else {
-
+      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX  
+        temp = multipleCostings.filter((item) => item !== id)                         // FILTER DESELECTED ID 
+        const filteredData = dataSelected.filter((item) => item.costingId !== id)     // FLTER DATA TO SET IN ARRAY LIST 
+        setDataSelected(filteredData)
+        checkWarning(filteredData)
+      } else {                                                                        // WHEN SELECT THE CHECKBOX 
         temp.push(id)
-        const ind = multipleCostings.findIndex((data) => data === id)
-        const checkInd = viewCostingData?.findIndex((data) => data?.costingId === id)
-
-        if (temp.length > 1 && isWarningFlag) {
-          if (viewCostingData[checkInd].IsApprovalLocked === true) {
-            setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
-          }
-        } else {
-          setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
-        }
+        const updatedArray = [...dataSelected, data]                                  // ADD SELECTED DATA IN ARRAY LIST
+        setDataSelected(updatedArray)
+        checkWarning(updatedArray)
       }
-      setMultipleCostings(temp)
-      setFlag(!flag)
-    } else {
 
+      setMultipleCostings(temp)
+    } else {                                                                          // WHEN USER CLICK ON BOTTOM SEND FOR APPROVAL BUTTON
       setIsWarningFlag(data?.IsApprovalLocked)
       return data?.IsApprovalLocked
     }
-
-
   }
 
   const sendForApprovalData = (costingIds) => {
@@ -667,15 +633,14 @@ const CostingSummaryTable = (props) => {
     let effectiveDateArray = []
     let plantArray = []
 
-    viewCostingData?.map(item => vendorArray.push(item.vendorId))
-    viewCostingData && viewCostingData?.map((item) => {
+    dataSelected && dataSelected?.map((item) => {
       vendorArray.push(item.vendorId)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
       return null
     })
 
-    if (multipleCostings.length === 0) {
+    if (dataSelected?.length === 0) {
       Toaster.warning('Please select at least one costing to send for approval')
       return
     } else if (!allEqual(vendorArray)) {
@@ -1638,7 +1603,7 @@ const CostingSummaryTable = (props) => {
                                   (data?.status === DRAFT && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     class="user-btn"
-                                    disabled={isWarningFlag}
+                                    disabled={viewCostingData[index].IsApprovalLocked}
                                     onClick={() => {
                                       sendForApprovalDown(data)
                                     }}

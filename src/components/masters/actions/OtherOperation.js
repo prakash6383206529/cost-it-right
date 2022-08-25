@@ -384,9 +384,6 @@ export function deleteOperationAPI(OperationId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -762,6 +759,7 @@ export function getOperationApprovalList(callback) {
  * @description setOperationList
  */
 export function setOperationList(data) {
+
     return (dispatch) => {
         dispatch({
             type: SET_OPERATION_DATA,

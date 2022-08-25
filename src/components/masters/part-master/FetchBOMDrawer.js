@@ -9,8 +9,6 @@ import { getPlantSelectListByType } from '../../../actions/Common';
 import { ZBC } from '../../../config/constants';
 
 
-
-
 const FetchDrawer = (props) => {
     const { register, handleSubmit, formState: { errors }, control } = useForm();
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
@@ -18,8 +16,7 @@ const FetchDrawer = (props) => {
     const [partCode, setPartCode] = useState("");
     const dispatch = useDispatch()
 
-
-
+    // Post api and get Api integration is pending.
     const renderListing = () => {
 
         let temp = []
@@ -32,7 +29,6 @@ const FetchDrawer = (props) => {
         return temp
     }
 
-
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, () => { }))
     }, [])
@@ -42,34 +38,24 @@ const FetchDrawer = (props) => {
     }
 
     const onSubmit = data => {
-
-
         let obj = {
             productNumber: partCode,
             plantCode: plantCode
-
         }
-
         dispatch(createMBOMAssembly(obj, () => { }))
-
         props.toggleDrawer()
-
     }
 
     const handlePlantCodeChange = (e) => {
         setPlantCode(e.label)
-
     }
 
     const handlePartCodeChange = (e) => {
         setPartCode(e.target.value)
     }
 
-
-
     return (
         <>
-
             <Drawer className="BOM-Drawer" open={props.isOpen} anchor={props.anchor}
             // onClose={(e) => this.toggleDrawer(e)}
             >

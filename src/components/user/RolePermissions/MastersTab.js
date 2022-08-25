@@ -6,9 +6,8 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from "../../../config/constants";
 import { MASTERS, } from "../../../config/constants";
-import Switch from "react-switch";
 import { renderActionCommon } from "../userUtil"
 
 class MastersTab extends Component {
@@ -47,6 +46,7 @@ class MastersTab extends Component {
         if (ele.ModuleName === 'Master') {
           this.setState({ checkBox: ele.IsChecked })
         }
+        return null
       })
     }
   }
@@ -88,6 +88,7 @@ class MastersTab extends Component {
             </th>
           )
         }
+        return null
       })
     }
   }
@@ -123,6 +124,9 @@ class MastersTab extends Component {
 
       this.setState({ Modules: tempArray, checkBox: false })
     }
+    // CHECK IF RAW MATERIAL IS SELECTED FOR RAW MATERIAL NAME AND GRADE SELECTION
+    this.checkIsRMSelected(index, tempArray)
+
   }
 
   /**
@@ -149,8 +153,42 @@ class MastersTab extends Component {
     }
   }
 
+  checkIsRMSelected = (parentIndex, Module) => {
+    let tempModule = [...Module]
+    let tempArray = [...Module];              // MANUPATATED ARRAY TO SET IN STATE
+
+    const commonLogic = (ModuleName, value) => {
+      let index = 0
+      index = tempModule && tempModule.findIndex((x) => x.PageName === ModuleName)
+      // ONLY WORK IN CASE OF RAW_MATERIAL_NAME_AND_GRADE
+      if (ModuleName === RAW_MATERIAL_NAME_AND_GRADE) {
+        tempModule[index].IsChecked = false
+      }
+      let actionList = (tempModule && tempModule !== undefined) ? tempModule[index].Actions : [];
+      let actions = []
+      actions = actionList && actionList.map((item) => {
+        item.IsChecked = value;
+        return item;
+      })
+      tempArray = Object.assign([...tempModule], { [index]: Object.assign({}, tempModule[index], { IsChecked: value, Actions: actions }) })
+    }
+
+    // WHEN USER CLICK ON RAWMATERIAL TO DESELECT IT
+    if (tempModule[parentIndex]?.PageName === RAW_MATERIAL && tempModule[parentIndex]?.IsChecked === false) {
+      // WILL SEND OPPOSITE MODULE IN THE FUNCTION CCOMPARED TO CLICKED MODULE
+      commonLogic(RAW_MATERIAL_NAME_AND_GRADE, false)
+    }
+    // WHEN USER CLICK ON RAW_MATERIAL_NAME_AND_GRADE TO SELECT IT
+    if (tempModule[parentIndex]?.PageName === RAW_MATERIAL_NAME_AND_GRADE && tempModule[parentIndex]?.IsChecked === true) {
+      // WILL SEND OPPOSITE MODULE IN THE FUNCTION CCOMPARED TO CLICKED MODULE
+      commonLogic(RAW_MATERIAL, true)
+    }
+
+    this.setState({ Modules: tempArray })
+  }
+
   selectAllHandler = (parentIndex, actionRows) => {
-    const { Modules, } = this.state;
+    const { Modules } = this.state;
 
     let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
@@ -172,10 +210,13 @@ class MastersTab extends Component {
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
       this.setState({ Modules: tempArray, checkBox: false })
     }
+    // CHECK IF RAW MATERIAL IS SELECTED FOR RAW MATERIAL NAME AND GRADE SELECTION
+    this.checkIsRMSelected(parentIndex, tempArray)
+
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
 
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
@@ -186,6 +227,7 @@ class MastersTab extends Component {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
+        return null
       })
       item.IsChecked = isCheckedSelectAll
       return actionRows;
@@ -209,8 +251,25 @@ class MastersTab extends Component {
   actionCheckHandler = (parentIndex, childIndex) => {
     const { Modules } = this.state;
 
+    // WHEN MODULE RAW_MATERIAL_NAME_AND_GRADE IS SELECTED THEN ALL RAW MATERIAL WILL BE SELECTED , WHEN NO RAW MATERIAL IS EXPLICITLY SELECTED
+    let tempModule = [...Modules]
+    let actionArray = []
+    if (tempModule[parentIndex]?.PageName === RAW_MATERIAL_NAME_AND_GRADE && tempModule[parentIndex]?.IsChecked === false) {
+      let indexRM = tempModule && tempModule.findIndex((x) => x.PageName === RAW_MATERIAL)
+
+      if (tempModule[indexRM]?.IsChecked === false) {
+        actionArray = tempModule[indexRM]?.Actions && tempModule[indexRM]?.Actions.map((item, index) => {
+          item.IsChecked = true;
+          return item;
+        })
+        tempModule[indexRM].IsChecked = true
+      }
+    }
+    this.setState({ Modules: tempModule })
+
+    let tempArray1 = []
     let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-    let actionArray = actionRow && actionRow.map((el, index) => {
+    actionArray = actionRow && actionRow.map((el, index) => {
       if (childIndex === index) {
         el.IsChecked = !el.IsChecked
       }
@@ -219,10 +278,20 @@ class MastersTab extends Component {
     let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
     this.setState({ Modules: tempArray }, () => {
       const { Modules } = this.state;
-      let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-      let checkedActions = aa.filter(item => item.IsChecked === true)
-      let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
-      let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
+      let actionTemp = (Modules && Modules !== undefined) ? Modules[parentIndex]?.Actions : [];
+      let checkedActions = actionTemp?.filter(item => item.IsChecked === true)
+      let tempValue = checkedActions && checkedActions?.length !== 0 ? true : false;
+      tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: tempValue, Actions: actionArray }) })
+
+
+      // WHEN MODULE RAW_MATERIAL IS DESELECTED THEN ALL RAW_MATERIAL_NAME_AND_GRADE WILL BE DESELECTED 
+      if (tempArray1[parentIndex]?.PageName === RAW_MATERIAL && tempArray1[parentIndex]?.IsChecked === false) {
+        let indexRM = tempArray1 && tempArray1.findIndex((x) => x.PageName === RAW_MATERIAL_NAME_AND_GRADE)
+        tempArray1[indexRM]?.Actions && tempArray1[indexRM]?.Actions.map((item) => {
+          item.IsChecked = false
+          return null
+        })
+      }
       this.setState({ Modules: tempArray1 })
     })
   }

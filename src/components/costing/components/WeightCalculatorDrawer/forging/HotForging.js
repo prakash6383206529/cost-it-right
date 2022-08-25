@@ -445,7 +445,7 @@ function HotForging(props) {
                             required: true,
                             pattern: {
                               value: /^\d{0,4}(\.\d{0,7})?$/i,
-                              message: 'Maximum length for interger is 4 and for decimal is 7',
+                              message: 'Maximum length for integer is 4 and for decimal is 7',
                             },
 
                           }}
@@ -522,7 +522,7 @@ function HotForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -536,7 +536,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length(mm)`}
+                  label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -546,7 +546,7 @@ function HotForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}

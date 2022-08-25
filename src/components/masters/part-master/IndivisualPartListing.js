@@ -21,9 +21,10 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper';
+import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
+import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -115,6 +116,9 @@ class IndivisualPartListing extends Component {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
 
                 }, 300);
 
@@ -131,6 +135,11 @@ class IndivisualPartListing extends Component {
 
     }
 
+
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
+    }
+
     onFloatingFilterChanged = (value) => {
 
         this.setState({ disableFilter: false })
@@ -144,6 +153,7 @@ class IndivisualPartListing extends Component {
     }
 
     resetState = () => {
+        this.props.setSelectedCostingListSimualtion([])
         resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
 
     }
@@ -165,18 +175,24 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
-
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+            }
+        }, 200);
     }
 
 
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState(() => {
-            this.getTableListData()
-        })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState(() => {
+                    this.getTableListData()
+                })
+            }
+        }, 200);
     }
 
     /**
@@ -248,7 +264,6 @@ class IndivisualPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
@@ -265,8 +280,25 @@ class IndivisualPartListing extends Component {
      */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.PartId === props.node.data.PartId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        } else {
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        }
     }
+
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -336,6 +368,26 @@ class IndivisualPartListing extends Component {
         return serialNumber;
     }
 
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -371,9 +423,6 @@ class IndivisualPartListing extends Component {
     }
 
 
-
-
-
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
@@ -396,7 +445,8 @@ class IndivisualPartListing extends Component {
 
         this.setState({ disableDownload: true })
 
-        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -414,7 +464,8 @@ class IndivisualPartListing extends Component {
     onBtExport = () => {
 
         let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this.props.selectedCostingListSimulation
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
@@ -449,6 +500,7 @@ class IndivisualPartListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
             date: "",
@@ -489,12 +541,42 @@ class IndivisualPartListing extends Component {
 
         }
 
+        const onRowSelect = (event) => {
+
+            var selectedRows = this.state.gridApi.getSelectedRows();
+
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+                selectedRows = this.props.selectedCostingListSimulation
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+                let finalData = []
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].PartId === event.data.PartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
+            }
+
+
+            let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ selectedRowData: selectedRows })
+        }
+
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
@@ -502,7 +584,8 @@ class IndivisualPartListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
         return (
             <>
@@ -579,6 +662,7 @@ class IndivisualPartListing extends Component {
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
                                 rowSelection={'multiple'}
+                                onRowSelected={onRowSelect}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -633,11 +717,12 @@ class IndivisualPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, auth }) {
+function mapStateToProps({ part, auth, simulation }) {
     const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
+    const { selectedCostingListSimulation } = simulation;
 
-    return { newPartsListing, allNewPartsListing, initialConfiguration };
+    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation };
 }
 
 /**
@@ -652,4 +737,5 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
+    setSelectedCostingListSimualtion
 })(IndivisualPartListing);

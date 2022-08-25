@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
@@ -12,6 +12,7 @@ import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import CommonApproval from "../masters/material-master/CommonApproval";
+import { setSelectedCostingListSimualtion } from "../simulation/actions/Simulation";
 
 
 function Dashboard(props) {
@@ -33,6 +34,7 @@ function Dashboard(props) {
   })
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
 
+  const dispatch = useDispatch()
 
   const closeDashboard = () => {
     setShowHideDash(true)
@@ -80,8 +82,19 @@ function Dashboard(props) {
   const toggle = (tab) => {
 
     if (activeTab !== tab) {
-      setactiveTab(tab);
+      dispatch(setSelectedCostingListSimualtion([]))
+      setTimeout(() => {
+        setactiveTab(tab);
+      }, 300);
     }
+  }
+
+  const isPageNoChange = () => {
+    setTimeout(() => {
+      document.getElementById('go-top-top').scrollIntoView({
+        behavior: 'auto'
+      });
+    }, 30);
   }
 
   return (
@@ -140,7 +153,7 @@ function Dashboard(props) {
               </Row>}
 
               {getConfigurationKey().IsMasterApprovalAppliedConfigure && (viewMastersObj.RM || viewMastersObj.BOP || viewMastersObj.operation || viewMastersObj.machine) &&
-                <Row className="m-0">
+                <Row className="m-0" id="go-top-top">
                   <div className="graph-box w-100">
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
@@ -181,19 +194,19 @@ function Dashboard(props) {
                       <TabContent activeTab={activeTab}>
                         {(Number(activeTab) === 1 && viewMastersObj.RM) &&
                           <TabPane tabId="1">
-                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 2 && viewMastersObj.BOP) &&
                           <TabPane tabId="2">
-                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 3 && viewMastersObj.operation) &&
                           <TabPane tabId="3">
-                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} />
+                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 4 && viewMastersObj.machine) &&
                           <TabPane tabId="4">
-                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} />
+                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                       </TabContent>
                     </>}
@@ -232,4 +245,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,
+  touchOnChange: true
 })(Dashboard));

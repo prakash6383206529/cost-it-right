@@ -212,7 +212,7 @@ function SurfaceTreatmentCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="cr-brdr-main" size="sm" >
+              <Table className="cr-brdr-main costing-surface-section" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>

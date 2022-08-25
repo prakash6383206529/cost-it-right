@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { NumberFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
@@ -93,7 +93,7 @@ function Ferrous(props) {
     ]
 
     useEffect(() => {
-        if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest.CostingFerrousCalculationRawMaterials.length > 0) {
+        if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest)?.length > 0 && WeightCalculatorRequest?.CostingFerrousCalculationRawMaterials?.length > 0) {
             WeightCalculatorRequest.CostingFerrousCalculationRawMaterials && WeightCalculatorRequest.CostingFerrousCalculationRawMaterials.map((item, index) => (
                 setValue(`${rmGridFields}.${index}.Percentage`, checkForDecimalAndNull(item.Percentage, getConfigurationKey().NoOfDecimalForInputOutput))
             ))
@@ -106,8 +106,20 @@ function Ferrous(props) {
         }
     }, [fieldValues])
 
-    const percentageChange = () => {
+    const totalPercentageValue = () => {
+        let sum = 0
+        rmData && rmData.map((item, index) => {
+            sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
+        })
+        return sum;
+    }
+
+    const percentageChange = (e) => {
         setTimeout(() => {
+            if (totalPercentageValue() > 100) {
+                Toaster.warning('Total percentage value should not be greater than 100')
+                return false
+            }
             calculateNetSCrapRate()
             calculateNetRmRate()
         }, 300);
@@ -172,11 +184,27 @@ function Ferrous(props) {
         setLostWeight(lostSum)
     }
 
+    const calcForOutside = () => {
+        let temp = [...rmData]
+        temp && temp.map((item, index) => {
+            item.GrossWeight = calculatePercentageValue(dataToSend?.totalGrossWeight, getValues(`rmGridFields.${index}.Percentage`))
+            item.ScrapWeight = calculatePercentageValue(dataToSend?.scrapCost, getValues(`rmGridFields.${index}.Percentage`))
+            item.FinishWeight = calculatePercentageValue(getValues('finishedWeight'), getValues(`rmGridFields.${index}.Percentage`))
+            return item
+        })
+        return temp
+    }
+
     const onSubmit = debounce(handleSubmit((values) => {
+
+        if (totalPercentageValue() !== 100) {
+            Toaster.warning('Percentage value should be equal to 100')
+            return false
+        }
         let obj = {}
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
-        obj.RawMaterialIdRef = ""
+        obj.RawMaterialIdRef = rmRowData?.RawMaterialId
         obj.BaseCostingIdRef = item.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialCost = dataToSend.NetRMCost
@@ -196,9 +224,12 @@ function Ferrous(props) {
         obj.LossOfTypeDetails = tempArr
         obj.NetLossWeight = lostWeight
         let tempArray = []
-        rmData && rmData.map((item, index) => (
-            tempArray.push({ RMName: item.RMName, RMRate: item.RMRate, ScrapRate: item.ScrapRate, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000", Percentage: getValues(`${rmGridFields}.${index}.Percentage`) })
-        ))
+        calcForOutside().map((item, index) => {
+            tempArray.push({
+                RMName: item.RMName, RMRate: item.RMRate, ScrapRate: item.ScrapRate, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000", Percentage: getValues(`${rmGridFields}.${index}.Percentage`)
+                , GrossWeight: item.GrossWeight, ScrapWeight: item.ScrapWeight, FinishWeight: item.FinishWeight,
+            })
+        })
         obj.CostingFerrousCalculationRawMaterials = tempArray
         dispatch(saveRawMaterialCalculationForFerrous(obj, res => {
             if (res.data.Result) {
@@ -225,12 +256,15 @@ function Ferrous(props) {
                 <form noValidate className="form"
                     onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
 
-                    <Col md="12">
+                    <Col md="12" className='mt-3'>
+                        <div className="header-title mt12">
+                            <h5>{'Raw Material:'}</h5>
+                        </div>
                         <Col md="12">
                             <tbody className='rm-table-body'></tbody>
                         </Col>
-                        <div className="costing-border px-4">
-                            <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
+                        <div className="costing-border ferrous-calculator">
+                            <Table className="table cr-brdr-main ferrous-table" size="sm">
                                 <thead>
                                     <tr>
                                         <th className='rm-name-head'>{`RM Name`}</th>
@@ -250,12 +284,11 @@ function Ferrous(props) {
                                                     <td>{item.ScrapRate}</td>
                                                     <td>
                                                         <NumberFieldHookForm
-                                                            label="Percentage"
+                                                            label=""
                                                             name={`${rmGridFields}.${index}.Percentage`}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
-                                                            mandatory={true}
                                                             rules={{
                                                                 required: true,
                                                                 pattern: {
@@ -270,7 +303,7 @@ function Ferrous(props) {
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            handleChange={percentageChange}
+                                                            handleChange={(e) => { percentageChange(e) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.isEditFlag ? false : true}
                                                         />
@@ -282,7 +315,7 @@ function Ferrous(props) {
 
                                 </tbody>
                             </Table>
-                            <Row className={''}>
+                            <Row className={"mx-0"}>
                                 <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Net RM Rate`}
@@ -327,7 +360,7 @@ function Ferrous(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
 
                                         }}
@@ -355,7 +388,7 @@ function Ferrous(props) {
                                 ferrousErrors={errors}
                                 isFerrous={true}
                             />
-                            <Row className={'mt25'}>
+                            <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
                                         label={`Gross Weight(Kg)`}
@@ -393,7 +426,7 @@ function Ferrous(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
 
                                         }}
@@ -494,7 +527,7 @@ function Ferrous(props) {
 
                         </div>
                     </Col>
-                    <div className="mt25 col-md-12 text-right">
+                    <div className=" col-md-12 text-right">
                         <button
                             onClick={onCancel} // Need to change this cancel functionality
                             type="submit"
@@ -510,8 +543,7 @@ function Ferrous(props) {
                             disabled={props.CostingViewMode || isDisable ? true : false}
                             className="btn-primary save-btn"
                         >
-                            <div className={'check-icon'}>
-                                <i class="fa fa-check" aria-hidden="true"></i>
+                            <div className={'save-icon'}>
                             </div>
                             {'SAVE'}
                         </button>

@@ -5,11 +5,11 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
-import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
+import { onFocus } from '../../../helper';
 
 class AddComponentForm extends Component {
   static contextType = PartEffectiveDate
@@ -23,7 +23,8 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
-      isLoader: false
+      isLoader: false,
+      showErrorOnFocus: false
     }
   }
 
@@ -230,8 +231,12 @@ class AddComponentForm extends Component {
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handlePartChange(e)}
                   noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the part numbers' : "No results found"}
+                  onFocus={() => onFocus(this)}
+                  onKeyDown={(onKeyDown) => {
+                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                  }}
                 />
-                {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
+                {((this.state.showErrorOnFocus && this.state.part.length === 0) || this.state.isPartNoNotSelected) && <div className='text-help'>This field is required.</div>}
               </div>
             </Col>
             <Col md="6">
@@ -402,4 +407,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddComponentForm',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddComponentForm));

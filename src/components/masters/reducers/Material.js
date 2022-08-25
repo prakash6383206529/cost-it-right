@@ -9,7 +9,6 @@ import {
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST, GET_ALL_RM_DOMESTIC_LIST
 } from '../../../config/constants';
-import { userDetails } from '../../../helper';
 
 const initialState = {
     filterRMSelectList: {}
@@ -337,13 +336,13 @@ export default function materialReducer(state = initialState, action) {
             // })
 
             let array = []
-            if (action.payload[0].Plant !== undefined) {
+            if (action?.payload[0]?.Plant !== undefined) {
                 array = action.payload && action.payload.filter((item) => {
                     return item.Plants = item.Plant
                 })
             }
 
-            if (action.payload[0].OperationId !== undefined && action.payload[0].OperationId !== null) {
+            if (action?.payload[0]?.OperationId !== undefined && action?.payload[0]?.OperationId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (item.TechnologyName = item.Technology,
                         item.UOM = item.UnitOfMeasurement,
@@ -353,7 +352,7 @@ export default function materialReducer(state = initialState, action) {
                 })
             }
 
-            if (action.payload[0].MachineId !== undefined && action.payload[0].MachineId !== null) {
+            if (action?.payload[0]?.MachineId !== undefined && action?.payload[0]?.MachineId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (
                         item.BasicRate = item.MachineRate

@@ -477,6 +477,7 @@ export const ZBCOperation = [
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -492,6 +493,7 @@ export const ZBCOperationTempData = [
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
+        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
@@ -588,7 +590,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Contractual',
         'VendorName': 'Tata Steel',
         'VendorCode': 'VC123',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
@@ -599,7 +601,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Employed',
         'VendorName': 'Reliance',
         'VendorCode': 'VC124',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
@@ -622,8 +624,8 @@ export const Fuel = [
 export const FuelTempData = [
     {
         'FuelName': 'Petrol',
-        'UOM': 'Mililitre',
-        'State': 'MP',
+        'UOM': 'Millilitre',
+        'State': 'Madhya Pradesh',
         'Rate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
@@ -655,7 +657,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -669,7 +671,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
-        'VendorName': 'Systematix',
+        'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -712,7 +714,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorName': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -732,7 +734,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -749,7 +751,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -774,7 +776,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -796,7 +798,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -809,7 +811,6 @@ export const BOP_VBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -820,7 +821,6 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part 2',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -832,12 +832,10 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -846,12 +844,10 @@ export const VOLUME_ACTUAL_VBC = [
 
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
         'PartNo': 'Screw Jack',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -865,7 +861,6 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -876,7 +871,6 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -888,12 +882,10 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -902,12 +894,10 @@ export const VOLUME_BUDGETED_VBC = [
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -1005,6 +995,7 @@ export const Power = [
 */
 export const MachineZBC = [
     { label: 'Technology', value: 'Technology', }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -1021,7 +1012,8 @@ export const MachineZBC = [
 export const MachineZBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'PlantCode': '1001',
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -1040,6 +1032,7 @@ export const MachineZBCTempData = [
 */
 export const MHRMoreZBC = [
     { label: "Technology", value: "Technology", }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode", }, //*
     { label: "MachineNo", value: "MachineNo", }, //*
     { label: "MachineName", value: "MachineName", }, //*
@@ -1109,7 +1102,8 @@ export const CLIENT_DOWNLOAD_EXCEl = [
 export const MHRMoreZBCTempData = [
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-001",
         "MachineName": "Power Press",
         "MachineSpec": "Machine Specification",
@@ -1163,7 +1157,8 @@ export const MHRMoreZBCTempData = [
     },
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
         "MachineSpec": "Machine Specification",
@@ -1271,7 +1266,6 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
-    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const PartComponentTempData = [
@@ -1285,7 +1279,6 @@ export const PartComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
-        "ProductGroupCode": "VB"
     }
 ]
 
@@ -2385,7 +2378,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
+export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9', '10', '11']
@@ -2418,6 +2411,8 @@ export const CostingSimulationDownloadRM = [
     { label: "Old RM Cost/Pc", value: "OldRMPrice" },
     { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2452,7 +2447,8 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Old Exchange Rate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
     { label: "PO Price", value: "OldPOPrice" },
-    { label: "Variance", value: "Variance" }
+    { label: "Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 ]
 export const COMBINEDPROCESSSIMULATION = [
     { label: "Costing Head", value: "CostingHead" },
@@ -2474,6 +2470,8 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: 'Old Net CC', value: 'OldNetCC' },
     { label: "New Net CC", value: "NewNetCC" },
     { label: "Variance", value: "CPVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2523,6 +2521,8 @@ export const CostingSimulationDownloadST = [
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2569,6 +2569,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldNetOperationCost", value: "OldNetOperationCost" },
     { label: "NewNetOperationCost", value: "NewNetOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2617,6 +2619,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2656,6 +2660,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2681,6 +2686,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
@@ -2698,6 +2704,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
     { label: "Old CC", value: "OldNetCC" },
     { label: "New CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2722,6 +2729,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2746,6 +2754,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2997,6 +3006,8 @@ export const VBCPLANT_DOWNLOAD_EXCEl = [
 
 export const REASON_DOWNLOAD_EXCEl = [
     { label: "Reason", value: "Reason", },
+    { label: "Status", value: "status", }
+
 ]
 
 export const VENDOR_DOWNLOAD_EXCEl = [
@@ -3006,6 +3017,7 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "Status", value: "status", }
 ]
 
 export const UOM_DOWNLOAD_EXCEl = [
@@ -3022,7 +3034,6 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Plant", value: "Plant", },
-    { label: "Destination Plant", value: "DestinationPlant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
     { label: "Approved Quantity", value: "ApprovedQuantity", },
 ]
@@ -3046,6 +3057,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "Status", value: "status", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
@@ -3174,7 +3186,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
-    { label: "IsActive", value: "IsActive", }
+    { label: "Status", value: "status", }
 
 ]
 
@@ -3255,6 +3267,7 @@ export const InitialGridForToken = [
 ]
 
 export const LastGridForToken = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -3287,6 +3300,7 @@ export const InitialGridForTokenSummary = [
 ]
 
 export const LastGridForTokenSummary = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },

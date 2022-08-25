@@ -63,7 +63,6 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
-    console.log('checkIsOverheadProfitChange: ', checkIsOverheadProfitChange);
     if (checkIsOverheadProfitChange) {
       let reqData = {
         "CostingId": item.CostingId,

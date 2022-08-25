@@ -31,13 +31,9 @@ function ReportListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [createDate, setCreateDate] = useState(Date);
-    const [costingVersionChange, setCostingVersion] = useState('');
-    const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
@@ -101,16 +97,10 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const createDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        setCreateDate(cellValue)
-    }
-
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
-        setCostingVersion(temp);
         return temp
     }
 
@@ -147,13 +137,11 @@ function ReportListing(props) {
             ))
         }
         setIsOpen(true)
-        setUserId(UserId)
     }
 
     const closeUserDetails = () => {
         setIsViewRM(false)
         setIsOpen(false)
-
     }
 
     const dateFormatter = (props) => {
@@ -266,7 +254,6 @@ function ReportListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
@@ -449,12 +436,6 @@ function ReportListing(props) {
 
         // getTableData(0, 100, true, floatingFilterData, false);
 
-        let departmentList = JSON.parse(localStorage.getItem('departmentList'))
-        departmentList = departmentList.split(",")
-        const found = departmentList.find(element => {
-            return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
-        })
-
         // if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin')) {  MAY BE USED LATER
 
         //     if (found !== undefined) {
@@ -543,14 +524,8 @@ function ReportListing(props) {
             }, 1400);
         }
     };
-
-    useEffect(() => {
-
-    }, [tableData])
-
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
         hyphenFormatter: hyphenFormatter,
         partTypeAssemblyFormatter: partTypeAssemblyFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
@@ -646,19 +621,13 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-    const lastWeekFilter = () => {
-
-        setPageNo(1)
-        setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true, true);
-    }
 
     return (
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Details Report</h1>
+                <h1 className="mb-0">Costing Details</h1>
 
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
@@ -669,34 +638,29 @@ function ReportListing(props) {
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                            <div>
-                                <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn(ReportMaster)}
-                                </ExcelFile>
+                            <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
 
+                            {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                            </button></div> :
 
-                                {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                <>
+                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        {/* DOWNLOAD */}
+                                    </button>
 
-                                    <>
-                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                            {/* DOWNLOAD */}
-                                        </button>
+                                    <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                                        <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                                        </button>}>
+                                        {renderColumn(ReportMaster)}
+                                    </ExcelFile>
 
-                                        <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
-                                            <button id={'Excel-Downloads'} type="button" >
-                                            </button>}>
-                                            {renderColumn(ReportMaster)}
-                                        </ExcelFile>
+                                </>
 
-                                    </>
+                            }
 
-                                }
-
-                            </div>
                         </div>
 
                     </Col>

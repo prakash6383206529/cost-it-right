@@ -6,7 +6,6 @@ import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialC
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
-import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -20,6 +19,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -49,7 +49,8 @@ class AddIndivisualPart extends Component {
       isBomEditable: false,
       minEffectiveDate: '',
       disablePartName: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      showErrorOnFocusDate: false
     }
   }
 
@@ -58,7 +59,6 @@ class AddIndivisualPart extends Component {
   * @description 
   */
   componentDidMount() {
-    this.props.getPlantSelectList(() => { })
     this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
@@ -185,14 +185,6 @@ class AddIndivisualPart extends Component {
 
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -208,7 +200,7 @@ class AddIndivisualPart extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -293,7 +285,7 @@ class AddIndivisualPart extends Component {
  * @method cancel
  * @description used to Reset form
  */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -301,7 +293,7 @@ class AddIndivisualPart extends Component {
       selectedPlants: [],
     })
     this.props.getPartData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -327,10 +319,10 @@ class AddIndivisualPart extends Component {
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
-        String(DataToCheck.GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
         && String(DataToCheck.Remark) === String(values.Remark) && !isGroupCodeChange && uploadAttachements) {
-        this.cancel()
+        this.cancel('submit')
         return false;
       }
 
@@ -385,7 +377,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
 
@@ -413,7 +405,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -424,7 +416,7 @@ class AddIndivisualPart extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -477,7 +469,7 @@ class AddIndivisualPart extends Component {
                               label={`Part No.`}
                               name={"PartNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -492,7 +484,7 @@ class AddIndivisualPart extends Component {
                               label={`Part Name`}
                               name={"PartName"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -508,7 +500,7 @@ class AddIndivisualPart extends Component {
                                 label={`Part Description`}
                                 name={"Description"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={isViewMode ? '-' : "Enter"}
                                 validate={[maxLength80, checkWhiteSpaces]}
                                 component={renderText}
                                 required={false}
@@ -525,7 +517,8 @@ class AddIndivisualPart extends Component {
                                 label="Group Code"
                                 name="ProductGroup"
                                 type="text"
-                                placeholder={"Select"}
+                                title={showDataOnHover(this.state.ProductGroup)}
+                                placeholder={isViewMode ? '-' : "Select"}
                                 selection={
                                   this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                                 options={this.renderListing("ProductGroup")}
@@ -544,7 +537,7 @@ class AddIndivisualPart extends Component {
                                 label={`Group Code`}
                                 name={"GroupCode"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={isViewMode ? '-' : "Enter"}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
                                 required={false}
@@ -562,7 +555,7 @@ class AddIndivisualPart extends Component {
                               label={`ECN No.`}
                               name={"ECNNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -575,7 +568,7 @@ class AddIndivisualPart extends Component {
                               label={`Revision No.`}
                               name={"RevisionNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -588,7 +581,7 @@ class AddIndivisualPart extends Component {
                               label={`Drawing No.`}
                               name={"DrawingNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -605,6 +598,7 @@ class AddIndivisualPart extends Component {
                                 <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
+                                  placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
@@ -616,8 +610,10 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
+                                  onFocus={() => onFocus(this, true)}
                                   disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
                                 />
+                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
@@ -633,7 +629,7 @@ class AddIndivisualPart extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512, checkWhiteSpaces]}
@@ -652,7 +648,6 @@ class AddIndivisualPart extends Component {
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="*"
@@ -730,7 +725,7 @@ class AddIndivisualPart extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -796,7 +791,6 @@ function mapStateToProps({ comman, part, auth }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   createPart,
   updatePart,
   getPartData,

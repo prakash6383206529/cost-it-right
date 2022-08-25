@@ -1,5 +1,4 @@
 import React, { useState, useRef, Fragment } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +9,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, ZBC, AssemblyWiseImpactt } from '../../../config/constants';
+import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
@@ -42,12 +41,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { formState: getValues, setValue } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
-
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
@@ -58,9 +52,7 @@ function CostingSimulation(props) {
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
     const [apiData, setAPIData] = useState([])
-    const [id, setId] = useState('')
     const [pricesDetail, setPricesDetail] = useState({})
-    const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -268,6 +260,7 @@ function CostingSimulation(props) {
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
@@ -345,7 +338,6 @@ function CostingSimulation(props) {
             simulationId: simulationId,
             costingId: data.CostingId
         }
-        setId(id)
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldNetOperationCost, NewOperationCost: data.NewNetOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency, NewNetCC: data.NewNetCC, OldNetCC: data.OldNetCC
         })
@@ -397,10 +389,11 @@ function CostingSimulation(props) {
         }
 
         else if (temp.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            if (selectedRows[0].LockedBySimulationProcessStep === '' || selectedRows[0].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'}`)
+            let index = selectedRows.length - 1
+            if (selectedRows[index].LockedBySimulationProcessStep === '' || selectedRows[index].LockedBySimulationProcessStep === null) {
+                Toaster.warning(`${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'}`)
             } else {
-                Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+                Toaster.warning(`This costing is under approval with token number ${selectedRows[index].LockedBySimulationToken ? selectedRows[index].LockedBySimulationToken : '-'} at ${selectedRows[index].LockedBySimulationProcessStep ? selectedRows[index].LockedBySimulationProcessStep : "-"} with ${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'} .`)
             }
             gridApi.deselectAll()
             return false
@@ -773,6 +766,11 @@ function CostingSimulation(props) {
         return `${props.value}(${props.data.PlantCode})`
     }
 
+    const impactPerQuarterFormatter = (props) => {
+        const cell = props?.value;
+        return cell != null ? cell : ''
+    }
+
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
@@ -854,6 +852,7 @@ function CostingSimulation(props) {
         const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
     const CPvarianceFormatter = (props) => {
         // ********** THIS IS RE SPECIFIC **********
         // ********** THIS IS RE SPECIFIC **********
@@ -868,13 +867,6 @@ function CostingSimulation(props) {
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
-
-
-
-
-    useEffect(() => {
-
-    }, [isView])
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -1083,7 +1075,8 @@ function CostingSimulation(props) {
         decimalFormatter: decimalFormatter,
         netBOPPartCostFormatter: netBOPPartCostFormatter,
         netCCFormatter: netCCFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        impactPerQuarterFormatter: impactPerQuarterFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1267,6 +1260,7 @@ function CostingSimulation(props) {
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>}
 
+                                                    <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact for Quarter(INR)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                     <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                 </AgGridReact >
 

@@ -49,8 +49,11 @@ class IndivisualProductListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getTableListData();
+            }
+        }, 300);
     }
 
     /**
@@ -340,7 +343,6 @@ class IndivisualProductListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 

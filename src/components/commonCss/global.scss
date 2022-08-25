@@ -2,6 +2,7 @@
 @import "./style.scss";
 @import "./drawers.scss";
 @import "./masters.scss";
+@import "./costing.scss";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
@@ -841,6 +842,13 @@ a:hover {
       font-weight: 500;
     }
   }
+.ag-ltr .ag-floating-filter-button {
+  margin-left: 4px !important;
+}
+input[type="date"].ag-input-field-input {
+    padding-bottom:0!important ;
+    min-width: 95px;
+}
 }
 .ag-root-wrapper-body.ag-layout-normal {
   border: 1px solid #e5eaf9;

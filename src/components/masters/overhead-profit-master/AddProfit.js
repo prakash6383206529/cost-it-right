@@ -15,13 +15,14 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, SPACEBAR } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -70,18 +71,23 @@ class AddProfit extends Component {
       minEffectiveDate: '',
       isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
-      vendorCode: ""
+      vendorCode: "",
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
+
 
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.fetchModelTypeAPI('--Model Types--', res => { });
+    if (!this.state.isViewMode) {
       this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
+      this.props.fetchModelTypeAPI('--Model Types--', res => { });
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getClientSelectList(() => { })
     }
     this.getDetails();
@@ -165,7 +171,7 @@ class AddProfit extends Component {
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
-              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
@@ -521,14 +527,6 @@ class AddProfit extends Component {
     })
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -544,7 +542,7 @@ class AddProfit extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -629,7 +627,7 @@ class AddProfit extends Component {
   * @method cancel
   * @description used to Cancel form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -641,7 +639,7 @@ class AddProfit extends Component {
       profitAppli: [],
     })
     this.props.getProfitData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -684,7 +682,7 @@ class AddProfit extends Component {
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true, disablePopup: false })
@@ -748,7 +746,7 @@ class AddProfit extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -759,7 +757,7 @@ class AddProfit extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }
@@ -874,7 +872,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Model Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("ModelType")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
@@ -904,8 +902,13 @@ class AddProfit extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
+                              />
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </div>
                           </Col>
                         )}
@@ -916,7 +919,7 @@ class AddProfit extends Component {
                               type="text"
                               label={"Client Name"}
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -939,7 +942,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Profit Applicability"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing(
                               "ProfitApplicability"
                             )}
@@ -965,7 +968,7 @@ class AddProfit extends Component {
                               name={"ProfitPercentage"}
                               type="text"
                               placeholder={
-                                !isProfitPercent ? "Enter" : ""
+                                isProfitPercent || isViewMode ? "-" : "Enter"
                               }
                               validate={
                                 !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
@@ -987,7 +990,7 @@ class AddProfit extends Component {
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
-                              placeholder={!isRM ? "Enter" : ""}
+                              placeholder={isRM || isViewMode ? "-" : "Enter"}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
                               component={renderNumberInputField}
@@ -1004,7 +1007,7 @@ class AddProfit extends Component {
                               label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
-                              placeholder={!isCC ? "Enter" : ""}
+                              placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
                               component={renderNumberInputField}
@@ -1022,7 +1025,7 @@ class AddProfit extends Component {
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
-                              placeholder={!isBOP ? "Enter" : ""}
+                              placeholder={isBOP || isViewMode ? "-" : "Enter"}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
                               component={renderNumberInputField}
@@ -1052,7 +1055,10 @@ class AddProfit extends Component {
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
+                              placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
+                              onFocus={() => onFocus(this, true)}
                             />
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                           </div>
                         </Col>
                       </Row>
@@ -1067,7 +1073,7 @@ class AddProfit extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"
@@ -1087,7 +1093,6 @@ class AddProfit extends Component {
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
-                              getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               disabled={isViewMode}
@@ -1169,7 +1174,7 @@ class AddProfit extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>

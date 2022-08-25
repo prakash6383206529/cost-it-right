@@ -79,7 +79,7 @@ function Costing(props) {
   */
   return (
     <>
-      <div className="user-page container-fluid">
+      <div className="user-page container-fluid costing-main-container">
         {/* {this.props.loading && <Loader/>} */}
         <div>
           <h1>Costing</h1>

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -11,10 +10,9 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
+    getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
-import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
@@ -31,16 +29,12 @@ import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
+import { required } from 'joi';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class VendorListing extends Component {
     constructor(props) {
@@ -76,6 +70,7 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
+            showPopupToggle: false,
             isLoader: false,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
@@ -84,18 +79,8 @@ class VendorListing extends Component {
         }
     }
 
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getAllVendorSelectList()
-        this.props.fetchCountryDataAPI(() => { })
-    }
-
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", defaultPageSize, this.state.floatingFilterData, true)
 
         this.applyPermission(this.props.topAndLeftMenuData)
     }
@@ -169,11 +154,7 @@ class VendorListing extends Component {
     * @description GET VENDOR DATA LIST
     */
     getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj, isPagination) => {
-        let filterData = {
-            vendorType: vendorType,
-            vendorName: vendorName,
-            country: country,
-        }
+
         this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
@@ -219,6 +200,9 @@ class VendorListing extends Component {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
 
                 }, 300);
 
@@ -232,40 +216,6 @@ class VendorListing extends Component {
             }
 
         });
-    }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { countryList, vendorTypeList, vendorSelectList } = this.props;
-
-        const temp = [];
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorType') {
-            vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorList') {
-            vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
     }
 
     /**
@@ -309,6 +259,10 @@ class VendorListing extends Component {
     }
     closePopUp = () => {
         this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
     }
     /**
     * @method buttonFormatter
@@ -316,7 +270,6 @@ class VendorListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.value;
-        const rowData = props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
@@ -342,19 +295,21 @@ class VendorListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
+    }
+    confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
-                //this.getTableListData(null, null, null)
                 this.filterList()
             }
         })
+        this.setState({ showPopupToggle: false })
     }
-
     /**
     * @method handleVendorType
     * @description Used to handle vendor type
@@ -409,7 +364,7 @@ class VendorListing extends Component {
 
         const { ActivateAccessibility } = this.state;
         if (rowData.UserId === loggedInUserId()) return null;
-        showTitleForActiveToggle(props)
+        showTitleForActiveToggle(props?.rowIndex)
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
@@ -483,8 +438,6 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
-            this.props.getVendorTypesSelectList()
-            this.props.getAllVendorSelectList()
             this.getTableListData(null, null, null)
         })
     }
@@ -493,15 +446,18 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
+
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -516,7 +472,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1367 && this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -561,6 +517,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
+            // if (item.IsActive === true) {
+            //     item.IsActive = 'Active'
+            // }
+            // else if (item.IsActive === false) {
+            //     item.IsActive = 'In Active'
+            // }
             return item
         })
         return (
@@ -598,7 +560,6 @@ class VendorListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
@@ -631,48 +592,6 @@ class VendorListing extends Component {
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills">
                                         <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Type"}
-                                            options={this.renderListing("vendorType")}
-
-                                            validate={
-                                                this.state.vendorType == null ||
-                                                    this.state.vendorType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorType}
-                                            valueDescription={this.state.vendorType}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Vendors"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            options={this.renderListing("vendorList")}
-
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
                                     </div>
 
                                     <div className="flex-fill">
@@ -772,6 +691,8 @@ class VendorListing extends Component {
                                 imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}
+                            enablePivot={true}
+                            enableBrowserTooltips={true}
                         >
                             <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -779,8 +700,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" width={"230px"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="120" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" minWidth={"160"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
 
@@ -830,6 +751,9 @@ class VendorListing extends Component {
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
                 }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`} />
+                }
             </div >
         );
     }
@@ -859,10 +783,7 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorTypesSelectList,
-    fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getAllVendorSelectList,
     getVendorTypeByVendorSelectList
 })(reduxForm({
     form: 'VendorListing',
@@ -870,4 +791,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VendorListing));

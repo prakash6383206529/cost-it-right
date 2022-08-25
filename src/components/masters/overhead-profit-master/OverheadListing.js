@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
-import { fetchCostingHeadsAPI, } from '../../../actions/Common';
+import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
@@ -22,6 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { i } from 'react-dom-factories';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -54,16 +54,17 @@ class OverheadListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorWithVendorCodeSelectList()
-
-        this.getDataList(null, null, null, null)
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList(null, null, null, null)
+            }
+        }, 300);
     }
 
     // Get updated Table data list after any action performed.
     getUpdatedData = () => {
         this.getDataList(null, null, null, null)
+
     }
 
     getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
@@ -154,23 +155,6 @@ class OverheadListing extends Component {
             </>
         )
     };
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let headText = '';
-        if (cellValue === 'ZBC') {
-            headText = 'Zero Based';
-        } if (cellValue === 'VBC') {
-            headText = 'Vendor Based';
-        } if (cellValue === 'CBC') {
-            headText = 'Client Based';
-        }
-        return headText;
-    }
 
     /**
     * @method effectiveDateFormatter
@@ -299,16 +283,9 @@ class OverheadListing extends Component {
                 item.VendorName = ' '
             } if (item.ClientName === '-') {
                 item.ClientName = ' '
-            } if (item.TypeOfHead === 'VBC') {
-                item.TypeOfHead = 'Vendor Based'
-            } if (item.TypeOfHead === 'ZBC') {
-                item.TypeOfHead = 'Zero Based'
-            } if (item.TypeOfHead === 'CBC') {
-                item.TypeOfHead = 'Client Based'
             }
-            if (item.EffectiveDate.includes('T')) {
+            if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-
             }
 
             return item
@@ -350,13 +327,11 @@ class OverheadListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
@@ -491,14 +466,12 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getOverheadDataList,
-    fetchCostingHeadsAPI,
     deleteOverhead,
-    fetchModelTypeAPI,
     activeInactiveOverhead,
-    getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(OverheadListing));

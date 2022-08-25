@@ -2134,7 +2134,7 @@ html {
 
 .select--is-disabled {
   .css-12jo7m5 {
-    color: hsl(0, 0%, 60%);
+    color: #616366;
     font-size: 13px;
   }
 }
@@ -2600,7 +2600,7 @@ button:disabled {
   .costing-table-next {
     tbody {
       td {
-        word-break: break-all;
+        word-break: break-word;
 
         .mb-15 {
           margin-bottom: 0px;
@@ -3801,7 +3801,7 @@ body {
 
 .css-4ljt47-MenuList {
   >div {
-    word-break: break-all;
+    word-break: break-word;
   }
 }
 
@@ -4741,7 +4741,7 @@ body {
   font-size: 16px;
   width: 100%;
   display: inline-block;
-  word-break: break-all;
+  word-break: break-word;
 
   &.success {
     background-color: #DBF4E2;
@@ -4793,6 +4793,7 @@ body {
   display: inline-block;
   vertical-align: middle;
   height: 24px;
+  width: fit-content;
 }
 
 .surface-treatment-btn {
@@ -6919,12 +6920,12 @@ body {
   }
 }
 
-@media (max-width:$miniDesktop) {
+@media (max-width:$middleDesktop ) {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 223px;
-        max-width: 223px;
+        min-width: 214px;
+        max-width: 214px;
         width: auto;
       }
     }
@@ -7016,6 +7017,7 @@ body {
   .toggle-button-per-and-fix {
     margin-top: 0.5rem;
     display: flex !important;
+    justify-content: space-between;
 
     .form-group.inputbox.withBorder {
       min-width: 12rem;
@@ -7471,6 +7473,10 @@ body {
     line-height: calc(14px * 80 / 100) !important;
     height: calc(32px * 80 / 100) !important;
     width: auto !important;
+
+    &.pull-right.w-100 {
+      width: 100% !important;
+    }
   }
 
   .edit-icon,
@@ -7870,7 +7876,7 @@ body {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     white-space: $whiteSpace;
-    word-break: break-all;
+    word-break: break-word;
   }
 
   @media (min-width:$middleDesktop) {
@@ -8276,12 +8282,14 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
+  display: flex;
+  align-items: center;
   .flex-fills.label {
     min-width: fit-content !important;
   }
 }
 
-@media screen and (min-width:$middleDesktop) {
+@media screen and (min-width:$miniDesktop) {
   .freight-drawer {
     width: 485px !important;
   }
@@ -8373,6 +8381,10 @@ body {
     display: flex;
     flex-wrap: wrap;
     grid-gap: 3px;
+
+    &.disabled {
+      background-color: #e6e6e6;
+    }
 
     .process-name {
       background-color: rgb(224, 224, 224);
@@ -8687,5 +8699,16 @@ table.group-process-table {
       font-size: 12px;
       top: 2px;
     }
+  }
+}
+
+.role-department-container {
+  display: flex;
+
+  .departments {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    white-space: nowrap;
   }
 }

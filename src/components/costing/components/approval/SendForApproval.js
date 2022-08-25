@@ -462,13 +462,9 @@ const SendForApproval = (props) => {
     props.closeDrawer('', 'Cancel')
   }
 
-  // specify upload params and url for your files
-  const getUploadParams = ({ file, meta }) => {
-    setAttachmentLoader(true)
-    return { url: "https://httpbin.org/post" };
-  };
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    setAttachmentLoader(true)
     if (status === "removed") {
       const removedFileName = file.name;
       let tempArr =
@@ -877,7 +873,6 @@ const SendForApproval = (props) => {
                         </div>
                       ) : (
                         <Dropzone
-                          getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           mandatory={true}

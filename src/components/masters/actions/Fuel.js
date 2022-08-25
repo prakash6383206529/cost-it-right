@@ -98,7 +98,8 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
                 dispatch({ type: GET_FUEL_FAILURE });
                 callback(error);
             });
-        } else {
+        }
+        else {
             dispatch({
                 type: GET_FUEL_DATALIST_SUCCESS,
                 payload: [],
@@ -612,5 +613,23 @@ export function deleteVendorPowerDetail(Id, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getFuelComboData
+ * @description USED TO GET FUEL COMBO DATA
+ */
+export function getUOMByFuelId(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getUOMByFuelId}?fuelId=${data}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

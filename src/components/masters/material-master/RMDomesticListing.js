@@ -37,7 +37,6 @@ const gridOptions = {};
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
-    const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -63,7 +62,7 @@ function RMDomesticListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
 
     var filterParams = {
@@ -100,36 +99,40 @@ function RMDomesticListing(props) {
     }, [rmDataList])
 
     useEffect(() => {
-        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            props?.changeSetLoader(true)
-            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
-                props?.changeSetLoader(false)
-            }))
-        } else {
-            if (isSimulation) {
-                props?.changeTokenCheckBox(false)
+        if (!props.stopApiCallOnCancel) {
+            if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+                props?.changeSetLoader(true)
+                dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                    props?.changeSetLoader(false)
+                }))
+            } else {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(false)
+                }
+                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
-            getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+            setvalue({ min: 0, max: 0 });
         }
-        setvalue({ min: 0, max: 0 });
     }, [])
 
 
     useEffect(() => {
-        let obj = {
-            MasterId: RM_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+        if (!props.stopApiCallOnCancel) {
+            let obj = {
+                MasterId: RM_MASTER_ID,
+                DepartmentId: userDetails().DepartmentId,
+                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                LoggedInUserId: loggedInUserId()
             }
-        }))
+            dispatch(masterFinalLevelUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+                }
+            }))
 
-        return () => {
-            dispatch(setSelectedCostingListSimualtion([]))
+            return () => {
+                dispatch(setSelectedCostingListSimualtion([]))
+            }
         }
     }, [])
 
@@ -167,17 +170,12 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(true)
                 }
                 if (res && res.status === 200) {
-                    let Data = res.data.DataList;
-                    let DynamicData = res.data.DynamicData;
-                    setmaxRange(DynamicData.MaxRange);
                     setloader(false);
 
                 } else if (res && res.response && res.response.status === 412) {
-                    setmaxRange(0);
                     setloader(false);
 
                 } else {
-                    setmaxRange(0);
                     setloader(false);
                 }
 
@@ -193,8 +191,16 @@ function RMDomesticListing(props) {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
-                            if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
-                                isReset = false
+
+                            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                if (floatingFilterData[prop] !== "") {
+                                    isReset = false
+                                }
+                            } else {
+
+                                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
@@ -215,7 +221,6 @@ function RMDomesticListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -243,7 +248,12 @@ function RMDomesticListing(props) {
                     setWarningMessage(false)
                     for (var prop in floatingFilterData) {
 
-                        if (prop !== "DepartmentCode") {
+                        if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName") {
+                                floatingFilterData[prop] = ""
+                            }
+
+                        } else {
                             floatingFilterData[prop] = ""
                         }
                     }
@@ -281,7 +291,11 @@ function RMDomesticListing(props) {
 
         for (var prop in floatingFilterData) {
 
-            if (prop !== "DepartmentCode") {
+            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                if (prop !== "DepartmentName") {
+                    floatingFilterData[prop] = ""
+                }
+            } else {
                 floatingFilterData[prop] = ""
             }
         }
@@ -451,17 +465,7 @@ function RMDomesticListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
-    /**
-    * @method shearingCostFormatter
-    * @description Renders buttons
-    */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
-    }
-
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // CHANGE IN STATUS IN AFTER KAMAL SIR API
         return <div className={row.Status}>{row.DisplayStatus}</div>
@@ -577,7 +581,8 @@ function RMDomesticListing(props) {
     const onExcelDownload = () => {
         setDisableDownload(true)
 
-        let tempArr = gridApi && gridApi?.getSelectedRows()
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedCostingListSimulation
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
@@ -595,7 +600,8 @@ function RMDomesticListing(props) {
 
     const onBtExport = () => {
         let tempArr = []
-        tempArr = gridApi && gridApi?.getSelectedRows()
+        //tempArr = gridApi && gridApi?.getSelectedRows()
+        tempArr = selectedCostingListSimulation
 
 
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
@@ -607,17 +613,16 @@ function RMDomesticListing(props) {
     }
 
 
-    /**
-    * @method render
-    * @description Renders the component
-    */
-
-
     const isFirstColumn = (params) => {
 
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-        return thisIsFirstColumn;
+
+        if (props?.isMasterSummaryDrawer) {
+            return false
+        } else {
+            return thisIsFirstColumn;
+        }
 
     }
 
@@ -644,12 +649,16 @@ function RMDomesticListing(props) {
             selectedRows = [...selectedRows, ...finalData]
 
         }
+
+
+        let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        let finalArr = selectedRows
+        let length = finalArr?.length
+        let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+
+
         if (isSimulation) {
-            let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-            let finalArr = selectedRows
-            let length = finalArr?.length
-            let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
             apply(uniqueArray, length)
         }
     }
@@ -658,8 +667,8 @@ function RMDomesticListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isSimulation ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
 
@@ -667,9 +676,10 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedCostingListSimulation?.length > 0) {
             selectedCostingListSimulation.map((item) => {
-                if (item.RawMaterialId == props.node.data.RawMaterialId) {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return cellValue
         } else {
@@ -819,6 +829,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         <AgGridColumn field="UOM"></AgGridColumn>
                                         <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>

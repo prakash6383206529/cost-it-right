@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
-import { Loader } from '../../common/Loader';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -51,7 +50,6 @@ class RMListing extends Component {
     componentDidMount() {
         this.getListData();
     }
-
     /**+-
     * @method getListData
     * @description Get list data
@@ -65,10 +63,12 @@ class RMListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
-        this.setState({ isLoader: true })
+    closeDrawer = (e = '', formData, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getListData()
+            if (type === 'submit') {
+                this.setState({ isLoader: true })
+                this.getListData()
+            }
         })
     }
 
@@ -259,17 +259,7 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -282,7 +272,6 @@ class RMListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 

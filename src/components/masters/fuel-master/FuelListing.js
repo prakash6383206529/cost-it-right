@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
+    getFuelDetailDataList, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -24,7 +24,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -56,15 +55,14 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.setState({ isLoader: true })
         setTimeout(() => {
-            this.getDataList(0, 0)
-            this.props.getFuelComboData(() => { })
-        }, 500);
-    }
-
-    componentWillUnmount() {
-        this.props.getFuelDetailDataList(false, {}, (res) => { })
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState({ isLoader: true })
+                setTimeout(() => {
+                    this.getDataList(0, 0)
+                }, 500);
+            }
+        }, 300);
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -92,31 +90,10 @@ class FuelListing extends Component {
     viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
-            Id: Id,
+            Id: rowData?.FuelGroupEntryId,
             isViewMode: isViewMode
         }
         this.props.getDetails(data);
-    }
-
-    /**
-    * @method deleteItem
-    * @description confirm delete Raw Material details
-    */
-    deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-    }
-
-    /**
-    * @method confirmDelete
-    * @description confirm delete Fuel details
-    */
-    confirmDelete = (ID) => {
-
     }
 
     /**
@@ -135,7 +112,7 @@ class FuelListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+        const { EditAccessibility, ViewAccessibility } = this.props;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
@@ -272,17 +249,7 @@ class FuelListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+        const ExcelFile = ReactExport.ExcelFile;
 
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -295,7 +262,6 @@ class FuelListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
@@ -445,11 +411,11 @@ function mapStateToProps({ fuel, auth }) {
 */
 export default connect(mapStateToProps, {
     getFuelDetailDataList,
-    getFuelComboData,
     deleteFuelDetailAPI,
     getStateListByFuel,
     getFuelListByState,
 })(reduxForm({
     form: 'FuelListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(FuelListing));

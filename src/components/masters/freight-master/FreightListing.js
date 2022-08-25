@@ -5,7 +5,6 @@ import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
-import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -20,10 +19,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -51,12 +46,14 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.fetchSupplierCityDataAPI(res => { });
-      this.getDataList()
-    }, 500);
+      if (!this.props.stopApiCallOnCancel) {
+        this.setState({ isLoader: true })
+        setTimeout(() => {
+          this.getDataList()
+        }, 500);
+      }
+    }, 300);
   }
 
   /**
@@ -208,7 +205,6 @@ class FreightListing extends Component {
   }
 
   returnExcelColumn = (data = [], TempData) => {
-    const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
@@ -267,6 +263,7 @@ class FreightListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -279,7 +276,6 @@ class FreightListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 
@@ -403,9 +399,8 @@ export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
   getVendorListByVendorType,
-  fetchSupplierCityDataAPI,
-  getVendorWithVendorCodeSelectList,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(FreightListing));

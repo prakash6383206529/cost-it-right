@@ -10,8 +10,8 @@ import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA } from '../../../config/constants'
-import { loggedInUserId, userDetails } from '../../../helper/auth'
+import { EMPTY_DATA, SPACEBAR } from '../../../config/constants'
+import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -21,6 +21,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
+import { onFocus } from '../../../helper'
 
 const selector = formValueSelector('AddLabour')
 
@@ -57,7 +58,8 @@ class AddLabour extends Component {
         labourType: false,
         labourRate: false,
         effectiveDate: false
-      }
+      },
+      showErrorOnFocus: false
     }
   }
 
@@ -66,15 +68,19 @@ class AddLabour extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.setState({ inputLoader: true })
-    this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.setState({ inputLoader: true })
+      this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+    }
+    if (!this.state.isViewMode) {
+      this.props.getMachineTypeSelectList(() => { })
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
       this.props.getPlantListByState('', () => { })
-      this.props.getMachineTypeSelectList(() => { })
     }
     this.getDetail()
   }
@@ -96,7 +102,6 @@ class AddLabour extends Component {
       this.props.getLabourData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-          this.props.getPlantListByState(Data.StateId, () => { })
 
           setTimeout(() => {
             let GridArray =
@@ -152,6 +157,7 @@ class AddLabour extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -297,7 +303,7 @@ class AddLabour extends Component {
   }
 
   closeMachineTypeDrawer = (e = '', formData = {}) => {
-    this.setState({ isOpenMachineType: false }, () => {
+    this.setState({ isOpenMachineType: false, labourType: '' }, () => {
       this.props.getMachineTypeSelectList(() => {
         const { machineTypeSelectList } = this.props
         /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
@@ -345,9 +351,8 @@ class AddLabour extends Component {
 
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
-    const { fieldsObj, error } = this.props
-
-    if ((IsEmployeContractual ? String(vendorName.length) === '0' : false) || String(selectedPlants.length) === '0' || String(StateName) === '0') {
+    const { fieldsObj } = this.props
+    if ((IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -374,7 +379,7 @@ class AddLabour extends Component {
         return false
       }
 
-      if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
+      if (fieldsObj !== undefined && isNaN(Number(fieldsObj))) {
         Toaster.warning('Please enter valid value.')
         return false;
       }
@@ -420,7 +425,7 @@ class AddLabour extends Component {
           labourType: [],
           effectiveDate: '',
         },
-        () => this.props.change('LabourRate', 0),
+        () => this.props.change('LabourRate', ''),
       )
       this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
     }, 200);
@@ -503,7 +508,7 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', 0), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     )
   }
 
@@ -563,7 +568,7 @@ class AddLabour extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props
     reset()
     this.setState({
@@ -574,7 +579,7 @@ class AddLabour extends Component {
     })
     this.props.getLabourData('', () => { })
 
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -583,7 +588,6 @@ class AddLabour extends Component {
    */
   onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
-    const userDetail = userDetails()
 
     if (vendorName.length <= 0 && IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -600,7 +604,7 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
@@ -623,7 +627,7 @@ class AddLabour extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
       this.setState({ DropdownChanged: true })
@@ -648,7 +652,7 @@ class AddLabour extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     }
@@ -755,8 +759,14 @@ class AddLabour extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) && gridTable.length !== 0 ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              isDisabled={(isEditFlag || this.state.inputLoader) && gridTable.length !== 0 ? true : false}
+                              onKeyDown={(onKeyDown) => {
+                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                              }}
+                              onFocus={() => onFocus(this)}
+                            />
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+
                           </div>
                         </Col>
                       )}
@@ -767,7 +777,7 @@ class AddLabour extends Component {
                             type="text"
                             label="State"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("state")}
                             validate={
                               this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
@@ -785,7 +795,7 @@ class AddLabour extends Component {
                             type="text"
                             label="Plant"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("plant")}
                             validate={
                               this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
@@ -812,7 +822,7 @@ class AddLabour extends Component {
                               type="text"
                               label="Machine Type"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("MachineTypeList")}
                               required={true}
                               handleChangeDescription={this.handleMachineType}
@@ -821,7 +831,7 @@ class AddLabour extends Component {
                             />
                             {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </div>
-                          {!isEditFlag && (
+                          {!isViewMode && (
                             <div
                               onClick={this.machineTypeToggler}
                               className={"plus-icon-square right mt30"}
@@ -836,7 +846,7 @@ class AddLabour extends Component {
                             type="text"
                             label="Labour Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("labourList")}
                             required={true}
                             handleChangeDescription={this.labourHandler}
@@ -852,7 +862,7 @@ class AddLabour extends Component {
                             label={`Rate Per Person/Annum (INR)`}
                             name={"LabourRate"}
                             type="text"
-                            placeholder={"Enter"}
+                            placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderNumberInputField}
@@ -875,7 +885,7 @@ class AddLabour extends Component {
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText={isViewMode ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation
@@ -904,14 +914,23 @@ class AddLabour extends Component {
                               </button>
                             </>
                           ) : (
-                            <button
-                              type="button"
-                              className={"user-btn  pull-left"}
-                              onClick={this.gridHandler}
-                              disabled={isViewMode}
-                            >
-                              <div className={"plus"}></div>ADD
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={"user-btn  pull-left"}
+                                onClick={this.gridHandler}
+                                disabled={isViewMode}
+                              >
+                                <div className={"plus"}></div>ADD
+                              </button>
+                              <button
+                                type="button"
+                                className={"reset-btn pull-left ml5"}
+                                onClick={this.resetGridData}
+                              >
+                                Reset
+                              </button>
+                            </>
                           )}
                         </div>
                       </Col>
@@ -979,7 +998,7 @@ class AddLabour extends Component {
                       <button
                         type={"button"}
                         className="reset mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>

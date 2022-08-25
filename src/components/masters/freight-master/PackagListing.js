@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { Loader } from '../../common/Loader';
-import { EMPTY_DATA } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
 
 class PackagListing extends Component {
     constructor(props) {
@@ -37,13 +35,6 @@ class PackagListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
-
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-
-        };
 
         return (
             <div>
@@ -85,4 +76,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'PackagListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(PackagListing));

@@ -9,13 +9,11 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
 import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
 
-
-
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)

@@ -4,7 +4,6 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { runSimulationOnSelectedOverheadProfitCosting } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -31,7 +30,6 @@ function OPSImulation(props) {
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -471,25 +469,6 @@ function OPSImulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
     const applicabilityCellEditor = (params) => {
         const selectedCountry = params.data?.OverheadApplicabilityType;
         const allowedCities = valuesForDropdownInAgGrid.applicability;
@@ -499,15 +478,7 @@ function OPSImulation(props) {
             formatValue: (value) => `${value} (${selectedCountry})`,
         };
     };
-    const modelTypeCellEditor = (params) => {
-        const selectedCountry = params.data?.ModelType;
-        const allowedCities = valuesForDropdownInAgGrid.modelType;
 
-        return {
-            values: allowedCities,
-            formatValue: (value) => `${value} (${selectedCountry})`,
-        };
-    };
     const cancel = () => {
         // props.cancelEditPage()
         setShowMainSimulation(true)

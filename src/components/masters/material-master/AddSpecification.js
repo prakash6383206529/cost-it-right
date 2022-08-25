@@ -201,22 +201,22 @@ class AddSpecification extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
       material: [],
       RMGrade: [],
     })
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
     this.props.getRMSpecificationDataAPI('', res => { });
   }
 
-  toggleDrawer = (event, data) => {
+  toggleDrawer = (event, data, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', data)
+    this.props.closeDrawer('', data, type)
   };
 
   rawMaterialToggler = (Id = '') => {
@@ -225,25 +225,27 @@ class AddSpecification extends Component {
   }
 
   /**
-  * @method closeGradeDrawer
+  * @method closeRMDrawer
   * @description  used to toggle RM Drawer Popup/Drawer
   */
-  closeRMDrawer = (e = '', formData = {}) => {
+  closeRMDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
-      this.getDetails()
-      this.props.getRawMaterialNameChild('', () => {
-        this.props.getRMGradeSelectListByRawMaterial('', res => { })
-        /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
-        const { rawMaterialNameSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
-          this.setState({
-            RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-            RMGrade: []
-          })
+      if (type === 'submit') {
+        this.getDetails()
+        this.props.getRawMaterialNameChild('', () => {
+          this.props.getRMGradeSelectListByRawMaterial('', res => { })
+          /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
+          const { rawMaterialNameSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
+            this.setState({
+              RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+              RMGrade: []
+            })
 
-        }
-      })
+          }
+        })
+      }
     })
   }
 
@@ -256,21 +258,22 @@ class AddSpecification extends Component {
   * @method closeGradeDrawer
   * @description  used to toggle grade Popup/Drawer
   */
-  closeGradeDrawer = (e = '', formData = {}) => {
+  closeGradeDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenGrade: false, Id: '' }, () => {
-      this.getDetails()
-      const { RawMaterial } = this.state;
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
-        /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
-        const { gradeSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
-          this.setState({
-            RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
-          })
-        }
-      });
-
+      if (type === 'submit') {
+        this.getDetails()
+        const { RawMaterial } = this.state;
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
+          /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
+          const { gradeSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+            this.setState({
+              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+            })
+          }
+        });
+      }
     })
   }
 
@@ -307,10 +310,8 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-
-
-      if (DataToChange.Specification == values.Specification && DropdownChanged) {
-        this.cancel()
+      if (DataToChange.Specification === values.Specification && DropdownChanged) {
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -332,7 +333,7 @@ class AddSpecification extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
-          this.toggleDrawer('', '')
+          this.toggleDrawer('', '', 'submit')
         }
       })
     } else {
@@ -350,7 +351,7 @@ class AddSpecification extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       });
     }
@@ -362,13 +363,15 @@ class AddSpecification extends Component {
     }
   };
 
-  checkUniqCode = (e) => {
+  checkUniqCode = debounce((e) => {
+
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('Code', "")
       }
     })
-  }
+  }, 600)
 
   /**
   * @method render
@@ -561,7 +564,8 @@ class AddSpecification extends Component {
                         required={true}
                         className=" "
                         customClassName=" withBorder"
-                        onBlur={this.checkUniqCode}
+                        //onBlur={this.checkUniqCode}
+                        onChange={this.checkUniqCode}
                         disabled={isEditFlag ? true : false}
                       />
                     </Col>
@@ -573,7 +577,7 @@ class AddSpecification extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
