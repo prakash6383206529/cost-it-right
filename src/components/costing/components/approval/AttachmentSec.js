@@ -86,14 +86,6 @@ function AttachmentSec(props) {
         setIsOpen(!IsOpen)
     }, [Attachements])
 
-
-
-    // attacment section 
-    // specify upload params and url for your files
-    const getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post', }
-    }
-
     /**
     * @method setDisableFalseFunctionAttachmentFiles
     * @description setDisableFalseFunctionAttachmentFiles
@@ -497,7 +489,6 @@ function AttachmentSec(props) {
                             <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
                                 <Dropzone
                                     ref={dropzoneImpactSheet}
-                                    getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeStatus}
                                     PreviewComponent={Preview}
                                     // onSubmit={handleImapctSubmit}
@@ -586,7 +577,6 @@ function AttachmentSec(props) {
                             <div className={`${supplierFiles.length >= 2 ? 'd-none' : ''}`}>
                                 <Dropzone
                                     ref={dropzoneSupplierConfirm}
-                                    getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeSupplierConfirmationStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
@@ -675,7 +665,6 @@ function AttachmentSec(props) {
                             <div className={`${invoiceFiles.length >= 10 ? 'd-none' : ''}`}>
                                 <Dropzone
                                     ref={dropzoneInvoiceBackup}
-                                    getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeInvoiceBackupStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
@@ -763,7 +752,6 @@ function AttachmentSec(props) {
                             <div className={`${otherFiles.length >= 10 ? 'd-none' : ''}`}>
                                 <Dropzone
                                     ref={dropzoneOthers}
-                                    getUploadParams={getUploadParams}
                                     onChangeStatus={handleOtherChangeStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
@@ -851,7 +839,6 @@ function AttachmentSec(props) {
                             <div className={`${attachmentFiles.length >= 4 ? 'd-none' : ''}`}>
                                 <Dropzone
                                     ref={dropzoneAttachments}
-                                    getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeAttachment}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
