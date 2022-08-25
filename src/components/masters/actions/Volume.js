@@ -8,6 +8,7 @@ import {
   GET_VOLUME_DATA_LIST,
   GET_VOLUME_DATA_BY_PART_AND_YEAR,
   config,
+  GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
@@ -93,18 +94,24 @@ export function getVolumeData(VolumeId, callback) {
  * @method getVolumeDataList
  * @description get all operation list
  */
-export function getVolumeDataList(filterData, callback) {
+export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const QueryParams = `year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}&CostingHead=${filterData.costing_head}`
-    axios
-      .get(`${API.getVolumeDataList}?${QueryParams}`, config())
+    const QueryParams = `CostingHead=${obj.CostingHead}&Year=${obj.Year}&Month=${obj.Month}&Vendor=${obj.VendorName}&Plant=${obj.Plant}&PartNumber=${obj.PartNumber}&PartName=${obj.PartName}&BudgetedQuantity=${obj.BudgetedQuantity}&ApprovedQuantity=${obj.ApprovedQuantity}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
-          dispatch({
-            type: GET_VOLUME_DATA_LIST,
-            payload: response.status === 204 ? [] : response.data.DataList
-          })
+          if (isPagination) {
+            dispatch({
+              type: GET_VOLUME_DATA_LIST,
+              payload: response.status === 204 ? [] : response.data.DataList
+            })
+          } else {
+            dispatch({
+              type: GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
+              payload: response.status === 204 ? [] : response.data.DataList
+            })
+          }
           callback(response.status === 204 ? [] : response)
         }
       })
