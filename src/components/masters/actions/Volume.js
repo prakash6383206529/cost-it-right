@@ -96,8 +96,8 @@ export function getVolumeData(VolumeId, callback) {
  */
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const QueryParams = `CostingHead=${obj.CostingHead}&Year=${obj.Year}&Month=${obj.Month}&Vendor=${obj.VendorName}&Plant=${obj.Plant}&PartNumber=${obj.PartNumber}&PartName=${obj.PartName}&BudgetedQuantity=${obj.BudgetedQuantity}&ApprovedQuantity=${obj.ApprovedQuantity}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    //dispatch({ type: API_REQUEST });    
+    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
     axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -129,10 +129,10 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
  */
 export function deleteVolume(ID, callback) {
   return (dispatch) => {
-    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
+    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId} `
     dispatch({ type: API_REQUEST })
     axios
-      .delete(`${API.deleteVolume}?${QueryParams}`, config())
+      .delete(`${API.deleteVolume}?${QueryParams} `, config())
       .then((response) => {
         callback(response)
       })
@@ -150,7 +150,7 @@ export function deleteVolume(ID, callback) {
 export function getFinancialYearSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getFinancialYearSelectList}`, config())
+    const request = axios.get(`${API.getFinancialYearSelectList} `, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -257,7 +257,7 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
 export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, config())
+    axios.get(`${API.getVolumeData} /${partNumber}/${financialYear} /0`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

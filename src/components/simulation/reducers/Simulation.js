@@ -24,13 +24,13 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
-    SET_SELECTED_COSTING_LIST_SIMULATION,
+    SET_SELECTED_ROW_FOR_PAGINATION,
     GET_SIMULATION_APPROVAL_LIST_DRAFT
 
 } from '../../../config/constants';
 
 const initialState = {
-    selectedCostingListSimulation: [],
+    selectedRowForPagination: [],
     costingSimulationList: [],
     keysForDownloadSummary: []
 };
@@ -226,11 +226,11 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 masterSelectListSimulation: action.payload
             }
-        case SET_SELECTED_COSTING_LIST_SIMULATION:
+        case SET_SELECTED_ROW_FOR_PAGINATION:
             return {
                 ...state,
                 loading: false,
-                selectedCostingListSimulation: action.payload
+                selectedRowForPagination: action.payload
             }
         default:
             return state;

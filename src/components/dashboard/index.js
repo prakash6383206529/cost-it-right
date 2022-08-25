@@ -12,7 +12,7 @@ import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import CommonApproval from "../masters/material-master/CommonApproval";
-import { setSelectedCostingListSimualtion } from "../simulation/actions/Simulation";
+import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 
 
 function Dashboard(props) {
@@ -82,7 +82,7 @@ function Dashboard(props) {
   const toggle = (tab) => {
 
     if (activeTab !== tab) {
-      dispatch(setSelectedCostingListSimualtion([]))
+      dispatch(setSelectedRowForPagination([]))
       setTimeout(() => {
         setactiveTab(tab);
       }, 300);

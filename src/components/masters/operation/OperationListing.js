@@ -27,7 +27,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion, } from '../../simulation/actions/Simulation'
+import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
@@ -113,7 +113,7 @@ class OperationListing extends Component {
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -256,7 +256,7 @@ class OperationListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     onBtPrevious = () => {
@@ -493,8 +493,8 @@ class OperationListing extends Component {
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
-        if (this.props.selectedCostingListSimulation?.length > 0) {
-            this.props.selectedCostingListSimulation.map((item) => {
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
                 if (item.OperationId === props.node.data.OperationId) {
                     props.node.setSelected(true)
                 }
@@ -571,7 +571,7 @@ class OperationListing extends Component {
         this.setState({ disableDownload: true })
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        let tempArr = this.props.selectedCostingListSimulation
+        let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -587,7 +587,7 @@ class OperationListing extends Component {
     onBtExport = () => {
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this.props.selectedCostingListSimulation
+        tempArr = this.props.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allOperationList ? this.props.allOperationList : [])
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
@@ -674,27 +674,27 @@ class OperationListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (selectedRows === undefined || selectedRows === null) {     //CONDITION FOR FIRST RENDERING OF COMPONENT
-                selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+                selectedRows = this.props.selectedRowForPagination
+            } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
                 if (event.node.isSelected() === false) {  // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].OperationId === event.data.OperationId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                        if (this.props.selectedRowForPagination[i].OperationId === event.data.OperationId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
-                        finalData.push(this.props.selectedCostingListSimulation[i])
+                        finalData.push(this.props.selectedRowForPagination[i])
                     }
                 } else {
-                    finalData = this.props.selectedCostingListSimulation
+                    finalData = this.props.selectedRowForPagination
                 }
                 selectedRows = [...selectedRows, ...finalData]
             }
 
 
             let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
             let finalArr = selectedRows
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "OperationId")
@@ -904,8 +904,8 @@ class OperationListing extends Component {
 function mapStateToProps({ otherOperation, auth, simulation }) {
     const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData, operationDataHold };
+    const { selectedRowForPagination } = simulation;
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
 }
 
 /**
@@ -928,7 +928,7 @@ export default connect(mapStateToProps, {
     getOperationListByVendor,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedCostingListSimualtion,
+    setSelectedRowForPagination,
     setOperationList
 })(reduxForm({
     form: 'OperationListing',

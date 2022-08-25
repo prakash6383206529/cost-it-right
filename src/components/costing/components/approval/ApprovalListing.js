@@ -26,8 +26,8 @@ import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, ch
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
-import { setSelectedCostingListSimualtion } from '../../../simulation/actions/Simulation';
 import _ from 'lodash';
+import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -51,7 +51,7 @@ function ApprovalListing(props) {
   const [isLoader, setIsLoader] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
-  const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+  const { selectedRowForPagination } = useSelector((state => state.simulation))
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
@@ -232,7 +232,7 @@ function ApprovalListing(props) {
     setWarningMessage(false)
     setPageNo(1)
     setCurrentRowIndex(0)
-    dispatch(setSelectedCostingListSimualtion([]))
+    dispatch(setSelectedRowForPagination([]))
     getTableData("", "", "", "", 0, 10, true, floatingFilterData)
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -275,8 +275,8 @@ function ApprovalListing(props) {
    */
   const linkableFormatter = (props) => {
 
-    if (selectedCostingListSimulation?.length > 0) {
-      selectedCostingListSimulation.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
 
         if (item.CostingId == props.node.data.CostingId) {
           props.node.setSelected(true)
@@ -410,28 +410,28 @@ function ApprovalListing(props) {
 
 
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedCostingListSimulation
-    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
       let finalData = []
       if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedCostingListSimulation[i])
+          finalData.push(selectedRowForPagination[i])
         }
 
       } else {
-        finalData = selectedCostingListSimulation
+        finalData = selectedRowForPagination
       }
       selectedRows = [...selectedRows, ...finalData]
 
     }
 
     let uniqeArray = _.uniqBy(selectedRows, "CostingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "CostingId")
