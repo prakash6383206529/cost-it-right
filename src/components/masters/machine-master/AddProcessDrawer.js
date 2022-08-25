@@ -87,14 +87,13 @@ class AddProcessDrawer extends Component {
     }
     this.setState({ processName: value })
 
-    if (fieldsObj === undefined) {
-      this.props.getProcessCode(obj, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.DynamicData
-          this.props.change('ProcessCode', Data.ProcessCode)
-        }
-      })
-    }
+    this.props.getProcessCode(obj, (res) => {
+      if (res && res.data && res.data.Result) {
+        let Data = res.data.DynamicData
+        this.props.change('ProcessCode', Data.ProcessCode)
+      }
+    })
+
   }
 
   checkProcessCodeUnique = (e) => {
