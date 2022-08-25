@@ -23,7 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper';
 import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -137,7 +137,7 @@ class IndivisualPartListing extends Component {
 
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     onFloatingFilterChanged = (value) => {
@@ -153,7 +153,7 @@ class IndivisualPartListing extends Component {
     }
 
     resetState = () => {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
 
     }
@@ -570,7 +570,7 @@ class IndivisualPartListing extends Component {
 
 
             let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
             this.setState({ selectedRowData: selectedRows })
         }
 
@@ -740,5 +740,5 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
-    setSelectedCostingListSimualtion
+    setSelectedRowForPagination
 })(IndivisualPartListing);

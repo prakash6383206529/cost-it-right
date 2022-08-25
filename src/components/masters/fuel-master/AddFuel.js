@@ -166,10 +166,10 @@ class AddFuel extends Component {
     return true;
   }
 
-  checkDuplicateRateGrid = (rateGrid, StateName, effectiveDate) => {
+  checkDuplicateRateGrid = (rateGrid, StateName, effectiveDate, rateGridEditIndex) => {
     let countForGrid = 0
-    rateGrid && rateGrid.map((item) => {
-      if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY')))) {
+    rateGrid && rateGrid.map((item, index) => {
+      if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY'))) && rateGridEditIndex !== index) {
         countForGrid++
       }
       return null
@@ -261,7 +261,7 @@ class AddFuel extends Component {
     const { StateName, rateGrid, effectiveDate, rateGridEditIndex } = this.state;
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
-    if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
+    if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate, rateGridEditIndex) !== 0) {
       return false
     }
     let tempArray = [];

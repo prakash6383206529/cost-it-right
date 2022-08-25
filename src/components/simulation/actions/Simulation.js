@@ -46,7 +46,7 @@ import {
     SET_TOKEN_FOR_SIMULATION,
     GET_AMMENDENT_STATUS_COSTING,
     GET_MASTER_SELECT_LIST_SIMUALTION,
-    SET_SELECTED_COSTING_LIST_SIMULATION,
+    SET_SELECTED_ROW_FOR_PAGINATION,
     GET_SIMULATION_APPROVAL_LIST_DRAFT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -1213,11 +1213,10 @@ export function getMasterSelectListSimulation(loggedInUserId, callback) {
     }
 }
 
-export function setSelectedCostingListSimualtion(value) {
-
+export function setSelectedRowForPagination(value) {
     return (dispatch) => {
         dispatch({
-            type: SET_SELECTED_COSTING_LIST_SIMULATION,
+            type: SET_SELECTED_ROW_FOR_PAGINATION,
             payload: value,
         });
     }
