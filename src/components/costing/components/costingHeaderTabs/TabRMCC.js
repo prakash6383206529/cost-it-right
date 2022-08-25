@@ -523,14 +523,11 @@ function TabRMCC(props) {
             isAllFalse = _.map(rmGrid, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
           }
 
-
-          //////////
           assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
 
-          assemblyObj.CostingPartDetails.IsRMCutOffApplicable = assemblyObj.CostingPartDetails.IsRMCutOffApplicable === true ? true : !isAllFalse
-          // assemblyObj.CostingPartDetails.TotalOtherOperationCostAssembly = setOtherOperationForSubAssembly(subAssemblyArray)             // FOR MAIN ASSEMBLY
+          assemblyObj.CostingPartDetails.IsRMCutOffApplicable = (assemblyObj.CostingPartDetails.IsRMCutOffApplicable === true) ? true : !isAllFalse
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
         }
@@ -682,7 +679,6 @@ function TabRMCC(props) {
 
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
         if (item.PartType === "Part" || item.PartType === "Component") {
-          // DEBUG HERE
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
@@ -729,7 +725,7 @@ function TabRMCC(props) {
           const level = costingItem.BOMLevel
           const useLevel = level.split('L')[1]
           tempArrForCosting = calculateValue(useLevel, costingItem, tempArrForCosting)
-        })          // BITTOM TO TOP PART TO Sub ASSEMBLY
+        })          // BOTTOM TO TOP PART TO SUB ASSEMBLY
         // MAIN ASSEMBLY CALCULATION
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Sub Assembly')
         let partAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Part')
@@ -742,7 +738,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
           assemblyObj.CostingPartDetails.TotalOtherOperationCostPerAssembly = setOtherOperationForSubAssembly([...subAssemblyArray, ...partAssemblyArray])
           tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
-        }               // ASSEMBLY
+        }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
         localStorage.setItem('costingArray', [])
         localStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
@@ -894,7 +890,6 @@ function TabRMCC(props) {
         assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray) + checkForNull(assemblyObj.CostingPartDetails.TotalOperationCostPerAssembly)
         assemblyObj.CostingPartDetails.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj.CostingPartDetails.IsOpen
         assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
-        assemblyObj.CostingPartDetails.TotalOtherOperationCostAssembly = setOtherOperationForSubAssembly(subAssemblyArray)             // FOR MAIN ASSEMBLY
 
         assemblyObj.CostingPartDetails.TotalOtherOperationCostPerAssembly = setOtherOperationForSubAssembly([...ccSubAssemblyArray, ...ccPartAssemblyArray])
 
@@ -928,7 +923,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
           newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
-          newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly       //TotalOtherOperationCostAssembly
+          newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
           if (item.CostingChildPartDetails.length > 0) {
             mapArray(newItem.CostingChildPartDetails)
           }
@@ -1065,7 +1060,7 @@ function TabRMCC(props) {
             if (item.PartType === "Sub Assembly") {
               // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
               if (i === useLevel) { // SUB ASSEMBLY LEVEL HERE
-                let checkIsAssemblyOpen = tempArrForCosting && tempArrForCosting.filter((x) => x.AssemblyPartNumber === item.PartNumber)         //&& x.PartType === 'Part'
+                let checkIsAssemblyOpen = tempArrForCosting && tempArrForCosting.filter((x) => x.AssemblyPartNumber === item.PartNumber)
                 let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
                 let subAssembObj = tempArrForCosting[subAssemblyIndex]
                 //THIS ARRAY IS FOR GETTING CHILD UNDER SUBASSEMBLY (COMPONENT CHILD)
@@ -1074,7 +1069,6 @@ function TabRMCC(props) {
                 subAssembObj.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(OperationGrid);
                 if (checkIsAssemblyOpen.length !== 0) {
                   subAssembObj.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(tempArr)
-                  //THIS ARRAY IS FOR GETTING CHILD UNDER SUBASSEMBLY (SUB ASSEMBLY CHILD)
                   let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(x => x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembly')
                   subAssembObj.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(subAssemblyArray)
                 }
@@ -1083,7 +1077,6 @@ function TabRMCC(props) {
                   checkForNull(subAssembObj.CostingPartDetails.TotalOperationCostSubAssembly) +
                   checkForNull(subAssembObj.CostingPartDetails.TotalOperationCostPerAssembly)
                 subAssembObj.CostingPartDetails.TotalConversionCostWithQuantity = subAssembObj.CostingPartDetails.TotalConversionCost
-                //NEED TO CONFRIM THIS CALCULATION
 
                 let GrandTotalCost = checkForNull(subAssembObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(subAssembObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(subAssembObj.CostingPartDetails.TotalConversionCost)
                 subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
