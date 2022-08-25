@@ -129,7 +129,7 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
  */
 export function deleteVolume(ID, callback) {
   return (dispatch) => {
-    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId} `
+    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
     dispatch({ type: API_REQUEST })
     axios
       .delete(`${API.deleteVolume}?${QueryParams} `, config())
@@ -257,7 +257,7 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
 export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData} /${partNumber}/${financialYear} /0`, config())
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({
