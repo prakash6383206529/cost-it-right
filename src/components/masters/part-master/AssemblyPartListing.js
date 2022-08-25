@@ -10,7 +10,7 @@ import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
-import BOMUpload from '../../massUpload/BOMUpload';
+import BOMUploadDrawer from '../../massUpload/BOMUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -412,7 +412,7 @@ class AssemblyPartListing extends Component {
                     isFromVishualAd={true}
                     NewAddedLevelOneChilds={[]}
                 />}
-                {isBulkUpload && <BOMUpload
+                {isBulkUpload && <BOMUploadDrawer
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
