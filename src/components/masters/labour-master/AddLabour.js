@@ -754,7 +754,7 @@ class AddLabour extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                              isDisabled={(isEditFlag || this.state.inputLoader) || gridTable.length !== 0 ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
@@ -779,7 +779,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.handleState}
                             valueDescription={this.state.StateName}
-                            disabled={(isEditFlag) ? true : false}
+                            disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
                           /></div>
                         { }
                       </Col>
@@ -797,7 +797,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
-                            disabled={(isEditFlag) ? true : false}
+                            disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
                           /></div>
                       </Col>
                     </Row>
