@@ -41,7 +41,7 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1535,9 +1535,10 @@ export function getMaterialTypeSelectList(callback) {
  * @method checkAndGetOperationCode
  * @description CHECK AND GET OPERATION CODE
  */
-export function checkAndGetRawMaterialCode(code, callback) {
+export function checkAndGetRawMaterialCode(obj, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', config());
+        let queryParams = `materialNameId=${obj?.materialNameId ? obj.materialNameId : EMPTY_GUID}&materialGradeId=${obj.materialGradeId ? obj.materialGradeId : EMPTY_GUID}&materialSpec=${obj.materialSpec}&materialCode=${obj.materialCode}`
+        const request = axios.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
