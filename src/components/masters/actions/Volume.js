@@ -132,7 +132,7 @@ export function deleteVolume(ID, callback) {
     const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
     dispatch({ type: API_REQUEST })
     axios
-      .delete(`${API.deleteVolume}?${QueryParams} `, config())
+      .delete(`${API.deleteVolume}?${QueryParams}`, config())
       .then((response) => {
         callback(response)
       })
@@ -150,7 +150,7 @@ export function deleteVolume(ID, callback) {
 export function getFinancialYearSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getFinancialYearSelectList} `, config())
+    const request = axios.get(`${API.getFinancialYearSelectList}`, config())
     request
       .then((response) => {
         if (response.data.Result) {

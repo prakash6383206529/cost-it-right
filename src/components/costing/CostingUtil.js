@@ -30,8 +30,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
           "TotalOperationCostSubAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
           "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          // "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails.TotalOtherOperationCostPerAssembly, //NEED TO IMPLEMENT THIS
+          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails.TotalOtherOperationCostPerAssembly,
           "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -104,8 +103,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
       "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
       "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
-      // "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails.TotalOtherOperationCostPerAssembly, //NEED TO IMPLEMENT THIS
+      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails.TotalOtherOperationCostPerAssembly,
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
       "TotalSurfaceTreatmentCostWithQuantity": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity,
