@@ -433,12 +433,6 @@ function SimulationApprovalListing(props) {
 
     }
 
-    const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
-    }
-
     const onRowSelect = (row, isSelected, e) => {
 
         let arr = []
@@ -615,7 +609,6 @@ function SimulationApprovalListing(props) {
         // effectiveDateRenderer: this.effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
-        renderVendor: renderVendor,
         requestedByFormatter: requestedByFormatter,
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
@@ -705,7 +698,7 @@ function SimulationApprovalListing(props) {
 
 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
