@@ -305,6 +305,19 @@ class AddSpecification extends Component {
               RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
               rmGradeId: tempObj3?.Value
             })
+
+            if (this.state.rawMaterialId && this.state.rmSpecification) {
+              let obj = {
+                materialNameId: this.state.rawMaterialId,
+                materialGradeId: tempObj3?.Value,
+                materialSpec: this.state.rmSpecification,
+                materialCode: this.state.rmCode
+              }
+              this.props.checkAndGetRawMaterialCode(obj, (res) => {
+                let Data = res.data.DynamicData;
+                this.props.change('Code', Data.RawMaterialCode)
+              })
+            }
           }
         });
       }
