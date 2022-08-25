@@ -65,12 +65,12 @@ class AddSpecification extends Component {
       setTimeout(() => {
         const { rawMaterialNameSelectList, gradeSelectList } = this.props;
 
-        let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === RawMaterial.value)
-        let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === RMGrade.value)
+        let rawMaterialObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === RawMaterial.value)
+        let rmGradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === RMGrade.value)
 
         this.setState({
-          RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-          RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+          RawMaterial: rawMaterialObj && rawMaterialObj !== undefined ? { label: rawMaterialObj.Text, value: rawMaterialObj.Value } : [],
+          RMGrade: rmGradeObj && rmGradeObj !== undefined ? { label: rmGradeObj.Text, value: rmGradeObj.Value } : [],
         })
       }, 500)
     }
@@ -91,9 +91,9 @@ class AddSpecification extends Component {
           setTimeout(() => {
             const { rawMaterialNameSelectList } = this.props;
             this.props.change('Code', Data?.RawMaterialCode)
-            let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
+            let rawMaterialObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
             this.setState({
-              RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+              RawMaterial: rawMaterialObj && rawMaterialObj !== undefined ? { label: rawMaterialObj.Text, value: rawMaterialObj.Value } : [],
               RMGrade: Data.GradeName !== undefined ? { label: Data.GradeName, value: Data.GradeId } : [],
             })
           }, 500)
@@ -128,10 +128,7 @@ class AddSpecification extends Component {
             materialSpec: this.state.rmSpecification,
             materialCode: this.state.rmCode
           }
-          this.props.checkAndGetRawMaterialCode(obj, (res) => {
-            let Data = res.data.DynamicData;
-            this.props.change('Code', Data.RawMaterialCode)
-          })
+          this.getRawMaterialCode(obj) //COMMON FUNCTION
         }
       });
     } else {
@@ -181,10 +178,7 @@ class AddSpecification extends Component {
           materialSpec: this.state.rmSpecification,
           materialCode: this.state.rmCode
         }
-        this.props.checkAndGetRawMaterialCode(obj, (res) => {
-          let Data = res.data.DynamicData;
-          this.props.change('Code', Data.RawMaterialCode)
-        })
+        this.getRawMaterialCode(obj) //COMMON FUNCTION
       }
 
     } else {
@@ -269,11 +263,11 @@ class AddSpecification extends Component {
           /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
           const { rawMaterialNameSelectList } = this.props;
           if (Object.keys(formData).length > 0) {
-            let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
+            let rawMaterialObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
             this.setState({
-              RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+              RawMaterial: rawMaterialObj && rawMaterialObj !== undefined ? { label: rawMaterialObj.Text, value: rawMaterialObj.Value } : [],
               RMGrade: [],
-              rawMaterialId: tempObj1?.Value
+              rawMaterialId: rawMaterialObj?.Value
             })
 
           }
@@ -300,23 +294,20 @@ class AddSpecification extends Component {
           /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
           const { gradeSelectList } = this.props;
           if (Object.keys(formData).length > 0) {
-            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+            let rmGradeObj = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
             this.setState({
-              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
-              rmGradeId: tempObj3?.Value
+              RMGrade: rmGradeObj && rmGradeObj !== undefined ? { label: rmGradeObj.Text, value: rmGradeObj.Value } : [],
+              rmGradeId: rmGradeObj?.Value
             })
 
             if (this.state.rawMaterialId && this.state.rmSpecification) {
               let obj = {
                 materialNameId: this.state.rawMaterialId,
-                materialGradeId: tempObj3?.Value,
+                materialGradeId: rmGradeObj?.Value,
                 materialSpec: this.state.rmSpecification,
                 materialCode: this.state.rmCode
               }
-              this.props.checkAndGetRawMaterialCode(obj, (res) => {
-                let Data = res.data.DynamicData;
-                this.props.change('Code', Data.RawMaterialCode)
-              })
+              this.getRawMaterialCode(obj) //COMMON FUNCTION
             }
           }
         });
@@ -328,6 +319,7 @@ class AddSpecification extends Component {
     this.setState({ isOpenMaterialDrawer: true })
   }
 
+
   /**
   * @method closeMaterialDrawer
   * @description  used to toggle Material Popup/Drawer
@@ -338,9 +330,9 @@ class AddSpecification extends Component {
         /*THIS IS FOR SELECTING DEFAULT VALUE OF MATERIAL  FROM DRAWER*/
         const { MaterialSelectList } = this.props;
         if (Object.keys(formData).length > 0) {
-          let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Text === formData.MaterialType)
+          let materialTypeObj = MaterialSelectList && MaterialSelectList.find(item => item.Text === formData.MaterialType)
           this.setState({
-            material: tempObj2 && tempObj2 !== undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
+            material: materialTypeObj && materialTypeObj !== undefined ? { label: materialTypeObj.Text, value: materialTypeObj.Value } : [],
           })
           this.props.change('Density', formData.CalculatedDensityValue)
         }
@@ -441,12 +433,20 @@ class AddSpecification extends Component {
         materialSpec: e.target.value,
         materialCode: this.state.rmCode
       }
-      this.props.checkAndGetRawMaterialCode(obj, (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
-      })
+      this.getRawMaterialCode(obj) //COMMON FUNCTION
+
     }
   }, 600)
+
+
+  getRawMaterialCode = (obj) => {
+
+    this.props.checkAndGetRawMaterialCode(obj, (res) => {
+      let Data = res.data.DynamicData;
+      this.props.change('Code', Data.RawMaterialCode)
+    })
+
+  }
 
   /**
   * @method render
