@@ -434,6 +434,10 @@ function ReportListing(props) {
             if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
             } else {
+                let valueString = value?.filterInstance?.appliedModel?.filter
+                if (valueString.includes("+")) {
+                    valueString = encodeURIComponent(valueString)
+                }
                 setDepartmentCodeFilter(true)
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
             }
