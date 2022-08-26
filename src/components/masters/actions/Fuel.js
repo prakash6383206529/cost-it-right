@@ -7,7 +7,7 @@ import {
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS,
-    GET_FULE_COMBO_SUCCESS,
+    GET_FUEL_BY_PLANT,
     GET_STATELIST_BY_FUEL,
     GET_FULELIST_BY_STATE,
     GET_PLANT_SELECTLIST_BY_STATE,
@@ -226,18 +226,18 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 }
 
 /**
- * @method getFuelComboData
+ * @method getFuelByPlant
  * @description USED TO GET FUEL COMBO DATA
  */
-export function getFuelComboData(callback) {
+export function getFuelByPlant(plantId = '', callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboData}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?plantId=${plantId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_FULE_COMBO_SUCCESS,
-                    payload: response.data.DynamicData,
+                    type: GET_FUEL_BY_PLANT,
+                    payload: response.data.DataList,
                 });
                 callback(response);
             }

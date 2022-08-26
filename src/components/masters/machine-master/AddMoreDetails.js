@@ -14,7 +14,7 @@ import {
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
-import { getFuelComboData, } from '../actions/Fuel';
+import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
@@ -132,7 +132,8 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: '',
       DataToChange: [],
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      labourDetailId: ''
     }
     this.dropzone = React.createRef();
   }
@@ -151,7 +152,7 @@ class AddMoreDetails extends Component {
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
-    this.props.getFuelComboData(() => { })
+    this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
     if (!this.props?.editDetails?.isEditFlag) {
 
       this.props.change('EquityPercentage', 100)
@@ -328,7 +329,7 @@ class AddMoreDetails extends Component {
 
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-              fuelComboSelectList, } = this.props;
+              fuelDataByPlant, } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
 
@@ -337,7 +338,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
+            const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -346,6 +347,8 @@ class AddMoreDetails extends Component {
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
+                LabourDetailId: el.LabourDetailId
+
               }
             })
 
@@ -422,7 +425,7 @@ class AddMoreDetails extends Component {
   renderListing = (label) => {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
-      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelComboSelectList, } = this.props;
+      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, } = this.props;
 
     const temp = [];
     if (label === 'technology') {
@@ -483,7 +486,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
     if (label === 'fuel') {
-      fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
+      fuelDataByPlant && fuelDataByPlant.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -845,7 +848,7 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
-      this.props.getFuelComboData(() => { })
+      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
       this.setState({ fuelType: [] })
     }
 
@@ -898,10 +901,15 @@ class AddMoreDetails extends Component {
   labourHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ labourType: newValue }, () => {
-        const { labourType, machineType } = this.state;
-        const data = { labourTypeId: labourType.value, machineTypeId: machineType.value }
-        this.props.getLabourCost(data, res => {
+        const { labourType, machineType, selectedPlants, effectiveDate } = this.state;
+        const data = {
+          labourTypeId: labourType.value,
+          machineTypeId: machineType.value,
+          plantId: selectedPlants.value
+        }
+        this.props.getLabourCost(data, effectiveDate, res => {
           let Data = res.data.DynamicData;
+          this.setState({ labourDetailId: Data.LabourDetailId })
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -1273,17 +1281,23 @@ class AddMoreDetails extends Component {
     const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
     const tempArray = [];
 
+    //CONDITION TO CHECK TOTAL COST IS ZERO
+    if (TotalLabourCost === 0) {
+      Toaster.warning('Total cost should not be zero.')
+      return false;
+    }
     tempArray.push(...labourGrid, {
       labourTypeName: labourType.label,
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     })
-
     this.setState({
       labourGrid: tempArray,
       labourType: [],
+      LabourDetailId: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1329,6 +1343,7 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     }
 
     tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
@@ -1795,7 +1810,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, labourType } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1887,7 +1902,8 @@ class AddMoreDetails extends Component {
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props.processGroupApiData,
-      IsFinancialDataChanged: this.state.isDateChange ? true : false
+      IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      // LabourDetailId: labourType.value
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -2169,11 +2185,11 @@ class AddMoreDetails extends Component {
   * @description lABOUR OPEN  AND CLOSE
   */
   labourToggle = () => {
-    const { isLabourOpen } = this.state
+    const { isLabourOpen, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if (checkForNull(fieldsObj?.MachineCost) === 0 || selectedPlants.length === 0 || effectiveDate === '') {
+      Toaster.warning('Please fill the mandatory fields.');
       return false;
     }
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -3434,6 +3450,7 @@ class AddMoreDetails extends Component {
                                   </tr>
                                 </thead>
                                 <tbody >
+
                                   {
                                     this.state.labourGrid &&
                                     this.state.labourGrid.map((item, index) => {
@@ -3884,7 +3901,7 @@ function mapStateToProps(state) {
 
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
-  const { fuelComboSelectList } = fuel;
+  const { fuelDataByPlant } = fuel;
   const { initialConfiguration } = auth;
   let initialValues = {};
   if (machineData && machineData !== undefined) {
@@ -3940,7 +3957,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading, processGroupApiData
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData
   }
 
 }
@@ -3960,7 +3977,7 @@ export default connect(mapStateToProps, {
   getShiftTypeSelectList,
   getDepreciationTypeSelectList,
   getLabourTypeByMachineTypeSelectList,
-  getFuelComboData,
+  getFuelByPlant,
   getFuelUnitCost,
   getLabourCost,
   getPowerCostUnit,
