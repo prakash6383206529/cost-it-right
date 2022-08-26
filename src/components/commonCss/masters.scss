@@ -46,3 +46,22 @@
     }
   }
   
+  .action-icon-container {
+    display: flex;
+    align-items: center;
+    grid-gap: 4px;
+    margin-top: 5px;
+    .user-btn {
+       height: 22px !important;
+       padding: 5px !important;
+       &:focus {
+        border: transparent !important;
+        box-shadow: none !important;
+      }
+    }
+    .plus-icon-square {
+      width: 25px;
+      height: 23px;
+
+    }
+  }

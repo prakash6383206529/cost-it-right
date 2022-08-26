@@ -132,7 +132,8 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: '',
       DataToChange: [],
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      labourDetailId: ''
     }
     this.dropzone = React.createRef();
   }
@@ -346,6 +347,8 @@ class AddMoreDetails extends Component {
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
+                LabourDetailId: el.LabourDetailId
+
               }
             })
 
@@ -898,10 +901,15 @@ class AddMoreDetails extends Component {
   labourHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ labourType: newValue }, () => {
-        const { labourType, machineType } = this.state;
-        const data = { labourTypeId: labourType.value, machineTypeId: machineType.value }
-        this.props.getLabourCost(data, res => {
+        const { labourType, machineType, selectedPlants, effectiveDate } = this.state;
+        const data = {
+          labourTypeId: labourType.value,
+          machineTypeId: machineType.value,
+          plantId: selectedPlants.value
+        }
+        this.props.getLabourCost(data, effectiveDate, res => {
           let Data = res.data.DynamicData;
+          this.setState({ labourDetailId: Data.LabourDetailId })
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -1273,17 +1281,23 @@ class AddMoreDetails extends Component {
     const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
     const tempArray = [];
 
+    //CONDITION TO CHECK TOTAL COST IS ZERO
+    if (TotalLabourCost === 0) {
+      Toaster.warning('Total cost should not be zero.')
+      return false;
+    }
     tempArray.push(...labourGrid, {
       labourTypeName: labourType.label,
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     })
-
     this.setState({
       labourGrid: tempArray,
       labourType: [],
+      LabourDetailId: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1329,6 +1343,7 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     }
 
     tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
@@ -1795,7 +1810,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, labourType } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1887,7 +1902,8 @@ class AddMoreDetails extends Component {
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props.processGroupApiData,
-      IsFinancialDataChanged: this.state.isDateChange ? true : false
+      IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      // LabourDetailId: labourType.value
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -2169,11 +2185,11 @@ class AddMoreDetails extends Component {
   * @description lABOUR OPEN  AND CLOSE
   */
   labourToggle = () => {
-    const { isLabourOpen } = this.state
+    const { isLabourOpen, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if (checkForNull(fieldsObj?.MachineCost) === 0 || selectedPlants.length === 0 || effectiveDate === '') {
+      Toaster.warning('Please fill the mandatory fields.');
       return false;
     }
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -3434,6 +3450,7 @@ class AddMoreDetails extends Component {
                                   </tr>
                                 </thead>
                                 <tbody >
+
                                   {
                                     this.state.labourGrid &&
                                     this.state.labourGrid.map((item, index) => {
