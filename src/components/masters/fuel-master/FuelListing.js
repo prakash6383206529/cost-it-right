@@ -397,10 +397,10 @@ class FuelListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel, auth }) {
-    const { fuelComboSelectList, fuelDataList } = fuel;
+    const { fuelDataByPlant, fuelDataList } = fuel;
     const { initialConfiguration } = auth;
 
-    return { fuelComboSelectList, fuelDataList, initialConfiguration }
+    return { fuelDataByPlant, fuelDataList, initialConfiguration }
 }
 
 /**

@@ -7,7 +7,7 @@ import {
   searchableSelect, focusOnError, renderNumberInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
-import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
+import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
@@ -69,7 +69,7 @@ class AddFuel extends Component {
     }
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
-      this.props.getFuelComboData(() => { })
+      this.props.getFuelByPlant('', () => { })
       this.props.getUOMSelectList(() => { })
     }
   }
@@ -354,11 +354,12 @@ class AddFuel extends Component {
 
   closeFuelDrawer = (e = '', reqData = {}) => {
     this.setState({ isOpenFuelDrawer: false }, () => {
-      this.props.getFuelComboData(() => {
-        const { fuelComboSelectList } = this.props;
+      this.props.getFuelByPlant('', () => {
+        const { fuelDataByPlant } = this.props;
+
         /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(reqData).length > 0) {
-          let fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Text === reqData.FuelName)
+          let fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => item.Text === reqData.FuelName)
 
           this.props.getUOMByFuelId(fuelObj.Value, (res) => {
             let Data = res.data.DynamicData
@@ -386,10 +387,10 @@ class AddFuel extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { fuelComboSelectList, UOMSelectList, stateList } = this.props;
+    const { fuelDataByPlant, UOMSelectList, stateList } = this.props;
     const temp = [];
     if (label === 'fuel') {
-      fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
+      fuelDataByPlant && fuelDataByPlant.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -839,10 +840,10 @@ function mapStateToProps(state) {
   let initialValues = {};
 
   const { UOMSelectList, stateList } = comman;
-  const { fuelComboSelectList } = fuel;
+  const { fuelDataByPlant } = fuel;
   const { initialConfiguration } = auth;
 
-  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration, UOMSelectList, stateList }
+  return { initialValues, fieldsObj, fuelDataByPlant, initialConfiguration, UOMSelectList, stateList }
 
 }
 
@@ -853,7 +854,7 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getFuelComboData,
+  getFuelByPlant,
   createFuelDetail,
   updateFuelDetail,
   getFuelDetailData,
