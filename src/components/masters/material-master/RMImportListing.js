@@ -561,7 +561,6 @@ function RMImportListing(props) {
       getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
-      setPageNo(pageNoNew)
       if (pageNo > Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
@@ -570,7 +569,6 @@ function RMImportListing(props) {
     else if (Number(newPageSize) === 100) {
       getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-      setGlobalTake(100)
       setGlobalTake(100)
       if (pageNo > Math.ceil(totalRecordCount / 100)) {
         setPageNo(Math.ceil(totalRecordCount / 100))

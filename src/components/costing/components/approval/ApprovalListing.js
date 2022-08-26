@@ -666,7 +666,6 @@ function ApprovalListing(props) {
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
 
-      setPageNo(pageNoNew)
       if (pageNo >= Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getTableData("", "", "", "", 0, 50, true, floatingFilterData)
