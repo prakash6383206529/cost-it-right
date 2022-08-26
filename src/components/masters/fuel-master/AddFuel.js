@@ -62,12 +62,13 @@ class AddFuel extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
-    this.props.getAllCity(countryId => {
-      this.props.fetchStateDataAPI(countryId, () => { })
-    })
+    if (!this.state.isViewMode) {
+      this.props.getAllCity(countryId => {
+        this.props.fetchStateDataAPI(countryId, () => { })
+      })
+    }
     this.getDetails(data);
-    this.props.getFuelComboData(() => { })
-    if (!(data.isEditFlag || data.isViewFlag)) {
+    if (!(data.isEditFlag || data.isViewMode)) {
       this.props.getFuelComboData(() => { })
       this.props.getUOMSelectList(() => { })
     }
