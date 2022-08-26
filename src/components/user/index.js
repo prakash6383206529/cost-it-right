@@ -70,7 +70,10 @@ class User extends Component {
 
         for (var propDepart in departmentData) {
           if (departmentData[propDepart] === true) {
-            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+            setTimeout(() => {
+              this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+            }, 400);
+
           }
         }
 
@@ -85,6 +88,7 @@ class User extends Component {
 
   componentDidMount() {
     this.topAndLeftMenuFunction()
+
   }
 
 
@@ -93,6 +97,7 @@ class User extends Component {
       this.setState({ count: 1 })
       this.topAndLeftMenuFunction()
     }
+
   }
 
   /**
