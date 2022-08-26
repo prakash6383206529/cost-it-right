@@ -3184,7 +3184,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
-    { label: "Department", value: "DepartmentName", },
+    { label: "Purchase Group", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 
