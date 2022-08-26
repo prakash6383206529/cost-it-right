@@ -486,7 +486,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.AnnualImpact !== null ? approvalDetails.AnnualImpact : '-'}
                       </td>
                       <td>
-                        {approvalDetails.ImpactOfTheYear !== null ? approvalDetails.ImpactOfTheYear : '-'}
+                        {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>
                     </tr>
 
