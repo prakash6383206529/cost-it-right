@@ -1060,12 +1060,12 @@ function mapStateToProps(state) {
 
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
-  const { fuelComboSelectList, plantSelectList } = fuel
+  const { fuelDataByPlant, plantSelectList } = fuel
   const { initialConfiguration } = auth;
   let initialValues = {}
 
   return {
-    fuelComboSelectList,
+    fuelDataByPlant,
     plantSelectList,
     vendorWithVendorCodeSelectList,
     machineTypeSelectList,

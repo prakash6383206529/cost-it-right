@@ -91,7 +91,7 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!this.state.isViewMode) {
+    if (!(this.state.isViewMode || this.props.data.isEditFlag)) {
       this.props.getUOMSelectList(() => { })
     }
   }
@@ -105,17 +105,19 @@ class AddOperation extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
-    let obj = {
-      MasterId: OPERATIONS_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    if (!this.state.isViewMode) {
+      let obj = {
+        MasterId: OPERATIONS_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
       }
-    })
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+      })
+    }
     this.getDetail()
   }
 
@@ -371,17 +373,25 @@ class AddOperation extends Component {
   checkUniqCode = (e) => {
     this.setState({ operationCode: e.target.value })
     this.props.checkAndGetOperationCode(e.target.value, this.state.operationName, res => {
-      if (res && res.data && res.data.Result === false) {
-        Toaster.warning(res.data.Message);
-        this.props.change('OperationCode', "")
+
+      let Data = res.data.DynamicData
+      if (Data?.IsExist) {
+        if (this.state.operationName) {
+          this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        } else {
+          Toaster.warning(res.data.Message);
+          this.props.change('OperationCode', '')
+        }
       }
     })
   }
+
+
   checkUniqCodeByName = (e) => {
     this.setState({ operationName: e.target.value })
     this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-        Toaster.warning(res.data.Message);
+        this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
       } else {
         this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
           this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
@@ -853,7 +863,7 @@ class AddOperation extends Component {
                           validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required, checkSpacesInString]}
                           component={renderText}
                           required={true}
-                          onBlur={this.checkUniqCode}
+                          onChange={this.checkUniqCode}
                           disabled={(isEditFlag || isDisableCode || initialConfiguration.IsOperationCodeConfigure) ? true : false}
                           className=" "
                           customClassName=" withBorder"

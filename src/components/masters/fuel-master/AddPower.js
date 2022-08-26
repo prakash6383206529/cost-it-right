@@ -7,7 +7,7 @@ import { renderNumberInputField, searchableSelect, renderMultiSelectField, focus
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
-  getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
@@ -932,7 +932,7 @@ class AddPower extends Component {
   */
   editItemDetails = (index, sourceType) => {
     const { powerGrid } = this.state;
-    const { fuelComboSelectList } = this.props;
+    const { UOMSelectList } = this.props;
     const tempData = powerGrid[index];
 
     if (tempData.SourcePowerType === 'SEB') {
@@ -948,7 +948,7 @@ class AddPower extends Component {
       });
 
     } else {
-      let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
+      let UOMObj = UOMSelectList && UOMSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
       this.setState({
         isEditFlagForStateElectricity: false,
         powerGridEditIndex: index,
@@ -1241,7 +1241,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
-          EffectiveDate: effectiveDate,
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1256,7 +1256,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              // EffectiveDate: effectiveDate,
+              // EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -2042,7 +2042,7 @@ function mapStateToProps(state) {
 
   const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { fuelComboSelectList, plantSelectList, powerData } = fuel;
+  const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
   // 
   let initialValues = {};
@@ -2064,7 +2064,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
   }
 }
 
@@ -2078,7 +2078,7 @@ export default connect(mapStateToProps, {
   getPowerTypeSelectList,
   getUOMSelectList,
   getPlantBySupplier,
-  getFuelComboData,
+  getFuelByPlant,
   createPowerDetail,
   updatePowerDetail,
   createVendorPowerDetail,

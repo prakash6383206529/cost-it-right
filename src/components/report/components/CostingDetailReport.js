@@ -415,9 +415,12 @@ function ReportListing(props) {
             //     setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
             // }
             else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+                let valueString = value?.filterInstance?.appliedModel?.filter
+                if (valueString.includes("+")) {
+                    valueString = encodeURIComponent(valueString)
+                }
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: valueString })
             }
-
         }
         filterClick = false
 
