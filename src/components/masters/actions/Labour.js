@@ -9,7 +9,8 @@ import {
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
     config,
-    GET_LABOUR_DATA_LIST
+    GET_LABOUR_DATA_LIST,
+    GET_LABOUR_TYPE_FOR_MACHINE_TYPE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -235,5 +236,57 @@ export function labourBulkUpload(data, callback) {
             apiErrors(error);
             callback(error);
         });
+    };
+}
+
+/**
+ * @method getLabourTypeDetailsForMachineType
+ * @description get labour type for machine type
+ */
+export function getLabourTypeDetailsForMachineType(ID, callback) {
+    return (dispatch) => {
+
+        if (ID !== '') {
+            const request = axios.get(`${API.getLabourTypeDetailsForMachineType}/${ID}`, config());
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateLabour
+ * @description update labour
+ */
+export function updateLabourTypeForMachineType(requestData, callback) {
+    console.log(requestData, "requestData");
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(API.updateLabourTypeForMachineType, requestData, config())
+
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
     };
 }

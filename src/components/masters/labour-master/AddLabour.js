@@ -59,7 +59,8 @@ class AddLabour extends Component {
         labourRate: false,
         effectiveDate: false
       },
-      showErrorOnFocus: false
+      showErrorOnFocus: false,
+      isEditMode: false
     }
   }
 
@@ -116,6 +117,7 @@ class AddLabour extends Component {
                   LabourType: item.LabourType,
                   EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate) : '',
                   LabourRate: item.LabourRate,
+                  IsAssociated: item.IsAssociated
                 }
               })
 
@@ -300,21 +302,25 @@ class AddLabour extends Component {
   }
 
   machineTypeToggler = () => {
-    this.setState({ isOpenMachineType: true })
+    this.setState({ isOpenMachineType: true, isEditMode: false })
   }
-
+  machineTypeEdit = () => {
+    this.setState({ isOpenMachineType: true, isEditMode: true })
+  }
   closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false, labourType: '' }, () => {
-      this.props.getMachineTypeSelectList(() => {
-        const { machineTypeSelectList } = this.props
-        /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
-        if (Object.keys(formData).length > 0) {
-          const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
-          this.setState({
-            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
-          })
-        }
-      })
+      if (!this.state.isEditMode) {
+        this.props.getMachineTypeSelectList(() => {
+          const { machineTypeSelectList } = this.props
+          /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
+          if (Object.keys(formData).length > 0) {
+            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
+            this.setState({
+              machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+            })
+          }
+        })
+      }
     })
   }
 
@@ -666,7 +672,7 @@ class AddLabour extends Component {
 
 
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable } = this.state;
+    const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
 
 
     const filterList = (inputValue) => {
@@ -759,6 +765,7 @@ class AddLabour extends Component {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
                               onFocus={() => onFocus(this)}
+                              placeholder={"Select"}
                             />
                             {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
 
@@ -827,10 +834,13 @@ class AddLabour extends Component {
                             {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </div>
                           {!isViewMode && (
-                            <div
-                              onClick={this.machineTypeToggler}
-                              className={"plus-icon-square right mt30"}
-                            ></div>
+                            <div className='action-icon-container'>
+                              <div
+                                onClick={this.machineTypeToggler}
+                                className={"plus-icon-square mt-0 right"}
+                              ></div>
+                              <button type="button" onClick={this.machineTypeEdit} className={'user-btn'} disabled={this.state.machineType.value ? false : true}> <div className={"edit_pencil_icon right"}></div></button>
+                            </div>
                           )}
                         </div>
                       </Col>
@@ -957,14 +967,14 @@ class AddLabour extends Component {
                                       <button
                                         className="Edit mr-2"
                                         type={"button"}
-                                        disabled={isViewMode}
+                                        disabled={isViewMode || item.IsAssociated}
                                         onClick={() =>
                                           this.editGridItemDetails(index)
                                         }
                                       />
                                       <button
                                         className="Delete"
-                                        disabled={isViewMode}
+                                        disabled={isViewMode || item.IsAssociated}
                                         type={"button"}
                                         onClick={() =>
                                           this.deleteGridItem(index)
@@ -1018,9 +1028,11 @@ class AddLabour extends Component {
           <AddMachineTypeDrawer
             isOpen={isOpenMachineType}
             closeDrawer={this.closeMachineTypeDrawer}
-            isEditFlag={false}
+            isEditFlag={isEditMode}
+            machineTypeId={this.state.machineType.value ? this.state.machineType.value : ''}
             ID={""}
             anchor={"right"}
+            gridTable={this.state.gridTable}
           />
         )}
       </div>

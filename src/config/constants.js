@@ -431,6 +431,8 @@ export const API = {
   getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
   labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
   getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
+  getLabourTypeDetailsForMachineType: `${BASE_URL}/masters-labour/get-labour-type-details`,
+  updateLabourTypeForMachineType: `${BASE_URL}/masters-labour/update-machine-type`,
 
   //OVERHEAD AND PROFIT API'S
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
@@ -1245,6 +1247,8 @@ export const LABOUR_TYPE_VENDOR_SELECTLIST = 'LABOUR_TYPE_VENDOR_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_PLANT_SELECTLIST = 'GET_LABOUR_TYPE_BY_PLANT_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST = 'GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST'
 export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
+export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
+export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
 //OVERHEAD AND PROFIT
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
