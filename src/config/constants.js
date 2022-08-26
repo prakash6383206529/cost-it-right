@@ -337,7 +337,7 @@ export const API = {
   getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details-by-filter`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
-  getFuelComboData: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
@@ -1172,7 +1172,7 @@ export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS'
-export const GET_FULE_COMBO_SUCCESS = 'GET_FULE_COMBO_SUCCESS'
+export const GET_FUEL_BY_PLANT = 'GET_FUEL_BY_PLANT'
 export const GET_STATELIST_BY_FUEL = 'GET_STATELIST_BY_FUEL'
 export const GET_FULELIST_BY_STATE = 'GET_FULELIST_BY_STATE'
 export const GET_PLANT_SELECTLIST_BY_STATE = 'GET_PLANT_SELECTLIST_BY_STATE'
@@ -1916,4 +1916,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.456";
+export const VERSION = "V1.2.457";
