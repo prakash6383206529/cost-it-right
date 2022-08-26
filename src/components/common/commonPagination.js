@@ -240,7 +240,7 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
         switch (master) {
             case "BOP":
                 thisReference.getDataList("", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
-                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
+                // thisReference.setState({ pageNo: thisReference.state.pageNoNew })
 
                 if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
                     thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
@@ -250,7 +250,6 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Machine":
                 thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
 
-                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
                 if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
                     thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
                     thisReference.getDataList("", 0, "", 0, "", "", 0, 50, true, thisReference.state.floatingFilterData)
@@ -259,7 +258,6 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 50, true, thisReference.state.floatingFilterData)
 
-                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
                 if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
                     thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
                     thisReference.getTableListData(null, null, null, null, 0, 50, true, thisReference.state.floatingFilterData)
@@ -268,7 +266,6 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Part":
                 thisReference.ApiActionCreator(currentRowIndex, 50, thisReference.state.floatingFilterData, true)
 
-                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
                 if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
                     thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
                     thisReference.ApiActionCreator(0, 50, thisReference.state.floatingFilterData, true)
@@ -277,16 +274,13 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Vendor":
                 thisReference.getTableListData(currentRowIndex, '', "", "", 50, thisReference.state.floatingFilterData, true)
 
-                thisReference.setState({ pageNo: thisReference.state.pageNoNew })
                 if (thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
                     thisReference.setState({ pageNo: Math.ceil(thisReference.state.totalRecordCount / 50) })
                     thisReference.getTableListData(0, '', "", "", 50, thisReference.state.floatingFilterData, true)
                 }
                 break;
-
             default:
         }
-
 
         thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false }, globalTake: 50 })
 
