@@ -201,7 +201,7 @@ export const MESSAGES = {
 
   //MACHINE TYPE
   MACHINE_TYPE_ADD_SUCCESS: 'Machine type has been added successfully',
-  UPDATE_MACHINE_TYPE_SUCESS: 'Machine class has been updated successfully',
+  UPDATE_MACHINE_TYPE_SUCESS: 'Machine type has been updated successfully',
   MACHINE_ADD_SUCCESS: 'Machine has been added successfully',
   DELETE_MACHINE_TYPE_SUCCESS: 'Machine type has been deleted successfully',
   MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete this machine type?',

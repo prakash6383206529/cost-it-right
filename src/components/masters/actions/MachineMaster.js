@@ -460,10 +460,10 @@ export function getFuelUnitCost(data, callback) {
  * @method getLabourCost
  * @description GET LABOUR COST
  */
-export function getLabourCost(data, callback) {
+export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
+        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
