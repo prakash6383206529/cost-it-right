@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextAreaHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
@@ -14,7 +14,7 @@ function MachiningStockTable(props) {
   const trim = trimValue.NoOfDecimalForInputOutput
   const [forgingVolume, setForgingVolume] = useState('')
   const [grossWeight, setGrossWeight] = useState('')
-  const [showLabel, setIsShowLabel] = useState(false)
+  // const [showLabel, setIsShowLabel] = useState(false)
   const [circularMachiningStock, setCircularMachiningStock] = useState(false)
   const [rectangularMachiningStock, setRectangularMachiningStock] = useState(false)
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
@@ -50,9 +50,7 @@ function MachiningStockTable(props) {
 
 
   const handleVolumeChange = () => {
-
     setTimeout(() => {
-
       calculateforgingVolumeAndWeight()
     }, 500);
 
@@ -82,6 +80,17 @@ function MachiningStockTable(props) {
 
   const handleMachiningStockChange = (value) => {
     setDisable(true)
+    reset({
+      description: '',
+      minorDiameter: '',
+      majorDiameter: '',
+      Length: '',
+      Breadth: '',
+      Height: '',
+      No: '',
+      MachiningStock: '',
+      forgingV: ''
+    })
     if ((value.label === "Circular") || (value.label === "Semi Circular") || (value.label === "Quarter Circular")) {
 
       setCircularMachiningStock(true)
@@ -482,60 +491,58 @@ function MachiningStockTable(props) {
 
         {circularMachiningStock &&
           <>
-            {!showLabel && (
-              <Col md="3">
-                <NumberFieldHookForm
-                  label={`Major Diameter(mm)`}
-                  name={'majorDiameter'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for integer is 3 and for decimal is 5',
-                    },
+            <Col md="3">
+              <NumberFieldHookForm
+                label={`Major Diameter(mm)`}
+                name={'majorDiameter'}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={true}
+                rules={{
+                  required: true,
+                  pattern: {
+                    value: /^\d{0,3}(\.\d{0,5})?$/i,
+                    message: 'Maximum length for integer is 3 and for decimal is 5',
+                  },
 
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.majorDiameter}
-                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
-                />
-              </Col>
-            )}
-            {!showLabel && (
-              <Col md="3">
-                <NumberFieldHookForm
-                  label={`Minor Diameter(mm)`}
-                  name={'minorDiameter'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for integer is 3 and for decimal is 5',
-                    },
+                }}
+                handleChange={() => { }}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                errors={errors.majorDiameter}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
+              />
+            </Col>
 
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.minorDiameter}
-                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
-                />
-              </Col>
+            <Col md="3">
+              <NumberFieldHookForm
+                label={`Minor Diameter(mm)`}
+                name={'minorDiameter'}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={true}
+                rules={{
+                  required: true,
+                  pattern: {
+                    value: /^\d{0,3}(\.\d{0,5})?$/i,
+                    message: 'Maximum length for integer is 3 and for decimal is 5',
+                  },
 
-            )}
+                  // maxLength: 4,
+                }}
+                handleChange={() => { }}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                errors={errors.minorDiameter}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
+              />
+            </Col>
+
+            {/* )} */}
 
 
           </>}
@@ -747,8 +754,6 @@ function MachiningStockTable(props) {
           />
         </Col>
 
-
-
         <Col md="3" className="pr-0">
           <div>
             {isEdit ? (
@@ -796,7 +801,6 @@ function MachiningStockTable(props) {
                 <th>{`Number`}</th>
                 <th>{UnitFormat()}</th>
                 <th>{`Gross Weight (Kg)`}</th>
-
                 <th>{`Actions`}</th>
               </tr>
             </thead>

@@ -147,7 +147,7 @@ class AddMachineRate extends Component {
     }
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
-
+      this.props.getProcessesSelectList(() => { })
       let obj = {
         MasterId: MACHINE_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
@@ -161,9 +161,9 @@ class AddMachineRate extends Component {
 
       })
     }
+
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
-      this.props.getProcessesSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
