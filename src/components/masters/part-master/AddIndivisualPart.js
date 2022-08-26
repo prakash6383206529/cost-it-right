@@ -57,7 +57,9 @@ class AddIndivisualPart extends Component {
   * @description 
   */
   componentDidMount() {
-    this.props.getProductGroupSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getProductGroupSelectList(() => { })
+    }
     this.getDetails()
   }
 
