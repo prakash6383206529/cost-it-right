@@ -14,7 +14,7 @@ import {
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
-import { getFuelComboData, } from '../actions/Fuel';
+import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
@@ -152,7 +152,7 @@ class AddMoreDetails extends Component {
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
-    this.props.getFuelComboData(() => { })
+    this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
     if (!this.props?.editDetails?.isEditFlag) {
 
       this.props.change('EquityPercentage', 100)
@@ -329,7 +329,7 @@ class AddMoreDetails extends Component {
 
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-              fuelComboSelectList, } = this.props;
+              fuelDataByPlant, } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
 
@@ -338,7 +338,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
+            const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -425,7 +425,7 @@ class AddMoreDetails extends Component {
   renderListing = (label) => {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
-      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelComboSelectList, } = this.props;
+      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, } = this.props;
 
     const temp = [];
     if (label === 'technology') {
@@ -486,7 +486,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
     if (label === 'fuel') {
-      fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
+      fuelDataByPlant && fuelDataByPlant.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -848,7 +848,7 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
-      this.props.getFuelComboData(() => { })
+      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
       this.setState({ fuelType: [] })
     }
 
@@ -3901,7 +3901,7 @@ function mapStateToProps(state) {
 
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
-  const { fuelComboSelectList } = fuel;
+  const { fuelDataByPlant } = fuel;
   const { initialConfiguration } = auth;
   let initialValues = {};
   if (machineData && machineData !== undefined) {
@@ -3957,7 +3957,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading, processGroupApiData
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData
   }
 
 }
@@ -3977,7 +3977,7 @@ export default connect(mapStateToProps, {
   getShiftTypeSelectList,
   getDepreciationTypeSelectList,
   getLabourTypeByMachineTypeSelectList,
-  getFuelComboData,
+  getFuelByPlant,
   getFuelUnitCost,
   getLabourCost,
   getPowerCostUnit,

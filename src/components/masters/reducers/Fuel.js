@@ -8,7 +8,7 @@ import {
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS,
-    GET_FULE_COMBO_SUCCESS,
+    GET_FUEL_BY_PLANT,
     GET_STATELIST_BY_FUEL,
     GET_FULELIST_BY_STATE,
     GET_PLANT_SELECTLIST_BY_STATE,
@@ -78,12 +78,12 @@ export default function fuelReducer(state = initialState, action) {
                 fuelDetailList: action.payload
             };
         }
-        case GET_FULE_COMBO_SUCCESS: {
+        case GET_FUEL_BY_PLANT: {
             return {
                 ...state,
                 loading: false,
                 error: false,
-                fuelComboSelectList: action.payload
+                fuelDataByPlant: action.payload
             };
         }
         case GET_STATELIST_BY_FUEL: {
