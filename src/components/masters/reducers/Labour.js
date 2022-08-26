@@ -9,6 +9,7 @@ import {
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
     GET_LABOUR_DATA_LIST,
+    GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -76,6 +77,12 @@ export default function labourReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 labourDataList: action.payload
+            }
+        case GET_LABOUR_TYPE_FOR_MACHINE_TYPE:
+            return {
+                ...state,
+                loading: false,
+                labourTypeDetailsForMachineType: action.payload
             }
         default:
             return state;
