@@ -1045,7 +1045,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Quarter(INR):`}</span>
-                                                <span className="d-block">{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? simulationDetail?.TotalImpactPerQuarter : '-')}</span>
+                                                <span className="d-block">{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey.NoOfDecimalForPrice) : '-')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
