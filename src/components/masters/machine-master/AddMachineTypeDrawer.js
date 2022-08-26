@@ -19,7 +19,8 @@ class AddMachineTypeDrawer extends Component {
     super(props);
     this.state = {
       labourType: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      labourIdFromTable: []
     }
   }
 
@@ -29,7 +30,17 @@ class AddMachineTypeDrawer extends Component {
  */
   componentDidMount() {
     this.props.getLabourTypeSelectList(() => { })
-    this.getDetails();
+    this.props.isEditFlag && this.getDetails();
+    let tempArray = [];
+    this.props.gridTable.map(e => {
+      if (this.props.machineTypeId === e.MachineTypeId.toString()) {
+        tempArray.push(e.LabourTypeId.toString())
+        return e.LabourTypeId
+      }
+      return null
+    }
+    )
+    this.setState({ labourIdFromTable: tempArray })
   }
   getDetails = () => {
     this.props.getLabourTypeDetailsForMachineType(this.props.machineTypeId, (res) => {
@@ -73,64 +84,14 @@ class AddMachineTypeDrawer extends Component {
 
   }
 
-  /**
-  * @method labourHandler
-  * @description called
-  */
-  // findArray = () => {
-  //   let labourId = [];
-  //   setTimeout(() => {
 
-  //   }, 1000);
-  //   this.props.gridTable.map(e => {
-  //     if (this.props.machineTypeId === e.MachineTypeId.toString()) {
-  //       labourId.push(e.LabourTypeId.toString())
-  //       return e.LabourTypeId
-  //     }
-  //     return null
-  //   }
-  //   )
+  labourHandler = (e, option) => {
 
-  //   // console.log(labourId, "labourId", this.state.labourType, "this.state.labourType");
-  //   var absent = this.state.labourType.filter(el => {
-  //     // console.log(el, "el");
-  //     return !labourId.includes(el.Value)
+    if (this.state.labourIdFromTable.includes(option.removedValue && option.removedValue.Value)) {
+      Toaster.warning("This labour type is exist in the table");
+      return;
+    }
 
-  //   }
-  //   );
-  //   return absent;
-
-  // console.log(absent, "initialize absent");
-  // }
-  labourHandler = (e) => {
-
-    // let labourId = [];
-    // let existLabourId = [];
-
-    // e && e.map(el => {
-    //   existLabourId.push(el.Value)
-    //   return null
-    // })
-    // this.props.gridTable.map(e => {
-    //   if (this.props.machineTypeId === e.MachineTypeId.toString()) {
-    //     labourId.push(e.LabourTypeId.toString())
-    //     return e.LabourTypeId
-    //   }
-    //   return null
-    // }
-    // )
-
-    // var absent = this.state.labourType.filter(el => !labourId.includes(el.Value));
-
-
-
-    // console.log('_.map(absent,  ', _.map(absent, 'Value'));
-
-
-    // if (!_.map(absent, 'Value').includes(absent[0]?.Value)) {
-    //   Toaster.error(MESSAGES.SOME_ERROR)
-    //   return false
-    // }
     this.setState({ labourType: e, DropdownChanged: false });
   };
 
