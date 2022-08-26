@@ -1236,7 +1236,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
-          EffectiveDate: effectiveDate,
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1251,7 +1251,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              // EffectiveDate: effectiveDate,
+              // EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
             }
           ],
           SGChargesDetails: selfGridDataArray,
