@@ -320,6 +320,10 @@ class AddLabour extends Component {
           }
         })
       }
+      this.props.getLabourTypeByMachineTypeSelectList(
+        this.state.machineType.value,
+        () => { },
+      )
     })
   }
 
