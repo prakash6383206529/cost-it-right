@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -255,7 +255,7 @@ function SimulationApprovalListing(props) {
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         getTableData(0, 10, true, floatingFilterData)
 
         setGlobalTake(10)
@@ -430,12 +430,6 @@ function SimulationApprovalListing(props) {
             return `U`
         }
 
-    }
-
-    const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -614,7 +608,6 @@ function SimulationApprovalListing(props) {
         // effectiveDateRenderer: this.effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
-        renderVendor: renderVendor,
         requestedByFormatter: requestedByFormatter,
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
@@ -702,7 +695,7 @@ function SimulationApprovalListing(props) {
 
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

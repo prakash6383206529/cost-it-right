@@ -99,7 +99,6 @@ class BulkUpload extends Component {
      */
     fileHandler = event => {
         let fileObj = event.target.files[0];
-        console.log('event.target.files: ', event.target.files);
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
@@ -153,9 +152,6 @@ class BulkUpload extends Component {
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT), fileHeads)
                             }
-                            break;
-                        case String(BOMBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
@@ -480,7 +476,6 @@ class BulkUpload extends Component {
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
-        console.log(' ref={this.dropzone}', this.fileUploadRef.current);
         if (faildRecords) {
             return <Downloadxls
                 isFailedFlag={true}
