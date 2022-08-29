@@ -3022,8 +3022,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Part Type", value: "PartType", },
-    { label: "Department Code", value: "DepartmentCode", },
-    { label: "Department Name", value: "DepartmentName", },
+    { label: "Company Code", value: "DepartmentCode", },
+    { label: "Company Name", value: "DepartmentName", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "RM Code", value: "RawMaterialCode", },
     { label: "RM Name", value: "RawMaterialName", },
@@ -3125,7 +3125,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
-    { label: "Department", value: "DepartmentName", },
+    { label: "Company", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 

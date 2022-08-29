@@ -56,6 +56,8 @@ function ReportListing(props) {
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
+    const [disableDownloadSap, setDisableDownloadSap] = useState(false)
+    const [disableDownloadEncode, setDisableDownloadEncode] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -604,13 +606,13 @@ function ReportListing(props) {
     }
 
     const onExcelDownloadSap = () => {
-
+        setDisableDownloadSap(true)
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
-                // setDisableDownload(false)
+                setDisableDownloadSap(false)
                 let button = document.getElementById('Excel-DownloadsSap')
-                button.click()
+                button?.click()
             }, 400);
 
         } else {
@@ -622,11 +624,11 @@ function ReportListing(props) {
     }
 
     const onExcelDownloadEncoded = () => {
-
+        setDisableDownloadEncode(true)
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
-                // setDisableDownload(false)
+                setDisableDownloadEncode(false)
                 let button = document.getElementById('Excel-DownloadsEncoded')
                 button.click()
             }, 400);
@@ -766,29 +768,27 @@ function ReportListing(props) {
                             }
 
 
-                            {
-
+                            {disableDownloadSap ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>SAP Excel Download
+                            </button></div> :
                                 <>
-
                                     <button type="button" onClick={onExcelDownloadSap} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                        {/* DOWNLOAD */}
+                                        SAP Excel Download
                                     </button>
 
-                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} id={'Excel-DownloadsSap'}><div className="download"></div>SAP Excel Download</button>}>
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className='p-absolute right-22' id={'Excel-DownloadsSap'}></button>}>
                                         {renderColumnSAP(ReportSAPMaster)}
                                     </ExcelFile>
                                 </>
                             }
-
-                            {
+                            {disableDownloadEncode ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>Encoded Download
+                            </button></div> :
                                 <>
-
                                     <button type="button" onClick={onExcelDownloadEncoded} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                        {/* DOWNLOAD */}
+                                        Encoded Download
                                     </button>
 
 
-                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} id={'Excel-DownloadsEncoded'}><div className="download"></div>Encoded Download</button>}>
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" id={'Excel-DownloadsEncoded'} className='p-absolute right-22'></button>}>
                                         {renderColumnSAPEncoded(ReportSAPMaster)}
                                     </ExcelFile>
                                 </>
@@ -840,8 +840,8 @@ function ReportListing(props) {
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='DepartmentCode' headerName='Company Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='DepartmentName' headerName='Company Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialCode' headerName='RM Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
