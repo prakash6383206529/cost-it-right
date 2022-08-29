@@ -99,7 +99,7 @@ function OperationCost(props) {
       })
       let tempArr = [...GridArray, ...rowArray]
       tempArr && tempArr.map((el, index) => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, el.Quantity)
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
       setGridData(tempArr)
@@ -336,7 +336,7 @@ function OperationCost(props) {
                                       message: 'Invalid Number.'
                                     },
                                   }}
-                                  defaultValue={item.Quantity}
+                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder hide-label-inside mb-0'}
                                   handleChange={(e) => {
@@ -399,7 +399,7 @@ function OperationCost(props) {
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td style={{ width: 130 }}>{item.Quantity}</td>
+                            <td style={{ width: 130 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td style={{ width: 130 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
