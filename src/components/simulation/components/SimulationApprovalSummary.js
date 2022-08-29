@@ -801,7 +801,7 @@ function SimulationApprovalSummary(props) {
 
     const impactPerQuarterFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? cell : ''
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
     if (showListing === true) {
