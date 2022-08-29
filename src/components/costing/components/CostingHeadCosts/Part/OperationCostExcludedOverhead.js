@@ -100,7 +100,7 @@ function OperationCostExcludedOverhead(props) {
       })
       let tempArr = [...GridArray, ...rowArray]
       tempArr && tempArr.map((el, index) => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, el.Quantity)
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
       setGridData(tempArr)
@@ -342,7 +342,7 @@ function OperationCostExcludedOverhead(props) {
                                       message: 'Invalid Number.'
                                     },
                                   }}
-                                  defaultValue={item.Quantity}
+                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder hide-label-inside mb-0'}
                                   handleChange={(e) => {
@@ -405,7 +405,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td>{item.Quantity}</td>
+                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
