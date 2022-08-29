@@ -18,6 +18,9 @@
 		align-items: flex-start;
 		background-color: $colorPrimary;
 		padding: 10px 0 0 6px;
+		a {
+			padding-right: 16px;
+		}
 	}
 
 	.h-100 {
