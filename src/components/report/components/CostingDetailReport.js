@@ -645,10 +645,6 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                {renderColumn(ReportMaster)}
-                            </ExcelFile>
-
 
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
