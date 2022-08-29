@@ -36,6 +36,7 @@ import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
+import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -44,6 +45,7 @@ const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
   constructor(props) {
+
     super(props);
     this.child = React.createRef();
     this.state = {
@@ -52,10 +54,8 @@ class AddMoreDetails extends Component {
       IsPurchased: false,
       isViewFlag: false,
       isDateChange: false,
-
       selectedTechnology: [],
       selectedPlants: [],
-
       machineType: [],
       isOpenMachineType: false,
 
@@ -152,9 +152,10 @@ class AddMoreDetails extends Component {
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
-    this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+    if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+    }
     if (!this.props?.editDetails?.isEditFlag) {
-
       this.props.change('EquityPercentage', 100)
     }
 
@@ -527,8 +528,13 @@ class AddMoreDetails extends Component {
 
     if (!editMode) {
       if (newValue && newValue !== '') {
-        this.setState({ selectedPlants: newValue, })
-
+        this.setState({ selectedPlants: newValue, }, () => {
+          const { selectedPlants } = this.state
+          this.props.getFuelByPlant(
+            selectedPlants.value,
+            (res) => { },
+          )
+        })
         if (effectiveDate) {
           this.props.getPowerCostUnit(newValue.value, effectiveDate, res => {
             let Data = res?.data?.DynamicData;
@@ -848,7 +854,9 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
-      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+      if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+        this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+      }
       this.setState({ fuelType: [] })
     }
 
@@ -1450,8 +1458,8 @@ class AddMoreDetails extends Component {
       if (count > 0) {
         return false
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0) {
-        Toaster.warning('Please enter the machine cost');
+      if (checkForNull(fieldsObj?.MachineCost) === 0 || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+        Toaster.warning('Please fill all mandatory fields');
         return false;
       }
 
@@ -2103,12 +2111,11 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen } = this.state
     const { fieldsObj } = this.props
-
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
-
     this.setState({
       isLoanOpen: !isLoanOpen
     })
@@ -2122,8 +2129,9 @@ class AddMoreDetails extends Component {
     const { isWorkingOpen } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
 
@@ -2138,10 +2146,12 @@ class AddMoreDetails extends Component {
     const { isDepreciationOpen } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
+
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
@@ -2153,10 +2163,12 @@ class AddMoreDetails extends Component {
     const { isVariableCostOpen } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
+
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
@@ -2167,9 +2179,9 @@ class AddMoreDetails extends Component {
   powerToggle = () => {
     const { isPowerOpen } = this.state
     const { fieldsObj } = this.props
-
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isPowerOpen: !isPowerOpen })
@@ -2190,6 +2202,7 @@ class AddMoreDetails extends Component {
 
     if (checkForNull(fieldsObj?.MachineCost) === 0 || selectedPlants.length === 0 || effectiveDate === '') {
       Toaster.warning('Please fill the mandatory fields.');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -2203,8 +2216,9 @@ class AddMoreDetails extends Component {
     const { isProcessOpen } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isProcessOpen: !isProcessOpen })
@@ -2213,8 +2227,9 @@ class AddMoreDetails extends Component {
     const { isProcessGroupOpen } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
@@ -2244,7 +2259,6 @@ class AddMoreDetails extends Component {
   DisplayMachineRateLabel = () => {
     return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
-
   /**
   * @method render
   * @description Renders the component
@@ -2257,7 +2271,7 @@ class AddMoreDetails extends Component {
       <>
         {(isLoader) && <LoaderCustom />}
         <div className="container-fluid">
-          <div className="login-container signup-form">
+          <div className="login-container signup-form" id="go-top-top">
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
