@@ -68,6 +68,7 @@ export const RMDomesticZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -94,6 +95,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "1511",
@@ -118,6 +120,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -146,6 +149,7 @@ export const RMDomesticVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" }, //*
@@ -172,6 +176,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -196,6 +201,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -225,6 +231,7 @@ export const RMImportZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -255,6 +262,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -279,6 +287,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -308,6 +317,7 @@ export const RMImportVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
@@ -335,6 +345,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -360,6 +371,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -1025,6 +1037,7 @@ export const MachineZBC = [
     { label: 'MachineType', value: 'MachineType', },
     { label: 'MachineTonnage', value: 'MachineTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'MachineRate', value: 'MachineRate', }, //* 
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //* 
@@ -1042,6 +1055,7 @@ export const MachineZBCTempData = [
         'MachineType': 'Mechanical',
         'MachineTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': 55,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1102,6 +1116,7 @@ export const MHRMoreZBC = [
     // { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
+    { label: "ProcessCode", value: "ProcessCode", },
     { label: "UOM", value: "UOM", },
     { label: "OutputPerHours", value: "OutputPerHours", },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1173,6 +1188,7 @@ export const MHRMoreZBCTempData = [
         // "LabourRate": 0,
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
+        "ProcessCode": "PR-1000001",
         "UOM": "Hours",
         "OutputPerHours": 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1249,6 +1265,7 @@ export const MachineVBC = [
     { label: 'MachineType', value: 'MachineType', },
     { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //* maybe
     { label: 'MachineRate', value: 'MachineRate', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1268,6 +1285,7 @@ export const MachineVBCTempData = [
         'MachineType': 'Mechanical',
         'MachineCapicityAndTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': '20',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
