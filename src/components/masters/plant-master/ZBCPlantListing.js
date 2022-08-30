@@ -318,21 +318,12 @@ class ZBCPlantListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    onFloatingFilterChanged = (value) => {
-        if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
-
-            this.setState({ noData: true })
-            document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
-        } else {
-            this.setState({ noData: false })
-            document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
-        }
-    }
 
     resetState() {
         this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        window.screen.width >= 1600 && this.state.gridApi.sizeColumnsToFit()
     }
 
 
@@ -435,7 +426,6 @@ class ZBCPlantListing extends Component {
                             }}
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
-                            onFilterModified={this.onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
@@ -444,8 +434,8 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>
