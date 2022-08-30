@@ -54,6 +54,7 @@ import {
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
   GET_LAST_SIMULATION_DATA,
   GET_IMPACTED_MASTER_DATA,
+  STATUS_COLUMN_DATA
 } from '../config/constants';
 
 const initialState = {
@@ -443,6 +444,11 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         loading: false,
         impactedMasterData: action.payload
+      };
+    case STATUS_COLUMN_DATA:
+      return {
+        ...state,
+        statusColumnData: action.payload
       };
     default:
       return state;
