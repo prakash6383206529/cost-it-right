@@ -1024,6 +1024,7 @@ export const onFocus = (thisRef, dateFocus) => {
   return temp
 }
 
+//FOR SHOWING NO DATA FOUND IMAGE WHEN DATA WILL ZERO WHILE USER TYPE
 export const searchNocontentFilter = (value, data) => {
 
   let temp = data
@@ -1033,4 +1034,12 @@ export const searchNocontentFilter = (value, data) => {
     temp = false
   }
   return temp;
+}
+
+//FOR RESETING CUSTOM TABLE SCROLL
+export const scrollReset = (ID) => {
+  console.log('ID: ', ID);
+
+  let temp = document.getElementById(ID);
+  temp.scrollLeft = 0;
 }
