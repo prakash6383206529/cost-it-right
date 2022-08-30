@@ -79,7 +79,8 @@ export const RMDomesticZBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -105,7 +106,8 @@ export const RMDomesticZBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -128,7 +130,8 @@ export const RMDomesticZBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -155,7 +158,8 @@ export const RMDomesticVBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
@@ -181,7 +185,8 @@ export const RMDomesticVBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        //  "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -205,7 +210,8 @@ export const RMDomesticVBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -237,7 +243,8 @@ export const RMImportZBC = [
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -266,7 +273,8 @@ export const RMImportZBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -290,7 +298,8 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -318,7 +327,8 @@ export const RMImportVBC = [
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
@@ -345,7 +355,8 @@ export const RMImportVBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -370,7 +381,8 @@ export const RMImportVBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
