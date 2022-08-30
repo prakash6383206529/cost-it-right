@@ -11,6 +11,7 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
 import { VBC } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
@@ -128,7 +129,7 @@ function VerifyImpactDrawer(props) {
 
                     <span class=" mr-2 pl-3">
                       <span class="grey-text d-block">Impact for Quarter(INR):</span>
-                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : amendmentDetails.TotalImpactPerQuarter}</span>
+                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</span>
                     </span>
 
                   </div>
