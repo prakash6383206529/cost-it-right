@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, checkForNull, getConfigurationKey } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -58,7 +58,7 @@ function SimulationApprovalListing(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
-
+    const [noData, setNoData] = useState(false)
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -128,6 +128,9 @@ function SimulationApprovalListing(props) {
             let array = isDashboard ? simualtionApprovalList : simualtionApprovalListDraft
             setTotalRecordCount(checkForNull(array[0].TotalRecordCount))
         }
+        else {
+            setNoData(false)
+        }
 
     }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
 
@@ -182,6 +185,7 @@ function SimulationApprovalListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+        if (simualtionApprovalList?.length !== 0 || simualtionApprovalListDraft?.length !== 0) setNoData(searchNocontentFilter(value, noData))
 
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
@@ -653,13 +657,12 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`${isDashboard ? simualtionApprovalList && simualtionApprovalList?.length <= 0 ? "overlay-contain" : "" : simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className="ag-theme-material">
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%', }}
                                     defaultColDef={defaultColDef}

@@ -13,7 +13,7 @@ import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
-import { checkPermission, showTitleForActiveToggle } from '../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -57,7 +57,8 @@ class UsersListing extends Component {
 			deletedId: '',
 			cell: [],
 			row: [],
-			isLoader: false
+			isLoader: false,
+			noData: false
 		}
 	}
 
@@ -514,8 +515,8 @@ class UsersListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { handleSubmit, initialConfiguration, } = this.props;
-		const { EditAccessibility, AddAccessibility } = this.state;
+		const { handleSubmit, initialConfiguration } = this.props;
+		const { EditAccessibility, AddAccessibility, noData } = this.state;
 
 		const isFirstColumn = (params) => {
 
@@ -635,11 +636,12 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+					<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
 						<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+							{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 							<AgGridReact
 								defaultColDef={defaultColDef}
 								floatingFilter={true}
@@ -658,6 +660,7 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 								enableBrowserTooltips={true}
 								onSelectionChanged={this.onRowSelect}
+								onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
 								rowSelection={'multiple'}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}

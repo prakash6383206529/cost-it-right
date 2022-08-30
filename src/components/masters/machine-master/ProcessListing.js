@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { searchableSelect } from '../../layout/FormInputs'
 import { PaginationWrapper } from '../../common/commonPagination'
+import { searchNocontentFilter } from '../../../helper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -45,7 +46,8 @@ class ProcessListing extends Component {
       rowData: null,
       showPopup: false,
       deletedId: '',
-      isLoader: false
+      isLoader: false,
+      noData: false
     }
   }
 
@@ -439,7 +441,7 @@ class ProcessListing extends Component {
    */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const { isOpenProcessDrawer, isEditFlag, noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
@@ -565,11 +567,12 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.processList && this.props.processList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.processList && this.props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
@@ -587,6 +590,7 @@ class ProcessListing extends Component {
                     title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
+                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

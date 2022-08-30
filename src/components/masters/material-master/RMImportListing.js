@@ -18,7 +18,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -66,7 +66,7 @@ function RMImportListing(props) {
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
-
+  const [noData, setNoData] = useState(false)
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -97,6 +97,9 @@ function RMImportListing(props) {
   useEffect(() => {
     if (rmImportDataList?.length > 0) {
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
+    }
+    else {
+      setNoData(false)
     }
   }, [rmImportDataList])
 
@@ -252,6 +255,10 @@ function RMImportListing(props) {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
+
+    if (rmImportDataList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
     if (!isFilterButtonClicked) {
       setWarningMessage(true)
     }
@@ -820,8 +827,9 @@ function RMImportListing(props) {
           </Row>
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper ${rmImportDataList && rmImportDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     style={{ height: '100%', width: '100%' }}
                     defaultColDef={defaultColDef}

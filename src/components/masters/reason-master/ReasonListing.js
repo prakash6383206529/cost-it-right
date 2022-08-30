@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
 import { ADDITIONAL_MASTERS, REASON, Reasonmaster } from '../../../config/constants';
-import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
@@ -55,7 +55,8 @@ class ReasonListing extends Component {
       showPopup: false,
       deletedId: '',
       selectedRowData: false,
-      showPopupToggle: false
+      showPopupToggle: false,
+      noData: false
     }
   }
 
@@ -352,7 +353,7 @@ class ReasonListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility, noData } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
@@ -425,11 +426,12 @@ class ReasonListing extends Component {
               </div>
             </Col>
           </Row>
-          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper  ${(this.props.reasonDataList && this.props.reasonDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -441,6 +443,7 @@ class ReasonListing extends Component {
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: 'imagClass pt-3'

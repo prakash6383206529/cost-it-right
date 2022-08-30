@@ -22,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +50,8 @@ class SpecificationListing extends Component {
             showPopup2: false,
             deletedId: '',
             isLoader: false,
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -318,7 +320,7 @@ class SpecificationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
+        const { isOpen, isEditFlag, ID, isBulkUpload, noData } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
@@ -400,11 +402,12 @@ class SpecificationListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
@@ -423,6 +426,7 @@ class SpecificationListing extends Component {
                                     }}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>

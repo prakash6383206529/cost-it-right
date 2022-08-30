@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -49,7 +49,8 @@ class ClientListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -322,7 +323,7 @@ class ClientListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         const isFirstColumn = (params) => {
@@ -394,11 +395,12 @@ class ClientListing extends Component {
 
 
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.clientDataList && this.props.clientDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.clientDataList && this.props.clientDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -412,6 +414,7 @@ class ClientListing extends Component {
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'

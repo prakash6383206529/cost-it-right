@@ -23,6 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { hyphenFormatter } from '../masterUtil';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,6 +46,7 @@ class IndivisualProductListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
+            noData: false
         }
     }
 
@@ -319,7 +321,7 @@ class IndivisualProductListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
@@ -394,11 +396,12 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.productDataList && this.props.productDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.productDataList && this.props.productDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -416,6 +419,7 @@ class IndivisualProductListing extends Component {
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
+                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                         >
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>

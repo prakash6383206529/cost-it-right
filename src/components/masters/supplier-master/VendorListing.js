@@ -16,7 +16,7 @@ import {
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -75,6 +75,7 @@ class VendorListing extends Component {
             globalTake: defaultPageSize,
             disableFilter: true,
             disableDownload: false,
+            noData: false
         }
     }
 
@@ -92,7 +93,9 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
+        if (this.props.supplierDataList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -160,6 +163,7 @@ class VendorListing extends Component {
         let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             this.setState({ isLoader: false })
+            this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ totalRecordCount: 0 })
 
@@ -542,7 +546,7 @@ class VendorListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -578,7 +582,7 @@ class VendorListing extends Component {
                     </Col>
                 </Row>
                 {this.state.isLoader && <LoaderCustom />}
-                <Row className="pt-4 no-filter-row">
+                <Row className="pt-4 no-filter-row zindex-2">
                     <Col md="12">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div className="warning-message d-flex align-items-center">
@@ -633,11 +637,12 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}

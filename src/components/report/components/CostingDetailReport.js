@@ -16,7 +16,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter } from '../../../helper'
 import { getCostingReport } from '.././actions/ReportListing'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
@@ -56,6 +56,7 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [noData, setNoData] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const [disableDownloadSap, setDisableDownloadSap] = useState(false)
     const [disableDownloadEncode, setDisableDownloadEncode] = useState(false)
@@ -448,10 +449,11 @@ function ReportListing(props) {
 
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
-
+        setNoData(false)
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
+        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API

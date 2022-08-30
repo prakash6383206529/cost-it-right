@@ -14,7 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -67,7 +67,8 @@ class BOPDomesticListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            noData: false
         }
     }
 
@@ -138,6 +139,7 @@ class BOPDomesticListing extends Component {
                 let obj = { ...this.state.floatingFilterData }
                 this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
+                    this.setState({ noData: false })
                     if (this.props.isSimulation) {
                         this.props?.changeTokenCheckBox(true)
                     }
@@ -146,6 +148,7 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: Data })
                     } else if (res && res.response && res.response.status === 412) {
                         this.setState({ tableData: [] })
+
                     } else {
                         this.setState({ tableData: [] })
                     }
@@ -199,6 +202,9 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        if (this.props.bopDomesticList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -535,7 +541,7 @@ class BOPDomesticListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
 
         var filterParams = {
             date: "",
@@ -728,8 +734,9 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? 'overlay-contain' : ''}`}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
