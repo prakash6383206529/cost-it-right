@@ -35,7 +35,11 @@ class AddComponentForm extends Component {
   componentDidMount() {
     this.setState({ isLoader: true })
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { this.setState({ isLoader: false }) })
+    let obj = {
+      technologyId: this.props?.TechnologySelected.value,
+      date: this.context
+    }
+    this.props.getComponentPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {

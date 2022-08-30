@@ -206,7 +206,7 @@ class AddBOPForm extends Component {
           <Row>
 
             <Col md="6">
-              <label>{"BOP Part No."}<span className="asterisk-required">*</span></label>
+              <label>{"Insert Part No."}<span className="asterisk-required">*</span></label>
               <div className='p-relative'>
                 {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
                 <AsyncSelect
@@ -216,7 +216,7 @@ class AddBOPForm extends Component {
                   cacheOptions
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the Insert numbers' : "No results found"}
                   onFocus={() => onFocus(this)}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -227,7 +227,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`BOP Part Name`}
+                label={`Insert Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -242,7 +242,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`BOP Category`}
+                label={`Insert Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}
