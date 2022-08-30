@@ -41,12 +41,12 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false, props.item)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false)
+        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       }
 
-      if (JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : [])) {
+      if (JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : [])) {
         dispatch(isDataChange(true))
       }
     }

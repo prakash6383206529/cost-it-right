@@ -43,7 +43,7 @@ function SurfaceTreatmentCost(props) {
     }
 
     if (!CostingViewMode && !IsLocked) {
-      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData.CostingPartDetails.SurfaceTreatmentDetails) ? true : false
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
       props.setSurfaceData({ gridData, Params, isEqual, item })
       // if (props.IsAssemblyCalculation) {
       //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)

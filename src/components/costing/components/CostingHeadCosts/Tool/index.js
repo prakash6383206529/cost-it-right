@@ -60,7 +60,7 @@ function Tool(props) {
 
 
   useEffect(() => {
-    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : []) ? true : false)
+    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : []) ? true : false)
 
   }, [gridData]);
 
