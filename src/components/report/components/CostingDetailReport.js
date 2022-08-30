@@ -325,6 +325,8 @@ function ReportListing(props) {
             if (res && isPagination === false) {  // CODE WRITTEN FOR EXCEL DOWNLOAD
                 setTimeout(() => {
                     setDisableDownload(false)
+                    setDisableDownloadSap(false)
+                    setDisableDownloadEncode(false)
                     let button = document.getElementById(`${sapExcel ? 'Excel-DownloadsSap' : sapEncoded ? 'Excel-DownloadsEncoded' : 'Excel-Downloads'}`)
                     button.click()
                 }, 800);
@@ -588,7 +590,8 @@ function ReportListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
-
+        setDisableDownloadSap(false)
+        setDisableDownloadEncode(false)
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
@@ -607,6 +610,8 @@ function ReportListing(props) {
 
     const onExcelDownloadSap = () => {
         setDisableDownloadSap(true)
+        setDisableDownload(false)
+        setDisableDownloadEncode(false)
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
@@ -625,6 +630,8 @@ function ReportListing(props) {
 
     const onExcelDownloadEncoded = () => {
         setDisableDownloadEncode(true)
+        setDisableDownloadSap(false)
+        setDisableDownload(false)
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
