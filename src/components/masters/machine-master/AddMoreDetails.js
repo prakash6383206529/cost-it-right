@@ -1202,7 +1202,8 @@ class AddMoreDetails extends Component {
       const PowerRatingPerKW = checkForNull(fieldsObj?.PowerRatingPerKW)
       const PowerCostPerUnit = checkForNull(machineFullValue?.PowerCostPerUnit); // may be state
 
-      const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
+      const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
+      const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
       this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
       this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
@@ -3325,9 +3326,23 @@ class AddMoreDetails extends Component {
                                   customClassName="withBorder"
                                 />
                               </Col>
+                              {/* <Col md="3">
+                                <Field
+                                  label={`Power Cost/Hour(INR)`}
+                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerHour"}
+                                  type="text"
+                                  placeholder={'-'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col> */}
                               <Col md="3">
                                 <Field
-                                  label={`Total Power Cost/Annum(INR)`}
+                                  label={`Power Cost/Annum(INR)`}
                                   name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
