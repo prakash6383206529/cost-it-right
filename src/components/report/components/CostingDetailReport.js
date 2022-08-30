@@ -599,7 +599,7 @@ function ReportListing(props) {
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
-
+        gridApi.deselectAll()
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
