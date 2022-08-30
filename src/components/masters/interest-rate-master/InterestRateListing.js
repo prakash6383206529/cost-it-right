@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
@@ -57,7 +57,8 @@ class InterestRateListing extends Component {
       isLoader: false,
       showPopup: false,
       deletedId: '',
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -283,6 +284,7 @@ class InterestRateListing extends Component {
   onSubmit(values) {
   }
 
+
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
@@ -347,7 +349,7 @@ class InterestRateListing extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
@@ -458,11 +460,12 @@ class InterestRateListing extends Component {
           </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -480,6 +483,7 @@ class InterestRateListing extends Component {
                   imagClass: 'imagClass'
                 }}
                 rowSelection={'multiple'}
+                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >

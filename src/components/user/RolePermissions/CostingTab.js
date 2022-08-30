@@ -9,6 +9,7 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
 import { renderActionCommon } from '../userUtil';
+import { scrollReset } from '../../../helper/util';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -26,9 +27,15 @@ class CostingTab extends Component {
   }
 
 
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
-      const { data, actionData, actionSelectList } = nextProps;
+      const { data, actionData, actionSelectList, scrollRef } = nextProps;
+      if (scrollRef) {
+        scrollReset('costingTab')
+      } else {
+        scrollReset('costingTab')
+      }
       this.setState({
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
@@ -265,7 +272,7 @@ class CostingTab extends Component {
       <div>
         <div className="row form-group grant-user-grid user-costing-tab">
           <div className="col-md-12">
-            <div className='overflow-auto'>
+            <div className='overflow-auto' id="costingTab">
               <Table className="table table-bordered" size="sm">
                 <thead>
                   <tr>

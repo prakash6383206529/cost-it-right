@@ -6,7 +6,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { ROLE } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -38,7 +38,8 @@ class RolesListing extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      cell: ''
+      cell: '',
+      noData: false
     }
   }
 
@@ -215,7 +216,7 @@ class RolesListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { AddAccessibility } = this.state;
+    const { AddAccessibility, noData } = this.state;
 
     const defaultColDef = {
       resizable: true,
@@ -259,11 +260,12 @@ class RolesListing extends Component {
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -275,6 +277,7 @@ class RolesListing extends Component {
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'
