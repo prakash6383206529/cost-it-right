@@ -35,6 +35,7 @@ class PermissionsTabIndex extends Component {
             reportAnalytics: [],
             user: [],
             audit: [],
+            scrollReset: false
         };
     }
 
@@ -130,6 +131,7 @@ class PermissionsTabIndex extends Component {
                 activeTab: tab
             });
         }
+        this.setState({ scrollReset: !this.state.scrollReset })
     }
 
     permissionHandler = (data, ModuleName) => {
@@ -248,6 +250,7 @@ class PermissionsTabIndex extends Component {
                                             actionData={this.state.actionData}
                                             actionSelectList={this.props.actionSelectList}
                                             permissions={this.permissionHandler}
+                                            scrollRef={this.state.scrollReset}
                                         />
                                     </TabPane>
 
