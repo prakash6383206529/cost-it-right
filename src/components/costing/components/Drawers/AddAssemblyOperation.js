@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import Switch from "react-switch";
 import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
@@ -35,25 +34,12 @@ function AddAssemblyOperation(props) {
   };
 
   /**
-* @method onToolToggle
-* @description TOOL COST TOGGLE
-*/
-  const onToolToggle = () => {
-    setIsOpenTool(!IsOpenTool)
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
   const cancel = () => {
     props.closeDrawer()
   }
-
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
 
   /**
   * @method saveData

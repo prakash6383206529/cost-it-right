@@ -8,7 +8,6 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
-import values from 'redux-form/lib/values';
 
 function Icc(props) {
 

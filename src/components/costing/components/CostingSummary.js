@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
@@ -13,19 +13,17 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
-import { useHistory } from "react-router-dom";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingSummary(props) {
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const dispatch = useDispatch()
-  let history = useHistory();
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
@@ -228,7 +226,7 @@ function CostingSummary(props) {
                       '00000000-0000-0000-0000-000000000000',
                       (res) => {
 
-                        if (res.data.Result == true) {
+                        if (res.data.Result === true) {
                           if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
                             setShowWarningMsg(true)
                             dispatch(setCostingViewData(temp))

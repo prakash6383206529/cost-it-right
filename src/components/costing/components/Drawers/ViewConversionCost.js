@@ -7,8 +7,6 @@ import { EMPTY_DATA, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
-import { EMPTY_GUID } from '../../../../config/constants';
-import Toaster from '../../../common/Toaster';
 import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
 import { MACHINING } from '../../../../config/masterData'
@@ -32,21 +30,16 @@ function ViewConversionCost(props) {
   const processGroup = getConfigurationKey().isProcessGroup
   const { viewConversionCostData } = props
   const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
-  const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, CostingOtherOperationCostResponse } = conversionData
+  const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [othercostingOperationCost, setOtherCostingOperationCostResponse] = useState([])
   const [surfaceTreatmentCost, setSurfaceTreatmentCost] = useState([])
   const [transportCost, setTransportCost] = useState([])
-  const [isShowToolCost, setIsShowToolCost] = useState(false)
-  const [costingToolsCost, setcostingToolsCost] = useState(false)
   const [activeTab, setActiveTab] = useState(0);
-  const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [partNumberList, setPartNumberList] = useState([])
   const [index, setIndex] = useState(0)
-  const [indexForProcessCalculator, setIndexForProcessCalculator] = useState(0)
-  const [parentIndex, setParentIndex] = useState('')
   const [loader, setLoader] = useState(false)
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -58,28 +51,31 @@ function ViewConversionCost(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (IsShowToolCost) {
-      setIsShowToolCost(IsShowToolCost)
-    }
+    // if (IsShowToolCost) {
+    //   setIsShowToolCost(IsShowToolCost)
+    // }
     if (IsAssemblyCosting === true && isPDFShow === false) {
       let temp = []
       let uniqueTemp = []
       CostingProcessCostResponse && CostingProcessCostResponse.map(item => {
         temp.push(item.PartNumber)
+        return null
       })
       CostingOperationCostResponse && CostingOperationCostResponse.map(item => {
         temp.push(item.PartNumber)
+        return null
       })
       CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.map(item => {
         temp.push(item.PartNumber)
+        return null
       })
       netTransportationCostView && netTransportationCostView.map(item => {
-
         temp.push(item.PartNumber)
-
+        return null
       })
       surfaceTreatmentDetails && surfaceTreatmentDetails.map(item => {
         temp.push(item.PartNumber)
+        return null
       })
       uniqueTemp = Array.from(new Set(temp))
       setPartNumberList(uniqueTemp)
@@ -115,20 +111,6 @@ function ViewConversionCost(props) {
     }
 
   }, [])
-  /**
-* @method toggle
-* @description toggling the tabs
-*/
-  const toggle = (tab) => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-
-      if (tab === '1') {
-        setIsCalledAPI(true)
-      }
-    }
-  }
-
 
   const setCalculatorData = (data, list, id, parentId) => {
     if (parentId === '') {
@@ -169,8 +151,6 @@ function ViewConversionCost(props) {
       UOMType = tempData?.UOMType
 
     }
-    setIndexForProcessCalculator(index)
-    setParentIndex(parentCalciIndex)
     setTimeout(() => {
       dispatch(getProcessDefaultCalculation(processCalciId, res => {
         if (res && res.data && res.data.Data) {
@@ -208,8 +188,6 @@ function ViewConversionCost(props) {
 
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
-    setIndexForProcessCalculator('')
-    setParentIndex('')
     setCalciData({})
     setCalculatorTechnology('')
   }
@@ -505,58 +483,6 @@ function ViewConversionCost(props) {
                   )
                 })}
               {othercostingOperationCost && othercostingOperationCost.length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </>
-  }
-  const toolCostTableData = () => {
-    return <>
-      <Row>
-        <Col md="10">
-          <div className="left-border">{'Tool Cost:'}</div>
-        </Col>
-      </Row>
-      <Row>
-        {/*TOOL COST GRID */}
-        <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
-                <th>{`Process/Operation`}</th>
-                <th>{`Tool Category`}</th>
-                <th>{`Name`}</th>
-                <th>{`Quantity`}</th>
-                <th>{`Tool Cost`}</th>
-                <th>{`Life`}</th>
-                <th>{`Net Tool Cost`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {costingToolsCost &&
-                costingToolsCost.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{item.ProcessOrOperation ? item.ProcessOrOperation : '-'}</td>
-                      <td>{item.ToolCategory ? item.ToolCategory : '-'}</td>
-                      <td>{item.ToolName ? item.ToolName : '-'}</td>
-                      <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.Life ? item.Life : '-'}</td>
-                      <td>
-                        {item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                      </td>
-                    </tr>
-                  )
-                })}
-              {costingToolsCost.length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />

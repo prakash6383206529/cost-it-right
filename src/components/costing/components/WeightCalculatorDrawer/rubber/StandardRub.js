@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
@@ -27,7 +26,6 @@ function StandardRub(props) {
     const [timeOutId, setTimeoutId] = useState([])
     const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
-    const [allRmData, setAllRmData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -46,10 +44,6 @@ function StandardRub(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
-
-
-    const dispatch = useDispatch()
-    const [grossWeights, setGrossWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '')
 
     const fieldValues = useWatch({
         control,
@@ -74,8 +68,8 @@ function StandardRub(props) {
                 label: item.RMName, value: count
             })
             count++
+            return null
         })
-        setAllRmData(arr)
         setRmDropDownData(arr)
     }, [])
 
@@ -218,9 +212,8 @@ function StandardRub(props) {
                 label: item.RMName, value: count
             })
             count++
+            return null
         })
-        setAllRmData(arr)
-
         setAgGridTable(false)
         gridData.pop()
         // grid.applyTransaction({ remove: [rowData] })
@@ -239,9 +232,10 @@ function StandardRub(props) {
         arr && arr.map((item) => {
             let count = 0
             gridData && gridData.map((ele) => {
-                if (item.label == ele.RmName) {
+                if (item.label === ele.RmName) {
                     count++
                 }
+                return null
             })
 
             if (count > 0) {
@@ -249,6 +243,7 @@ function StandardRub(props) {
             } else {
                 dropDown.push(item)
             }
+            return null
         })
         setRmDropDownData(dropDown)
         /////
@@ -283,8 +278,7 @@ function StandardRub(props) {
 
 
     const buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // props.gridApi?.applyTransaction({ remove: gridOptions.rowData })
 
         let isEditable;
         if ((props?.agGridReact?.gridOptions?.rowData.length - 1) === props.rowIndex) {
@@ -317,15 +311,8 @@ function StandardRub(props) {
         setGridApi(params.api)
         params.api.paginationGoToPage(0);
     };
-    const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
-    };
-
 
     const addRow = () => {
-
-
         let obj = {
             RmName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),

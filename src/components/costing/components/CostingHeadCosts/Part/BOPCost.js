@@ -11,7 +11,6 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
-import _ from 'lodash'
 
 let counter = 0;
 function BOPCost(props) {

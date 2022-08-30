@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
-import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -31,14 +28,7 @@ function AddBOP(props) {
   const costData = useContext(costingInfoContext)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
-  const { bopCategorySelectList } = useSelector(state => state.boughtOutparts)
   const { bopDrawerList } = useSelector(state => state.costing)
-
-
-  const { register, handleSubmit, control, setValue, getValues } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  })
 
   /**
   * @method toggleDrawer
@@ -56,15 +46,6 @@ function AddBOP(props) {
     getDataList()
 
   }, []);
-
-
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
 
   const onRowSelect = (event) => {
     var selectedRows = gridApi && gridApi?.getSelectedRows();
@@ -154,46 +135,11 @@ function AddBOP(props) {
   }
 
   /**
-* @method filterList
-* @description Filter user listing on the basis of role and department
-*/
-  const filterList = () => {
-    const categoryId = getValues('Category') ? getValues('Category').value : null;
-    getDataList(categoryId)
-  }
-
-  const renderListing = (label) => {
-    const temp = [];
-    if (label === 'category') {
-      bopCategorySelectList && bopCategorySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
-  /**
- * @method resetFilter
- * @description Reset user filter
- */
-  const resetFilter = () => {
-    setValue('Category', '')
-    dispatch(getBOPCategorySelectList(res => { }))
-    getDataList()
   }
 
   const isFirstColumn = (params) => {

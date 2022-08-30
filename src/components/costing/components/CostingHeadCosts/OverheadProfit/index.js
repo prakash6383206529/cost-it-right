@@ -13,7 +13,6 @@ import TooltipCustom from '../../../../common/Tooltip';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
-import { Link } from 'react-scroll'
 import { debounce } from 'lodash';
 
 function OverheadProfit(props) {
