@@ -107,10 +107,6 @@ class VendorListing extends Component {
         onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
-    resetState = () => {
-        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
-
-    }
 
     onBtPrevious = () => {
         onBtPrevious(this, "Vendor")       //COMMON PAGINATION FUNCTION
@@ -476,7 +472,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        window.screen.width >= 1367 && this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1367 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -485,7 +481,11 @@ class VendorListing extends Component {
         onPageSizeChanged(this, newPageSize, "Vendor", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
-
+    resetState = () => {
+        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
@@ -671,8 +671,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="120" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" minWidth={"160"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
 
