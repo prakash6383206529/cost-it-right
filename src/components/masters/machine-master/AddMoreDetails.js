@@ -2271,7 +2271,7 @@ class AddMoreDetails extends Component {
       <>
         {(isLoader) && <LoaderCustom />}
         <div className="container-fluid">
-          <div className="login-container signup-form" id="go-top-top">
+          <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
