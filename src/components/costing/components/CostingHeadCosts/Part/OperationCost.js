@@ -24,12 +24,10 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
-  const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -43,12 +41,12 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false, props.item)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false)
       }
 
-      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      if (JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : [])) {
         dispatch(isDataChange(true))
       }
     }
@@ -131,7 +129,6 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
-    setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
     tempData = {

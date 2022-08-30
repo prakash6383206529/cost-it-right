@@ -3,8 +3,7 @@ import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import Toaster from '../../../../common/Toaster';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
@@ -72,23 +71,6 @@ function PackageCost(props) {
     setRowObjData(tempArr)
     setDrawerOpen(true)
   }
-
-  const handleSurfaceAreaChange = (event, index) => {
-    let tempArr = [];
-    let tempData = gridData[index];
-
-    if (!isNaN(event.target.value)) {
-
-      const SurfaceTreatmentCost = (checkForNull(event.target.value) * checkForNull(tempData.RatePerUOM)) + (checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity));
-      tempData = { ...tempData, SurfaceArea: parseInt(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-
-    } else {
-      Toaster.warning('Please enter valid number.')
-    }
-  }
-
   /**
   * @method render
   * @description Renders the component

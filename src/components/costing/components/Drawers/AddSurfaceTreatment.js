@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -22,10 +21,8 @@ function AddSurfaceTreatment(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
 
   const dispatch = useDispatch()
 
@@ -86,21 +83,6 @@ function AddSurfaceTreatment(props) {
     }
   }, []);
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-
-  };
-
   const onRowSelect = (row, isSelected, e) => {
 
     var selectedRows = gridApi.getSelectedRows();
@@ -116,21 +98,6 @@ function AddSurfaceTreatment(props) {
 
   }
 
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
 
   /**
   * @method addRow
@@ -150,10 +117,6 @@ function AddSurfaceTreatment(props) {
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
   }
 
   const isFirstColumn = (params) => {
@@ -207,7 +170,7 @@ function AddSurfaceTreatment(props) {
     customNoRowsOverlay: NoContentFound,
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();

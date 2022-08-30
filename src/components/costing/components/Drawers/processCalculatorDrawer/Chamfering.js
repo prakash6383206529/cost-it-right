@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
@@ -12,7 +12,7 @@ import { debounce } from 'lodash'
 
 
 function Chamfering(props) {
-  const { technology, process, calculateMachineTime } = props
+  const { calculateMachineTime } = props
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const costData = useContext(costingInfoContext);
 
@@ -30,11 +30,10 @@ function Chamfering(props) {
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
-    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     turningLength: WeightCalculatorRequest && WeightCalculatorRequest.TurningLength !== undefined ? WeightCalculatorRequest.TurningLength : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
