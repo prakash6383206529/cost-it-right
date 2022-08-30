@@ -10,7 +10,7 @@ import { createToprowObjAndSave } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function AssemblyOverheadProfit(props) {
-  const { children, item, index } = props;
+  const { item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
 

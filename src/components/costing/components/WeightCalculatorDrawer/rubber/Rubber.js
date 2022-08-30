@@ -1,7 +1,6 @@
 import React, { useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
 
@@ -51,12 +50,8 @@ function Rubber(props) {
             WeightCalculatorRequest.GrossWeight !== undefined
             ? WeightCalculatorRequest.GrossWeight
             : '',
-        inputDiameter: WeightCalculatorRequest &&
-            WeightCalculatorRequest.InputDiameter !== undefined
-            ? WeightCalculatorRequest.InputDiameter
-            : ''
     }
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,

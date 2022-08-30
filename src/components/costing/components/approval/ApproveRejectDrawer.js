@@ -10,7 +10,7 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, FILE_URL } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
-import _, { debounce } from 'lodash'
+import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -37,13 +37,11 @@ function ApproveRejectDrawer(props) {
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
   const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
   const [showError, setShowError] = useState(false)
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [initialFiles, setInitialFiles] = useState([]);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
   const [attachmentLoader, setAttachmentLoader] = useState(false)
@@ -130,6 +128,7 @@ function ApproveRejectDrawer(props) {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
+      return null
     })
     if (!IsFinalLevel) {
       if (values.length > 1) {
@@ -144,7 +143,6 @@ function ApproveRejectDrawer(props) {
           }
 
           dispatch(getAllSimulationApprovalList(obj, (res) => {
-            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
@@ -167,7 +165,7 @@ function ApproveRejectDrawer(props) {
               let valueOfAllArrays = []
               approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
                 valueOfAllArrays.push(itemmmm?.value)
-
+                return null
               })
               allObjVal.push(valueOfAllArrays)
             }
@@ -184,9 +182,10 @@ function ApproveRejectDrawer(props) {
                 if (i.value === item) {
                   listForDropdown.push(i)
                 }
+                return null
               })
+              return null
             })
-
 
             setApprovalDropDown(listForDropdown)
             count = count + 1;
@@ -293,11 +292,6 @@ function ApproveRejectDrawer(props) {
     setOpenPushButton(false)
     props.closeDrawer('', 'Cancel')
   }
-
-  const handleEffectiveDateChange = (date) => {
-    setSelectedDate(date)
-  }
-
   const onSubmit = debounce(handleSubmit(() => {
     const remark = getValues('remark')
     const reason = getValues('reason')
@@ -521,21 +515,15 @@ function ApproveRejectDrawer(props) {
       return tempDropdownList
     }
 
-
     if (label === 'Link') {
       TokensList && TokensList.map((item) => {
 
         if (item.Value === '0') return false
         tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
-
-
       })
       return tempDropdownList
     }
-
-
-
   }
 
   const handleDepartmentChange = (value) => {
@@ -929,7 +917,7 @@ function ApproveRejectDrawer(props) {
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
                               accept="*"
-                              initialFiles={initialFiles}
+                              initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>

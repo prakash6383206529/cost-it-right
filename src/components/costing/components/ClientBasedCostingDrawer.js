@@ -19,7 +19,6 @@ export function Clientbasedcostingdrawer(props) {
         props.closeDrawer('')
     };
 
-    const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
     const [attachmentLoader, setAttachmentLoader] = useState(false)
@@ -77,7 +76,6 @@ export function Clientbasedcostingdrawer(props) {
     }
 
     const Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -550,7 +548,7 @@ export function Clientbasedcostingdrawer(props) {
                                             PreviewComponent={Preview}
                                             //onSubmit={this.handleSubmit}
                                             accept="*"
-                                            initialFiles={initialFiles}
+                                            initialFiles={[]}
                                             maxFiles={4}
                                             maxSizeBytes={2000000000}
                                             inputContent={(files, extra) =>

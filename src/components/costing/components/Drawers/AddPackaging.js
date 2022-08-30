@@ -5,7 +5,6 @@ import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo'
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
-import Switch from "react-switch";
 import { useSelector } from 'react-redux';
 
 function IsolateReRender(control) {
@@ -224,18 +223,6 @@ function AddPackaging(props) {
       default:
         break;
     }
-  }
-
-  /**
-    * @method PackageTypeToggle
-    * @description PACKAGING TYPE 
-    */
-  const PackageTypeToggle = () => {
-    setValue('PackagingDescription', '')
-    setValue('PackagingCost', '')
-    setValue('PackagingCostPercentage', '')
-    setValue('Applicability', '')
-    setPackageType(!PackageType)
   }
 
   /**

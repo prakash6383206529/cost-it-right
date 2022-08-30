@@ -19,7 +19,6 @@ function ViewRM(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const [viewRM, setViewRM] = useState(viewRMData)
-  const [isSimulation, setIsSimulation] = useState(isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false))
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
@@ -207,7 +206,7 @@ function ViewRM(props) {
         </>}
 
       {
-        isAssemblyCosting && masterBatchList.length > 0 && !isSimulation &&
+        isAssemblyCosting && masterBatchList.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>

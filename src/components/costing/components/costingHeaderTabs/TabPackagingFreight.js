@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -13,7 +13,6 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave } from '../../CostingUtil';
-import { Link } from 'react-scroll';
 import { debounce } from 'lodash';
 
 function TabPackagingFreight(props) {
@@ -193,12 +192,6 @@ function TabPackagingFreight(props) {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
 
   return (
     <>

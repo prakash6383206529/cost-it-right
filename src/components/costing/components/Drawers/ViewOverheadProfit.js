@@ -3,7 +3,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
