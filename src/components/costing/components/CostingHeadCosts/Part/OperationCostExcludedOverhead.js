@@ -41,11 +41,11 @@ function OperationCostExcludedOverhead(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       } else {
-        props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : []) ? true : false)
+        props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       }
-      if (JSON.stringify(gridData) !== JSON.stringify(props.data ? props.data : [])) {
+      if (JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : [])) {
         dispatch(isDataChange(true))
       }
     }

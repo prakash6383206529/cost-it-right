@@ -23,8 +23,8 @@ function PackageCost(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
-    props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+    props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : []) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : [])) {
       dispatch(isPackageAndFreightDataChange(true))
     }
   }, [gridData]);
