@@ -901,7 +901,7 @@ function Simulation(props) {
                 </div>
             }
 
-            {loader ? <LoaderCustom /> :
+            {loader ? <LoaderCustom customClass="simulation-loader" /> :
 
                 <div className="simulation-edit">
                     {showEditTable && editMasterPage(master.value)}
