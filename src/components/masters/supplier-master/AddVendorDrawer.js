@@ -430,6 +430,7 @@ class AddVendorDrawer extends Component {
                                             title={showDataOnHover(this.state.selectedVendorType)}
                                             selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
+                                            validate={[required]}
                                             selectionChanged={this.handleVendorType}
                                             optionValue={option => option.Value}
                                             optionLabel={option => option.Text}
