@@ -652,6 +652,7 @@ class UsersListing extends Component {
 								onSelectionChanged={this.onRowSelect}
 								onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
 								rowSelection={'multiple'}
+								suppressRowClickSelection={true}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>

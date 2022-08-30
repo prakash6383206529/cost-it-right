@@ -450,6 +450,7 @@ class ReasonListing extends Component {
                   imagClass: 'imagClass pt-3'
                 }}
                 rowSelection={'multiple'}
+                suppressRowClickSelection={true}
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
