@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux'
 import { FILE_URL } from '../../../../config/constants'

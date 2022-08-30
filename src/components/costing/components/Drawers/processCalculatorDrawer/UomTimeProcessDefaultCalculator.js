@@ -80,7 +80,6 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
     const { calculateMachineTime } = props
-    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setSpindleSpeed = () => {
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
@@ -180,7 +179,6 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
-        obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
@@ -188,7 +186,6 @@ function UomTimeProcessDefaultCalculator(props) {
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
                 Toaster.success('Calculation saved sucessfully.')
-                calculateMachineTime(totalMachiningTime, obj)
             }
         }))
     }), 500);

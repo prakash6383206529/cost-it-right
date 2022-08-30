@@ -349,6 +349,7 @@ const SendForApproval = (props) => {
       tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
       temp.push(tempObj)
+      return null
     })
 
     obj.CostingsList = temp

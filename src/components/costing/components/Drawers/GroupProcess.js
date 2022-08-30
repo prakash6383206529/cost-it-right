@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
-import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
+import { getMachineProcessGroupDetail, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
 import { EMPTY_DATA, EMPTY_GUID, VBC, ZBC } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
-import { Checkbox } from "@material-ui/core";
 import NoContentFound from "../../../common/NoContentFound";
 import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
 
@@ -64,6 +63,7 @@ function GroupProcess(props) {
             if (el.GroupName === clickedData.GroupName && el.MachineId === clickedData.MachineId) {
                 removeCondition = true
             }
+            return null
         })
 
         let tempData = selectedData
@@ -90,6 +90,7 @@ function GroupProcess(props) {
             if (el.GroupName === item.GroupName && el.MachineId === item.MachineId) {
                 result = true
             }
+            return null
         })
         return result
     }

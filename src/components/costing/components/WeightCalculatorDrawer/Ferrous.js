@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
@@ -12,7 +11,6 @@ import { debounce } from 'lodash'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
-    const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
     const { ferrousCalculatorReset } = useSelector(state => state.costing)
 
@@ -27,11 +25,9 @@ function Ferrous(props) {
         scrapCost: WeightCalculatorRequest && checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
         NetRMCost: WeightCalculatorRequest && checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     }
-
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const [isDisable, setIsDisable] = useState(false)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -110,6 +106,7 @@ function Ferrous(props) {
         let sum = 0
         rmData && rmData.map((item, index) => {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
+            return null
         })
         return sum;
     }
@@ -229,6 +226,7 @@ function Ferrous(props) {
                 RMName: item.RMName, RMRate: item.RMRate, ScrapRate: item.ScrapRate, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000", Percentage: getValues(`${rmGridFields}.${index}.Percentage`)
                 , GrossWeight: item.GrossWeight, ScrapWeight: item.ScrapWeight, FinishWeight: item.FinishWeight,
             })
+            return null
         })
         obj.CostingFerrousCalculationRawMaterials = tempArray
         dispatch(saveRawMaterialCalculationForFerrous(obj, res => {
@@ -540,7 +538,7 @@ function Ferrous(props) {
                         <button
                             type="button"
                             onClick={onSubmit}
-                            disabled={props.CostingViewMode || isDisable ? true : false}
+                            disabled={props.CostingViewMode ? true : false}
                             className="btn-primary save-btn"
                         >
                             <div className={'save-icon'}>
