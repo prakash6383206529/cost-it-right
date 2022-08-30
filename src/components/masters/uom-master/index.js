@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
@@ -51,7 +51,8 @@ class UOMMaster extends Component {
       showPopup: false,
       deletedId: '',
       isLoader: false,
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -295,7 +296,7 @@ class UOMMaster extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
+    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility, noData } = this.state;
 
 
     const isFirstColumn = (params) => {
@@ -365,11 +366,12 @@ class UOMMaster extends Component {
           <Row>
             <Col>
 
-              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper  ${(this.state.dataList && this.state.dataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -381,6 +383,7 @@ class UOMMaster extends Component {
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                     }}

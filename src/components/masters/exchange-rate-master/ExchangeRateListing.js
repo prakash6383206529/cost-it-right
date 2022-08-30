@@ -11,7 +11,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -54,7 +54,8 @@ class ExchangeRateListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -331,7 +332,7 @@ class ExchangeRateListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, AddAccessibility, DownloadAccessibility } = this.state;
+        const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData } = this.state;
 
         if (toggleForm) {
             return (
@@ -408,9 +409,10 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 
                             <div className="ag-theme-material">
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -422,6 +424,7 @@ class ExchangeRateListing extends Component {
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'

@@ -88,7 +88,7 @@ class AddMachineTypeDrawer extends Component {
   labourHandler = (e, option) => {
 
     if (this.state.labourIdFromTable.includes(option.removedValue && option.removedValue.Value)) {
-      Toaster.warning("This labour type is exist in the table");
+      Toaster.warning("This labour type exist in the table");
       return;
     }
 
