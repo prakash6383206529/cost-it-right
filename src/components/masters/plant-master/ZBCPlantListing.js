@@ -434,6 +434,7 @@ class ZBCPlantListing extends Component {
                                 imagClass: 'imagClass'
                             }}
                             rowSelection={'multiple'}
+                            suppressRowClickSelection={true}
                             onSelectionChanged={this.onRowSelect}
                             onFilterModified={this.onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
