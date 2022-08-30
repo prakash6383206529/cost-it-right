@@ -66,6 +66,7 @@ function ApprovalListing(props) {
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
+  const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
@@ -84,6 +85,9 @@ function ApprovalListing(props) {
   useEffect(() => {
     if (approvalGridData?.length > 0) {
       setTotalRecordCount(approvalGridData[0].TotalRecordCount)
+    }
+    else {
+      setNoData(false)
     }
 
   }, [approvalGridData])
@@ -163,7 +167,7 @@ function ApprovalListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
-
+    if ((isDashboard ? approvalList : approvalListDraft)?.length !== 0 || (isDashboard ? approvalList : approvalListDraft)?.length !== 0) setNoData(true)
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
@@ -765,13 +769,12 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? approvalList && approvalList?.length <= 0 ? "overlay-contain" : "" : approvalListDraft && approvalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
-                      <div
-                        className="ag-theme-material"
-                      >
+                      <div className="ag-theme-material">
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                         <AgGridReact
                           floatingFilter={true}
                           style={{ height: '100%', width: '100%' }}

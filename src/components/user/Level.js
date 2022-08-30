@@ -644,7 +644,6 @@ class Level extends Component {
                             handleChangeDescription={this.levelHandler}
                             valueDescription={this.state.level}
                           />
-                          {console.log(this.state.level, "this.state.level")}
                         </div>
                         <div className="text-right mt-0 col-md-12">
                           <button

@@ -1023,3 +1023,14 @@ export const onFocus = (thisRef, dateFocus) => {
   }
   return temp
 }
+
+export const searchNocontentFilter = (value, data) => {
+
+  let temp = data
+  if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
+    temp = true
+  } else {
+    temp = false
+  }
+  return temp;
+}

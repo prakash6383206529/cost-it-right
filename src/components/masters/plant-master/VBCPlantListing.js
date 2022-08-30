@@ -48,6 +48,7 @@ class VBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
+            noData: false
 
         }
     }
@@ -133,7 +134,17 @@ class VBCPlantListing extends Component {
             </>
         )
     }
+    onFloatingFilterChanged = (value) => {
+        if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
 
+            this.setState({ noData: true })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
+        } else {
+            this.setState({ noData: false })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
+        }
+
+    }
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
             Id: row.PlantId,
@@ -420,7 +431,7 @@ class VBCPlantListing extends Component {
     }
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isEditFlag, isOpenVendor, } = this.state;
+        const { isEditFlag, isOpenVendor, noData } = this.state;
 
         const defaultColDef = {
             resizable: true,
@@ -473,11 +484,12 @@ class VBCPlantListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -490,6 +502,7 @@ class VBCPlantListing extends Component {
                             gridOptions={gridOptions}
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
+                            onFilterModified={this.onFloatingFilterChanged}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'

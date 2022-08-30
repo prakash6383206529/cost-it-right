@@ -49,7 +49,8 @@ class ZBCPlantListing extends Component {
             showPopupToggle: false,
             isViewMode: false,
             isLoader: false,
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -317,6 +318,16 @@ class ZBCPlantListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
+    onFloatingFilterChanged = (value) => {
+        if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
+
+            this.setState({ noData: true })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
+        } else {
+            this.setState({ noData: false })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
+        }
+    }
 
     resetState() {
         this.state.gridApi.deselectAll()
@@ -332,7 +343,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor } = this.state;
+        const { isEditFlag, isOpenVendor, noData } = this.state;
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -401,11 +412,12 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -423,6 +435,7 @@ class ZBCPlantListing extends Component {
                             }}
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
+                            onFilterModified={this.onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>

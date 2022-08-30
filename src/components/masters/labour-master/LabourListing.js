@@ -13,7 +13,7 @@ import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -61,7 +61,8 @@ class LabourListing extends Component {
       isLoader: false,
       showPopup: false,
       deletedId: '',
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -395,6 +396,7 @@ class LabourListing extends Component {
       AddAccessibility,
       BulkUploadAccessibility,
       DownloadAccessibility,
+      noData
     } = this.state
 
     if (toggleForm) {
@@ -498,11 +500,12 @@ class LabourListing extends Component {
             </Row>
           </form>
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.labourDataList && this.props.labourDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.labourDataList && this.props.labourDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -513,6 +516,7 @@ class LabourListing extends Component {
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
