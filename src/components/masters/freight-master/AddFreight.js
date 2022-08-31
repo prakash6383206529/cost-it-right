@@ -452,7 +452,7 @@ class AddFreight extends Component {
           label: tempData.RateCriteria,
           value: tempData.RateCriteria,
         },
-        effectiveDate: tempData.EffectiveDate,
+        effectiveDate: DayTime(tempData?.EffectiveDate).isValid() && tempData?.EffectiveDate !== null ? new Date(DayTime(tempData.EffectiveDate).format("MM/DD/YYYY")) : "",
       },
       () => this.props.change("Rate", tempData.Rate)
     );
