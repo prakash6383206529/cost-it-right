@@ -603,11 +603,8 @@ class OperationListing extends Component {
         temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
-            } else if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            } else if (item.Plants === '-') {
+            }
+            else if (item.Plants === '-') {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
