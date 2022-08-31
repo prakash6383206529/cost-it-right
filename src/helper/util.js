@@ -1032,7 +1032,6 @@ export const searchNocontentFilter = (value, data) => {
 
 //FOR RESETING CUSTOM TABLE SCROLL
 export const scrollReset = (ID) => {
-  console.log('ID: ', ID);
 
   let temp = document.getElementById(ID);
   temp.scrollLeft = 0;
