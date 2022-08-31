@@ -34,10 +34,9 @@ function SlotCutting(props) {
     doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
-    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -56,9 +55,8 @@ function SlotCutting(props) {
     onSpeedChange()
   }, [fieldValues])
 
-  const trimValue = getConfigurationKey()
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
-  const { technology, process, calculateMachineTime } = props
+  const { calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
   const [isDisable, setIsDisable] = useState(false)

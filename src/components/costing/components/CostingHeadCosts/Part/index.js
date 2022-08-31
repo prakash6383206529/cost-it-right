@@ -8,7 +8,6 @@ import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
   setComponentDiscountOtherItemData,
   saveAssemblyPartRowCostingCalculation,
-  setAllCostingInArray,
   isDataChange,
   savePartNumber,
   setPartNumberArrayAPICALL,
@@ -22,8 +21,6 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../../CostingUtil';
-import DayTime from '../../../../common/DayTimeWrapper';
-import _ from 'lodash';
 
 
 function PartCompoment(props) {
@@ -33,7 +30,6 @@ function PartCompoment(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
-  const [openForAccordian, setOpenForAccordian] = useState(false);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
 
@@ -116,10 +112,6 @@ function PartCompoment(props) {
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && item.IsOpen && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
-      const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
       let requestData = {

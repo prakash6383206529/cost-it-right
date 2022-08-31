@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
@@ -16,7 +15,7 @@ import { debounce } from 'lodash'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag, item, CostingViewMode } = props
+    const { rmRowData, item, CostingViewMode } = props
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -39,8 +38,6 @@ function Coil(props) {
                 break;
         }
     }
-
-    const costData = useContext(costingInfoContext)
 
     const defaultValues = {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
@@ -71,7 +68,6 @@ function Coil(props) {
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
     })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
-    const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
     const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
@@ -250,7 +246,6 @@ function Coil(props) {
         setUOMDimension(value)
         let grossWeight = GrossWeight
         // let finishWeight = FinishWeightOfSheet
-        setUnit(value.label)
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeight, value.label) }))
         setTimeout(() => {
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))

@@ -46,6 +46,7 @@ function AssemblySurfaceTreatment(props) {
           array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
@@ -91,6 +92,7 @@ function AssemblySurfaceTreatment(props) {
         SubAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {

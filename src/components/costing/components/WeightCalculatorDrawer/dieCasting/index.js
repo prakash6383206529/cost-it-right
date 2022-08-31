@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import {
   Row,
   Col,
@@ -8,10 +7,8 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Container,
 } from 'reactstrap'
 import classnames from 'classnames'
-import Drawer from '@material-ui/core/Drawer'
 import NonFerrous from './NonFerrous'
 
 
@@ -31,19 +28,6 @@ function NonFerrousCalculator(props) {
     }
   }
   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
-  /**
-   * @method toggleDrawer
-   * @description TOGGLE DRAWER
-   */
-  const toggleDrawer = (event, weightData = {}) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return
-    }
-    props.closeDrawer('', weightData)
-  }
 
   /**
    * @method toggle

@@ -152,9 +152,10 @@ function AddProcess(props) {
 
     if (isTabSwitch) {
       selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
-        if (item.ProcessId == rowData.ProcessId && item.MachineRateId == rowData.MachineRateId) {
+        if (item.ProcessId === rowData.ProcessId && item.MachineRateId === rowData.MachineRateId) {
           Execute = false
         }
+        return null
       })
     }
 
@@ -240,9 +241,10 @@ function AddProcess(props) {
 
     if (selectedRowData?.length > 0) {
       selectedRowData.map((item) => {
-        if (item.ProcessId == props.node.data.ProcessId && item.MachineRateId == props.node.data.MachineRateId) {
+        if (item.ProcessId === props.node.data.ProcessId && item.MachineRateId === props.node.data.MachineRateId) {
           props.node.setSelected(true)
         }
+        return null
       })
       return cellValue
     } else {

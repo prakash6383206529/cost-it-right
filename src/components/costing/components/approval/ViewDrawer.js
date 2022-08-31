@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Row, Col } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { APPROVED, PENDING, REJECTED } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
