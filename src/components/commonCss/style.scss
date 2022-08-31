@@ -8626,3 +8626,13 @@ padding-bottom: 3px;
     white-space: nowrap;
   }
 }
+
+.assembly-wise-impact-header {
+  display: grid;
+  grid-template-columns: max-content max-content max-content auto;
+  grid-gap: 5px;
+  align-items: center;
+  .text-warning {
+    justify-content: flex-end !important;
+  }
+}

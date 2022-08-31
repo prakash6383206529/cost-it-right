@@ -14,6 +14,7 @@ import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PaginationWrapper } from '../../common/commonPagination';
+import WarningMessage from '../../common/WarningMessage';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -116,21 +117,22 @@ function AssemblyWiseImpactSummary(props) {
         <div className={`ag-grid-react `}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
-                <Col className="mb-3">
-                    <div className="ag-grid-header">
-                        <input type="text" className="form-control mr-1 table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                <Col>
+                    <div className="ag-grid-header assembly-wise-impact-header">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
                         <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
-                            <button type="button" className={'user-btn mr5 ml-2'}><div className="download mr-0" title="Download"></div>
+                            <button type="button" className={'user-btn'}><div className="download mr-0" title="Download"></div>
                                 {/* DOWNLOAD */}
                             </button>}>
                             {onBtExport()}
                         </ExcelFile>
+                        <WarningMessage dClass="mt-2" message={"Some of the parts are present at different BOM levels. (child part, sub-assemblies)"} />
+
                     </div>
-                    <div>
-                    </div>
+
                 </Col>
             </Row>
             <Row>
