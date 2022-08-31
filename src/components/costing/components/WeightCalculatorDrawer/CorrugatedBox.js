@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../actions/CostWorking'
@@ -42,8 +41,6 @@ function CorrugatedBox(props) {
             reValidateMode: 'onChange',
             defaultValues: defaultValues,
         })
-
-    const costData = useContext(costingInfoContext)
 
     const fieldValues = useWatch({
         control,

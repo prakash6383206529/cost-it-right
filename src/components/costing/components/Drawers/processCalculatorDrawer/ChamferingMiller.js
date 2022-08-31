@@ -35,7 +35,7 @@ function ChamferingMiller(props) {
     toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
 
   }
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -55,8 +55,7 @@ function ChamferingMiller(props) {
 
 
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
-  const isEditFlag = WeightCalculatorRequest ? true : false
-  const { technology, process, calculateMachineTime } = props
+  const { calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
   const [isDisable, setIsDisable] = useState(false)

@@ -122,6 +122,9 @@ a:hover {
   opacity: 0.5;
     cursor: default;
 }
+.zindex-2 {
+  z-index: 2;
+}
 
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
@@ -2987,5 +2990,44 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
         min-height: calc(100vh - 385px) !important;
       }
     }
+  }
+}
+.custom-select-grid {
+  margin: 0 2px;
+  position: relative;
+  select {
+    padding: 5px;
+    border-color: $borderColor;
+    width: 100%;
+    border-radius: 4px;
+    color: $grid-font;
+    option {
+      color: $grid-font;
+      font-size: 14px;
+      color: $grid-font;
+      // padding:5px;
+      display: block;
+    }
+    &:focus {
+      box-shadow: 0 0 5px $inputBorderFocusColor !important;
+      border: 1px solid $inputBorderFocusColor !important;
+      animation-name: example;
+      animation-duration: 0.3s;
+    }
+  }
+  .chevron:before {
+    border-style: solid;
+    border-color: #959cb6;
+    border-width: 0.18em 0.18em 0 0;
+    content: "";
+    display: inline-block;
+    height: 0.65em;
+    position: absolute;
+    top: 0.55em;
+    transform: rotate(135deg);
+    vertical-align: top;
+    width: 0.65em;
+    background-color: #ffff;
+    right: 6px;
   }
 }

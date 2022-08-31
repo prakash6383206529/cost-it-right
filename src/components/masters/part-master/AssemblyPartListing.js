@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,7 +46,8 @@ class AssemblyPartListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -274,6 +276,7 @@ class AssemblyPartListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
+
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -290,7 +293,7 @@ class AssemblyPartListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpenVisualDrawer, isBulkUpload } = this.state;
+        const { isOpenVisualDrawer, isBulkUpload, noData } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
@@ -364,11 +367,12 @@ class AssemblyPartListing extends Component {
                 </Row>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.partsListing && this.props.partsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             style={{ height: '100%', width: '100%' }}
                             defaultColDef={defaultColDef}
@@ -387,6 +391,7 @@ class AssemblyPartListing extends Component {
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
+                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                         >
                             <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                             <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>

@@ -9,7 +9,7 @@ import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -39,7 +39,8 @@ class DepartmentsListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      noData: false
 
     }
   }
@@ -199,7 +200,7 @@ class DepartmentsListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
+    const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = this.state;
 
     const defaultColDef = {
       resizable: true,
@@ -242,11 +243,12 @@ class DepartmentsListing extends Component {
 
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -259,6 +261,7 @@ class DepartmentsListing extends Component {
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'

@@ -954,12 +954,11 @@ function Simulation(props) {
                 </div >
             }
 
-            {
-                loader ? <LoaderCustom customClass="simulation-Loader" /> :
+            {loader ? <LoaderCustom customClass="simulation-loader" /> :
 
-                    <div className="simulation-edit">
-                        {showEditTable && editMasterPage(master.value)}
-                    </div>
+                <div className="simulation-edit">
+                    {showEditTable && editMasterPage(master.value)}
+                </div>
             }
             {
                 showUploadDrawer &&

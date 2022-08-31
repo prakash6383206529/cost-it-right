@@ -59,6 +59,7 @@ const SendForApproval = (props) => {
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   const [costingIdArray, setCostingIdArray] = useState([])
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [effectiveDate, setEffectiveDate] = useState('')
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -423,6 +424,7 @@ const SendForApproval = (props) => {
       tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
       temp.push(tempObj)
+      return null
     })
 
     obj.CostingsList = temp
@@ -449,7 +451,9 @@ const SendForApproval = (props) => {
   const handleChangeQuantity = (e) => {
   };
 
-  useEffect(() => { }, [viewApprovalData])
+  useEffect(() => {
+    viewApprovalData && viewApprovalData.map(item => setEffectiveDate(item.effectiveDate !== "" ? DayTime(item.effectiveDate).format('DD/MM/YYYY') : ""))
+  }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
     if (
@@ -540,6 +544,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
+
   return (
     <Fragment>
       <Drawer
@@ -711,7 +716,7 @@ const SendForApproval = (props) => {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
-                              <TooltipCustom tooltipText="The current impact is calculated based on the data present in the volume master." />
+                              <TooltipCustom tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                               <label>Annual Impact</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}

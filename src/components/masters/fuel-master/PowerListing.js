@@ -22,7 +22,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from 
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
@@ -49,7 +49,8 @@ class PowerListing extends Component {
       showPopup: false,
       deletedId: '',
       isLoader: false,
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -335,7 +336,7 @@ class PowerListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
     var filterParams = {
@@ -463,12 +464,13 @@ class PowerListing extends Component {
           <Col>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.powerDataList && this.props.powerDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -486,6 +488,7 @@ class PowerListing extends Component {
                       imagClass: 'imagClass power-listing'
                     }}
                     rowSelection={'multiple'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >

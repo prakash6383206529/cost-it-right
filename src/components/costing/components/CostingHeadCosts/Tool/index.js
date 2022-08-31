@@ -46,7 +46,6 @@ function Tool(props) {
   });
 
   const [gridData, setGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
-  const [OldGridData, setOldGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -61,7 +60,7 @@ function Tool(props) {
 
 
   useEffect(() => {
-    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : []) ? true : false)
 
   }, [gridData]);
 

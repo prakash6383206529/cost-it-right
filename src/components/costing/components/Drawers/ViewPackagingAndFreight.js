@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
@@ -10,9 +10,6 @@ function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
   const { isPDFShow } = props
-
-  const [viewPackaging, setViewPackaging] = useState(packagingData)
-  const [viewFrieght, setViewFrieght] = useState(freightData)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -52,8 +49,8 @@ function ViewPackagingAndFreight(props) {
               </tr>
             </thead>
             <tbody>
-              {viewPackaging &&
-                viewPackaging.map((item, index) => {
+              {packagingData &&
+                packagingData.map((item, index) => {
                   return (
                     <tr key={index}>
                       <td>
@@ -69,7 +66,7 @@ function ViewPackagingAndFreight(props) {
                     </tr>
                   )
                 })}
-              {viewPackaging && viewPackaging.length === 0 && (
+              {packagingData && packagingData.length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />
@@ -104,8 +101,8 @@ function ViewPackagingAndFreight(props) {
               </tr>
             </thead>
             <tbody>
-              {viewFrieght &&
-                viewFrieght.map((item, index) => {
+              {freightData &&
+                freightData.map((item, index) => {
                   return (
                     <tr key={index}>
                       <td>{item.FreightType ? item.FreightType : '-'}</td>
@@ -118,7 +115,7 @@ function ViewPackagingAndFreight(props) {
                     </tr>
                   )
                 })}
-              {viewFrieght?.length === 0 && (
+              {freightData?.length === 0 && (
                 <tr>
                   <td colSpan={9}>
                     <NoContentFound title={EMPTY_DATA} />
@@ -163,7 +160,7 @@ function ViewPackagingAndFreight(props) {
         </Container>
       </Drawer> : <>
         <div>{freightData?.length !== 0 && freightTableData()}</div>
-        <div>{viewPackaging?.length !== 0 && packageTableData()}</div>
+        <div>{packagingData?.length !== 0 && packageTableData()}</div>
       </>}
     </>
   )

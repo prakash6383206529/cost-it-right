@@ -50,6 +50,7 @@ import {
   GET_UOM_SELECTLIST_BY_UNITTYPE,
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
+  STATUS_COLUMN_DATA,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
@@ -1525,9 +1526,7 @@ export function getAllCity(callback) {
   }
 }
 
-
 export function getPartSelectList(callback) {
-
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPartSelectLists}`, config());
@@ -1540,4 +1539,20 @@ export function getPartSelectList(callback) {
       apiErrors(error);
     });
   };
+}
+
+
+export function agGridStatus(data, id) {
+  let obj = {
+    data: data,
+    id: id
+  }
+  return (dispatch) => {
+    dispatch({
+      type: STATUS_COLUMN_DATA,
+      payload: obj,
+    })
+
+  }
+
 }

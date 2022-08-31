@@ -16,11 +16,11 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { EMPTY_GUID, VBC } from '../../../../config/constants'
-import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
+import { ErrorMessage } from '../../../simulation/SimulationUtils'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state

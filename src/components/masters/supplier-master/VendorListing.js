@@ -16,7 +16,7 @@ import {
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -76,6 +76,7 @@ class VendorListing extends Component {
             globalTake: defaultPageSize,
             disableFilter: true,
             disableDownload: false,
+            noData: false
         }
     }
 
@@ -93,7 +94,9 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
+        if (this.props.supplierDataList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -104,10 +107,6 @@ class VendorListing extends Component {
         onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
-    resetState = () => {
-        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
-
-    }
 
     onBtPrevious = () => {
         onBtPrevious(this, "Vendor")       //COMMON PAGINATION FUNCTION
@@ -161,6 +160,7 @@ class VendorListing extends Component {
         let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             this.setState({ isLoader: false })
+            this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ totalRecordCount: 0 })
 
@@ -472,7 +472,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        window.screen.width >= 1367 && this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1367 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -481,7 +481,11 @@ class VendorListing extends Component {
         onPageSizeChanged(this, newPageSize, "Vendor", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
-
+    resetState = () => {
+        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
@@ -543,7 +547,7 @@ class VendorListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -579,7 +583,7 @@ class VendorListing extends Component {
                     </Col>
                 </Row>
                 {this.state.isLoader && <LoaderCustom />}
-                <Row className="pt-4 no-filter-row">
+                <Row className="pt-4 no-filter-row zindex-2">
                     <Col md="12">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div className="warning-message d-flex align-items-center">
@@ -634,11 +638,12 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -666,8 +671,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="120" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" minWidth={"160"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
 
