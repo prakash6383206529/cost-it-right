@@ -155,7 +155,7 @@ function AssemblyWiseImpact(props) {
                             </button>}>
                             {onBtExport()}
                         </ExcelFile>
-                        <WarningMessage dClass="mt-2" message={"Some of the parts are present at different BOM levels. (child part, sub-assemblies)"} />
+                        <WarningMessage dClass="mt-2" message={"Some of the parts are present at different BOM levels (child part, sub-assemblies)."} />
                     </div>
                 </Col>
             </Row>
