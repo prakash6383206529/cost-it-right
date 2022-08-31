@@ -210,11 +210,7 @@ class FreightListing extends Component {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData && TempData.map((item) => {
-      if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
+      if (item.VendorName === '-') {
         item.VendorName = ' '
       }
       return item
@@ -361,7 +357,7 @@ class FreightListing extends Component {
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
