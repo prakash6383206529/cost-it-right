@@ -16,6 +16,7 @@ function UomTimeProcessDefaultCalculator(props) {
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
     let TotalCycleTimeSecGlobal = 0
 
     const defaultValues = {
@@ -180,12 +181,14 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
         obj.MachineRate = props.calculatorData.MHR
+        obj.TotalMachiningTime = totalMachiningTime
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
                 Toaster.success('Calculation saved sucessfully.')
+                calculateMachineTime(totalMachiningTime, obj)
             }
         }))
     }), 500);
