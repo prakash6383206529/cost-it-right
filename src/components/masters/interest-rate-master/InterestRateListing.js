@@ -317,11 +317,8 @@ class InterestRateListing extends Component {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
         item.PaymentTermPercent = ' '
-      } else if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
+      }
+      else if (item.VendorName === '-') {
         item.VendorName = ' '
       }
       return item
@@ -487,7 +484,7 @@ class InterestRateListing extends Component {
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
-                <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
