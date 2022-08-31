@@ -8284,6 +8284,7 @@ body {
 .simulation-labels {
   display: flex;
   align-items: center;
+
   .flex-fills.label {
     min-width: fit-content !important;
   }
@@ -8710,5 +8711,16 @@ table.group-process-table {
     text-overflow: ellipsis;
     max-width: 100%;
     white-space: nowrap;
+  }
+}
+
+.assembly-wise-impact-header {
+  display: grid;
+  grid-template-columns: max-content max-content max-content auto;
+  grid-gap: 5px;
+  align-items: center;
+
+  .text-warning {
+    justify-content: flex-end !important;
   }
 }
