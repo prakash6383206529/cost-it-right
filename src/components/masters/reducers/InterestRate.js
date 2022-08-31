@@ -57,20 +57,10 @@ export default function InterestRateReducer(state = initialState, action) {
                 iccApplicabilitySelectList: action.payload
             };
         case GET_INTEREST_RATE_DATA_LIST:
-            let arr = []
-            arr = action.payload && action.payload.filter((el, i) => {
-                if (el.IsVendor === true) {
-                    el.IsVendor = "Vendor Based"
-                } else {
-                    el.IsVendor = "Zero Based"
-                }
-                return true
-            })
-
             return {
                 ...state,
                 loading: false,
-                interestRateDataList: arr
+                interestRateDataList: action.payload
             }
         default:
             return state;

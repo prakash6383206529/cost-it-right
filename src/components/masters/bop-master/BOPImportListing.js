@@ -58,7 +58,7 @@ class BOPImportListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -444,11 +444,7 @@ class BOPImportListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.IsVendor === true) {
-                item.IsVendor = 'Vendor Based'
-            } if (item.IsVendor === false) {
-                item.IsVendor = 'Zero Based'
-            } if (item.Plants === '-') {
+            if (item.Plants === '-') {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
@@ -685,7 +681,7 @@ class BOPImportListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>

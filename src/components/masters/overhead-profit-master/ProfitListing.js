@@ -289,13 +289,8 @@ class ProfitListing extends Component {
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
-            } if (item.TypeOfHead === 'VBC') {
-                item.TypeOfHead = 'Vendor Based'
-            } if (item.TypeOfHead === 'ZBC') {
-                item.TypeOfHead = 'Zero Based'
-            } if (item.TypeOfHead === 'CBC') {
-                item.TypeOfHead = 'Client Based'
-            } if (item.ClientName === null) {
+            }
+            if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.ProfitBOPPercentage === null) {
                 item.ProfitBOPPercentage = ' '
@@ -441,7 +436,7 @@ class ProfitListing extends Component {
                                     onSelectionChanged={this.onRowSelect}
                                     onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* MAY BE USED LATER */}
                                     {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
