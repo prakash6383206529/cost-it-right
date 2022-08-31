@@ -76,23 +76,18 @@ class valuesFloatingFilter extends Component {
 
     render() {
         return (
-            // <input type="range"
-            //     value={this.state.currentValue}
-            //     min={0}
-            //     max={this.state.maxValue}
-            //     step={1}
-            //     onChange={this.valueChanged} />
-
-            <select name="status" id="status" onChange={this.valueChanged} >
-                <option value="0"> Select</option>
-
-                {this.state.dropdownData && this.state.dropdownData.map((item) => {
-                    return (
-                        <option value={item.Text}> {item.Text}</option>
-                    )
-                })
-                }
-            </select >
+            <div className="custom-select-grid">
+                <span className="chevron"></span>
+                <select name="status" id="status" onChange={this.valueChanged} >
+                    <option value="0">Select</option>
+                    {this.state.dropdownData && this.state.dropdownData.map((item) => {
+                        return (
+                            <option value={item.Text}> {item.Text}</option>
+                        )
+                    })
+                    }
+                </select>
+            </div>
         )
     }
 }
