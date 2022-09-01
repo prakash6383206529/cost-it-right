@@ -300,8 +300,8 @@ function SurfaceTreatment(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-right">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-right bluefooter-butn">
                   <button
                     type={'button'}
                     className="reset mr5 cancel-btn"
