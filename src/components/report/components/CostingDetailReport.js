@@ -58,6 +58,7 @@ function ReportListing(props) {
     const [disableDownload, setDisableDownload] = useState(false)
     const [disableDownloadSap, setDisableDownloadSap] = useState(false)
     const [disableDownloadEncode, setDisableDownloadEncode] = useState(false)
+    const [departmentCodeFilter, setDepartmentCodeFilter] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -305,8 +306,15 @@ function ReportListing(props) {
                 setLoader(false)
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
-                        if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
-                            isReset = false
+
+                        if (departmentCodeFilter) {
+                            if (floatingFilterData[prop] !== "") {
+                                isReset = false
+                            }
+                        } else {
+                            if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
+                                isReset = false
+                            }
                         }
                     }
                     // Sets the filter model via the grid API
@@ -319,6 +327,7 @@ function ReportListing(props) {
 
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
+                    setDepartmentCodeFilter(false)
                 }, 600);
             }
 
@@ -405,6 +414,10 @@ function ReportListing(props) {
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
+            if (value?.filterInstance?.appliedModel === "DepartmentCode") {
+                setDepartmentCodeFilter(false)
+            }
+
             if (!filterClick) {
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: "" })                                                         // DYNAMICALLY SETTING KEY:VALUE PAIRS IN OBJECT THAT WE ARE RECEIVING FROM THE FLOATING FILTER
             }
@@ -421,6 +434,7 @@ function ReportListing(props) {
             if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
             } else {
+                setDepartmentCodeFilter(true)
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
             }
         }

@@ -219,7 +219,7 @@ function RMImportListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+              if (!(isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant)) {
                 if (floatingFilterData[prop] !== "") {
                   isReset = false
                 }
