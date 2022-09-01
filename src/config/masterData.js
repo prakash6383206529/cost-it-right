@@ -3033,7 +3033,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
     { label: "Technology", value: "TechnologyName" },
     { label: "Plant(Code)", value: "Plant", },
-    { label: "Vendor(Code)", value: "Plant", },
+    { label: "Vendor(Code)", value: "Vendor", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
