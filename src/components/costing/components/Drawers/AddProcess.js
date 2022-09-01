@@ -323,7 +323,7 @@ function AddProcess(props) {
                 </Col>
               </Row>
               <Row>
-                <Col className='px-3'>
+                <Col className="hidepage-size">
                   {processGroup && groupMachineId === '' && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
@@ -351,8 +351,7 @@ function AddProcess(props) {
                     {activeTab === '1' && (
                       <TabPane tabId="1">
                         <Row className="mx-0">
-                          <Col className="hidepage-size mt-2 px-0">
-
+                          <Col className="pt-2 px-0">
                             <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -414,8 +413,8 @@ function AddProcess(props) {
               </Row>
 
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left d-flex justify-content-end">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-left d-flex justify-content-end bluefooter-butn">
                   <button
                     type={'button'}
                     className="reset cancel-btn mr5"
