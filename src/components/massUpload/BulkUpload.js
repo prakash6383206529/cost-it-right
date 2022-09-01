@@ -21,7 +21,7 @@ import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import Downloadxls, { checkLabourRateConfigure, checkVendorPlantConfig } from './Downloadxls';
+import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
 import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
@@ -119,7 +119,7 @@ class BulkUpload extends Component {
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC), fileHeads)
                             }
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC), fileHeads)
@@ -128,7 +128,7 @@ class BulkUpload extends Component {
                         case String(RMIMPORTBULKUPLOAD):
 
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads)
                             }
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC), fileHeads)
@@ -167,7 +167,7 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC), fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(MHRMoreZBC), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
@@ -477,14 +477,14 @@ class BulkUpload extends Component {
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
-        if (faildRecords) {
-            return <Downloadxls
-                isFailedFlag={true}
-                fileName={fileName}
-                failedData={failedData}
-                costingHead={costingHead}
-            />
-        }
+        // if (faildRecords) {
+        //     return <Downloadxls
+        //         isFailedFlag={true}
+        //         fileName={fileName}
+        //         failedData={failedData}
+        //         costingHead={costingHead}
+        //     />
+        // }
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}
