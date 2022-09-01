@@ -545,13 +545,10 @@ class VendorListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-
         const isFirstColumn = (params) => {
-
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
             var thisIsFirstColumn = displayedColumns[0] === params.column;
             return thisIsFirstColumn;
