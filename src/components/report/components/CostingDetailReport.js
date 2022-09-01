@@ -15,9 +15,10 @@ import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/const
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
+import valuesFloatingFilter from '../../masters/material-master/valuesFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -52,8 +53,10 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [noData, setNoData] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -80,6 +83,27 @@ function ReportListing(props) {
         minValidYear: 2000,
     };
 
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterProfit = {
+        maxValue: 2,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterRejection = {
+
+        maxValue: 3,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterIcc = {
+        maxValue: 4,
+        suppressFilterButton: true
+    }
+
     let filterClick = false
     const dispatch = useDispatch()
     const { handleSubmit, getValues } = useForm({
@@ -90,6 +114,33 @@ function ReportListing(props) {
     let reportListingData = useSelector((state) => state.report.reportListing)
     let allReportListingData = useSelector((state) => state.report.allReportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+
+    useEffect(() => {
+
+        if (statusColumnData?.data) {
+            setEnableSearchFilterButton(false)
+            setWarningMessage(true)
+
+            switch (statusColumnData?.id) {
+                case 1:
+                    setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 2:
+                    setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 3:
+                    setFloatingFilterData(prevState => ({ ...prevState, RejectionApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 4:
+                    setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                default:
+                    setFloatingFilterData(prevState => ({ ...prevState, ICCApplicability: encodeURIComponent(statusColumnData?.data) }))
+            }
+        }
+
+    }, [statusColumnData])
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -382,10 +433,11 @@ function ReportListing(props) {
 
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
-
+        setNoData(false)
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
+        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API
@@ -540,14 +592,16 @@ function ReportListing(props) {
         decimalInputOutputFormatter: decimalInputOutputFormatter,
         decimalPriceFormatter: decimalPriceFormatter,
         rmHyperLinkFormatter: rmHyperLinkFormatter,
-        remarkFormatter: remarkFormatter
+        remarkFormatter: remarkFormatter,
+        valuesFloatingFilter: valuesFloatingFilter
     };
 
     const resetState = () => {
+
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
-
+        gridApi.deselectAll()
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
@@ -645,10 +699,6 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                {renderColumn(ReportMaster)}
-                            </ExcelFile>
-
 
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
@@ -674,8 +724,9 @@ function ReportListing(props) {
                 </Row>
             </form>
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material mt-2 ${isLoader && "max-loader-height"}`}>
+                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
@@ -729,17 +780,17 @@ function ReportListing(props) {
                         <AgGridColumn field='TransportationCost' headerName='Extra Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead} ></AgGridColumn>
                         <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit} ></AgGridColumn>
                         <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
                         <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
                         <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -791,16 +842,18 @@ function ReportListing(props) {
                     isReportLoader={isReportLoader}
                 />
             }
-            {isViewRM && <ViewRM
-                isOpen={isViewRM}
-                viewRMData={viewRMData}
-                closeDrawer={closeUserDetails}
-                isAssemblyCosting={isAssemblyCosting}
-                anchor={'right'}
-                technologyId={viewCostingData[0].technologyId}
-                rmMBDetail={rmMBDetail}
-                index={0}
-            />}
+            {
+                isViewRM && <ViewRM
+                    isOpen={isViewRM}
+                    viewRMData={viewRMData}
+                    closeDrawer={closeUserDetails}
+                    isAssemblyCosting={isAssemblyCosting}
+                    anchor={'right'}
+                    technologyId={viewCostingData[0].technologyId}
+                    rmMBDetail={rmMBDetail}
+                    index={0}
+                />
+            }
         </div >
     );
 }

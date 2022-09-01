@@ -15,7 +15,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -57,7 +57,7 @@ class BOPImportListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -66,7 +66,8 @@ class BOPImportListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            noData: false
         }
     }
 
@@ -111,6 +112,7 @@ class BOPImportListing extends Component {
                 })
             }
         }, 300);
+
     }
 
     componentWillUnmount() {
@@ -146,6 +148,7 @@ class BOPImportListing extends Component {
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
         this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            this.setState({ noData: false })
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
             }
@@ -157,6 +160,7 @@ class BOPImportListing extends Component {
                 this.setState({ tableData: [] })
             } else {
                 this.setState({ tableData: [] })
+
             }
 
             if (res && isPagination === false) {
@@ -203,6 +207,9 @@ class BOPImportListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        if (this.props.bopImportList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -437,11 +444,7 @@ class BOPImportListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.IsVendor === true) {
-                item.IsVendor = 'Vendor Based'
-            } if (item.IsVendor === false) {
-                item.IsVendor = 'Zero Based'
-            } if (item.Plants === '-') {
+            if (item.Plants === '-') {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
@@ -470,7 +473,7 @@ class BOPImportListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
@@ -652,8 +655,9 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
 
@@ -679,7 +683,7 @@ class BOPImportListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>

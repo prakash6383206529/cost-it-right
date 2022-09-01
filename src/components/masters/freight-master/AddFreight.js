@@ -471,6 +471,7 @@ class AddFreight extends Component {
       if (i === index) return false;
       return true;
     });
+    this.resetGridData()
     this.setState({ gridTable: tempData });
     this.setState({ DeleteChanged: false });
   };

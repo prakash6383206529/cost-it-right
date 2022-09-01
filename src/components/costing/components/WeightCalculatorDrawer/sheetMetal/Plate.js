@@ -1,13 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React from 'react';
 import { Col, Row, } from 'reactstrap';
 
 function Plate(props) {
-
-  const { register, control } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
 
   /**
   * @method render

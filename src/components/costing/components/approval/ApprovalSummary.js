@@ -15,9 +15,7 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
-import HeaderTitle from '../../../common/HeaderTitle'
 import { EMPTY_GUID, VBC } from '../../../../config/constants'
-import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
@@ -146,11 +144,6 @@ function ApprovalSummary(props) {
     }),
 
     )
-  }
-
-  const handleApproveAndPushButton = () => {
-    setShowPushDrawer(true)
-    setApproveDrawer(true)
   }
 
   const closeDrawer = (e = '', type) => {

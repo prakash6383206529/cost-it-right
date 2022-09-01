@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA, IMPORT } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -338,7 +338,7 @@ function AddRM(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                   <button
                     type={'button'}

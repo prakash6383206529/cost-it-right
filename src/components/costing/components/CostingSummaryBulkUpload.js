@@ -4,7 +4,6 @@ import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import ReactExport from 'react-export-excel';
 import { defaultPageSize, EMPTY_DATA, REJECTED } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile, generateReport } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';

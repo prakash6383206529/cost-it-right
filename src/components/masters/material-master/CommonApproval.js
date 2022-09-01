@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper'
 import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -47,6 +47,8 @@ function CommonApproval(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    const [noData, setNoData] = useState(false)
+    console.log('noData: ss', noData);
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
@@ -106,7 +108,9 @@ function CommonApproval(props) {
         if (approvalList?.length > 0) {
             setTotalRecordCount(approvalList[0].TotalRecordCount)
         }
-
+        else {
+            setNoData(false)
+        }
     }, [approvalList])
 
 
@@ -147,6 +151,7 @@ function CommonApproval(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+        if (approvalList?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -543,6 +548,7 @@ function CommonApproval(props) {
                     valid = false
                     return false
                 }
+                return null
             })
             if (valid) {
                 setApprovalDrawer(true)
@@ -680,11 +686,12 @@ function CommonApproval(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-react`} >
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}

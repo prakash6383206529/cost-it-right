@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter } from '../../../helper';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -36,7 +37,8 @@ class FreightListing extends Component {
       isLoader: false,
       showPopup: false,
       deletedId: '',
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -208,11 +210,7 @@ class FreightListing extends Component {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData && TempData.map((item) => {
-      if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
+      if (item.VendorName === '-') {
         item.VendorName = ' '
       }
       return item
@@ -263,6 +261,7 @@ class FreightListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const ExcelFile = ReactExport.ExcelFile;
+    const { noData } = this.state;
 
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -333,11 +332,12 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.freightDetail && this.props.freightDetail?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.freightDetail && this.props.freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
@@ -348,6 +348,7 @@ class FreightListing extends Component {
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
+                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
                     imagClass: 'imagClass'
@@ -356,7 +357,7 @@ class FreightListing extends Component {
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>

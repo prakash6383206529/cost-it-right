@@ -12,7 +12,6 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { showDataOnHover } from '../../../helper';
-import _ from 'lodash';
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {
@@ -88,7 +87,7 @@ class AddMachineTypeDrawer extends Component {
   labourHandler = (e, option) => {
 
     if (this.state.labourIdFromTable.includes(option.removedValue && option.removedValue.Value)) {
-      Toaster.warning("This labour type is exist in the table");
+      Toaster.warning("This labour type exist in the table");
       return;
     }
 
