@@ -10,7 +10,6 @@ import {
   COMBINED_PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
-import { data } from 'react-dom-factories';
 import _ from 'lodash';
 
 

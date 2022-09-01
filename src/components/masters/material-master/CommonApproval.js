@@ -548,6 +548,7 @@ function CommonApproval(props) {
                     valid = false
                     return false
                 }
+                return null
             })
             if (valid) {
                 setApprovalDrawer(true)

@@ -78,7 +78,6 @@ class AddProcessDrawer extends Component {
   }
 
   checkProcessCode = (e) => {
-    const { fieldsObj } = this.props
     const value = e.target.value
     let obj = {
       processName: value,
