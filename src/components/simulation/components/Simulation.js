@@ -873,7 +873,9 @@ function Simulation(props) {
                     </Row>
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {showMasterList && renderModule(master)}
+                    {showMasterList &&
+                        <div className={`${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
+                    }
 
                     {showMasterList &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
