@@ -12,7 +12,6 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { showDataOnHover } from '../../../helper';
-import _ from 'lodash';
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {

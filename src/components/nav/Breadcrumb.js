@@ -36,16 +36,18 @@ class Breadcrumb extends Component {
 	}
 
 	render() {
-		const { secondTitle, } = this.state;
 
-		let url = this.state.secondURL;
+		/************************************MAY BE USED LATER*****************************/
+		// const { secondTitle, } = this.state;
 
-		if (secondTitle === 'Master') {
-			url = 'raw-material-master'
-		}
-		if (secondTitle === 'Additional Masters') {
-			url = 'reason-master'
-		}
+		// let url = this.state.secondURL;
+
+		// // if (secondTitle === 'Master') {
+		// // 	url = 'raw-material-master'
+		// // }
+		// // if (secondTitle === 'Additional Masters') {
+		// // 	url = 'reason-master'
+		// // }
 
 		return (
 			<div className="breadcrumbs fixed-top">

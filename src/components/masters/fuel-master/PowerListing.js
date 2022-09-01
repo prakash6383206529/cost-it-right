@@ -175,7 +175,6 @@ class PowerListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.data;
     let obj = {}
     obj.PowerId = rowData?.PowerId

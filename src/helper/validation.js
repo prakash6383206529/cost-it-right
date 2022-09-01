@@ -138,7 +138,7 @@ export const decimalNumberLimit = value =>
 
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
-    let pattern = /[0-9a-zA-Z](?=@.#%\_!\^&\*\(\)-+\=\?<>,|)/;
+    let pattern = /[0-9a-zA-Z](?=@.#%_!\^&\*\(\)-+=\?<>,|)/;
     return value && !pattern.test(value)
         ? 'Invalid field' : undefined;
 }
