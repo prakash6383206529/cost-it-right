@@ -3032,10 +3032,8 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
     { label: "Technology", value: "TechnologyName" },
-    { label: "Vendor", value: "VendorName", },
-    { label: "Vendor(Code)", value: "VendorCode", },
-    { label: "Plant", value: "PlantName", },
-    { label: "Plant(Code)", value: "PlantCode", },
+    { label: "Plant(Code)", value: "Plant", },
+    { label: "Vendor(Code)", value: "Plant", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
