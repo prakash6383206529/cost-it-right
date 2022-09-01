@@ -161,7 +161,7 @@ class AddFuel extends Component {
   };
 
   checkForSpecialCharacter = (value) => {
-    if (value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)) {
+    if (value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)) {
       return false;
     }
     return true;

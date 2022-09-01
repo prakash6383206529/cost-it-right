@@ -314,7 +314,7 @@ function RMSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }

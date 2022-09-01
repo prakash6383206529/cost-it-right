@@ -107,7 +107,6 @@ function VolumeListing(props) {
   const [data, setData] = useState({ isEditFlag: false, ID: '' });
   const [isActualBulkUpload, setIsActualBulkUpload] = useState(false);
   const [isBudgetedBulkUpload, setIsBudgetedBulkUpload] = useState(false);
-  const [viewAccessibility, setViewAccessibility] = useState(false);
   const [addAccessibility, setAddAccessibility] = useState(false);
   const [editAccessibility, setEditAccessibility] = useState(false);
   const [deleteAccessibility, setDeleteAccessibility] = useState(false);
@@ -178,7 +177,6 @@ function VolumeListing(props) {
       const accessData = Data && Data.Pages.find((el) => el.PageName === VOLUME)
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
       if (permmisionData !== undefined) {
-        setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
         setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
         setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
         setDeleteAccessibility(permmisionData && permmisionData.Delete ? permmisionData.Delete : false)

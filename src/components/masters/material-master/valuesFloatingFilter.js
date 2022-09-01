@@ -1,7 +1,4 @@
 import React, { Component } from "react";
-import { Col, Row } from "reactstrap";
-import { Field } from "redux-form";
-import { renderMultiSelectField } from "../../layout/FormInputs";
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import {

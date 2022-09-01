@@ -767,7 +767,7 @@ class AddMoreDetails extends Component {
     });
 
     const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
-    const { initialConfiguration, editDetails } = this.props
+    const { initialConfiguration } = this.props
 
     if (Object.keys(selectedPlants)?.length > 0) {
       this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
@@ -1819,8 +1819,8 @@ class AddMoreDetails extends Component {
 
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
-      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, labourType } = this.state;
+      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
