@@ -280,8 +280,7 @@ function AddBOP(props) {
                 </Col>
               </Row>
 
-
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                   <button
                     type={'button'}
