@@ -1213,7 +1213,7 @@ function TabSurfaceTreatment(props) {
                                     setSurfaceCost={setSurfaceCost}
                                     setTransportationCost={setTransportationCost}
                                     IsAssemblyCalculation={false}
-                                    subAssembId={item.CostingId}
+                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
                               )
