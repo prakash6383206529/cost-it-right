@@ -13,7 +13,6 @@ import { getConfigurationKey } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
 
 function AddToComparisonDrawer(props) {
-
   const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
@@ -43,7 +42,6 @@ function AddToComparisonDrawer(props) {
   const [costingDropdown, setCostingDropdown] = useState([])
 
   const [vendorId, setVendorId] = useState(editObject.VendorId ? editObject.VendorId : [])
-
   /* constant for checkbox rendering condition */
   const [isZbcSelected, setIsZbcSelected] = useState(true)
 
@@ -438,8 +436,6 @@ function AddToComparisonDrawer(props) {
   const handleVendorNameChange = ({ value }) => {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
-    } else {
-      this.value = value
     }
     dispatch(
       getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, value, (res) => {
@@ -456,8 +452,6 @@ function AddToComparisonDrawer(props) {
   const handleDestinationPlantNameChange = ({ value }) => {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
-    } else {
-      this.value = value
     }
     dispatch(
       getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, '00000000-0000-0000-0000-000000000000', value, (res) => {
