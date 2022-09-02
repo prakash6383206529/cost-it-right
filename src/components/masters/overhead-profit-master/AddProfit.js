@@ -282,10 +282,10 @@ class AddProfit extends Component {
     }
   };
   /** 
-   * @method handleSourceSupplierPlant
-   * @description Used handle vendor plants
+   * @method handlePlant
+   * @description Used handle plants
    */
-  handleSourceSupplierPlant = (e) => {
+  handlePlant = (e) => {
     this.setState({ selectedPlants: e })
     this.setState({ DropdownChanged: false })
   }
@@ -940,13 +940,13 @@ class AddProfit extends Component {
                           <Col md="3">
                             <Field
                               label="Plant"
-                              name="SourceSupplierPlantId"
+                              name="Plant"
                               placeholder={"Select"}
                               title={showDataOnHover(this.state.selectedPlants)}
                               selection={
                                 this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                               options={this.renderListing("plant")}
-                              selectionChanged={this.handleSourceSupplierPlant}
+                              selectionChanged={this.handlePlant}
                               validate={
                                 this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                               required={true}
