@@ -2616,7 +2616,7 @@ class AddMoreDetails extends Component {
                           <label
                             className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
                             onChange={this.handleChangeIncludeMachineRateDepreciation}
-                          > Include Machine Rate in Depreciation
+                          > Include Total Cost in Depreciation
                             <input
                               type="checkbox"
                               checked={this.state.IsIncludeMachineRateDepreciation}
