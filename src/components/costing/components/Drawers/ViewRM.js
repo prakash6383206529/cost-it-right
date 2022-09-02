@@ -6,7 +6,7 @@ import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { EMPTY_DATA, FERROUSCASTINGID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../actions/CostWorking'
@@ -59,7 +59,7 @@ function ViewRM(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -109,7 +109,14 @@ function ViewRM(props) {
       <Col md="12">
         <div className="left-border mt-4 mb-3">Raw Material</div>
       </Col>
-
+      <Col md="12">
+        {!isPDFShow && String(viewCostingData[props.index].technologyId) === FERROUSCASTINGID && <td><button
+          className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+          type={"button"}
+          disabled={(viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null) ? true : false}
+          onClick={() => { getWeightData(0) }}
+        /></td>}
+      </Col>
       <Col>
         <Table className="table cr-brdr-main" size="sm">
           <thead>
@@ -122,7 +129,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && <th>{`Calculator`}</th>}
+              {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <th>{`Calculator`}</th>}
               {/* <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th> */}
               <th>{`Burning Loss Weight`}</th>
@@ -143,7 +150,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && <td><button
+                  {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
