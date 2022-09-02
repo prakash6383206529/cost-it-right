@@ -879,11 +879,12 @@ function ReportListing(props) {
             </form>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingData && reportListingData?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 {/* <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div> */}
                 <div className="ag-theme-material" >
+                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
