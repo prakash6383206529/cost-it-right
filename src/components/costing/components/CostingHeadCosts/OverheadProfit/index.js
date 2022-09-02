@@ -331,6 +331,7 @@ function OverheadProfit(props) {
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
+          plantId: costData.plantId
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
