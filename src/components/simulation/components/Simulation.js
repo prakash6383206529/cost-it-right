@@ -921,7 +921,9 @@ function Simulation(props) {
                     </Row>
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {showMasterList && renderModule(master)}
+                    {showMasterList &&
+                        <div className={`${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
+                    }
 
                     {
                         showMasterList &&

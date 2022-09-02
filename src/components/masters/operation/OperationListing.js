@@ -564,7 +564,7 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        if (this.props.isSimulation) {
+        if (this.props.isSimulation || this.props.isMasterSummaryDrawer) {
             window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
