@@ -133,7 +133,8 @@ class AddMoreDetails extends Component {
       FuelEntryId: '',
       DataToChange: [],
       showErrorOnFocusDate: false,
-      labourDetailId: ''
+      labourDetailId: '',
+      IsIncludeMachineRateDepreciation: false
     }
     this.dropzone = React.createRef();
   }
@@ -394,7 +395,8 @@ class AddMoreDetails extends Component {
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
               powerId: Data?.PowerId,
-              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
+              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -1229,14 +1231,19 @@ class AddMoreDetails extends Component {
   */
   handleProcessCalculation = () => {
     const { fieldsObj, initialConfiguration, } = this.props
-    const { UOM } = this.state
+    const { UOM, IsIncludeMachineRateDepreciation } = this.state
 
     let MachineRate
     const OutputPerHours = checkForNull(fieldsObj?.OutputPerHours)
     const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
     // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
-    const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
-
+    let TotalMachineCostPerAnnum = 0
+    if (IsIncludeMachineRateDepreciation) {
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+    } else {
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+    }
+    // 
     if (UOM.type === TIME) {
 
       MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
@@ -1829,7 +1836,7 @@ class AddMoreDetails extends Component {
     }
 
     const { editDetails, fieldsObj } = this.props;
-    const { DataToChange } = this.state
+    const { DataToChange, IsIncludeMachineRateDepreciation } = this.state
 
     const userDetail = userDetails()
 
@@ -1912,6 +1919,7 @@ class AddMoreDetails extends Component {
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props?.processGroupApiData,
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      IsIncludeMachineCost: IsIncludeMachineRateDepreciation
       // LabourDetailId: labourType.value
     }
 
@@ -2046,6 +2054,7 @@ class AddMoreDetails extends Component {
         rowData: this.state.rowData,
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
+        IsIncludeMachineCost: IsIncludeMachineRateDepreciation
       }
 
       let obj = {}
@@ -2263,6 +2272,12 @@ class AddMoreDetails extends Component {
   DisplayMachineRateLabel = () => {
     return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
+
+  handleChangeIncludeMachineRateDepreciation = (value) => {
+    this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
+    this.handleProcessCalculation()
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -2270,7 +2285,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, IsIncludeMachineRateDepreciation } = this.state;
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -2600,17 +2615,17 @@ class AddMoreDetails extends Component {
                         <Col md="6" className='d-flex align-items-center mb-2'>
                           <label
                             className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
-                            onChange={this.onPressLoadUnload}
+                            onChange={this.handleChangeIncludeMachineRateDepreciation}
                           > Include Machine Rate in Depreciation
                             <input
                               type="checkbox"
-                              checked={this.state.IsLoadingUnloadingApplicable}
-                              disabled={isViewMode}
+                              checked={this.state.IsIncludeMachineRateDepreciation}
+                              disabled={isViewMode || this.state.processGrid?.length !== 0}
                             />
                             <span
                               className=" before-box"
-                              checked={this.state.IsLoadingUnloadingApplicable}
-                              onChange={this.onPressLoadUnload}
+                              checked={this.state.IsIncludeMachineRateDepreciation}
+                              onChange={this.handleChangeIncludeMachineRateDepreciation}
                             />
                           </label>
                         </Col>
