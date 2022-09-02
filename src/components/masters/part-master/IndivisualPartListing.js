@@ -23,7 +23,8 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper';
 import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -62,7 +63,8 @@ class IndivisualPartListing extends Component {
             globalTake: defaultPageSize,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             disableFilter: true,
-            disableDownload: false
+            disableDownload: false,
+            noData: false
         }
     }
 
@@ -74,7 +76,7 @@ class IndivisualPartListing extends Component {
         let object = { ...this.state.floatingFilterData }
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             this.setState({ isLoader: false })
-
+            this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
@@ -137,11 +139,13 @@ class IndivisualPartListing extends Component {
 
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     onFloatingFilterChanged = (value) => {
-
+        if (this.props.newPartsListing?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -153,7 +157,7 @@ class IndivisualPartListing extends Component {
     }
 
     resetState = () => {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
 
     }
@@ -203,6 +207,7 @@ class IndivisualPartListing extends Component {
         this.setState({ isLoader: true })
         this.props.getPartDataList((res) => {
             this.setState({ isLoader: false })
+            this.setState({ noData: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -492,13 +497,16 @@ class IndivisualPartListing extends Component {
             </ExcelSheet>);
     }
 
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const ExcelFile = ReactExport.ExcelFile;
 
@@ -567,7 +575,7 @@ class IndivisualPartListing extends Component {
 
 
             let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
             this.setState({ selectedRowData: selectedRows })
         }
 
@@ -591,8 +599,8 @@ class IndivisualPartListing extends Component {
             <>
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
-                    <Row className="pt-3 no-filter-row">
-                        <Col md="12" className="search-user-block pr-0">
+                    <Row className="pt-4 no-filter-row">
+                        <Col md="8" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
@@ -646,11 +654,12 @@ class IndivisualPartListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header mt-4 pt-1">
-
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -737,5 +746,5 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
-    setSelectedCostingListSimualtion
+    setSelectedRowForPagination
 })(IndivisualPartListing);

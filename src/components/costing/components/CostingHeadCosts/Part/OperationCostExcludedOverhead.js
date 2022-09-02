@@ -25,12 +25,10 @@ function OperationCostExcludedOverhead(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
-  const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -43,11 +41,11 @@ function OperationCostExcludedOverhead(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       } else {
-        props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       }
-      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      if (JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : [])) {
         dispatch(isDataChange(true))
       }
     }
@@ -100,7 +98,7 @@ function OperationCostExcludedOverhead(props) {
       })
       let tempArr = [...GridArray, ...rowArray]
       tempArr && tempArr.map((el, index) => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, el.Quantity)
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
       setGridData(tempArr)
@@ -111,7 +109,6 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
-    setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -342,7 +339,7 @@ function OperationCostExcludedOverhead(props) {
                                       message: 'Invalid Number.'
                                     },
                                   }}
-                                  defaultValue={item.Quantity}
+                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder hide-label-inside mb-0'}
                                   handleChange={(e) => {
@@ -405,7 +402,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td>{item.Quantity}</td>
+                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}

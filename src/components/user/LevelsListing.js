@@ -8,7 +8,7 @@ import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
@@ -56,7 +56,8 @@ class LevelsListing extends Component {
 			showPopupToggle: false,
 			isLoader: false,
 			updateApi: false,
-			cancelButton: false
+			cancelButton: false,
+			noData: false
 
 		}
 	}
@@ -328,7 +329,7 @@ class LevelsListing extends Component {
 	*/
 	render() {
 		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
-			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
+			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact, noData } = this.state;
 
 
 		const defaultColDef = {
@@ -381,33 +382,12 @@ class LevelsListing extends Component {
 									<Row>
 										<Col className="mt-0 level-table" md="12">
 
-											{/* <BootstrapTable
-											data={this.props.usersListByTechnologyAndLevel}
-											striped={false}
-											bordered={false}
-											hover={false}
-											options={options}
-											search
-											ignoreSinglePage
-											ref={'table'}
-											trClassName={'userlisting-row'}
-											tableHeaderClass={'my-custom-header'}
-											pagination>
-											<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-											<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-											<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
-													<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
-
-													{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
-											{/* </BootstrapTable> */}
-
-											<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+											<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.usersListByTechnologyAndLevel && this.props.usersListByTechnologyAndLevel?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 												<div className="ag-grid-header">
 													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 												</div>
 												<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+													{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 													<AgGridReact
 														defaultColDef={defaultColDef}
 														floatingFilter={true}
@@ -419,6 +399,7 @@ class LevelsListing extends Component {
 														onGridReady={this.onGridReady}
 														gridOptions={gridOptions}
 														noRowsOverlayComponent={'customNoRowsOverlay'}
+														onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
 														noRowsOverlayComponentParams={{
 															title: EMPTY_DATA,
 														}}

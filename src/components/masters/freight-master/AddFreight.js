@@ -34,7 +34,7 @@ class AddFreight extends Component {
       FreightID: "",
       isEditFlag: false,
       IsVendor: false,
-      TransPortMood: [],
+      TransportMode: [],
       FullTruckCapacity: [],
       RateCriteria: [],
       isEditIndex: false,
@@ -67,7 +67,6 @@ class AddFreight extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getFreightModeSelectList((res) => { });
     if (!this.state.isViewMode) {
       this.props.getFreigtFullTruckCapacitySelectList((res) => { });
       this.props.getFreigtRateCriteriaSelectList((res) => { });
@@ -77,6 +76,7 @@ class AddFreight extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
+    this.props.getFreightModeSelectList((res) => { });
     this.getDetails();
   }
   /**
@@ -97,9 +97,9 @@ class AddFreight extends Component {
    */
   handleTransportMoodChange = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ TransPortMood: newValue });
+      this.setState({ TransportMode: newValue });
     } else {
-      this.setState({ TransPortMood: [] });
+      this.setState({ TransportMode: [] });
     }
   };
   /**
@@ -140,7 +140,7 @@ class AddFreight extends Component {
               // isLoader: false,
               IsVendor: Data.IsVendor,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
-              TransPortMood:
+              TransportMode:
                 modeObj && modeObj !== undefined
                   ? { label: modeObj.Text, value: modeObj.Value }
                   : [],
@@ -470,6 +470,7 @@ class AddFreight extends Component {
       if (i === index) return false;
       return true;
     });
+    this.resetGridData()
     this.setState({ gridTable: tempData });
     this.setState({ DeleteChanged: false });
   };
@@ -495,7 +496,7 @@ class AddFreight extends Component {
    */
   onSubmit = debounce((values) => {
     const {
-      IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
+      IsVendor, TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
 
     if (IsVendor && vendorName.length <= 0) {
@@ -542,7 +543,7 @@ class AddFreight extends Component {
       this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
-        Mode: TransPortMood.label,
+        Mode: TransportMode.label,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
@@ -661,8 +662,8 @@ class AddFreight extends Component {
                                   options={this.renderListing("FREIGHT_MODE")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.TransPortMood == null ||
-                                      this.state.TransPortMood.length === 0
+                                    this.state.TransportMode == null ||
+                                      this.state.TransportMode.length === 0
                                       ? [required]
                                       : []
                                   }
@@ -670,7 +671,7 @@ class AddFreight extends Component {
                                   handleChangeDescription={
                                     this.handleTransportMoodChange
                                   }
-                                  valueDescription={this.state.TransPortMood}
+                                  valueDescription={this.state.TransportMode}
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>

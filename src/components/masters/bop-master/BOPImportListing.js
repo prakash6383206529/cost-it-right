@@ -15,13 +15,13 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
@@ -58,7 +58,7 @@ class BOPImportListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -67,7 +67,8 @@ class BOPImportListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            noData: false
         }
     }
 
@@ -112,12 +113,13 @@ class BOPImportListing extends Component {
                 })
             }
         }, 300);
+
     }
 
     componentWillUnmount() {
         setTimeout(() => {
             if (!this.props.stopApiCallOnCancel) {
-                this.props.setSelectedCostingListSimualtion([])
+                this.props.setSelectedRowForPagination([])
             }
         }, 300);
     }
@@ -147,6 +149,7 @@ class BOPImportListing extends Component {
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
         this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            this.setState({ noData: false })
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
             }
@@ -157,7 +160,8 @@ class BOPImportListing extends Component {
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], loader: false })
             } else {
-                this.setState({ tableData: [], loader: false })
+                this.setState({ tableData: [] })
+
             }
 
             if (res && isPagination === false) {
@@ -204,6 +208,9 @@ class BOPImportListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        if (this.props.bopImportList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -214,7 +221,7 @@ class BOPImportListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     onBtPrevious = () => {
@@ -351,8 +358,8 @@ class BOPImportListing extends Component {
             cellValue = 'Zero Based'
         }
         //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
-        if (this.props.selectedCostingListSimulation?.length > 0) {
-            this.props.selectedCostingListSimulation.map((item) => {
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
                 if (item.BoughtOutPartId === props.node.data.BoughtOutPartId) {
                     props.node.setSelected(true)
                 }
@@ -412,7 +419,7 @@ class BOPImportListing extends Component {
         this.setState({ disableDownload: true })
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        let tempArr = this?.props?.selectedCostingListSimulation
+        let tempArr = this?.props?.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -430,7 +437,7 @@ class BOPImportListing extends Component {
     onBtExport = () => {
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this?.props?.selectedCostingListSimulation
+        tempArr = this?.props?.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allBopDataList ? this.props.allBopDataList : [])
         return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
     };
@@ -438,11 +445,7 @@ class BOPImportListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.IsVendor === true) {
-                item.IsVendor = 'Vendor Based'
-            } if (item.IsVendor === false) {
-                item.IsVendor = 'Zero Based'
-            } if (item.Plants === '-') {
+            if (item.Plants === '-') {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
@@ -471,7 +474,8 @@ class BOPImportListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
             date: "",
@@ -534,27 +538,27 @@ class BOPImportListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
-                selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {    // CHECKING IF REDUCER HAS DATA
+                selectedRows = this.props.selectedRowForPagination
+            } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {    // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
                 if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {    // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                        if (this.props.selectedRowForPagination[i].BoughtOutPartId === event.data.BoughtOutPartId) {    // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
-                        finalData.push(this.props.selectedCostingListSimulation[i])
+                        finalData.push(this.props.selectedRowForPagination[i])
                     }
 
                 } else {
-                    finalData = this.props.selectedCostingListSimulation
+                    finalData = this.props.selectedRowForPagination
                 }
                 selectedRows = [...selectedRows, ...finalData]
             }
 
             let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")              //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                        //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)                        //SETTING CHECKBOX STATE DATA IN REDUCER
             let finalArr = selectedRows
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
@@ -652,8 +656,9 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
 
@@ -679,7 +684,7 @@ class BOPImportListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
@@ -737,9 +742,9 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
     const { plantSelectList, } = comman;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
-    const { selectedCostingListSimulation } = simulation;
+    const { selectedRowForPagination } = simulation;
 
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination }
 }
 
 /**
@@ -754,7 +759,7 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedCostingListSimualtion
+    setSelectedRowForPagination
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

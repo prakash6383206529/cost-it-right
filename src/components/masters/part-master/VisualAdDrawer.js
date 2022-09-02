@@ -3,9 +3,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { NumberFieldHookForm } from '../../layout/HookFormInputs';
-// import { yupResolver } from '@hookform/resolvers';
+import { DIMENSIONLESS } from '../../../config/constants';
 
 export default function VishualAdDrawer(props) {
+    const { BOPUom } = props
 
     const { register, handleSubmit, formState: { errors }, control } = useForm({
         // resolver: yupResolver(schema),
@@ -40,7 +41,8 @@ export default function VishualAdDrawer(props) {
     * @description Renders the component
     */
     return (
-        <div>
+
+        < div >
             <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
@@ -71,13 +73,13 @@ export default function VishualAdDrawer(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: props.partType === 'BoughtOutPart' ? /^\d*\.?\d*$/ : /^[1-9]\d*$/,
+                                                value: props.partType === 'BoughtOutPart' ? (BOPUom === DIMENSIONLESS ? /^\+?(0|[0-9]\d*)$/ : /^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/) : /^[1-9]\d*$/,
                                                 //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
-                                                message: 'Invalid Number.',
+                                                message: props.partType !== 'BoughtOutPart' ? 'Invalid Number.' : BOPUom === DIMENSIONLESS ? 'Quantity cannot be in decimal' : 'Invalid Number.',
                                             },
                                             min: {
-                                                value: 1,
-                                                message: 'Quantity should not be less than 1.'
+                                                value: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 0 : 1,
+                                                message: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 'Quantity should not be negetive' : 'Quantity should not be less than 1.',
                                             },
 
                                         }}
@@ -113,7 +115,7 @@ export default function VishualAdDrawer(props) {
                     </div>
                 </Container>
             </Drawer>
-        </div>
+        </div >
     );
 }
 

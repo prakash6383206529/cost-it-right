@@ -2,9 +2,6 @@
 import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
-import { useDispatch } from "react-redux";
-import { getVolumeDataByPartAndYear } from "../masters/actions/Volume";
-
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
@@ -30,8 +27,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
           "TotalOperationCostSubAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
           "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-          "TotalOtherOperationCostPerSubAssembly": 0, //NEED TO IMPLEMENT THIS
+          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails.TotalOtherOperationCostPerAssembly,
           "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -41,7 +37,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "IsApplyBOPHandlingCharges": item.CostingPartDetails?.IsApplyBOPHandlingCharges,
           "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
           "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
-          "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability
+          "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability,
+          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -103,8 +100,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
       "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
       "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
-      "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-      "TotalOtherOperationCostPerSubAssembly": 0, //NEED TO IMPLEMENT THIS
+      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails.TotalOtherOperationCostPerAssembly,
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
       "TotalSurfaceTreatmentCostWithQuantity": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity,
@@ -116,7 +112,9 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalCalculatedSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerAssembly,
       "TotalCalculatedSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerSubAssembly,
       "TotalCalculatedSurfaceTreatmentCostWithQuantitys": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
-      "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent
+      "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent,
+      "RawMaterialCostWithCutOff": tabData && tabData.CostingPartDetails?.RawMaterialCostWithCutOff,
+      "IsRMCutOffApplicable": tabData && tabData.CostingPartDetails?.IsRMCutOffApplicable
 
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,

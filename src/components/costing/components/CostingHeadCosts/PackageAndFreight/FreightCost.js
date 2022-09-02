@@ -12,7 +12,6 @@ import { checkForDecimalAndNull } from '../../../../../helper';
 function FreightCost(props) {
 
   const [gridData, setGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
-  const [OldGridData, setOldGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
@@ -23,8 +22,8 @@ function FreightCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
-    props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+    props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : [])) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : []))) {
       dispatch(isPackageAndFreightDataChange(true))
     }
   }, [gridData]);

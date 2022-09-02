@@ -9,7 +9,6 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
-import { data } from 'react-dom-factories';
 import _ from 'lodash';
 
 
@@ -1035,4 +1034,23 @@ export const onFocus = (thisRef, dateFocus) => {
     thisRef.setState({ showErrorOnFocus: true })
   }
   return temp
+}
+
+//FOR SHOWING NO DATA FOUND IMAGE WHEN DATA WILL ZERO WHILE USER TYPE
+export const searchNocontentFilter = (value, data) => {
+
+  let temp = data
+  if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
+    temp = true
+  } else {
+    temp = false
+  }
+  return temp;
+}
+
+//FOR RESETING CUSTOM TABLE SCROLL
+export const scrollReset = (ID) => {
+
+  let temp = document.getElementById(ID);
+  temp.scrollLeft = 0;
 }

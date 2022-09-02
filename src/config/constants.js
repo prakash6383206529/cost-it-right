@@ -335,7 +335,7 @@ export const API = {
   getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details-by-filter`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
-  getFuelComboData: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
@@ -429,6 +429,8 @@ export const API = {
   getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
   labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
   getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
+  getLabourTypeDetailsForMachineType: `${BASE_URL}/masters-labour/get-labour-type-details`,
+  updateLabourTypeForMachineType: `${BASE_URL}/masters-labour/update-machine-type`,
 
   //OVERHEAD AND PROFIT API'S
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
@@ -1059,6 +1061,7 @@ export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
+export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 
 
 //RAW MATERIAL APPROVAL
@@ -1167,7 +1170,7 @@ export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS'
-export const GET_FULE_COMBO_SUCCESS = 'GET_FULE_COMBO_SUCCESS'
+export const GET_FUEL_BY_PLANT = 'GET_FUEL_BY_PLANT'
 export const GET_STATELIST_BY_FUEL = 'GET_STATELIST_BY_FUEL'
 export const GET_FULELIST_BY_STATE = 'GET_FULELIST_BY_STATE'
 export const GET_PLANT_SELECTLIST_BY_STATE = 'GET_PLANT_SELECTLIST_BY_STATE'
@@ -1242,6 +1245,8 @@ export const LABOUR_TYPE_VENDOR_SELECTLIST = 'LABOUR_TYPE_VENDOR_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_PLANT_SELECTLIST = 'GET_LABOUR_TYPE_BY_PLANT_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST = 'GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST'
 export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
+export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
+export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
 //OVERHEAD AND PROFIT
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
@@ -1503,6 +1508,7 @@ export const GET_VOLUME_DATA_SUCCESS = 'GET_VOLUME_DATA_SUCCESS'
 export const GET_FINANCIAL_YEAR_SELECTLIST = 'GET_FINANCIAL_YEAR_SELECTLIST'
 export const GET_VOLUME_DATA_BY_PART_AND_YEAR = 'GET_VOLUME_DATA_BY_PART_AND_YEAR'
 export const GET_VOLUME_DATA_LIST = 'GET_VOLUME_DATA_LIST'
+export const GET_VOLUME_DATA_LIST_FOR_DOWNLOAD = 'GET_VOLUME_DATA_LIST_FOR_DOWNLOAD'
 
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
@@ -1550,7 +1556,7 @@ export const GET_KEYS_FOR_DOWNLOAD_SUMMARY = 'GET_KEYS_FOR_DOWNLOAD_SUMMARY'
 export const SET_KEY_FOR_API_CALLS = 'SET_KEY_FOR_API_CALLS'
 export const SET_TOKEN_FOR_SIMULATION = 'SET_TOKEN_FOR_SIMULATION'
 export const GET_MASTER_SELECT_LIST_SIMUALTION = 'GET_MASTER_SELECT_LIST_SIMUALTION'
-export const SET_SELECTED_COSTING_LIST_SIMULATION = 'SET_SELECTED_COSTING_LIST_SIMULATION'
+export const SET_SELECTED_ROW_FOR_PAGINATION = 'SET_SELECTED_ROW_FOR_PAGINATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1910,4 +1916,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.444.9";
+export const VERSION = "V1.2.472.2";

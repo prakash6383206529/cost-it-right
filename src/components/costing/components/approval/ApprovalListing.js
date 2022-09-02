@@ -1,6 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
-import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
@@ -9,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -26,8 +25,8 @@ import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, ch
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
-import { setSelectedCostingListSimualtion } from '../../../simulation/actions/Simulation';
 import _ from 'lodash';
+import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -35,23 +34,19 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 function ApprovalListing(props) {
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
-  const [tableData, setTableData] = useState([])
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
-  const [selectedIds, setSelectedIds] = useState('')
   const [reasonId, setReasonId] = useState('')
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
-  const [isLoader, setIsLoader] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
-  const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+  const { selectedRowForPagination } = useSelector((state => state.simulation))
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
@@ -66,16 +61,13 @@ function ApprovalListing(props) {
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
+  const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
 
-  const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-  })
   useEffect(() => {
     getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
   }, [])
@@ -84,6 +76,9 @@ function ApprovalListing(props) {
   useEffect(() => {
     if (approvalGridData?.length > 0) {
       setTotalRecordCount(approvalGridData[0].TotalRecordCount)
+    }
+    else {
+      setNoData(false)
     }
 
   }, [approvalGridData])
@@ -115,9 +110,7 @@ function ApprovalListing(props) {
 
     dispatch(
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
-        setIsLoader(false)
         if (res.status === 204 && res.data === '') {
-          setTableData([])
           setloader(false)
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
@@ -130,7 +123,6 @@ function ApprovalListing(props) {
             }
             return temp
           })
-          setSelectedIds(temp)
           setloader(false)
           //  setTableData(Data)
 
@@ -155,7 +147,6 @@ function ApprovalListing(props) {
             }, 600);
           }
         } else {
-          setTableData([])
           setloader(false)
         }
       }),
@@ -163,7 +154,7 @@ function ApprovalListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
-
+    if ((isDashboard ? approvalList : approvalListDraft)?.length !== 0 || (isDashboard ? approvalList : approvalListDraft)?.length !== 0) setNoData(searchNocontentFilter(value, noData))
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
@@ -207,7 +198,6 @@ function ApprovalListing(props) {
   const onSearch = () => {
 
     setWarningMessage(false)
-    setIsLoader(true)
     setIsFilterButtonClicked(true)
     setPageNo(1)
     setCurrentRowIndex(0)
@@ -217,7 +207,6 @@ function ApprovalListing(props) {
 
   const resetState = () => {
     setIsFilterButtonClicked(false)
-    setIsLoader(true)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
 
@@ -232,7 +221,7 @@ function ApprovalListing(props) {
     setWarningMessage(false)
     setPageNo(1)
     setCurrentRowIndex(0)
-    dispatch(setSelectedCostingListSimualtion([]))
+    dispatch(setSelectedRowForPagination([]))
     getTableData("", "", "", "", 0, 10, true, floatingFilterData)
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -275,12 +264,13 @@ function ApprovalListing(props) {
    */
   const linkableFormatter = (props) => {
 
-    if (selectedCostingListSimulation?.length > 0) {
-      selectedCostingListSimulation.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
 
-        if (item.CostingId == props.node.data.CostingId) {
+        if (item.CostingId === props.node.data.CostingId) {
           props.node.setSelected(true)
         }
+        return null
       })
 
     }
@@ -381,7 +371,6 @@ function ApprovalListing(props) {
 
   const renderPlant = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
 
@@ -410,30 +399,29 @@ function ApprovalListing(props) {
 
 
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedCostingListSimulation
-    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
       let finalData = []
       if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedCostingListSimulation[i])
+          finalData.push(selectedRowForPagination[i])
         }
 
       } else {
-        finalData = selectedCostingListSimulation
+        finalData = selectedRowForPagination
       }
       selectedRows = [...selectedRows, ...finalData]
 
     }
 
     let uniqeArray = _.uniqBy(selectedRows, "CostingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
     let finalArr = selectedRows
-    let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "CostingId")
 
 
@@ -575,11 +563,13 @@ function ApprovalListing(props) {
               } else if (data.Sequence >= sequence) {
                 actualRemQty += parseInt(data.ApprovedQuantity)
               }
+              return null
             })
             budgetedQtyArr.map((data) => {
               // if (data.Sequence >= sequence) {
               totalBudgetedQty += parseInt(data.BudgetedQuantity)
               // }
+              return null
             })
             costingObj.consumptionQty = checkForNull(actualQty)
             costingObj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
@@ -591,6 +581,7 @@ function ApprovalListing(props) {
       }
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
+      return null
     })
     let obj = {
       DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
@@ -666,7 +657,6 @@ function ApprovalListing(props) {
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
 
-      setPageNo(pageNoNew)
       if (pageNo >= Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getTableData("", "", "", "", 0, 50, true, floatingFilterData)
@@ -762,13 +752,12 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? approvalList && approvalList?.length <= 0 ? "overlay-contain" : "" : approvalListDraft && approvalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
-                      <div
-                        className="ag-theme-material"
-                      >
+                      <div className="ag-theme-material">
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                         <AgGridReact
                           floatingFilter={true}
                           style={{ height: '100%', width: '100%' }}

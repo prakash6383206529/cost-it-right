@@ -22,7 +22,7 @@ class Breadcrumb extends Component {
 		if (prevProps.location !== this.props.location || prevProps.leftMenuData !== this.props.leftMenuData) {
 			const { location, leftMenuData, menusData } = prevProps;
 			if (location) {
-				const ModuleID = reactLocalStorage.get("ModuleId");
+				const ModuleID = reactLocalStorage.get('ModuleId');
 				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL === location.pathname);
 				const menuObj = menusData && menusData.find(el => el.ModuleId === ModuleID);
 				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')
@@ -36,16 +36,18 @@ class Breadcrumb extends Component {
 	}
 
 	render() {
-		const { secondTitle, } = this.state;
 
-		let url = this.state.secondURL;
+		/************************************MAY BE USED LATER*****************************/
+		// const { secondTitle, } = this.state;
 
-		if (secondTitle === 'Master') {
-			url = 'raw-material-master'
-		}
-		if (secondTitle === 'Additional Masters') {
-			url = 'reason-master'
-		}
+		// let url = this.state.secondURL;
+
+		// // if (secondTitle === 'Master') {
+		// // 	url = 'raw-material-master'
+		// // }
+		// // if (secondTitle === 'Additional Masters') {
+		// // 	url = 'reason-master'
+		// // }
 
 		return (
 			<div className="breadcrumbs fixed-top">

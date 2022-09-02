@@ -23,8 +23,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from 
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { li } from 'react-dom-factories';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
@@ -51,7 +50,8 @@ class PowerListing extends Component {
       showPopup: false,
       deletedId: '',
       isLoader: false,
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -111,14 +111,16 @@ class PowerListing extends Component {
   }
 
   /**
-  * @method editItemDetails
-  * @description edit material type
-  */
-  editItemDetails = (Id) => {
+ * @method viewOrEditItemDetails
+ * @description edit or view material type
+ */
+  viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id,
+      Id: this.state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
       IsVendor: this.state.IsVendor,
+      isViewMode: isViewMode,
+      plantId: Id?.PlantId
     }
     this.props.getDetails(data);
   }
@@ -137,12 +139,13 @@ class PowerListing extends Component {
   */
   confirmDelete = (ID) => {
     if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID, (res) => {
+      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
+      this.setState({ showPopup: false })
     } else {
       this.props.deletePowerDetail(ID, (res) => {
         if (res.data.Result === true) {
@@ -172,18 +175,30 @@ class PowerListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-    const { EditAccessibility, ViewAccessibility, DeleteAccessibility } = this.props;
+    const rowData = props?.data;
+    let obj = {}
+    obj.PowerId = rowData?.PowerId
+    obj.PlantId = rowData?.PlantId
+    obj.PowerDetailId = rowData?.PowerDetailId
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, true)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, false)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
 
+
+  /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
 
   /**
   * @method costingHeadFormatter
@@ -320,9 +335,34 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-    const { isEditFlag, } = this.state;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const { isEditFlag, noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
+
+    var filterParams = {
+      date: "",
+      comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+          Number(dateParts[2]),
+          Number(dateParts[1]) - 1,
+          Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+          return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+          return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+          return 1;
+        }
+      },
+      browserDatePicker: true,
+      minValidYear: 2000,
+    };
 
     const isFirstColumn = (params) => {
 
@@ -342,7 +382,8 @@ class PowerListing extends Component {
       totalValueRenderer: this.buttonFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,
       customNoRowsOverlay: NoContentFound,
-      commonCostFormatter: this.commonCostFormatter
+      costFormatter: this.costFormatter,
+      effectiveDateFormatter: this.effectiveDateFormatter,
     };
 
     return (
@@ -395,17 +436,6 @@ class PowerListing extends Component {
                         {/* ADD */}
                       </button>
                     )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.bulkToggle}
-                        title="Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
-                        {/* Bulk Upload */}
-                      </button>
-                    )}
                     {
                       DownloadAccessibility &&
                       <>
@@ -419,8 +449,6 @@ class PowerListing extends Component {
                         </ExcelFile>
 
                       </>
-
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -437,12 +465,13 @@ class PowerListing extends Component {
           <Col>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.powerDataList && this.props.powerDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -460,12 +489,14 @@ class PowerListing extends Component {
                       imagClass: 'imagClass power-listing'
                     }}
                     rowSelection={'multiple'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
+                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 

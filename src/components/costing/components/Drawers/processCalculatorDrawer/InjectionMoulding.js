@@ -1,9 +1,7 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { Row, Col, Container } from 'reactstrap'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { Fragment } from 'react'
+import { Row, Col } from 'reactstrap'
+import { useForm, Controller } from 'react-hook-form'
 import {
-  SearchableSelectHookForm,
   TextFieldHookForm,
 } from '../../../../layout/HookFormInputs'
 
@@ -66,9 +64,6 @@ function InjectionMoulding(props) {
     register,
     handleSubmit,
     control,
-    setValue,
-    getValues,
-    reset,
     formState: { errors },
   } = useForm({
     mode: 'onChange',
@@ -94,49 +89,7 @@ function InjectionMoulding(props) {
   const onCancel = () => {
     calculateMachineTime('0.00')
   }
-  /**
-   * @method calculateMHR
-   * @description calculate mhr from tonnage
-   */
-  const calculateMHR = () => {
-    const tonnage = getValues('tonnage')
-    if (!tonnage) {
-      return ''
-    }
-    const MHR = tonnage * 1.3
-    setValue('mhr', MHR)
-  }
-  /**
-   * @method efficiency
-   * @description calculate shot number/efficiency
-   */
-  const calculateEfficiency = () => {
-    const cycleTime = getValues('cycleTime')
-    if (!cycleTime) {
-      return ''
-    }
-    const shotNumber = (cycleTime / 3600) * (85 / 100)
-    setValue('shotNumber', shotNumber)
-  }
 
-  /**
-   * @method calculateProcessCost
-   * @description Calculate Process Cost
-   */
-  const calculateProcessCost = () => {
-    const mhr = getValues('mhr')
-    const efficiency = getValues('shotNumber')
-    const cavity = getValues('cavity')
-    const processCost = mhr / efficiency / cavity
-    setValue('processCost', processCost)
-  }
-
-  const totalMfgCosting = () => {
-    const rmCosting = 50 //     -> how to get this value need to confirm
-    const processCost = getValues('processCost')
-    const mfg = rmCosting + processCost
-    setValue('mfg', mfg)
-  }
   return (
     <Fragment>
       <Row>

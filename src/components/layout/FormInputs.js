@@ -187,6 +187,7 @@ export function renderPasswordInputField(field) {
           {...input}
           id={"password"}
           placeholder={placeholder}
+          autoComplete={field.autoComplete}
         />
         {field.isEyeIcon === true && (
           <div
@@ -228,7 +229,6 @@ export function renderPasswordInputField(field) {
 export function renderMultiSelectField(field) {
   const {
     input,
-    isTouched,
     meta: { touched, error, active },
   } = field;
   //const inputbox = `inputbox ${active ? "active" : ""}`;
@@ -592,7 +592,7 @@ export function renderText(field) {
 }
 
 export function InputHiddenField(field) {
-  const { input, meta: { touched, error }, ...others } = field;
+  const { input, ...others } = field;
   return (
     <div>
       <input {...input} {...others} />
@@ -601,7 +601,7 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, defaultValue, disabled, meta: { touched, error }, minDate } = field;
+  const { input, placeholder, disabled, meta: { touched, error }, minDate } = field;
   return (
     <div className={"react-picker-box"}>
       <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
@@ -632,7 +632,6 @@ export function renderDatePickerOneDayAgo(field) {
   const {
     input,
     placeholder,
-    defaultValue,
     meta: { touched, error },
   } = field;
   const d = new Date();
@@ -681,7 +680,6 @@ export const searchableSelect = ({
   children,
   onKeyDown
 }) => {
-  const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = disabled && disabled === true ? true : false;
   return (
     <div className="w-100 form-group-searchable-select">
@@ -859,7 +857,6 @@ export function renderYearPicker(field) {
   const {
     input,
     placeholder,
-    defaultValue,
     meta: { touched, error },
   } = field;
   return (

@@ -68,6 +68,7 @@ export const RMDomesticZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -94,6 +95,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "1511",
@@ -118,6 +120,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -146,6 +149,7 @@ export const RMDomesticVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" }, //*
@@ -172,6 +176,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -196,6 +201,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -225,6 +231,7 @@ export const RMImportZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -255,6 +262,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -279,6 +287,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -308,6 +317,7 @@ export const RMImportVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
@@ -335,6 +345,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -360,6 +371,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -845,7 +857,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'ActualQuantity': 100,
     }
 ]
@@ -872,7 +884,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'PartNo': 'Screw Jack',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'ActualQuantity': 50,
     }
 ]
@@ -895,7 +907,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 10,
     }
 ]
@@ -922,7 +934,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
     }
 ]
@@ -1025,6 +1037,7 @@ export const MachineZBC = [
     { label: 'MachineType', value: 'MachineType', },
     { label: 'MachineTonnage', value: 'MachineTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'MachineRate', value: 'MachineRate', }, //* 
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //* 
@@ -1042,6 +1055,7 @@ export const MachineZBCTempData = [
         'MachineType': 'Mechanical',
         'MachineTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': 55,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1102,6 +1116,7 @@ export const MHRMoreZBC = [
     // { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
+    { label: "ProcessCode", value: "ProcessCode", },
     { label: "UOM", value: "UOM", },
     { label: "OutputPerHours", value: "OutputPerHours", },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1173,6 +1188,7 @@ export const MHRMoreZBCTempData = [
         // "LabourRate": 0,
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
+        "ProcessCode": "PR-1000001",
         "UOM": "Hours",
         "OutputPerHours": 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1249,6 +1265,7 @@ export const MachineVBC = [
     { label: 'MachineType', value: 'MachineType', },
     { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //* maybe
     { label: 'MachineRate', value: 'MachineRate', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1268,6 +1285,7 @@ export const MachineVBCTempData = [
         'MachineType': 'Mechanical',
         'MachineCapicityAndTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': '20',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2713,7 +2731,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Insert Part Number", value: "BoughtOutPartNumber", },
     { label: "Insert Part Name", value: "BoughtOutPartName", },
     { label: "Insert Category", value: "BoughtOutPartCategory", },
@@ -2727,10 +2745,10 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor" },
-    { label: "BOP Part No.", value: "BoughtOutPartNumber" },
-    { label: "BOP Part Name", value: "BoughtOutPartName" },
-    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Insert Part No.", value: "BoughtOutPartNumber" },
+    { label: "Insert Part Name", value: "BoughtOutPartName" },
+    { label: "Insert Category", value: "BoughtOutPartCategory" },
     { label: "UOM", value: "UOM" },
     { label: "Currency", value: "Currency" },
     { label: "Specification", value: "Specification" },
@@ -2743,9 +2761,9 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
-    { label: "BOP Part No.", value: "BoughtOutPartNumber", },
-    { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "BOP Category", value: "BoughtOutPartCategory", },
+    { label: "Insert Part No.", value: "BoughtOutPartNumber", },
+    { label: "Insert Part Name", value: "BoughtOutPartName", },
+    { label: "Insert Category", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "No. of Vendors", value: "NoOfVendors", },
     { label: "Plant(Code)", value: "Plant", },
@@ -2764,7 +2782,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
@@ -2792,7 +2810,7 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
@@ -2814,7 +2832,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 ]
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Plant(Code)", value: "Plants", },
@@ -2903,7 +2921,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 ]
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -2981,7 +2999,7 @@ export const UOM_DOWNLOAD_EXCEl = [
 ]
 
 export const VOLUME_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
     { label: "Vendor Name", value: "VendorName", },
@@ -2993,7 +3011,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3017,16 +3035,14 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
     { label: "Technology", value: "TechnologyName" },
-    { label: "Vendor", value: "VendorName", },
-    { label: "Vendor(Code)", value: "VendorCode", },
-    { label: "Plant", value: "PlantName", },
-    { label: "Plant(Code)", value: "PlantCode", },
+    { label: "Plant(Code)", value: "Plant", },
+    { label: "Vendor(Code)", value: "Vendor", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Part Type", value: "PartType", },
-    { label: "Department Code", value: "DepartmentCode", },
-    { label: "Department Name", value: "DepartmentName", },
+    { label: "Company Code", value: "DepartmentCode", },
+    { label: "Company Name", value: "DepartmentName", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "RM Code", value: "RawMaterialCode", },
     { label: "RM Name", value: "RawMaterialName", },
@@ -3128,7 +3144,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
-    { label: "Department", value: "DepartmentName", },
+    { label: "Company", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 

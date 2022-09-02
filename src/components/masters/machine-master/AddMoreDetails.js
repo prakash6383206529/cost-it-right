@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366
+  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation
 } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -14,7 +14,7 @@ import {
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
-import { getFuelComboData, } from '../actions/Fuel';
+import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
@@ -29,13 +29,14 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
+import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -44,6 +45,7 @@ const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
   constructor(props) {
+
     super(props);
     this.child = React.createRef();
     this.state = {
@@ -52,10 +54,8 @@ class AddMoreDetails extends Component {
       IsPurchased: false,
       isViewFlag: false,
       isDateChange: false,
-
       selectedTechnology: [],
       selectedPlants: [],
-
       machineType: [],
       isOpenMachineType: false,
 
@@ -95,6 +95,7 @@ class AddMoreDetails extends Component {
 
       remarks: '',
       files: [],
+      powerId: '',
 
       manufactureYear: new Date(),
 
@@ -131,6 +132,8 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: '',
       DataToChange: [],
+      showErrorOnFocusDate: false,
+      labourDetailId: ''
     }
     this.dropzone = React.createRef();
   }
@@ -148,10 +151,11 @@ class AddMoreDetails extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
-    // this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
-    this.props.getFuelComboData(() => { })
+    this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
+    if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+    }
     if (!this.props?.editDetails?.isEditFlag) {
-
       this.props.change('EquityPercentage', 100)
     }
 
@@ -200,16 +204,24 @@ class AddMoreDetails extends Component {
       this.props.change('Description', fieldsObj.Description)
       this.props.change('Specification', fieldsObj.Specification)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
-
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
+        setTimeout(() => {
+          if (fieldsObj?.EffectiveDate) {
+            this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
+          }
+          if (machineType?.length === 0) {
+          } else {
+            this.handleMachineType(machineType)
+          }
+        }, 200);
       }, 1500);
 
       this.setState({
         fieldsObj: fieldsObj,
         selectedTechnology: selectedTechnology,
         machineType: machineType,
-        effectiveDate: fieldsObj.EffectiveDate
+        effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
       }, () => {
         // if (machineType && machineType.value) {
         //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -318,7 +330,7 @@ class AddMoreDetails extends Component {
 
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-              fuelComboSelectList, } = this.props;
+              fuelDataByPlant, } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
 
@@ -327,7 +339,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
+            const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -336,6 +348,8 @@ class AddMoreDetails extends Component {
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
+                LabourDetailId: el.LabourDetailId
+
               }
             })
 
@@ -350,6 +364,7 @@ class AddMoreDetails extends Component {
                 MachineRate: el.MachineRate,
               }
             })
+
 
             this.setState({
               IsFinancialDataChanged: false,
@@ -378,6 +393,7 @@ class AddMoreDetails extends Component {
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
+              powerId: Data?.PowerId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
@@ -410,7 +426,7 @@ class AddMoreDetails extends Component {
   renderListing = (label) => {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
-      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelComboSelectList, } = this.props;
+      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, } = this.props;
 
     const temp = [];
     if (label === 'technology') {
@@ -471,7 +487,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
     if (label === 'fuel') {
-      fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
+      fuelDataByPlant && fuelDataByPlant.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -506,31 +522,39 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    const { IsUsesSolarPower, machineFullValue } = this.state;
+    const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
     const { initialConfiguration, editDetails } = this.props
     let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
 
     if (!editMode) {
       if (newValue && newValue !== '') {
-        this.setState({ selectedPlants: newValue, })
-        this.props.getPowerCostUnit(newValue.value, res => {
-          let Data = res?.data?.DynamicData;
-          if (res && res.data && res.data.Message !== '') {
-            Toaster.warning(res.data.Message)
-            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
-          } else {
-            //  if(IsUsesSolarPower)
-            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
-            this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-            })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
-          }
+        this.setState({ selectedPlants: newValue, }, () => {
+          const { selectedPlants } = this.state
+          this.props.getFuelByPlant(
+            selectedPlants.value,
+            (res) => { },
+          )
         })
+        if (effectiveDate) {
+          this.props.getPowerCostUnit(newValue.value, effectiveDate, res => {
+            let Data = res?.data?.DynamicData;
+            if (res && res.data && res.data.Message !== '') {
+              Toaster.warning(res.data.Message)
+              machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+              })
+              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            } else {
+              //  if(IsUsesSolarPower)
+              machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+              })
+              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            }
+          })
+        }
       } else {
         this.setState({ selectedPlants: [] })
       }
@@ -736,10 +760,37 @@ class AddMoreDetails extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
+
     this.setState({
       effectiveDate: date,
       isDateChange: true,
     });
+
+    const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
+    const { initialConfiguration } = this.props
+
+    if (Object.keys(selectedPlants)?.length > 0) {
+      this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let Data = res?.data?.DynamicData;
+        if (res && res.data && res.data.Message !== '') {
+          Toaster.warning(res.data.Message)
+          machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+          })
+          this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+          //  if(IsUsesSolarPower)
+          machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+          })
+          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        }
+      })
+    }
+
+
   };
   /**
    * @method handleChange
@@ -802,7 +853,12 @@ class AddMoreDetails extends Component {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
+      if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+        this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+      }
+      this.setState({ fuelType: [] })
     }
+
     this.setState({
       IsUsesFuel: !this.state.IsUsesFuel,
     });
@@ -814,10 +870,10 @@ class AddMoreDetails extends Component {
    */
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
-      const { IsUsesSolarPower, selectedPlants, machineFullValue } = this.state;
+      const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
-        this.props.getPowerCostUnit(selectedPlants.value, res => {
+        this.props.getPowerCostUnit(selectedPlants.value, effectiveDate, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -852,10 +908,15 @@ class AddMoreDetails extends Component {
   labourHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ labourType: newValue }, () => {
-        const { labourType, machineType } = this.state;
-        const data = { labourTypeId: labourType.value, machineTypeId: machineType.value }
-        this.props.getLabourCost(data, res => {
+        const { labourType, machineType, selectedPlants, effectiveDate } = this.state;
+        const data = {
+          labourTypeId: labourType.value,
+          machineTypeId: machineType.value,
+          plantId: selectedPlants.value
+        }
+        this.props.getLabourCost(data, effectiveDate, res => {
           let Data = res.data.DynamicData;
+          this.setState({ labourDetailId: Data.LabourDetailId })
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -1141,7 +1202,8 @@ class AddMoreDetails extends Component {
       const PowerRatingPerKW = checkForNull(fieldsObj?.PowerRatingPerKW)
       const PowerCostPerUnit = checkForNull(machineFullValue?.PowerCostPerUnit); // may be state
 
-      const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
+      const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
+      const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
       this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
       this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
@@ -1227,17 +1289,23 @@ class AddMoreDetails extends Component {
     const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
     const tempArray = [];
 
+    //CONDITION TO CHECK TOTAL COST IS ZERO
+    if (TotalLabourCost === 0) {
+      Toaster.warning('Total cost should not be zero.')
+      return false;
+    }
     tempArray.push(...labourGrid, {
       labourTypeName: labourType.label,
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     })
-
     this.setState({
       labourGrid: tempArray,
       labourType: [],
+      LabourDetailId: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1283,6 +1351,7 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
+      LabourDetailId: this.state.labourDetailId
     }
 
     tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
@@ -1367,7 +1436,7 @@ class AddMoreDetails extends Component {
    * @description ADDING PROCESS IN PROCESS TABLE 
   */
   processTableHandler = () => {
-    const { processName, UOM, processGrid, isProcessGroup } = this.state;
+    const { processName, UOM, processGrid, isProcessGroup, machineType, selectedPlants, effectiveDate } = this.state;
 
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
@@ -1389,8 +1458,8 @@ class AddMoreDetails extends Component {
       if (count > 0) {
         return false
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0) {
-        Toaster.warning('Please enter the machine cost');
+      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+        Toaster.warning('Please fill all mandatory fields');
         return false;
       }
 
@@ -1506,7 +1575,7 @@ class AddMoreDetails extends Component {
     let tempData = processGrid[processGridEditIndex];
     tempData = {
       processName: processName.label,
-      processId: processName.value,
+      ProcessId: processName.value,
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
@@ -1561,7 +1630,7 @@ class AddMoreDetails extends Component {
     this.setState({
       processGridEditIndex: index,
       isEditIndex: true,
-      processName: { label: tempData.processName, value: tempData.processId },
+      processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
@@ -1750,8 +1819,8 @@ class AddMoreDetails extends Component {
 
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
-      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
+      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1810,12 +1879,12 @@ class AddMoreDetails extends Component {
       OtherYearlyCost: values.OtherYearlyCost,
       TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
       IsUsesFuel: IsUsesFuel,
-      PowerId: '',
+      PowerId: powerId ? powerId : "",
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-      IsUsesSolarPower: IsUsesSolar,
+      IsUsesSolarPower: IsUsesSolarPower,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
       FuelEntryId: this.state.FuelEntryId,
@@ -1842,7 +1911,8 @@ class AddMoreDetails extends Component {
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props?.processGroupApiData,
-      IsFinancialDataChanged: this.state.isDateChange ? true : false
+      IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      // LabourDetailId: labourType.value
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -1942,12 +2012,12 @@ class AddMoreDetails extends Component {
         OtherYearlyCost: values.OtherYearlyCost,
         TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
         IsUsesFuel: IsUsesFuel,
-        PowerId: '',
+        PowerId: powerId ? powerId : "",
         UtilizationFactorPercentage: values.UtilizationFactorPercentage,
         PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
         TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-        IsUsesSolarPower: IsUsesSolar,
+        IsUsesSolarPower: IsUsesSolarPower,
         FuleId: fuelType ? fuelType.value : '',
         FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
         ConsumptionPerYear: values.ConsumptionPerYear,
@@ -2043,14 +2113,13 @@ class AddMoreDetails extends Component {
    * @description LOAN ROW OPEN  AND CLOSE
   */
   loanToggle = () => {
-    const { isLoanOpen } = this.state
+    const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
-
     this.setState({
       isLoanOpen: !isLoanOpen
     })
@@ -2061,11 +2130,12 @@ class AddMoreDetails extends Component {
   * @description WORKING HOUR ROW OPEN  AND CLOSE
   */
   workingHourToggle = () => {
-    const { isWorkingOpen } = this.state
+    const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
 
@@ -2077,13 +2147,15 @@ class AddMoreDetails extends Component {
    * @description depreciation ROW OPEN  AND CLOSE
   */
   depreciationToogle = () => {
-    const { isDepreciationOpen } = this.state
+    const { isDepreciationOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
+
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
@@ -2092,13 +2164,15 @@ class AddMoreDetails extends Component {
    * @description VARIABLE COST ROW OPEN  AND CLOSE
   */
   variableCostToggle = () => {
-    const { isVariableCostOpen } = this.state
+    const { isVariableCostOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
+
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
@@ -2107,11 +2181,11 @@ class AddMoreDetails extends Component {
   * @description POWER OPEN  AND CLOSE
   */
   powerToggle = () => {
-    const { isPowerOpen } = this.state
+    const { isPowerOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isPowerOpen: !isPowerOpen })
@@ -2127,11 +2201,12 @@ class AddMoreDetails extends Component {
   * @description lABOUR OPEN  AND CLOSE
   */
   labourToggle = () => {
-    const { isLabourOpen } = this.state
+    const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill the mandatory fields.');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -2142,21 +2217,23 @@ class AddMoreDetails extends Component {
    * @description PROCESS OPEN  AND CLOSE
   */
   processToggle = () => {
-    const { isProcessOpen } = this.state
+    const { isProcessOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isProcessOpen: !isProcessOpen })
   }
   processGroupToggle = () => {
-    const { isProcessGroupOpen } = this.state
+    const { isProcessGroupOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) {
-      Toaster.warning('Please enter the machine cost');
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      Toaster.warning('Please fill all mandatory fields');
+      scroll.scrollToTop();
       return false;
     }
     this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
@@ -2186,7 +2263,6 @@ class AddMoreDetails extends Component {
   DisplayMachineRateLabel = () => {
     return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
-
   /**
   * @method render
   * @description Renders the component
@@ -2271,11 +2347,11 @@ class AddMoreDetails extends Component {
                             label={`Machine No.`}
                             name={"MachineNumber"}
                             type="text"
-                            placeholder={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? '-' : 'Enter'}
-                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
+                            placeholder={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? '-' : 'Enter'}
+                            validate={initialConfiguration.IsAutoGeneratedMachineNumber ? [] : [required]}
                             component={renderText}
-                            required={initialConfiguration.IsMachineNumberConfigure ? false : true}
-                            disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : false}
+                            required={initialConfiguration.IsAutoGeneratedMachineNumber ? false : true}
+                            disabled={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2504,19 +2580,20 @@ class AddMoreDetails extends Component {
                                 label="Effective Date"
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
+                                placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
-                                  //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged}
-
+                                onFocus={() => onFocus(this, true)}
                               />
+                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
@@ -2648,7 +2725,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 label="No. Of Shifts"
                                 component={searchableSelect}
-                                placeholder={'select'}
+                                placeholder={'Select'}
                                 options={this.renderListing('ShiftType')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [] : []}
@@ -2664,7 +2741,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2]}
+                                validate={[decimalAndNumberValidation]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -2822,7 +2899,7 @@ class AddMoreDetails extends Component {
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
                                     dropdownMode="select"
-                                    placeholderText="Select date"
+                                    placeholderText={disableAllForm ? '-' : "Select Date"}
                                     className="withBorder"
                                     autoComplete={'off'}
                                     disabledKeyboardNavigation
@@ -3109,7 +3186,7 @@ class AddMoreDetails extends Component {
                                 onChange={this.onPressUsesFuel}
                                 checked={this.state.IsUsesFuel}
                                 id="normal-switch"
-                                disabled={isEditFlag || disableAllForm ? true : false}
+                                disabled={disableAllForm ? true : false}
                                 background="#4DC771"
                                 onColor="#4DC771"
                                 onHandleColor="#ffffff"
@@ -3137,7 +3214,7 @@ class AddMoreDetails extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleFuelType}
                                   valueDescription={this.state.fuelType}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                 />
                               </Col>
                               <Col md="3">
@@ -3209,7 +3286,7 @@ class AddMoreDetails extends Component {
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                   component={renderText}
                                   //required={true}
-                                  disabled={isEditFlag || disableAllForm ? true : false}
+                                  disabled={disableAllForm ? true : false}
                                   className=" "
                                   customClassName="withBorder"
                                 />
@@ -3222,7 +3299,7 @@ class AddMoreDetails extends Component {
                                     onChange={this.onPressUsesSolarPower}
                                     checked={this.state.IsUsesSolarPower}
                                     id="normal-switch"
-                                    disabled={isEditFlag || disableAllForm ? true : false}
+                                    disabled={disableAllForm ? true : false}
                                     background="#4DC771"
                                     onColor="#4DC771"
                                     onHandleColor="#ffffff"
@@ -3249,9 +3326,23 @@ class AddMoreDetails extends Component {
                                   customClassName="withBorder"
                                 />
                               </Col>
+                              {/* <Col md="3">
+                                <Field
+                                  label={`Power Cost/Hour(INR)`}
+                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerHour"}
+                                  type="text"
+                                  placeholder={'-'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col> */}
                               <Col md="3">
                                 <Field
-                                  label={`Total Power Cost/Annum(INR)`}
+                                  label={`Power Cost/Annum(INR)`}
                                   name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -3391,6 +3482,7 @@ class AddMoreDetails extends Component {
                                   </tr>
                                 </thead>
                                 <tbody >
+
                                   {
                                     this.state.labourGrid &&
                                     this.state.labourGrid.map((item, index) => {
@@ -3841,7 +3933,7 @@ function mapStateToProps(state) {
 
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
-  const { fuelComboSelectList } = fuel;
+  const { fuelDataByPlant } = fuel;
   const { initialConfiguration } = auth;
   let initialValues = {};
   if (machineData && machineData !== undefined) {
@@ -3897,7 +3989,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading, processGroupApiData
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData
   }
 
 }
@@ -3917,7 +4009,7 @@ export default connect(mapStateToProps, {
   getShiftTypeSelectList,
   getDepreciationTypeSelectList,
   getLabourTypeByMachineTypeSelectList,
-  getFuelComboData,
+  getFuelByPlant,
   getFuelUnitCost,
   getLabourCost,
   getPowerCostUnit,
@@ -3936,5 +4028,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddMoreDetails));

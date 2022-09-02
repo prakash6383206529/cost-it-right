@@ -25,6 +25,8 @@ class BOMViewer extends Component {
       displayEditIcon: false,
       EditIndex: '',
       updatedQuantity: '',
+      BOPUom: '',
+      BOPUomCreateMode: '',
       isOpenVisualDrawer: false,
       selected_point: null,
       flowpoints: [],
@@ -139,7 +141,8 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
-    this.setState({ isOpenChildDrawer: false }, () => {
+
+    this.setState({ isOpenChildDrawer: false, BOPUomCreateMode: childData?.UnitOfMeasurementType }, () => {
       this.setChildPartsData(childData)
     })
   }
@@ -240,8 +243,8 @@ class BOMViewer extends Component {
   * @method editLevelOne
   * @description EDIT LEVEL 1 QUANTITY IN DRAWER
   */
-  editLevelOne(index, quantity, partType) {
-    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity, partType: partType })
+  editLevelOne(index, quantity, partType, BoughtOutPartUOM) {
+    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity, partType: partType, BOPUom: BoughtOutPartUOM })
   }
 
   /**
@@ -476,7 +479,7 @@ class BOMViewer extends Component {
                                     <button
                                       className="Edit"
                                       onClick={() =>
-                                        this.editLevelOne(i, el.Quantity, el.PartType)
+                                        this.editLevelOne(i, el.Quantity, el.PartType, el.BoughtOutPartUOMType)
                                       }
                                     />
                                   </span>
@@ -549,6 +552,7 @@ class BOMViewer extends Component {
                 anchor={"right"}
                 updatedQuantity={this.state.updatedQuantity}
                 partType={this.state.partType}
+                BOPUom={this.state.BOPUom ? this.state.BOPUom : this.state.BOPUomCreateMode}
               />
             )}
           </>

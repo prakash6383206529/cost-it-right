@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -184,7 +183,7 @@ function AddOperation(props) {
           <Container>
             <div className={'drawer-wrapper drawer-1500px'}>
 
-              <Row className="drawer-heading mb-4">
+              <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
                     <h3>{'Add Operation:'}</h3>
@@ -197,7 +196,7 @@ function AddOperation(props) {
               </Row>
 
 
-              <Row className="mb-3 mx-0">
+              <Row className="mx-0">
                 <Col className="hidepage-size">
                   <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
@@ -250,8 +249,8 @@ function AddOperation(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-left px-3 d-flex bluefooter-butn justify-content-end">
                   <button
                     type={'button'}
                     className="reset mr5 cancel-btn"

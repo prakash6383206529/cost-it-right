@@ -70,30 +70,18 @@ export default function MachineReducer(state = initialState, action) {
                 machineTypeData: action.payload
             };
         case GET_MACHINE_DATALIST_SUCCESS:
-            let arr = []
-            action.payload && action.payload.map((item) => {
-                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
-                arr.push(item)
-                return null
-            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                machineDatalist: arr
+                machineDatalist: action.payload
             };
         case GET_ALL_MACHINE_DATALIST_SUCCESS:
-            let arry = []
-            action.payload && action.payload.map((item) => {
-                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
-                arry.push(item)
-                return null
-            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                allMachineDataList: arry
+                allMachineDataList: action.payload
             };
         case GET_MACHINE_DATA_SUCCESS:
             return {

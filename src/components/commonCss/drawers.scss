@@ -90,3 +90,31 @@
         }
     }
 }
+.MuiBackdrop-root {
+    padding-bottom: 0;
+}
+.MuiDrawer-paper {
+    .drawer-wrapper {
+        padding-bottom: 0 !important;
+    }
+    .hidepage-size {
+      min-height: calc(100vh - 154px);
+      @media screen and (min-width:$middleDesktop) {
+        min-height: calc(100vh - 160px);
+      }
+    }
+      .drawer-sticky-btn {
+        position: sticky;
+        min-width: calc(100% + 30px);
+        bottom: -20px;
+        margin-bottom: -20px !important;
+        .bluefooter-butn {
+          padding: 10px 15px !important;
+          padding-bottom: 15px !important;
+          background-color: #eaf0f9 !important;
+          margin-left: -15px;
+        }
+      }
+    }
+
+  

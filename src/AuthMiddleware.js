@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { checkPageAuthorization } from './actions/auth/AuthActions'
 import { loggedInUserId } from './helper';
 
-export default function (ComposedComponent, PAGENAME) {
+export default function AuthMiddleware(ComposedComponent, PAGENAME) {
     class AuthMiddleware extends Component {
 
         constructor(props) {
@@ -34,7 +34,7 @@ export default function (ComposedComponent, PAGENAME) {
                         //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
                         reactLocalStorage.setObject("isUserLoggedIn", false);
                         reactLocalStorage.setObject("userDetail", {});
-                        reactLocalStorage.set("ModuleId", "")
+                        reactLocalStorage.set('ModuleId', '');
                         this.setState({ redirectToLogin: true })
                     }
                 })

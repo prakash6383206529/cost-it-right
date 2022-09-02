@@ -5,7 +5,6 @@ import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo'
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
-import Switch from "react-switch";
 import { useSelector } from 'react-redux';
 
 function IsolateReRender(control) {
@@ -227,18 +226,6 @@ function AddPackaging(props) {
   }
 
   /**
-    * @method PackageTypeToggle
-    * @description PACKAGING TYPE 
-    */
-  const PackageTypeToggle = () => {
-    setValue('PackagingDescription', '')
-    setValue('PackagingCost', '')
-    setValue('PackagingCostPercentage', '')
-    setValue('Applicability', '')
-    setPackageType(!PackageType)
-  }
-
-  /**
   * @method addRow
   * @description ADD ROW IN TO RM COST GRID
   */
@@ -339,7 +326,7 @@ function AddPackaging(props) {
                     <SearchableSelectHookForm
                       label={'Applicability'}
                       name={'Applicability'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: PackageType ? true : false }}

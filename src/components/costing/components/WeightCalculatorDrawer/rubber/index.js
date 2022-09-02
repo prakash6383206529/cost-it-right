@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap'
 import classnames from 'classnames'
 import Rubber from './Rubber'
@@ -7,20 +6,6 @@ import StandardRub from './StandardRub'
 
 
 function RubberCalciTab(props) {
-
-    const dispatch = useDispatch()
-
-
-    const getTabno = (layout) => {
-        switch (layout) {
-            case 'Standard':
-                return '1'
-            case 'Coil':
-                return '2'
-            default:
-                break;
-        }
-    }
 
     //   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
     const [activeTab, setActiveTab] = useState('1')

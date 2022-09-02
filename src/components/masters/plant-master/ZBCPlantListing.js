@@ -49,7 +49,8 @@ class ZBCPlantListing extends Component {
             showPopupToggle: false,
             isViewMode: false,
             isLoader: false,
-            selectedRowData: false
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -410,6 +411,7 @@ class ZBCPlantListing extends Component {
         this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        window.screen.width >= 1600 && this.state.gridApi.sizeColumnsToFit()
     }
 
 
@@ -420,7 +422,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor } = this.state;
+        const { isEditFlag, isOpenVendor, noData } = this.state;
         const isFirstColumn = (params) => {
 
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -489,11 +491,12 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -510,6 +513,7 @@ class ZBCPlantListing extends Component {
                                 imagClass: 'imagClass'
                             }}
                             rowSelection={'multiple'}
+                            suppressRowClickSelection={true}
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                         >
@@ -519,8 +523,8 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>

@@ -26,7 +26,6 @@ function SurfaceTreatmentCost(props) {
   const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
-  const [OldGridData, setOldGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -44,7 +43,7 @@ function SurfaceTreatmentCost(props) {
     }
 
     if (!CostingViewMode && !IsLocked) {
-      const isEqual = JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
       props.setSurfaceData({ gridData, Params, isEqual, item })
       // if (props.IsAssemblyCalculation) {
       //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
@@ -81,10 +80,6 @@ function SurfaceTreatmentCost(props) {
     if (Object.keys(rowData).length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
-        const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
-        const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
-        const SurfaceTreatmentCost = WithLaboutCost + WithOutLabourCost;
-
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,

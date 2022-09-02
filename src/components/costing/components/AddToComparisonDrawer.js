@@ -3,22 +3,20 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/Common'
+import { getPlantSelectListByType, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
+import { getConfigurationKey } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
 
 function AddToComparisonDrawer(props) {
-  const loggedIn = isUserLoggedIn()
-
   const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
-    vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
+    vendorPlantName, vendorPlantId, destinationPlantName, destinationPlantId } = editObject
 
 
 
@@ -48,14 +46,7 @@ function AddToComparisonDrawer(props) {
   // const [clientDropdown, setclientDropdown] = useState([])
   const [costingDropdown, setCostingDropdown] = useState([])
 
-  const [vendorId, setVendorId] = useState([])
-
-  /* constant for form value */
-  const [plantValue, setPlantValue] = useState('')
-  const [vendorValue, setVendorValue] = useState('')
-  const [vendorPlant, setVendorPlant] = useState('')
-  const [cbcValue, setCbcValue] = useState('')
-
+  const [vendorId, setVendorId] = useState(editObject.VendorId ? editObject.VendorId : [])
   /* constant for checkbox rendering condition */
   const [isZbcSelected, setIsZbcSelected] = useState(false)  // FALSE FOR MINDA 
 
@@ -114,7 +105,7 @@ function AddToComparisonDrawer(props) {
         if (getConfigurationKey().IsDestinationPlantConfigure) {
           dispatch(getPlantSelectListByType(ZBC, () => { }))
         } else if (getConfigurationKey().IsVendorPlantConfigurable) {
-          dispatch(getPlantBySupplier(VendorId, (res) => { }))
+          // dispatch(getPlantBySupplier(VendorId, (res) => { }))
         }
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId ? vendorPlantId : '00000000-0000-0000-0000-000000000000', destinationPlantId ? destinationPlantId : '00000000-0000-0000-0000-000000000000', () => { }))
       }
@@ -214,19 +205,21 @@ function AddToComparisonDrawer(props) {
    * @description showing vendor plant by vendor name
    */
   const handleVendorChange = ({ value }) => {
-    const temp = []
     setVendorId(value)
-    if (loggedIn) {
-      dispatch(getPlantBySupplier(value, (res) => { }),
-        // dispatch(
-        //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
-        //   }),
-        //   )
-        setValue('costings', '')
-      )
-    } else {
-      handleVendorNameChange('')
-    }
+    setValue('destinationPlant', '')
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    setValue('costings', '')
+    // if (loggedIn) {
+    //   dispatch(getPlantBySupplier(value, (res) => { }),
+    //     // dispatch(
+    //     //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
+    //     //   }),
+    //     //   )
+    //     setValue('costings', '')
+    //   )
+    // } else {
+    //   handleVendorNameChange('')
+    // }
   }
 
 
@@ -236,16 +229,8 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-
-    setPlantValue(values.plant)
-    setVendorValue(values.vendor)
-    setVendorPlant(values.vendorPlant)
-    setCbcValue(values.clientName)
     setCostingDropdown([])
-
-
     partNo.isChanged = true
-
     dispatch(storePartNumber(partNo))
 
     setValue('costings', '')
@@ -420,10 +405,10 @@ function AddToComparisonDrawer(props) {
             temp[index] = obj
           } else {
             const index = temp.findIndex(
-              (data) => data.costingId == values.costings.value,
+              (data) => data.costingId === values.costings.value,
             )
 
-            if (index == -1) {
+            if (String(index) === '-1') {
 
               temp.push(obj)
               setIsZbcSelected(true)
@@ -466,8 +451,6 @@ function AddToComparisonDrawer(props) {
    * @description Getting costing dropdown on basis of plant selection
    */
   const handlePlantChange = (value) => {
-
-    const temp = []
     dispatch(
       getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, value.value, (res) => {
         setValue('costings', '')
@@ -481,11 +464,8 @@ function AddToComparisonDrawer(props) {
   */
 
   const handleVendorNameChange = ({ value }) => {
-    const temp = []
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
-    } else {
-      value = value
     }
     dispatch(
       getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, value, (res) => {
@@ -500,11 +480,8 @@ function AddToComparisonDrawer(props) {
  */
 
   const handleDestinationPlantNameChange = ({ value }) => {
-    const temp = []
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
-    } else {
-      value = value
     }
     dispatch(
       getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, '00000000-0000-0000-0000-000000000000', value, (res) => {
@@ -558,6 +535,7 @@ function AddToComparisonDrawer(props) {
             temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
             return null
           }
+          return null
         })
       } else {
         costingSelectList && costingSelectList.map((item) => {

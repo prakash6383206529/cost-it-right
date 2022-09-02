@@ -22,6 +22,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config
 
@@ -181,7 +182,7 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
-        const queryParamsSecond = `CostingHead=${obj.CostingHeadNew !== undefined ? obj.CostingHeadNew : ""}&Technology=${obj.Technologies !== undefined ? obj.Technologies : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technologies !== undefined ? obj.Technologies : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
                 let value = []
@@ -460,10 +461,10 @@ export function getFuelUnitCost(data, callback) {
  * @method getLabourCost
  * @description GET LABOUR COST
  */
-export function getLabourCost(data, callback) {
+export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
+        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
@@ -481,10 +482,10 @@ export function getLabourCost(data, callback) {
  * @method getPowerCostUnit
  * @description GET POWER COST UNIT
  */
-export function getPowerCostUnit(plantId, callback) {
+export function getPowerCostUnit(plantId, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, config())
+        axios.get(`${API.getPowerCostUnit}?PlantId=${plantId}&EffectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

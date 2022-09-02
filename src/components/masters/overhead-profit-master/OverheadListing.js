@@ -4,7 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { loggedInUserId, } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -46,6 +46,7 @@ class OverheadListing extends Component {
             deletedId: '',
             selectedRowData: [],
             isLoader: false,
+            noData: false
         }
     }
 
@@ -383,11 +384,12 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0) || this.state.noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {this.state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -405,9 +407,9 @@ class OverheadListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
-
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>

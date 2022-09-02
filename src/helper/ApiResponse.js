@@ -75,6 +75,7 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
             obj['label'] = val.name
             obj['value'] = val._id
             cloneListValue.push(obj);
+            return null
         })
         return cloneListValue;
     }
@@ -107,6 +108,7 @@ export function formatGetPlanResult(result) {
             } else if ((item.code !== 'fps' && item.intervalLength === 1 && item.state === 'active')) {
                 planListMonthly.push(item);
             }
+            return null
         });
         planListArray.push(planListMonthly);
         planListArray.push(planListYearly);
@@ -127,11 +129,13 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
                 if (_.isEqual(item, item1)) {
                     count++
                 }
+                return null
             })
             if (count === 0) {                                              // NOT EQUAL
                 item.IsChecked = false
                 tempFinal.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
             }
+            return null
         })
 
         selectedRowData.forEach(object => {

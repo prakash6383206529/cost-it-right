@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
@@ -53,9 +52,7 @@ function Pipe(props) {
     }
   }
 
-  const { rmRowData, isEditFlag, item, CostingViewMode } = props
-
-  const costData = useContext(costingInfoContext)
+  const { rmRowData, item, CostingViewMode } = props
 
   const defaultValues = {
 
@@ -98,7 +95,6 @@ function Pipe(props) {
     FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
   })
   const [isChangeApplies, setIsChangeApplied] = useState(true)
-  const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
   const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
@@ -449,7 +445,6 @@ function Pipe(props) {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
     let grossWeight = GrossWeight
-    setUnit(value.label)
     setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
     setTimeout(() => {
       setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
@@ -773,7 +768,7 @@ function Pipe(props) {
                   <SearchableSelectHookForm
                     label={'Weight Unit'}
                     name={'UOMDimension'}
-                    placeholder={'-Select-'}
+                    placeholder={'Select'}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

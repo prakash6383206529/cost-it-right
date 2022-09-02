@@ -20,9 +20,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, userDepartmetList, loggedInUserId, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, userDepartmetList, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
@@ -44,7 +44,7 @@ function RMDomesticListing(props) {
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -60,9 +60,9 @@ function RMDomesticListing(props) {
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [noData, setNoData] = useState(false)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
-
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -93,6 +93,9 @@ function RMDomesticListing(props) {
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
+        }
+        else {
+            setNoData(false)
         }
 
     }, [rmDataList])
@@ -130,7 +133,7 @@ function RMDomesticListing(props) {
             }))
 
             return () => {
-                dispatch(setSelectedCostingListSimualtion([]))
+                dispatch(setSelectedRowForPagination([]))
             }
         }
     }, [])
@@ -165,7 +168,7 @@ function RMDomesticListing(props) {
         }
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
-                // apply(selectedCostingListSimulation, selectedCostingListSimulation.length)
+                // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
                     props?.changeTokenCheckBox(true)
                 }
@@ -192,7 +195,7 @@ function RMDomesticListing(props) {
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
 
-                            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (!(isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant)) {
                                 if (floatingFilterData[prop] !== "") {
                                     isReset = false
                                 }
@@ -221,6 +224,10 @@ function RMDomesticListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+
+        if (rmDataList.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -306,7 +313,7 @@ function RMDomesticListing(props) {
         setPageNoNew(1)
         setCurrentRowIndex(0)
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     }
@@ -541,7 +548,6 @@ function RMDomesticListing(props) {
             getDataList(null, null, null, null, null, 0, currentRowIndex, 50, true, floatingFilterData)
             setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
             setGlobalTake(50)
-            setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
                 getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
@@ -593,7 +599,7 @@ function RMDomesticListing(props) {
         setDisableDownload(true)
 
         //let tempArr = gridApi && gridApi?.getSelectedRows()
-        let tempArr = selectedCostingListSimulation
+        let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
@@ -612,7 +618,7 @@ function RMDomesticListing(props) {
     const onBtExport = () => {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
-        tempArr = selectedCostingListSimulation
+        tempArr = selectedRowForPagination
 
 
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
@@ -641,21 +647,21 @@ function RMDomesticListing(props) {
 
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-            selectedRows = selectedCostingListSimulation
-        } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+            selectedRows = selectedRowForPagination
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
             let finalData = []
             if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-                    if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                         continue;
                     }
-                    finalData.push(selectedCostingListSimulation[i])
+                    finalData.push(selectedRowForPagination[i])
                 }
 
             } else {
-                finalData = selectedCostingListSimulation
+                finalData = selectedRowForPagination
             }
             selectedRows = [...selectedRows, ...finalData]
 
@@ -663,7 +669,7 @@ function RMDomesticListing(props) {
 
 
         let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
@@ -685,8 +691,8 @@ function RMDomesticListing(props) {
 
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        if (selectedCostingListSimulation?.length > 0) {
-            selectedCostingListSimulation.map((item) => {
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
                 if (item.RawMaterialId === props.node.data.RawMaterialId) {
                     props.node.setSelected(true)
                 }
@@ -808,8 +814,9 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} ${rmDataList && rmDataList?.length <= 0 ? 'overlay-contain' : ''}`}>
+                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
                                         defaultColDef={defaultColDef}
