@@ -80,10 +80,25 @@ export default function ReportListingReducers(state = initialState, action) {
                 reportListing: arr1
             }
         case GET_ALL_REPORT_LIST:
+
+            let tempAll = action.payload
+            let ArrNew = []
+            let srSecond = 0
+            let arrSecond = []
+            tempAll && tempAll.map(item => {
+                item.PersonRequestingChange = userDetails().Name
+                srSecond = ''
+                item.SrNo = srSecond
+                ArrNew.push(item)
+                return ArrNew
+
+            })
+
+            arrSecond = ArrNew
             return {
                 ...state,
                 loading: false,
-                allReportListing: action.payload
+                allReportListing: arrSecond
             }
 
         default:
