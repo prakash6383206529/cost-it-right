@@ -276,7 +276,6 @@ export function getLabourTypeDetailsForMachineType(ID, callback) {
  * @description update labour
  */
 export function updateLabourTypeForMachineType(requestData, callback) {
-    console.log(requestData, "requestData");
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(API.updateLabourTypeForMachineType, requestData, config())

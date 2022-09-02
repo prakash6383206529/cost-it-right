@@ -924,10 +924,7 @@ class AddBOPImport extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
       });
-    console.log('DropdownChange: ', DropdownChange);
-    console.log('DataToChange: ', DataToChange);
-    console.log(updatedObj, 'updatedObj');
-    console.log(this.state.IsFinancialDataChanged, 'IsFinancialDataChanged');
+
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}

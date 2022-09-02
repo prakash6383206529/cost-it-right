@@ -355,7 +355,6 @@ class AddPower extends Component {
 
           setTimeout(() => {
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-            console.log('Data: ', Data);
 
             this.setState({
               isEditFlag: true,
@@ -493,8 +492,6 @@ class AddPower extends Component {
           Toaster.warning("Please select state first.")
           return false
         }
-
-        console.log('StateName: ', StateName);
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;
