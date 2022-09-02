@@ -418,6 +418,7 @@ class OverheadListing extends Component {
                                     onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
