@@ -116,7 +116,7 @@ class PowerListing extends Component {
   viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id?.PowerId,
+      Id: this.state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
       IsVendor: this.state.IsVendor,
       isViewMode: isViewMode,
       plantId: Id?.PlantId
