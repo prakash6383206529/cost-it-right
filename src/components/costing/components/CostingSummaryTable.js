@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -28,12 +28,16 @@ import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
 import _ from 'lodash'
+import ReactExport from 'react-export-excel';
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage } = props
   let history = useHistory();
+  const ExcelFile = ReactExport.ExcelFile;
+  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -73,6 +77,7 @@ const CostingSummaryTable = (props) => {
   const [stepOne, setStepOne] = useState(true);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
+  const [excelArray, setExcelArray] = useState([])
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
@@ -90,6 +95,8 @@ const CostingSummaryTable = (props) => {
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [viewBomPartId, setViewBomPartId] = useState("");
   const [dataSelected, setDataSelected] = useState([]);
+  const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
+
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -98,7 +105,6 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
 
     if (!viewMode && viewCostingData && partInfo) {
       let obj = {}
@@ -114,6 +120,7 @@ const CostingSummaryTable = (props) => {
         }
       }))
     }
+
   }, [])
 
   useEffect(() => {
@@ -435,7 +442,6 @@ const CostingSummaryTable = (props) => {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
         }
-
 
       }))
     }
@@ -771,6 +777,98 @@ const CostingSummaryTable = (props) => {
     }
   }
 
+
+  const onBtExport = () => {
+
+    function checkAssembly(obj) {
+      if (obj.IsAssemblyCosting) {
+        obj.rm = "Multiple RM"
+        obj.gWeight = "Multiple RM"
+        obj.fWeight = "Multiple RM"
+        obj.pCost = "Multiple Process"
+        obj.oCost = "Multiple Operation"
+        obj.sTreatment = "Multiple Surface Treatment"
+        return obj
+      } else {
+        return obj
+      }
+    }
+
+    let costingSummary = []
+    for (var prop in VIEW_COSTING_DATA) {
+      costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+    }
+
+    let dummy = []
+    viewCostingData && viewCostingData.map((item, index) => {
+      dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnA${index}` })
+      dummy.push({ label: "", value: `columnB${index}` })
+      dummy.push({ label: "", value: "" })
+      dummy.push({ label: "", value: "" })
+
+    })
+
+
+    let dummyA = []
+    var value = ""
+
+    viewCostingData && viewCostingData.map((element, indexOutside) => {
+      let nextObj = checkAssembly(viewCostingData[indexOutside])
+
+      if (indexOutside === 0) {
+
+        costingSummary.map((item, index) => {
+
+          value = (item.value)
+          let obj = {}
+          let key1 = `columnA${indexOutside}`
+          let key2 = `columnB${indexOutside}`
+
+          obj[key1] = item.label
+          obj[key2] = nextObj ? nextObj[value] : ""
+
+
+          dummyA.push(obj)
+
+        })
+
+      } else {
+        let newArr = []
+        costingSummary.map((item, index) => {
+
+          value = (item.value)
+          let obj = {}
+          let key1 = `columnA${indexOutside}`
+          let key2 = `columnB${indexOutside}`
+
+          obj[key1] = item.label
+          obj[key2] = nextObj ? nextObj[value] : ""
+
+          obj = { ...obj, ...dummyA[index] }
+
+          newArr.push(obj)
+
+        })
+        dummyA = newArr
+
+      }
+
+    })
+
+    return returnExcelColumn(dummy, dummyA)
+
+  };
+
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    temp = TempData
+    return (
+      <ExcelSheet data={temp} name={"CostingSummary"}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>
+    );
+  }
+
   return (
     <Fragment>
       {
@@ -784,7 +882,17 @@ const CostingSummaryTable = (props) => {
               </Col>
             )}
 
+
             <Col md={simulationMode ? "12" : "8"} className="text-right">
+
+              {
+                DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
+                  <>
+                    <ExcelFile filename={'CostingSummary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5 mb-2'} title="Download"><div className="download mr-0"></div></button>}>
+                      {onBtExport()}
+                    </ExcelFile>
+                  </>
+              }
               {!simulationMode &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
