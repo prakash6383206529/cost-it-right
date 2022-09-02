@@ -494,6 +494,7 @@ class InterestRateListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>

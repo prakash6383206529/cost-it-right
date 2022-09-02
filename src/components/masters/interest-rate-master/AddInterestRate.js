@@ -3,24 +3,23 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
-import { renderDatePicker, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { SPACEBAR } from '../../../config/constants';
-import { onFocus } from '../../../helper';
+import { SPACEBAR, ZBC } from '../../../config/constants';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -69,10 +68,6 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
-    }
     this.getDetail()
     if (!this.state.isViewMode) {
       this.props.getICCAppliSelectList(() => { })
@@ -100,7 +95,7 @@ class AddInterestRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
     const temp = [];
     if (label === 'VendorNameList') {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
@@ -127,15 +122,13 @@ class AddInterestRate extends Component {
       return temp;
     }
     if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.PlantId === '0') return false
-          temp.push({ label: item.PlantName, value: item.PlantId })
-          return null
-        })
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
       return temp
     }
-
   }
 
   /**
@@ -250,7 +243,14 @@ class AddInterestRate extends Component {
     this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
     this.setState({ DropdownChanged: false })
   };
-
+  /** 
+   * @method handleSourceSupplierPlant
+   * @description Used handle vendor plants
+   */
+  handleSourceSupplierPlant = (e) => {
+    this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
+  }
   /**
   * @method getDetail
   * @description used to get user detail
@@ -277,6 +277,7 @@ class AddInterestRate extends Component {
               isEditFlag: true,
               IsVendor: Data.IsVendor,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
+              selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -336,9 +337,14 @@ class AddInterestRate extends Component {
 
   onSubmit = debounce((values) => {
 
-    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
 
+    let plantArray = []
+    selectedPlants && selectedPlants.map((item) => {
+      plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+      return plantArray
+    })
 
     if (vendorName.length <= 0) {
 
@@ -379,7 +385,8 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        PlantId: plant.value
+        // PlantId: plant.value
+        Plants: plantArray
       }
       if (this.state.isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
@@ -420,7 +427,8 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        PlantId: plant.value
+        // PlantId: plant.value
+        Plants: plantArray
       }
 
       this.props.createInterestRate(formData, (res) => {
@@ -613,6 +621,29 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
+                      {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        <Col md="3">
+                          <Field
+                            label="Plant"
+                            name="SourceSupplierPlantId"
+                            placeholder={"Select"}
+                            title={showDataOnHover(this.state.selectedPlants)}
+                            selection={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                            options={this.renderListing("plant")}
+                            selectionChanged={this.handleSourceSupplierPlant}
+                            validate={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                            required={true}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            disabled={isEditFlag || isViewMode}
+                            className="multiselect-with-border"
+                          />
+                        </Col>)
+                      )}
                     </Row>
 
                     <Row>
@@ -788,7 +819,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, plantSelectList
+    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj
   }
 }
 
@@ -800,6 +831,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   updateInterestRate,
+  getPlantSelectListByType,
   createInterestRate,
   getInterestRateData,
   getPaymentTermsAppliSelectList,
