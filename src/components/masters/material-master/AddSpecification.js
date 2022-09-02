@@ -13,7 +13,7 @@ import { fetchRMGradeAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { SPECIFICATION } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';

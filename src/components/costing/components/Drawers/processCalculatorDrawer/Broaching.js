@@ -16,6 +16,7 @@ function Broaching(props) {
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const defaultValues = {
         noOFTeeth: WeightCalculatorRequest && WeightCalculatorRequest.NoOFTeeth !== undefined ? WeightCalculatorRequest.NoOFTeeth : '',
@@ -61,7 +62,6 @@ function Broaching(props) {
     }, [dataToSend.CuttingTimeMins])
 
     const { calculateMachineTime } = props
-    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setBroachingForce = () => {
         const cuttingResistance = Number(getValues('cuttingResistance'))
@@ -178,14 +178,15 @@ function Broaching(props) {
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
-        obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
+        obj.TotalMachiningTime = totalMachiningTime
+
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
                 Toaster.success('Calculation saved sucessfully.')
-                calculateMachineTime(totalMachiningTime, obj)
+                calculateMachineTime('', obj)
             }
         }))
     }), 500);

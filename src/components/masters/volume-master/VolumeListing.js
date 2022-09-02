@@ -10,7 +10,7 @@ import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster } from '../../../config/constants'
-import { checkPermission } from '../../../helper/util'
+import { checkPermission, searchNocontentFilter } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -106,7 +106,6 @@ function VolumeListing(props) {
   const [data, setData] = useState({ isEditFlag: false, ID: '' });
   const [isActualBulkUpload, setIsActualBulkUpload] = useState(false);
   const [isBudgetedBulkUpload, setIsBudgetedBulkUpload] = useState(false);
-  const [viewAccessibility, setViewAccessibility] = useState(false);
   const [addAccessibility, setAddAccessibility] = useState(false);
   const [editAccessibility, setEditAccessibility] = useState(false);
   const [deleteAccessibility, setDeleteAccessibility] = useState(false);
@@ -132,10 +131,12 @@ function VolumeListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '' })
   const [disableDownload, setDisableDownload] = useState(false)
+  const [noData, setNoData] = useState(false)
 
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
   const { selectedRowForPagination } = useSelector((state => state.simulation))
+
 
   const dispatch = useDispatch();
 
@@ -160,6 +161,9 @@ function VolumeListing(props) {
     if (volumeDataList?.length > 0) {
       setTotalRecordCount(volumeDataList[0].TotalRecordCount)
     }
+    else {
+      setNoData(false)
+    }
   }, [volumeDataList])
 
   /**
@@ -172,7 +176,6 @@ function VolumeListing(props) {
       const accessData = Data && Data.Pages.find((el) => el.PageName === VOLUME)
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
       if (permmisionData !== undefined) {
-        setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
         setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
         setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
         setDeleteAccessibility(permmisionData && permmisionData.Delete ? permmisionData.Delete : false)
@@ -199,7 +202,6 @@ function VolumeListing(props) {
           button && button.click()
         }, 500);
       }
-
       if (res) {
         let isReset = true
         setTimeout(() => {
@@ -482,6 +484,9 @@ function VolumeListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
+    if (volumeDataList?.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
@@ -621,7 +626,7 @@ function VolumeListing(props) {
     <>
       <div className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
         <ScrollToTop pointProp="go-to-top" />
-        {isLoader ? <LoaderCustom /> :
+        {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
           <>
             <form noValidate>
               <Row>
@@ -705,11 +710,12 @@ function VolumeListing(props) {
               </Row>
             </form>
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${volumeDataList && volumeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}

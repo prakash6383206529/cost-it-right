@@ -31,12 +31,9 @@ function EndMill(props) {
     cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
-    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
-
-
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -52,8 +49,7 @@ function EndMill(props) {
     onToothFeedChange()
     onSpeedChange()
   }, [fieldValues])
-  const { technology, process, calculateMachineTime } = props
-  const isEditFlag = WeightCalculatorRequest ? true : false
+  const { calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const [dataToSend, setDataToSend] = useState({})

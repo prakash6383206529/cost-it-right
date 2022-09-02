@@ -6,13 +6,12 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { getConfigurationKey, getVendorCode, } from '../../../helper';
+import { getConfigurationKey } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
-import LoaderCustom from '../../common/LoaderCustom';
 
 function AddVendorDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, reset, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
   const [data, setData] = useState({});
@@ -25,7 +24,6 @@ function AddVendorDrawer(props) {
   const dispatch = useDispatch()
 
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
-  const filterPlantList = useSelector(state => state.comman.filterPlantList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
@@ -42,8 +40,7 @@ function AddVendorDrawer(props) {
       tempArr.push(el.VendorId)
       return null;
     })
-    { initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr) }
-
+    initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
   }, []);
 
   /**
@@ -90,7 +87,6 @@ function AddVendorDrawer(props) {
       })
       return temp
     }
-
   }
 
   /**

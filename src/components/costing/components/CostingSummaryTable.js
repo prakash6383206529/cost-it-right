@@ -70,11 +70,9 @@ const CostingSummaryTable = (props) => {
   const [viewAtttachments, setViewAttachment] = useState([])
   const [pdfHead, setPdfHead] = useState(false);
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
-  const [icons, setIcon] = useState(true);
   const [loader, setLoader] = useState(false);
   const [isAttachment, setAttachment] = useState(false)
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
-  const [stepOne, setStepOne] = useState(true);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
   const [excelArray, setExcelArray] = useState([])
@@ -148,7 +146,7 @@ const CostingSummaryTable = (props) => {
       if (item.IsApprovalLocked) {
         setIsLockedState(true)
       }
-      return;
+      return null
     })
 
   }, [viewCostingData])
@@ -547,7 +545,7 @@ const CostingSummaryTable = (props) => {
     let temp = viewApprovalData
     costingIds &&
       costingIds.map((id) => {
-        let index = viewCostingData?.findIndex((data) => data?.costingId == id)
+        let index = viewCostingData?.findIndex((data) => data?.costingId === id)
         if (index !== -1) {
           let obj = {}
           // add vendor key here
@@ -598,10 +596,12 @@ const CostingSummaryTable = (props) => {
                   } else if (data?.Sequence >= sequence) {
                     actualRemQty += parseInt(data?.ApprovedQuantity)
                   }
+                  return null
                 })
                 budgetedQtyArr.map((data) => {
                   // if (data?.Sequence >= sequence) {
                   totalBudgetedQty += parseInt(data?.BudgetedQuantity)
+                  return null
                   // }
                 })
                 obj.consumptionQty = checkForNull(actualQty)
@@ -630,6 +630,7 @@ const CostingSummaryTable = (props) => {
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
+        return null
       })
   }
 
@@ -872,7 +873,6 @@ const CostingSummaryTable = (props) => {
   return (
     <Fragment>
       {
-        stepOne &&
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
           <Row>
@@ -1125,7 +1125,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span>{checkForDecimalAndNull(data?.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1155,7 +1155,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span>{checkForDecimalAndNull(data?.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1213,7 +1213,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1272,7 +1272,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1383,7 +1383,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span>{checkForDecimalAndNull(data?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1431,7 +1431,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1500,7 +1500,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -1697,7 +1697,7 @@ const CostingSummaryTable = (props) => {
 
                               <td class="text-center costing-summary">
                                 {(!viewMode && !isFinalApproverShow) &&
-                                  (data?.status === DRAFT && icons) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     class="user-btn"
                                     disabled={viewCostingData[index].IsApprovalLocked}

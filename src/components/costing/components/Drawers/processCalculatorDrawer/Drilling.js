@@ -29,7 +29,7 @@ function Drilling(props) {
     turningDiameter: WeightCalculatorRequest && WeightCalculatorRequest.TurningDiameter !== undefined ? WeightCalculatorRequest.TurningDiameter : '',
     turningLength: WeightCalculatorRequest && WeightCalculatorRequest.TurningLength !== undefined ? WeightCalculatorRequest.TurningLength : '',
   }
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,

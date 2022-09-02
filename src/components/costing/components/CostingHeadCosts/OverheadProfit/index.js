@@ -12,7 +12,6 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
-import { Link } from 'react-scroll'
 import { debounce } from 'lodash';
 
 function OverheadProfit(props) {
@@ -332,6 +331,7 @@ function OverheadProfit(props) {
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
+          plantId: costData.plantId
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {

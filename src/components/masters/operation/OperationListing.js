@@ -16,7 +16,7 @@ import AddOperation from './AddOperation';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
 import { checkForDecimalAndNull, userDepartmetList, getConfigurationKey } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -76,7 +76,8 @@ class OperationListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            noData: false
         }
     }
     componentDidMount() {
@@ -185,6 +186,7 @@ class OperationListing extends Component {
             }
 
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
+                this.setState({ noData: false })
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
@@ -246,6 +248,9 @@ class OperationListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
+        if (this.state.tableData?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -559,7 +564,7 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        if (this.props.isSimulation) {
+        if (this.props.isSimulation || this.props.isMasterSummaryDrawer) {
             window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
@@ -597,11 +602,8 @@ class OperationListing extends Component {
         temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
-            } else if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            } else if (item.Plants === '-') {
+            }
+            else if (item.Plants === '-') {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
@@ -625,7 +627,7 @@ class OperationListing extends Component {
     */
     render() {
         const { isSimulation } = this.props;
-        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -825,8 +827,9 @@ class OperationListing extends Component {
 
                         </Row>
                     </form>
-                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.state.tableData && this.state.tableData.length <= 0 ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}

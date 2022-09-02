@@ -15,7 +15,7 @@ import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/const
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import valuesFloatingFilter from '../../masters/material-master/valuesFloatingFilter'
@@ -53,6 +53,7 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [noData, setNoData] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -432,10 +433,11 @@ function ReportListing(props) {
 
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
-
+        setNoData(false)
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
+        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API
@@ -697,10 +699,6 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                {renderColumn(ReportMaster)}
-                            </ExcelFile>
-
 
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
@@ -726,8 +724,9 @@ function ReportListing(props) {
                 </Row>
             </form>
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material mt-2 ${isLoader && "max-loader-height"}`}>
+                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
@@ -752,10 +751,8 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorName' headerName='Vendor' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorCode' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantName' headerName='Plant' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantCode' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>

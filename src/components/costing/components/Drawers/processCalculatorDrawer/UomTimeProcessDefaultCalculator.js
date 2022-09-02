@@ -16,6 +16,7 @@ function UomTimeProcessDefaultCalculator(props) {
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
     let TotalCycleTimeSecGlobal = 0
 
     const defaultValues = {
@@ -80,7 +81,6 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
     const { calculateMachineTime } = props
-    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setSpindleSpeed = () => {
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
@@ -180,8 +180,8 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
-        obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
+        obj.TotalMachiningTime = totalMachiningTime
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)

@@ -2703,7 +2703,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
@@ -2717,7 +2717,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor" },
+    { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
     { label: "BOP Category", value: "BoughtOutPartCategory" },
@@ -2754,7 +2754,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
@@ -2782,7 +2782,7 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
@@ -2804,7 +2804,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 ]
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Plant(Code)", value: "Plants", },
@@ -2893,7 +2893,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 ]
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -2983,7 +2983,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3006,10 +3006,8 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
     { label: "Technology", value: "TechnologyName" },
-    { label: "Vendor", value: "VendorName", },
-    { label: "Vendor(Code)", value: "VendorCode", },
-    { label: "Plant", value: "PlantName", },
-    { label: "Plant(Code)", value: "PlantCode", },
+    { label: "Plant(Code)", value: "Plant", },
+    { label: "Vendor(Code)", value: "Vendor", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },

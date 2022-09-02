@@ -24,6 +24,7 @@ import DayTime from '../../common/DayTimeWrapper';
 import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -62,7 +63,8 @@ class IndivisualPartListing extends Component {
             globalTake: defaultPageSize,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             disableFilter: true,
-            disableDownload: false
+            disableDownload: false,
+            noData: false
         }
     }
 
@@ -74,7 +76,7 @@ class IndivisualPartListing extends Component {
         let object = { ...this.state.floatingFilterData }
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             this.setState({ isLoader: false })
-
+            this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
@@ -141,7 +143,9 @@ class IndivisualPartListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
-
+        if (this.props.newPartsListing?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -203,6 +207,7 @@ class IndivisualPartListing extends Component {
         this.setState({ isLoader: true })
         this.props.getPartDataList((res) => {
             this.setState({ isLoader: false })
+            this.setState({ noData: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -501,7 +506,7 @@ class IndivisualPartListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const ExcelFile = ReactExport.ExcelFile;
 
@@ -649,11 +654,12 @@ class IndivisualPartListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}

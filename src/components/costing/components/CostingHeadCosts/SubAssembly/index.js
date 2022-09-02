@@ -65,6 +65,7 @@ function AssemblyPart(props) {
           array = JSON.parse(localStorage.getItem('costingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('costingArray', JSON.stringify(uniqueArary));
@@ -129,6 +130,7 @@ function AssemblyPart(props) {
         subAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {

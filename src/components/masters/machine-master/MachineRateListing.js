@@ -20,7 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList } from '../../../helper'
+import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
@@ -60,7 +60,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -71,6 +71,7 @@ class MachineRateListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             disableFilter: true,
+            noData: false
         }
     }
 
@@ -138,6 +139,7 @@ class MachineRateListing extends Component {
             let FloatingfilterData = this.state.filterModel
             let obj = { ...this.state.floatingFilterData }
             this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+                this.setState({ noData: false })
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
@@ -191,6 +193,9 @@ class MachineRateListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        if (this.props.machineDatalist?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -445,11 +450,8 @@ class MachineRateListing extends Component {
                 item.MachineTonnage = ' '
             } else if (item.EffectiveDate === null) {
                 item.EffectiveDate = ' '
-            } else if (item.IsVendor === true) {
-                item.IsVendor = 'Vendor Based'
-            } else if (item.IsVendor === false) {
-                item.IsVendor = 'Zero Based'
-            } else if (item.Plants === '-') {
+            }
+            else if (item.Plants === '-') {
                 item.Plants = ' '
             } else if (item.MachineTypeName === '-') {
                 item.MachineTypeName = ' '
@@ -517,7 +519,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
 
         var filterParams = {
             date: "",
@@ -699,9 +701,10 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -722,7 +725,7 @@ class MachineRateListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
-                                    <AgGridColumn field="CostingHeadNew" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>

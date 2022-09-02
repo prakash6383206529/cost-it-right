@@ -37,7 +37,6 @@ function CostingDetailStepTwo(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   const { initialConfiguration } = useSelector(state => state.auth)
-  const partInfo = useSelector((state) => state.costing.partInfo)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)

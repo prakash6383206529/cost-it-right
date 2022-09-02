@@ -767,7 +767,7 @@ class AddMoreDetails extends Component {
     });
 
     const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
-    const { initialConfiguration, editDetails } = this.props
+    const { initialConfiguration } = this.props
 
     if (Object.keys(selectedPlants)?.length > 0) {
       this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
@@ -1437,7 +1437,7 @@ class AddMoreDetails extends Component {
    * @description ADDING PROCESS IN PROCESS TABLE 
   */
   processTableHandler = () => {
-    const { processName, UOM, processGrid, isProcessGroup } = this.state;
+    const { processName, UOM, processGrid, isProcessGroup, machineType, selectedPlants, effectiveDate } = this.state;
 
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
@@ -1459,7 +1459,7 @@ class AddMoreDetails extends Component {
       if (count > 0) {
         return false
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0 || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
         return false;
       }
@@ -1818,8 +1818,8 @@ class AddMoreDetails extends Component {
   onSubmit = (values) => {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
-      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, labourType } = this.state;
+      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -2110,9 +2110,9 @@ class AddMoreDetails extends Component {
    * @description LOAN ROW OPEN  AND CLOSE
   */
   loanToggle = () => {
-    const { isLoanOpen } = this.state
+    const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2127,10 +2127,10 @@ class AddMoreDetails extends Component {
   * @description WORKING HOUR ROW OPEN  AND CLOSE
   */
   workingHourToggle = () => {
-    const { isWorkingOpen } = this.state
+    const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2144,10 +2144,10 @@ class AddMoreDetails extends Component {
    * @description depreciation ROW OPEN  AND CLOSE
   */
   depreciationToogle = () => {
-    const { isDepreciationOpen } = this.state
+    const { isDepreciationOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2161,10 +2161,10 @@ class AddMoreDetails extends Component {
    * @description VARIABLE COST ROW OPEN  AND CLOSE
   */
   variableCostToggle = () => {
-    const { isVariableCostOpen } = this.state
+    const { isVariableCostOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2178,9 +2178,9 @@ class AddMoreDetails extends Component {
   * @description POWER OPEN  AND CLOSE
   */
   powerToggle = () => {
-    const { isPowerOpen } = this.state
+    const { isPowerOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2198,10 +2198,10 @@ class AddMoreDetails extends Component {
   * @description lABOUR OPEN  AND CLOSE
   */
   labourToggle = () => {
-    const { isLabourOpen, selectedPlants, effectiveDate } = this.state
+    const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (checkForNull(fieldsObj?.MachineCost) === 0 || selectedPlants.length === 0 || effectiveDate === '') {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
       return false;
@@ -2214,10 +2214,10 @@ class AddMoreDetails extends Component {
    * @description PROCESS OPEN  AND CLOSE
   */
   processToggle = () => {
-    const { isProcessOpen } = this.state
+    const { isProcessOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2225,10 +2225,10 @@ class AddMoreDetails extends Component {
     this.setState({ isProcessOpen: !isProcessOpen })
   }
   processGroupToggle = () => {
-    const { isProcessGroupOpen } = this.state
+    const { isProcessGroupOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || this.state.effectiveDate === '' || this.state.selectedPlants.length === 0 || this.state.machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2593,6 +2593,23 @@ class AddMoreDetails extends Component {
                               {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
+                        </Col>
+                        <Col md="6" className='d-flex align-items-center mb-2'>
+                          <label
+                            className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
+                            onChange={this.onPressLoadUnload}
+                          > Include Machine Rate in Depreciation
+                            <input
+                              type="checkbox"
+                              checked={this.state.IsLoadingUnloadingApplicable}
+                              disabled={isViewMode}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.IsLoadingUnloadingApplicable}
+                              onChange={this.onPressLoadUnload}
+                            />
+                          </label>
                         </Col>
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}
