@@ -105,6 +105,19 @@ class FuelListing extends Component {
     }
 
     /**
+    * @method viewOrEditItemDetails
+    * @description Edit or view Fuel
+    */
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+        let data = {
+            isEditFlag: true,
+            Id: rowData?.FuelGroupEntryId,
+            isViewMode: isViewMode
+        }
+        this.props.getDetails(data);
+    }
+
+    /**
     * @method buttonFormatter
     * @description Renders buttons
     */
