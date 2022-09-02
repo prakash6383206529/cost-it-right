@@ -814,10 +814,15 @@ const CostingSummaryTable = (props) => {
 
     let dummy = []
     viewCostingData && viewCostingData.map((item, index) => {
-      dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnA${index}` })
-      dummy.push({ label: "", value: `columnB${index}` })
-      dummy.push({ label: "", value: "" })
-      dummy.push({ label: "", value: "" })
+
+      if (index === 0) {
+        dummy.push({ label: "", value: `columnA${index}` })
+        dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+      } else {
+        dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+      }
+      // dummy.push({ label: "", value: "" })
+      // dummy.push({ label: "", value: "" })
 
     })
 
