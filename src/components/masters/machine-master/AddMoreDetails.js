@@ -2597,6 +2597,23 @@ class AddMoreDetails extends Component {
                             </div>
                           </div>
                         </Col>
+                        <Col md="6" className='d-flex align-items-center mb-2'>
+                          <label
+                            className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
+                            onChange={this.onPressLoadUnload}
+                          > Include Machine Rate in Depreciation
+                            <input
+                              type="checkbox"
+                              checked={this.state.IsLoadingUnloadingApplicable}
+                              disabled={isViewMode}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.IsLoadingUnloadingApplicable}
+                              onChange={this.onPressLoadUnload}
+                            />
+                          </label>
+                        </Col>
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}
                       <Row className="mb-3 accordian-container">
