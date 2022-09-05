@@ -343,7 +343,6 @@ export default function materialReducer(state = initialState, action) {
                 deptList: updateList
             }
         case GET_RM_APPROVAL_LIST:
-            console.log(action.payload, 'action.payload');
             // let temp1 = []
             // let temp = action.payload
             // temp && temp.map((item) => {
@@ -374,6 +373,25 @@ export default function materialReducer(state = initialState, action) {
                     return (
                         item.BasicRate = item.MachineRate
 
+                    )
+                })
+            }
+            if (action?.payload[0]?.RawMaterialId !== undefined && action?.payload[0]?.RawMaterialId !== null) {
+                array = action.payload && action.payload.map((item) => {
+                    item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.ScrapRate = checkForDecimalAndNull(item.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    return item
+
+                })
+            }
+            else if (action?.payload[0]?.BoughtOutPartId !== undefined && action?.payload[0]?.BoughtOutPartId !== null) {
+                array = action.payload && action.payload.filter((item) => {
+                    return (
+                        item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice),
+                        item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
                     )
                 })
             }
