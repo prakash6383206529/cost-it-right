@@ -203,7 +203,7 @@ function VolumeListing(props) {
         }, 500);
       }
       if (res) {
-        console.log(res.status, "res", res)
+
         if ((res && res.status === 204) || res.length === 0) {
           setTotalRecordCount(0)
           setPageNo(0)
