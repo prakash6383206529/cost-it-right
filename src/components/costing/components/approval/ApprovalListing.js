@@ -191,6 +191,8 @@ function ApprovalListing(props) {
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
+          setTotalRecordCount(0)
+          setPageNo(0)
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
           let temp = []

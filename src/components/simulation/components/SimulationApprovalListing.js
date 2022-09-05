@@ -155,10 +155,18 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+            if (res?.data?.DataList?.length === 0) {
+                setTotalRecordCount(0)
+                setPageNo(0)
+            }
             if (res?.data?.Result) {
                 setIsLoader(false)
                 let isReset = true
                 if (res) {
+                    if (res && res.status === 204) {
+                        setTotalRecordCount(0)
+                        setPageNo(0)
+                    }
                     setTimeout(() => {
                         for (var prop in obj) {
                             if (obj[prop] !== "") {

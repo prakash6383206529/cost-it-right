@@ -190,6 +190,11 @@ function RMDomesticListing(props) {
                     }, 500);
                 }
 
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
+
                 if (res) {
                     let isReset = true
                     setTimeout(() => {

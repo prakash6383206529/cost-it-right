@@ -210,6 +210,11 @@ function RMImportListing(props) {
           setloader(false);
         }
 
+        if (res && res.status === 204) {
+          setTotalRecordCount(0)
+          setPageNo(0)
+        }
+
         if (res && isPagination === false) {
           setDisableDownload(false)
           setTimeout(() => {
