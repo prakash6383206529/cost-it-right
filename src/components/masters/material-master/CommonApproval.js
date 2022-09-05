@@ -127,6 +127,10 @@ function CommonApproval(props) {
             let obj = { ...floatingFilterData }
 
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 let isReset = true
                 setTimeout(() => {
 
