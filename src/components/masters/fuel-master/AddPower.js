@@ -105,6 +105,7 @@ class AddPower extends Component {
       })
       this.props.getPlantListByState('', () => { })
       this.props.getPlantBySupplier('', () => { })
+      this.props.getPowerDetailData('', () => { })
     }
     this.getDetails();
   }
@@ -347,7 +348,7 @@ class AddPower extends Component {
               isSelfPowerGenerator: false,
             })
           }
-
+          this.props.change('SEBPowerContributaion', Data.SEBChargesDetails[0].PowerContributaionPersentage)
           if (Data.SGChargesDetails.length > 0) {
             let selfPowerArray = Data && Data.SGChargesDetails.map((item) => item)
             tempArray.push(...powerGrid, ...selfPowerArray)
@@ -642,7 +643,11 @@ class AddPower extends Component {
   updateSEBGrid = () => {
     const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
-
+    if (checkForNull(fieldsObj?.MinDemandKWPerMont) === 0 && checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.AvgUnitConsumptionPerMonth) === 0 &&
+      checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.MeterRentAndOtherChargesPerAnnum) === 0 && checkForNull(fieldsObj?.DutyChargesAndFCA) === 0 &&
+      checkForNull(fieldsObj?.SEBPowerContributaion) === 0) {
+      return false;
+    }
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
@@ -943,7 +948,7 @@ class AddPower extends Component {
       });
 
     } else {
-      let UOMObj = UOMSelectList && UOMSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
+      let UOMObj = UOMSelectList && UOMSelectList.find(el => el.Value === tempData.UnitOfMeasurementId)
       this.setState({
         isEditFlagForStateElectricity: false,
         powerGridEditIndex: index,
@@ -2068,7 +2073,7 @@ function mapStateToProps(state) {
       DutyChargesAndFCA: powerData && powerData.SEBChargesDetails[0].DutyChargesAndFCA,
       TotalUnitCharges: powerData && powerData.SEBChargesDetails[0].TotalUnitCharges,
       //effectiveDate: powerData && powerData.SEBChargesDetails[0].EffectiveDate,
-      SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
+      // SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
     }
   }
 
