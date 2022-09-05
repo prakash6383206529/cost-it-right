@@ -480,14 +480,14 @@ class BulkUpload extends Component {
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
-        // if (faildRecords) {
-        //     return <Downloadxls
-        //         isFailedFlag={true}
-        //         fileName={fileName}
-        //         failedData={failedData}
-        //         costingHead={costingHead}
-        //     />
-        // }
+        if (faildRecords) {
+            return <Downloadxls
+                isFailedFlag={true}
+                fileName={fileName}
+                failedData={failedData}
+                costingHead={costingHead}
+            />
+        }
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}
