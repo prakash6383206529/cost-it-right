@@ -5,6 +5,7 @@ import {
     GET_EXCHANGE_RATE_DATA,
     GET_CURRENCY_SELECTLIST_BY,
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
 
@@ -23,10 +24,16 @@ export default function ExchangeRateReducer(state = initialState, action) {
                 loading: false
             };
         case EXCHANGE_RATE_DATALIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.BankRate = checkForDecimalAndNull(el.BankRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                el.CustomRate = checkForDecimalAndNull(el.CustomRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
-                exchangeRateDataList: action.payload
+                exchangeRateDataList: arr
             };
         case GET_EXCHANGE_RATE_DATA:
             return {
