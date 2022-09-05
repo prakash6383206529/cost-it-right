@@ -41,6 +41,7 @@ export function createMachineType(data, callback) {
         }).catch((error) => {
             dispatch({ type: CREATE_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
