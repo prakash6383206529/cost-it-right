@@ -448,9 +448,8 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== INR ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '';
+    return cellValue !== INR ? cellValue : '';
   }
 
   /**
@@ -476,7 +475,7 @@ function RMImportListing(props) {
   */
   const shearingCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
 
   const statusFormatter = (props) => {
@@ -491,7 +490,7 @@ function RMImportListing(props) {
   */
   const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
   /**
   * @method currencyFormatter

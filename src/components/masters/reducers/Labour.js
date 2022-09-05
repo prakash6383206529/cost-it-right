@@ -11,6 +11,7 @@ import {
     GET_LABOUR_DATA_LIST,
     GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
 
@@ -73,10 +74,15 @@ export default function labourReducer(state = initialState, action) {
                 labourTypeByMachineTypeSelectList: action.payload
             };
         case GET_LABOUR_DATA_LIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.LabourRate = checkForDecimalAndNull(el.LabourRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
-                labourDataList: action.payload
+                labourDataList: arr
             }
         case GET_LABOUR_TYPE_FOR_MACHINE_TYPE:
             return {

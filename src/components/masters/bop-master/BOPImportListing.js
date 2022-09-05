@@ -345,7 +345,7 @@ class BOPImportListing extends Component {
     */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
     /**
@@ -376,8 +376,7 @@ class BOPImportListing extends Component {
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
-        const { initialConfiguration } = this.props
-        return checkForDecimalAndNull(row.Currency === INR ? row.NetLandedCost : row.NetLandedCostConversion, initialConfiguration && initialConfiguration.NoOfDecimalForPrice);
+        return row.Currency === INR ? row.NetLandedCost : row.NetLandedCostConversion;
     }
 
     /**
