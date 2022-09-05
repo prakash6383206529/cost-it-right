@@ -330,13 +330,8 @@ class AddMoreDetails extends Component {
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
           setTimeout(() => {
-            const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-              fuelDataByPlant, } = this.props;
+            const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
-
-
-            // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-            const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.PlantId === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
@@ -374,7 +369,7 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              selectedPlants: [{ label: Data.PlantName && Data.Plant[0].PlantName, value: Data.PlantId && Data.Plant[0].PlantId }],
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
