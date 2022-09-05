@@ -812,22 +812,20 @@ const CostingSummaryTable = (props) => {
       costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
     }
 
-    let dummy = []
+    let masterDataArray = []
     viewCostingData && viewCostingData.map((item, index) => {
 
       if (index === 0) {
-        dummy.push({ label: "", value: `columnA${index}` })
-        dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: "", value: `columnA${index}` })
+        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
       } else {
-        dummy.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
       }
       // dummy.push({ label: "", value: "" })
       // dummy.push({ label: "", value: "" })
-
     })
 
-
-    let dummyA = []
+    let dataArray = []
     var value = ""
 
     viewCostingData && viewCostingData.map((element, indexOutside) => {
@@ -845,15 +843,13 @@ const CostingSummaryTable = (props) => {
           obj[key1] = item.label
           obj[key2] = nextObj ? nextObj[value] : ""
 
-
-          dummyA.push(obj)
+          dataArray.push(obj)
 
         })
 
       } else {
         let newArr = []
         costingSummary.map((item, index) => {
-
           value = (item.value)
           let obj = {}
           let key1 = `columnA${indexOutside}`
@@ -862,19 +858,15 @@ const CostingSummaryTable = (props) => {
           obj[key1] = item.label
           obj[key2] = nextObj ? nextObj[value] : ""
 
-          obj = { ...obj, ...dummyA[index] }
+          obj = { ...obj, ...dataArray[index] }
 
           newArr.push(obj)
 
         })
-        dummyA = newArr
-
+        dataArray = newArr
       }
-
     })
-
-    return returnExcelColumn(dummy, dummyA)
-
+    return returnExcelColumn(masterDataArray, dataArray)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
