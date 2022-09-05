@@ -109,13 +109,14 @@ function ViewRM(props) {
       <Col md="12">
         <div className="left-border mt-4 mb-3">Raw Material</div>
       </Col>
-      <Col md="12">
-        {!isPDFShow && String(viewCostingData[props.index].technologyId) === FERROUSCASTINGID && <td><button
-          className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-          type={"button"}
-          disabled={(viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null) ? true : false}
+      <Col md="12" className='btn-container mb-2 ' >
+        {!isPDFShow && String(viewCostingData[props.index].technologyId) === FERROUSCASTINGID && <button
+          className="secondary-btn"
+          type={'button'}
           onClick={() => { getWeightData(0) }}
-        /></td>}
+          disabled={(viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null) ? true : false}
+        >
+          <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
       </Col>
       <Col>
         <Table className="table cr-brdr-main" size="sm">
