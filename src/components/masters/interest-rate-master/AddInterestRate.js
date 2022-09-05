@@ -69,11 +69,8 @@ class AddInterestRate extends Component {
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetail()
-    if (!this.state.isViewMode) {
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
-    }
-
+    this.props.getICCAppliSelectList(() => { })
+    this.props.getPaymentTermsAppliSelectList(() => { })
   }
 
   componentDidUpdate(prevProps) {
