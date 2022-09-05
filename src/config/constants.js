@@ -1760,10 +1760,11 @@ export const VIEW_COSTING_DATA = {
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging and Freight',
   toolMaintenanceCostApplicablity: 'Tool MaintenanceCost Applicablity',
-  toolMaintenanceCostApplicablityValue: 'Tool MaintenanceCost Value',
+  toolMaintenanceCost: 'Tool MaintenanceCost Value',
   //toolMaintenanceCost: 'Tool Maintenance Cost',
   toolPrice: 'Tool Price',
   amortizationQty: 'Amortization Quantity',
+  toolAmortizationCost: 'Tool Amortization Cost',
   totalToolCost: 'Net Tool Cost',
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
@@ -1775,8 +1776,10 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostType: 'Any Other Cost Type',
   anyOtherCostApplicablity: 'AnyOtherCostApplicablity',
   anyOtherCostPercent: 'Any Other Cost Value',
+  anyOtherCost: 'Any Other Cost',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
+  currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net PO Price (In Currency)',
   remark: 'Remark',
   //nPOPrice: 'Net PO Price',
@@ -1949,4 +1952,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.475";
+export const VERSION = "V1.2.476";

@@ -153,6 +153,10 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: [] })
                     }
 
+                    if (res && res.status === 204) {
+                        this.setState({ totalRecordCount: 0, pageNo: 0 })
+                    }
+
                     if (res && isPagination === false) {
                         this.setState({ disableDownload: false })
                         setTimeout(() => {

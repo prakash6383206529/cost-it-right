@@ -154,6 +154,9 @@ class MachineRateListing extends Component {
                 }
 
                 if (res) {
+                    if (res && res.status === 204) {
+                        this.setState({ totalRecordCount: 0, pageNo: 0 })
+                    }
                     if (res && res.data && res.data.DataList.length > 0) {
                         this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     }

@@ -346,6 +346,10 @@ function ReportListing(props) {
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 setLoader(false)
                 let isReset = true
                 setLoader(false)
