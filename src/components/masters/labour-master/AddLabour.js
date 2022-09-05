@@ -323,7 +323,7 @@ class AddLabour extends Component {
     })
     setTimeout(() => {
       this.props.getLabourTypeByMachineTypeSelectList(
-        this.state.machineType.value,
+        this.state.machineType?.value ? this.state.machineType?.value : '',
         () => { },
       )
     }, 400);
