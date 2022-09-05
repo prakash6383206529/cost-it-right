@@ -191,6 +191,27 @@ function ApprovalListing(props) {
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
+          setTotalRecordCount(0)
+          setPageNo(0)
+          let isReset = true
+          setTimeout(() => {
+            for (var prop in floatingFilterData) {
+              if (floatingFilterData[prop] !== "") {
+                isReset = false
+              }
+            }
+            // Sets the filter model via the grid API
+            isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+          }, 300);
+
+          setTimeout(() => {
+            setWarningMessage(false)
+          }, 330);
+
+          setTimeout(() => {
+            setIsFilterButtonClicked(false)
+          }, 600);
+
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
           let temp = []
