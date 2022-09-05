@@ -21,6 +21,7 @@ import {
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
 
@@ -129,10 +130,15 @@ export default function OtherOperationReducer(state = initialState, action) {
                 filterOperation: { ...state.filterOperation, technology: action.payload }
             };
         case GET_OPERATION_COMBINED_DATA_LIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.Rate = checkForDecimalAndNull(el.Rate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
-                operationList: action.payload
+                operationList: arr
             }
         case GET_ALL_OPERATION_COMBINED_DATA_LIST:
             return {
