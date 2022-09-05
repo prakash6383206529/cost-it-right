@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
@@ -81,7 +81,8 @@ function PaymentTerms(props) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor,
-                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                // Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData.IsVendor) ? costData.PlantId : EMPTY_GUID
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
