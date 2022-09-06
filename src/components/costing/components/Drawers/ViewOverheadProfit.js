@@ -114,7 +114,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewOverheadData.IsOverheadBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`Insert`}</td>
                       <td>
                         {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -225,7 +225,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewProfitData.IsProfitBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`Insert`}</td>
                       <td>
                         {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
