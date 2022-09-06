@@ -355,7 +355,7 @@ function VolumeListing(props) {
       let finalData = []
       if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+          if (selectedRowForPagination[i].VolumeApprovedId === event.data.VolumeApprovedId && selectedRowForPagination[i].VolumeBudgetedId === event.data.VolumeBudgetedId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
           finalData.push(selectedRowForPagination[i])
@@ -365,8 +365,9 @@ function VolumeListing(props) {
       }
       selectedRows = [...selectedRows, ...finalData]
     }
-    let uniqeArray = _.uniqBy(selectedRows, "VolumeId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
   }
 
 
@@ -700,7 +701,7 @@ function VolumeListing(props) {
                             <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                               {/* DOWNLOAD */}
                             </button>
-                            <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
                               <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
                               </button>}>
                               {onBtExport()}
