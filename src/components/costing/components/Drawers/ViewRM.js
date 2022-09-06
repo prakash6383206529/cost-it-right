@@ -106,10 +106,10 @@ function ViewRM(props) {
   }
   const tableData = () => {
     return <>
-      <Col md="12">
-        <div className="left-border mt-4 mb-3">Raw Material</div>
+      <Col md="6" className='mt-1'>
+        <div className="left-border">Raw Material</div>
       </Col>
-      <Col md="12" className='btn-container mb-2 ' >
+      <Col md="6" className='btn-container mt-1' >
         {!isPDFShow && String(viewCostingData[props.index].technologyId) === FERROUSCASTINGID && <button
           className="secondary-btn"
           type={'button'}
