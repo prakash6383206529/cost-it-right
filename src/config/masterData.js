@@ -1025,7 +1025,7 @@ export const MachineZBC = [
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
@@ -1043,7 +1043,7 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
@@ -1067,7 +1067,7 @@ export const MHRMoreZBC = [
     { label: "MachineType", value: "MachineType", },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
-    { label: "MachineTonnage", value: "MachineTonnage", },
+    { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
     { label: "MachineCost(INR)", value: "MachineCost(INR)", }, //*
     { label: "AccessoriesCost(INR)", value: "AccessoriesCost(INR)", },
     { label: "InstallationCost(INR)", value: "InstallationCost(INR)", },
@@ -1138,7 +1138,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 40,
+        "MachineCapacityAndTonnage": 40,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
@@ -1194,7 +1194,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 50,
+        "MachineCapacityAndTonnage": 50,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
