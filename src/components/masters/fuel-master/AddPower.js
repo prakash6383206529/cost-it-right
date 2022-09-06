@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
-  getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
@@ -44,7 +44,7 @@ class AddPower extends Component {
       isVendorNameNotSelected: false,
 
       selectedPlants: [],
-      effectiveDate: new Date(),
+      effectiveDate: '',
 
       powerGridEditIndex: '',
       powerGrid: [],
@@ -105,6 +105,7 @@ class AddPower extends Component {
       })
       this.props.getPlantListByState('', () => { })
       this.props.getPlantBySupplier('', () => { })
+      this.props.getPowerDetailData('', () => { })
     }
     this.getDetails();
   }
@@ -322,7 +323,7 @@ class AddPower extends Component {
         PowerDetailID: data.Id,
       })
 
-      this.props.getPowerDetailData(data.Id, res => {
+      this.props.getPowerDetailData(data, res => {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
@@ -347,13 +348,14 @@ class AddPower extends Component {
               isSelfPowerGenerator: false,
             })
           }
-
+          this.props.change('SEBPowerContributaion', Data.SEBChargesDetails[0].PowerContributaionPersentage)
           if (Data.SGChargesDetails.length > 0) {
             let selfPowerArray = Data && Data.SGChargesDetails.map((item) => item)
             tempArray.push(...powerGrid, ...selfPowerArray)
           }
 
           setTimeout(() => {
+            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             console.log('Data: ', Data);
 
@@ -365,7 +367,7 @@ class AddPower extends Component {
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
-              effectiveDate: DayTime(Data.SEBChargesDetails[0].EffectiveDate),
+              effectiveDate: DayTime(Data.EffectiveDate),
               powerGrid: tempArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -420,7 +422,7 @@ class AddPower extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
     })
   }
 
@@ -644,7 +646,11 @@ class AddPower extends Component {
   updateSEBGrid = () => {
     const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
-
+    if (checkForNull(fieldsObj?.MinDemandKWPerMont) === 0 && checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.AvgUnitConsumptionPerMonth) === 0 &&
+      checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.MeterRentAndOtherChargesPerAnnum) === 0 && checkForNull(fieldsObj?.DutyChargesAndFCA) === 0 &&
+      checkForNull(fieldsObj?.SEBPowerContributaion) === 0) {
+      return false;
+    }
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
@@ -934,7 +940,7 @@ class AddPower extends Component {
   */
   editItemDetails = (index, sourceType) => {
     const { powerGrid } = this.state;
-    const { fuelComboSelectList } = this.props;
+    const { UOMSelectList } = this.props;
     const tempData = powerGrid[index];
 
     if (tempData.SourcePowerType === 'SEB') {
@@ -950,7 +956,7 @@ class AddPower extends Component {
       });
 
     } else {
-      let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
+      let UOMObj = UOMSelectList && UOMSelectList.find(el => el.Value === tempData.UnitOfMeasurementId)
       this.setState({
         isEditFlagForStateElectricity: false,
         powerGridEditIndex: index,
@@ -1177,6 +1183,7 @@ class AddPower extends Component {
         this.setState({ setDisable: true })
         let requestData = {
           PowerId: PowerDetailID,
+          PlantId: plantArray && plantArray[0]?.PlantId,
           IsVendor: IsVendor,
           Plants: plantArray,
           StateId: StateName.value,
@@ -1184,6 +1191,7 @@ class AddPower extends Component {
           IsActive: true,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
+          EffectiveDate: effectiveDate,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1198,7 +1206,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: effectiveDate,
+              // EffectiveDate: effectiveDate,
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -1241,6 +1249,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
           VendorPlant: [],
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1255,7 +1264,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: effectiveDate,
+              // EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -1455,6 +1464,32 @@ class AddPower extends Component {
                               </div>
                             </Col>
 
+                            <Col md="auto">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
+                                <div className="fullinput-icon">
+                                  <div className="form-group">
+                                    <div className="inputbox date-section form-group">
+                                      <Field
+                                        label="Effective Date"
+                                        name="EffectiveDate"
+                                        onChange={this.handleEffectiveDateChange}
+                                        type="text"
+                                        validate={[required]}
+                                        autoComplete={'off'}
+                                        required={true}
+                                        changeHandler={(e) => { }}
+                                        component={renderDatePicker}
+                                        className="form-control"
+                                        disabled={(isEditFlag || isViewMode) ? true : false}
+                                        placeholder={isViewMode ? '-' : "Select Date"}
+                                        onFocus={() => onFocus(this, true)}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+
                           </Row>
 
                           <Row className='child-form-container'>
@@ -1641,33 +1676,7 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            <Col md="auto">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
-                                <div className="fullinput-icon">
-                                  <div className="form-group">
-                                    <label>Effective Date{/* <span className="asterisk-required">*</span> */}</label>
-                                    <div className="inputbox date-section">
-                                      <DatePicker
-                                        name="EffectiveDate"
-                                        selected={new Date(this.state.effectiveDate)}
-                                        onChange={this.handleEffectiveDateChange}
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()}
-                                        dropdownMode="select"
-                                        placeholderText="Select date"
-                                        className="withBorder"
-                                        autoComplete={'off'}
-                                        disabledKeyboardNavigation
-                                        onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={isEditFlag ? true : false}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
+
                             <Col md="auto" className="d-flex">
 
                               <div className="machine-rate-filed pr-3">
@@ -2039,7 +2048,7 @@ function mapStateToProps(state) {
 
   const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { fuelComboSelectList, plantSelectList, powerData } = fuel;
+  const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
   // 
   let initialValues = {};
@@ -2055,13 +2064,13 @@ function mapStateToProps(state) {
       DutyChargesAndFCA: powerData && powerData.SEBChargesDetails[0].DutyChargesAndFCA,
       TotalUnitCharges: powerData && powerData.SEBChargesDetails[0].TotalUnitCharges,
       //effectiveDate: powerData && powerData.SEBChargesDetails[0].EffectiveDate,
-      SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
+      // SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
     }
   }
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
   }
 }
 
@@ -2075,7 +2084,7 @@ export default connect(mapStateToProps, {
   getPowerTypeSelectList,
   getUOMSelectList,
   getPlantBySupplier,
-  getFuelComboData,
+  getFuelByPlant,
   createPowerDetail,
   updatePowerDetail,
   createVendorPowerDetail,

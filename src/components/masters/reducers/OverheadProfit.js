@@ -10,6 +10,7 @@ import {
     GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
     GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
 } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
 
@@ -28,19 +29,10 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 loading: false
             };
         case GET_OVERHEAD_PROFIT_SUCCESS:
-            let arr = []
-            arr = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
-                el.EffectiveDateNew = el.EffectiveDate
-                if (el.TypeOfHead === 'VBC') {
-                    el.TypeOfHead = "Vendor Based"
-                } else if (el.TypeOfHead === 'ZBC') {
-                    el.TypeOfHead = "Zero Based"
-                } else {
-                    el.TypeOfHead = "Client Based"
-                }
-                return true
+            let arr = action.payload && action.payload.map((item) => {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                return item
             })
-
             return {
                 ...state,
                 loading: false,

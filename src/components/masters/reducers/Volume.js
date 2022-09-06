@@ -4,6 +4,7 @@ import {
     GET_VOLUME_DATA_SUCCESS,
     GET_FINANCIAL_YEAR_SELECTLIST,
     GET_VOLUME_DATA_LIST,
+    GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
 } from '../../../config/constants';
 
 const initialState = {
@@ -35,19 +36,16 @@ export default function VolumeReducer(state = initialState, action) {
                 financialYearSelectList: action.payload
             };
         case GET_VOLUME_DATA_LIST:
-            let arr = []
-            arr = action.payload && action.payload.filter((el, i) => {
-                if (el.IsVendor === true) {
-                    el.IsVendor = "Vendor Based"
-                } else {
-                    el.IsVendor = "Zero Based"
-                }
-                return true
-            })
             return {
                 ...state,
                 loading: false,
-                volumeDataList: arr
+                volumeDataList: action.payload
+            }
+        case GET_VOLUME_DATA_LIST_FOR_DOWNLOAD:
+            return {
+                ...state,
+                loading: false,
+                volumeDataListForDownload: action.payload
             }
         default:
             return state;

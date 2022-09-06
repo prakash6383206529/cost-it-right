@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
 import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -45,8 +45,8 @@ class FuelListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
-            selectedRowData: false
-
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -239,7 +239,7 @@ class FuelListing extends Component {
    */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
     /**
@@ -248,7 +248,7 @@ class FuelListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         const isFirstColumn = (params) => {
@@ -339,11 +339,12 @@ class FuelListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.fuelDataList && this.props.fuelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.fuelDataList && this.props.fuelDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -361,6 +362,7 @@ class FuelListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
@@ -397,10 +399,10 @@ class FuelListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel, auth }) {
-    const { fuelComboSelectList, fuelDataList } = fuel;
+    const { fuelDataByPlant, fuelDataList } = fuel;
     const { initialConfiguration } = auth;
 
-    return { fuelComboSelectList, fuelDataList, initialConfiguration }
+    return { fuelDataByPlant, fuelDataList, initialConfiguration }
 }
 
 /**

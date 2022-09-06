@@ -66,6 +66,7 @@ export const RMDomesticZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -78,7 +79,8 @@ export const RMDomesticZBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -91,6 +93,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "1511",
@@ -103,7 +106,8 @@ export const RMDomesticZBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -114,6 +118,7 @@ export const RMDomesticZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -125,7 +130,8 @@ export const RMDomesticZBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -141,6 +147,7 @@ export const RMDomesticVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" }, //*
@@ -151,7 +158,8 @@ export const RMDomesticVBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
@@ -166,6 +174,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -176,7 +185,8 @@ export const RMDomesticVBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        //  "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -189,6 +199,7 @@ export const RMDomesticVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -199,7 +210,8 @@ export const RMDomesticVBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -217,6 +229,7 @@ export const RMImportZBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -230,7 +243,8 @@ export const RMImportZBC = [
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -246,6 +260,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -258,7 +273,8 @@ export const RMImportZBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -269,6 +285,7 @@ export const RMImportZBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
@@ -281,7 +298,8 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -297,6 +315,7 @@ export const RMImportVBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "RMGrade", value: "RMGrade" }, //*
     { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
@@ -308,7 +327,8 @@ export const RMImportVBC = [
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    // KEEP COMMENTED ON RE
+    // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
@@ -323,6 +343,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -334,7 +355,8 @@ export const RMImportVBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -347,6 +369,7 @@ export const RMImportVBCTempData = [
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "VendorName": "Systematix",
@@ -358,7 +381,8 @@ export const RMImportVBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
+        // KEEP COMMENTED ON RE
+        // "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -823,7 +847,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'ActualQuantity': 100,
     }
 ]
@@ -850,7 +874,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'PartNo': 'Screw Jack',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'ActualQuantity': 50,
     }
 ]
@@ -873,7 +897,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 10,
     }
 ]
@@ -900,7 +924,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'PartNo': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-        'Month': DayTime().format('MM'),
+        'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
     }
 ]
@@ -1001,8 +1025,9 @@ export const MachineZBC = [
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'MachineRate', value: 'MachineRate', }, //* 
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //* 
@@ -1018,8 +1043,9 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': 55,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1041,7 +1067,7 @@ export const MHRMoreZBC = [
     { label: "MachineType", value: "MachineType", },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
-    { label: "MachineTonnage", value: "MachineTonnage", },
+    { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
     { label: "MachineCost(INR)", value: "MachineCost(INR)", }, //*
     { label: "AccessoriesCost(INR)", value: "AccessoriesCost(INR)", },
     { label: "InstallationCost(INR)", value: "InstallationCost(INR)", },
@@ -1080,6 +1106,7 @@ export const MHRMoreZBC = [
     // { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
+    { label: "ProcessCode", value: "ProcessCode", },
     { label: "UOM", value: "UOM", },
     { label: "OutputPerHours", value: "OutputPerHours", },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1111,7 +1138,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 40,
+        "MachineCapacityAndTonnage": 40,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
@@ -1151,6 +1178,7 @@ export const MHRMoreZBCTempData = [
         // "LabourRate": 0,
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
+        "ProcessCode": "PR-1000001",
         "UOM": "Hours",
         "OutputPerHours": 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1166,7 +1194,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 50,
+        "MachineCapacityAndTonnage": 50,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
@@ -1227,6 +1255,7 @@ export const MachineVBC = [
     { label: 'MachineType', value: 'MachineType', },
     { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //* maybe
     { label: 'MachineRate', value: 'MachineRate', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1246,6 +1275,7 @@ export const MachineVBCTempData = [
         'MachineType': 'Mechanical',
         'MachineCapicityAndTonnage': '40',
         'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
         'MachineRate': '20',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2759,7 +2789,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
@@ -2773,7 +2803,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor" },
+    { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
     { label: "BOP Category", value: "BoughtOutPartCategory" },
@@ -2810,7 +2840,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
@@ -2838,7 +2868,7 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
@@ -2860,7 +2890,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 ]
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Plant(Code)", value: "Plants", },
@@ -2949,7 +2979,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 ]
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3027,7 +3057,7 @@ export const UOM_DOWNLOAD_EXCEl = [
 ]
 
 export const VOLUME_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
     { label: "Vendor Name", value: "VendorName", },
@@ -3039,7 +3069,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "TypeOfHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3062,10 +3092,8 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
     { label: "Technology", value: "TechnologyName" },
-    { label: "Vendor", value: "VendorName", },
-    { label: "Vendor(Code)", value: "VendorCode", },
-    { label: "Plant", value: "PlantName", },
-    { label: "Plant(Code)", value: "PlantCode", },
+    { label: "Plant(Code)", value: "Plant", },
+    { label: "Vendor(Code)", value: "Vendor", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
@@ -3184,7 +3212,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
-    { label: "Department", value: "DepartmentName", },
+    { label: "Purchase Group", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 

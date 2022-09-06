@@ -232,7 +232,7 @@ class Level extends Component {
       this.props.getSimulationTechnologySelectList(() => { })
     }
     this.setState({ levelType: label });
-    this.setState({ technology: { label: "", value: "" }, level: { label: "", value: "" } });
+    this.setState({ technology: [], level: [] });
   };
 
   /**

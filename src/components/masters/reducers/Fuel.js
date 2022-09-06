@@ -8,7 +8,7 @@ import {
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS,
-    GET_FULE_COMBO_SUCCESS,
+    GET_FUEL_BY_PLANT,
     GET_STATELIST_BY_FUEL,
     GET_FULELIST_BY_STATE,
     GET_PLANT_SELECTLIST_BY_STATE,
@@ -18,6 +18,7 @@ import {
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
 
@@ -55,11 +56,16 @@ export default function fuelReducer(state = initialState, action) {
             };
         }
         case GET_FUEL_DATALIST_SUCCESS: {
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.Rate = checkForDecimalAndNull(el.Rate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
                 error: false,
-                fuelDataList: action.payload
+                fuelDataList: arr
             };
         }
         case GET_FUEL_UNIT_DATA_SUCCESS: {
@@ -78,12 +84,12 @@ export default function fuelReducer(state = initialState, action) {
                 fuelDetailList: action.payload
             };
         }
-        case GET_FULE_COMBO_SUCCESS: {
+        case GET_FUEL_BY_PLANT: {
             return {
                 ...state,
                 loading: false,
                 error: false,
-                fuelComboSelectList: action.payload
+                fuelDataByPlant: action.payload
             };
         }
         case GET_STATELIST_BY_FUEL: {
@@ -141,11 +147,16 @@ export default function fuelReducer(state = initialState, action) {
                 error: true,
             };
         case GET_POWER_DATA_LIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.NetPowerCostPerUnit = checkForDecimalAndNull(el.NetPowerCostPerUnit, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
                 error: false,
-                powerDataList: action.payload
+                powerDataList: arr
             }
         case GET_POWER_VENDOR_DATA_LIST:
             return {

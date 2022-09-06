@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField } from "../../layout/FormInputs";
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
   createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
@@ -12,17 +12,17 @@ import {
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, SPACEBAR } from '../../../config/constants';
+import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { onFocus } from '../../../helper';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -80,11 +80,12 @@ class AddProfit extends Component {
 
   /**
    * @method componentDidMount
-   * @description Called after rendering the component
+   * @description Called after rendering the component   
    */
   componentDidMount() {
+    this.props.getPlantSelectListByType(ZBC, () => { })
+    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
     if (!this.state.isViewMode) {
-      this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
@@ -177,7 +178,8 @@ class AddProfit extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : ""
+              vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : "",
+              selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -208,7 +210,7 @@ class AddProfit extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList, plantSelectList } = this.props;
     const temp = [];
 
     if (label === 'ModelType') {
@@ -246,6 +248,14 @@ class AddProfit extends Component {
       });
       return temp;
     }
+    if (label === 'plant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -271,6 +281,14 @@ class AddProfit extends Component {
       this.setState({ client: [] })
     }
   };
+  /** 
+   * @method handlePlant
+   * @description Used handle plants
+   */
+  handlePlant = (e) => {
+    this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
@@ -647,10 +665,15 @@ class AddProfit extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, ModelType, vendorName, client, profitAppli, remarks, ProfitID,
+    const { costingHead, IsVendor, ModelType, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
       isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
+    let plantArray = []
+    selectedPlants && selectedPlants.map((item) => {
+      plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+      return plantArray
+    })
     if (vendorName.length <= 0) {
 
       if (IsVendor && costingHead === 'vendor') {
@@ -713,7 +736,8 @@ class AddProfit extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        Plants: plantArray
       }
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
@@ -739,7 +763,8 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        Plants: plantArray
       }
 
       this.props.createProfit(formData, (res) => {
@@ -911,6 +936,30 @@ class AddProfit extends Component {
                               {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </div>
                           </Col>
+                        )}
+                        {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                          <Col md="3">
+                            <Field
+                              label="Plant"
+                              name="Plant"
+                              placeholder={"Select"}
+                              title={showDataOnHover(this.state.selectedPlants)}
+                              selection={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handlePlant}
+                              validate={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              disabled={isEditFlag || isViewMode}
+                              className="multiselect-with-border"
+                              valueDescription={this.state.selectedPlants}
+                            />
+                          </Col>)
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="3">
@@ -1214,7 +1263,7 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitMachiningCCPercentage',
     'ProfitBOPPercentage')
 
-  const { modelTypes, costingHead, } = comman;
+  const { modelTypes, costingHead, plantSelectList } = comman;
   const { overheadProfitData, } = overheadProfit;
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1232,7 +1281,7 @@ function mapStateToProps(state) {
 
   return {
     modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList,
-    filedObj, initialValues,
+    filedObj, initialValues, plantSelectList
   }
 
 }
@@ -1249,6 +1298,7 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   getClientSelectList,
   createProfit,
+  getPlantSelectListByType,
   updateProfit,
   getProfitData,
   fileUploadProfit,

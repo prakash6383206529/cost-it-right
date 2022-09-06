@@ -33,7 +33,9 @@ class Department extends Component {
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
 		if (isEditFlag) {
-			this.props.getDepartmentAPI(DepartmentId, () => { })
+			this.props.getDepartmentAPI(DepartmentId, (res) => {
+				this.setState({ DataToChange: res?.data?.Data })
+			})
 		} else {
 			this.props.setEmptyDepartmentAPI('', () => { })
 		}
@@ -48,7 +50,7 @@ class Department extends Component {
 		const { reset } = this.props;
 		reset();
 		this.props.setEmptyDepartmentAPI('', () => { })
-		this.toggleDrawer('')
+		this.toggleDrawer('', 'cancel')
 	}
 
 	/**
@@ -61,12 +63,12 @@ class Department extends Component {
 		this.props.setEmptyDepartmentAPI('', () => { })
 	}
 
-	toggleDrawer = (event) => {
+	toggleDrawer = (event, type) => {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;
 		}
 
-		this.props.closeDrawer('')
+		this.props.closeDrawer('', type)
 	};
 
 	/**
@@ -78,10 +80,14 @@ class Department extends Component {
 	onSubmit(values) {
 		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
+		const { DataToChange } = this.state;
 		this.setState({ isLoader: true })
 
 		if (isEditFlag) {
-
+			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode) {
+				this.toggleDrawer('', 'cancel')
+				return false
+			}
 			// Update existing department
 			let formReq = {
 				DepartmentId: DepartmentId,
@@ -104,7 +110,7 @@ class Department extends Component {
 					}
 				}
 				reset();
-				this.toggleDrawer('')
+				this.toggleDrawer('', 'submit')
 				this.props.setEmptyDepartmentAPI('', () => { })
 			})
 
@@ -120,15 +126,10 @@ class Department extends Component {
 				if (res && res.data && res.data.Result) {
 					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
 					reset();
-					this.toggleDrawer('')
+					this.toggleDrawer('', 'submit')
 				}
 			})
 		}
-
-
-
-
-
 	}
 
 	render() {
@@ -151,7 +152,7 @@ class Department extends Component {
 											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}`}</h3>
 										</div>
 										<div
-											onClick={(e) => this.toggleDrawer(e)}
+											onClick={(e) => this.toggleDrawer(e, 'cancel')}
 											className={'close-button right'}>
 										</div>
 									</Col>

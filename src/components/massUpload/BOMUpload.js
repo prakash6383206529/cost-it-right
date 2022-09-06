@@ -11,18 +11,23 @@ import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
 import DayTime from '../common/DayTimeWrapper';
+import { BOMBULKUPLOAD } from '../../config/constants';
+import { checkForSameFileUpload } from '../../helper';
+import { BOMUpload } from '../../config/masterData';
+import LoaderCustom from '../common/LoaderCustom';
 
-class BOMUpload extends Component {
+class BOMUploadDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       cols: [],
       rows: [],
       fileData: [],
-
+      setDisable: false,
       faildRecords: false,
       failedData: [],
       uploadfileName: "",
+      bomUploadLoader: false
     }
   }
 
@@ -57,10 +62,10 @@ class BOMUpload extends Component {
    * @description called for profile pic change
    */
   fileHandler = event => {
-
+    this.setState({ bomUploadLoader: true })
     let fileObj = event.target.files[0];
     let fileHeads = [];
-    let uploadfileName = fileObj.name;
+    let uploadfileName = fileObj?.name;
     let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
     //pass the fileObj as parameter
@@ -78,9 +83,20 @@ class BOMUpload extends Component {
 
           fileHeads = resp.rows[0];
           // fileHeads = ["SerialNumber", "BillNumber"]
-
+          let checkForFileHead
           let fileData = [];
-
+          switch (String(this.props.fileName)) {
+            case String(BOMBULKUPLOAD):
+              checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
+              break;
+            default:
+              break;
+          }
+          this.setState({ bomUploadLoader: false })
+          if (!checkForFileHead) {
+            Toaster.warning('Please select file of same Master')
+            return false
+          }
           resp.rows.map((val, index) => {
             if (val === []) return false
             if (index > 0 && val?.length > 0) {
@@ -121,9 +137,18 @@ class BOMUpload extends Component {
   }
 
   responseHandler = (res) => {
-    const { messageLabel } = this.props;
-    if (res && res.Result === true) {
-      Toaster.success(`BOM uploaded successfully.`)
+    if (res?.data) {
+      let Data = res?.data?.Data;
+      if (Data[0]?.CountSucceeded > 0) {
+        Toaster.success(`${Data[0].CountSucceeded} BOM uploaded successfully`)
+      }
+      if (Data[0]?.CountFailed > 0) {
+        Toaster.warning(res.data.Message);
+        this.setState({
+          failedData: Data[0].FaildRecords,
+          faildRecords: true,
+        })
+      }
     }
     this.toggleDrawer(false)
   }
@@ -133,7 +158,8 @@ class BOMUpload extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { fileData, } = this.state;
+    const { fileData } = this.state;
+    const { fileName } = this.props;
     if (fileData.length === 0) {
       Toaster.warning('Please select a file to upload.')
       return false
@@ -144,12 +170,13 @@ class BOMUpload extends Component {
       IsMultipleUpload: true,
       LoggedInUserId: loggedInUserId(),
     }
-
-    this.props.BOMUploadPart(uploadData, (res) => {
-      this.responseHandler(res)
-    });
-
-
+    this.setState({ setDisable: true })
+    if (fileName === 'BOM') {
+      this.props.BOMUploadPart(uploadData, (res) => {
+        this.setState({ setDisable: false })
+        this.responseHandler(res)
+      });
+    }
   }
 
   /**
@@ -158,7 +185,7 @@ class BOMUpload extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, fileName, messageLabel, } = this.props;
-    const { faildRecords, failedData, } = this.state;
+    const { faildRecords, failedData, setDisable } = this.state;
 
     if (faildRecords) {
       return <DownloadUploadBOMxls
@@ -201,6 +228,7 @@ class BOMUpload extends Component {
 
                 <div className="input-group mt25 col-md-12 input-withouticon " >
                   <div className="file-uploadsection">
+                    {this.state.bomUploadLoader && <LoaderCustom customClass="attachment-loader" />}
                     <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
                     <input
                       type="file"
@@ -218,12 +246,14 @@ class BOMUpload extends Component {
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
-                    onClick={this.cancel} >
+                    onClick={this.cancel}
+                    disabled={setDisable}>
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                   <button
                     type="submit"
-                    className="submit-button save-btn" >
+                    className="submit-button save-btn"
+                    disabled={setDisable}>
                     <div className={"save-icon"}></div>
                     {isEditFlag ? 'Update' : 'Save'}
                   </button>
@@ -259,4 +289,4 @@ export default connect(mapStateToProps, {
   form: 'BOMUpload',
   enableReinitialize: true,
   touchOnChange: true
-})(BOMUpload));
+})(BOMUploadDrawer));

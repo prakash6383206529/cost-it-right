@@ -10,7 +10,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -43,7 +43,8 @@ class SOBListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: false,
-      selectedRowData: false
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -293,7 +294,7 @@ class SOBListing extends Component {
   }
   commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
 
 
@@ -303,7 +304,7 @@ class SOBListing extends Component {
   */
   render() {
     const { handleSubmit, DownloadAccessibility } = this.props;
-    const { isOpen, isEditFlag } = this.state;
+    const { isOpen, isEditFlag, noData } = this.state;
 
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -367,11 +368,12 @@ class SOBListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopSobList && this.props.bopSobList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopSobList && this.props.bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
@@ -390,6 +392,7 @@ class SOBListing extends Component {
                   frameworkComponents={frameworkComponents}
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
+                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                   <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>

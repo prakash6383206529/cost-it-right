@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getToolCategoryList } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import { data } from 'jquery';
 
 function AddTool(props) {
 
@@ -32,7 +30,6 @@ function AddTool(props) {
 
   const dispatch = useDispatch()
 
-  const costData = useContext(costingInfoContext)
   const [tool, setTool] = useState(isEditFlag && rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : []);
   const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag && rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : []);
   const [selectedTools, setSelectedTool] = useState();
@@ -220,7 +217,7 @@ function AddTool(props) {
                     <SearchableSelectHookForm
                       label={'Process/Operation'}
                       name={'ProcessOrOperation'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -238,7 +235,7 @@ function AddTool(props) {
                     <SearchableSelectHookForm
                       label={'Tool Category'}
                       name={'ToolCategory'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}

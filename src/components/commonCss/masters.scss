@@ -46,3 +46,42 @@
     }
   }
   
+  .action-icon-container {
+    display: flex;
+    align-items: center;
+    grid-gap: 4px;
+    margin-top: 5px;
+    .user-btn {
+       height: 22px !important;
+       padding: 5px !important;
+       &:focus {
+        border: transparent !important;
+        box-shadow: none !important;
+      }
+    }
+    .plus-icon-square {
+      width: 25px;
+      height: 23px;
+
+    }
+  }
+  .ag-grid-wrapper, .ag-theme-material {
+    .no-content-found {
+      position:absolute; 
+      z-index: 1;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      margin: 0 !important;
+      .my-2 {
+        margin-top: 0 !important;
+      }
+      &.approval-listing {
+        bottom: 103px;
+      }
+    }
+  }
+  .no-content-image-container {
+    min-height: 150px;
+   
+  }

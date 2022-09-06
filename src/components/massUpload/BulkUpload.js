@@ -21,12 +21,13 @@ import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import Downloadxls, { checkLabourRateConfigure, checkVendorPlantConfig } from './Downloadxls';
+import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
-import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticVBC, RMDomesticZBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
+import { BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticVBC, RMDomesticZBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload } from '../../helper';
+import LoaderCustom from '../common/LoaderCustom';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -42,7 +43,8 @@ class BulkUpload extends Component {
             failedData: [],
             costingHead: props?.fileName === "InterestRate" ? 'VBC' : 'ZBC',
             uploadfileName: "",
-            setDisable: false
+            setDisable: false,
+            bulkUploadLoader: false
         }
     }
 
@@ -98,8 +100,8 @@ class BulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
+        this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
-        console.log('event.target.files: ', event.target.files);
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
@@ -120,7 +122,7 @@ class BulkUpload extends Component {
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC), fileHeads)
                             }
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC), fileHeads)
@@ -129,7 +131,7 @@ class BulkUpload extends Component {
                         case String(RMIMPORTBULKUPLOAD):
 
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads)
                             }
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC), fileHeads)
@@ -154,9 +156,6 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT), fileHeads)
                             }
                             break;
-                        case String(BOMBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
-                            break;
                         case String(PARTCOMPONENTBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
                             break;
@@ -171,7 +170,7 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC), fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(MHRMoreZBC), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
@@ -214,11 +213,11 @@ class BulkUpload extends Component {
                         default:
                             break;
                     }
+                    this.setState({ bulkUploadLoader: false })
                     if (!checkForFileHead) {
                         Toaster.warning('Please select file of same Master')
                         return false
                     }
-                    //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
@@ -382,7 +381,7 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
         } else if (fileName === 'Machine' && costingHead === 'ZBC') {
-            this.props.bulkUploadMachineZBC(uploadData, (res) => {
+            this.props.bulkUploadMachineZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -480,7 +479,6 @@ class BulkUpload extends Component {
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
-        console.log(' ref={this.dropzone}', this.fileUploadRef.current);
         if (faildRecords) {
             return <Downloadxls
                 isFailedFlag={true}
@@ -559,6 +557,7 @@ class BulkUpload extends Component {
 
                                 <div className="input-group mt25 col-md-12 input-withouticon " >
                                     <div className="file-uploadsection">
+                                        {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
                                         <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
                                         <input
                                             ref={this.fileUploadRef}

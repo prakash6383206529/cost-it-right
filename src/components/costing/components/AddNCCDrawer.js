@@ -7,12 +7,12 @@ import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
-import { getPlantCode, getVendorCode } from '../../../helper/validation';
+import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 
 function AddNCCDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control, reset, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -154,7 +154,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -170,7 +170,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: false }}

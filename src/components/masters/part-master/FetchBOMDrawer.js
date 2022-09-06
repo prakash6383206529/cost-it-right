@@ -81,7 +81,7 @@ const FetchDrawer = (props) => {
                                     <SearchableSelectHookForm
                                         label={"Plant code"}
                                         name={"plantCode"}
-                                        placeholder={"-Select-"}
+                                        placeholder={"Select"}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: false }}

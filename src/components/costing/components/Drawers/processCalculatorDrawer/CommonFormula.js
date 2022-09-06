@@ -1,9 +1,3 @@
-import {
-  checkForDecimalAndNull,
-  getConfigurationKey,
-} from '../../../../../helper'
-
-const trimNo = getConfigurationKey()
 
 export const passesNo = (mr, doc) => {
   if (!mr || !doc) {

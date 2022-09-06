@@ -4,7 +4,9 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation';
+import {
+    getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedRowForPagination
+} from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, COMBINED_PROCESS } from '../../../config/constants';
@@ -409,9 +411,8 @@ function Simulation(props) {
     }
 
     const editTable = (Data, length) => {
-        // let Data = selectedCostingListSimulation
         let uniqeArray = _.uniq(Data)
-        dispatch(setSelectedCostingListSimualtion(uniqeArray))
+        dispatch(setSelectedRowForPagination(uniqeArray))
         setTableData(Data)
         // alert('Hello')
         let flag = true;
@@ -920,7 +921,9 @@ function Simulation(props) {
                     </Row>
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {showMasterList && renderModule(master)}
+                    {showMasterList &&
+                        <div className={`${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
+                    }
 
                     {
                         showMasterList &&
@@ -953,12 +956,11 @@ function Simulation(props) {
                 </div >
             }
 
-            {
-                loader ? <LoaderCustom customClass="simulation-Loader" /> :
+            {loader ? <LoaderCustom customClass="simulation-loader" /> :
 
-                    <div className="simulation-edit">
-                        {showEditTable && editMasterPage(master.value)}
-                    </div>
+                <div className="simulation-edit">
+                    {showEditTable && editMasterPage(master.value)}
+                </div>
             }
             {
                 showUploadDrawer &&

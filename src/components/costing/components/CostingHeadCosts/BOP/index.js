@@ -1,14 +1,13 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
 
 function BoughtOutPart(props) {
-  const { children, item } = props;
+  const { item } = props;
 
   const dispatch = useDispatch()
-  const [IsOpen, setIsOpen] = useState(false);
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -30,10 +29,6 @@ function BoughtOutPart(props) {
       }, 500)
     }
   }, [])
-
-  const toggle = () => {
-    setIsOpen(!IsOpen)
-  }
 
   /**
   * @method render

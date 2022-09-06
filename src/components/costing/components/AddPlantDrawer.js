@@ -7,8 +7,6 @@ import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { ZBC } from '../../../config/constants';
-import { getPlantCode } from '../../../helper/validation';
-import { message } from 'antd';
 
 function AddPlantDrawer(props) {
 
@@ -119,7 +117,7 @@ function AddPlantDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

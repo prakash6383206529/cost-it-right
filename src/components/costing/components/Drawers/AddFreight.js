@@ -8,7 +8,6 @@ import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import Switch from "react-switch";
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 
 function AddFreight(props) {
@@ -185,7 +184,7 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost } = headCostData;
 
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
     const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
@@ -427,7 +426,7 @@ function AddFreight(props) {
                     <SearchableSelectHookForm
                       label={'Capacity'}
                       name={'Capacity'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: (freightType !== Fixed && freightType !== Percentage) ? true : false }}
@@ -445,7 +444,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Applicability'}
                         name={'Applicability'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -461,7 +460,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Rate Criteria'}
                         name={'Criteria'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: freightType !== Fixed ? true : false }}

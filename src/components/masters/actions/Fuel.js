@@ -7,7 +7,7 @@ import {
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS,
-    GET_FULE_COMBO_SUCCESS,
+    GET_FUEL_BY_PLANT,
     GET_STATELIST_BY_FUEL,
     GET_FULELIST_BY_STATE,
     GET_PLANT_SELECTLIST_BY_STATE,
@@ -18,6 +18,7 @@ import {
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 
 // const config() = config;
@@ -225,18 +226,18 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 }
 
 /**
- * @method getFuelComboData
+ * @method getFuelByPlant
  * @description USED TO GET FUEL COMBO DATA
  */
-export function getFuelComboData(callback) {
+export function getFuelByPlant(plantId = '', callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboData}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?plantId=${plantId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_FULE_COMBO_SUCCESS,
-                    payload: response.data.DynamicData,
+                    type: GET_FUEL_BY_PLANT,
+                    payload: response.data.DataList,
                 });
                 callback(response);
             }
@@ -535,11 +536,12 @@ export function getStateSelectList(callback) {
  * @method getPowerDetailData
  * @description GET POWER DETAIL DATA
  */
-export function getPowerDetailData(PowerId, callback) {
+export function getPowerDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (PowerId !== '') {
-            axios.get(`${API.getPowerDetailData}/${PowerId}`, config())
+        let queryParams = `powerId=${data?.Id}&plantId=${data?.plantId}`
+        if (data !== '') {
+            axios.get(`${API.getPowerDetailData}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -588,8 +590,9 @@ export function getVendorPowerDetailData(PowerId, callback) {
  */
 export function deletePowerDetail(Id, callback) {
     return (dispatch) => {
+        const QueryParams = `PowerId=${Id.PowerId}&PlantId=${Id.PlantId}&LoggedInUserId=${userDetails().LoggedInUserId}`
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePowerDetail}/${Id}`, config())
+        axios.delete(`${API.deletePowerDetail}?${QueryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

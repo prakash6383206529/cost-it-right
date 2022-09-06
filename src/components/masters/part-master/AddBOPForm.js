@@ -28,6 +28,7 @@ class AddBOPForm extends Component {
       isBOPNoNotSelected: false,
       isDimensionless: false,
       showErrorOnFocus: false,
+      UnitOfMeasurementType: ""
     }
   }
 
@@ -67,9 +68,9 @@ class AddBOPForm extends Component {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, (res) => {
           if (res?.data?.Data?.UnitOfMeasurementType === DIMENSIONLESS) {
-            this.setState({ isDimensionless: true })
+            this.setState({ isDimensionless: true, UnitOfMeasurementType: res?.data?.Data?.UnitOfMeasurementType })
           } else {
-            this.setState({ isDimensionless: false })
+            this.setState({ isDimensionless: false, UnitOfMeasurementType: res?.data?.Data?.UnitOfMeasurementType })
           }
         })
       });
@@ -154,6 +155,7 @@ class AddBOPForm extends Component {
       InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
       PartName: BOPPart ? BOPPart : [],
       Quantity: values.Quantity,
+      UnitOfMeasurementType: this.state.UnitOfMeasurementType,
       Level: "L1",
       selectedPartType: this.props.selectedPartType,
       PartId: BOPPart ? BOPPart.value : '',

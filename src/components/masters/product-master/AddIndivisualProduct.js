@@ -118,13 +118,6 @@ class AddIndivisualProduct extends Component {
 
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
@@ -555,7 +548,6 @@ class AddIndivisualProduct extends Component {
                               </div>
                             ) : (
                               <Dropzone
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 //onSubmit={this.handleSubmit}

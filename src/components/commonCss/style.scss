@@ -6226,6 +6226,7 @@ body {
       .ApprovedBySimulation,
       .Rejected,
       .History,
+      .RejectedBySystem,
       .ApprovedByAssembly {
         min-width: calc(90px * 80 / 100);
         height: calc(30px * 80 / 100);
@@ -8284,6 +8285,7 @@ body {
 .simulation-labels {
   display: flex;
   align-items: center;
+
   .flex-fills.label {
     min-width: fit-content !important;
   }
@@ -8710,5 +8712,24 @@ table.group-process-table {
     text-overflow: ellipsis;
     max-width: 100%;
     white-space: nowrap;
+  }
+}
+
+.assembly-wise-impact-header {
+  display: grid;
+  grid-template-columns: max-content max-content max-content auto;
+  grid-gap: 5px;
+  align-items: center;
+
+  .text-warning {
+    justify-content: flex-end !important;
+  }
+}
+
+.min-height-simulation {
+  max-height: 400px;
+  overflow: hidden;
+  @media screen and (max-height: 768px) {
+    max-height: 100px;
   }
 }

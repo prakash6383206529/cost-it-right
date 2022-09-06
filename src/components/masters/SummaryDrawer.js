@@ -128,7 +128,7 @@ function SummaryDrawer(props) {
 
 
                                 <Row>
-                                    <Col md="12">
+                                    <Col md="12" className='mt-2'>
                                         <h5 className="left-border">Attachments</h5>
                                     </Col>
                                     <Col md="12">
@@ -159,8 +159,8 @@ function SummaryDrawer(props) {
                         </Row>
                         {
                             !approvalDetails.IsSent &&
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
+                                <div className="col-sm-12 text-right bluefooter-butn ml-0">
                                     <Fragment>
                                         <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                                             <div className={'cancel-icon-white mr5'}></div>

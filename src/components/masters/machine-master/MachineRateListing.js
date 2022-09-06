@@ -20,13 +20,13 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList } from '../../../helper'
+import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -60,7 +60,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -71,6 +71,7 @@ class MachineRateListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             disableFilter: true,
+            noData: false
         }
     }
 
@@ -111,7 +112,7 @@ class MachineRateListing extends Component {
 
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
 
@@ -138,6 +139,7 @@ class MachineRateListing extends Component {
             let FloatingfilterData = this.state.filterModel
             let obj = { ...this.state.floatingFilterData }
             this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+                this.setState({ noData: false })
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
@@ -152,6 +154,9 @@ class MachineRateListing extends Component {
                 }
 
                 if (res) {
+                    if (res && res.status === 204) {
+                        this.setState({ totalRecordCount: 0, pageNo: 0 })
+                    }
                     if (res && res.data && res.data.DataList.length > 0) {
                         this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     }
@@ -191,6 +196,9 @@ class MachineRateListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        if (this.props.machineDatalist?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -200,7 +208,7 @@ class MachineRateListing extends Component {
     }
 
     resetState = () => {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
     }
 
@@ -356,9 +364,9 @@ class MachineRateListing extends Component {
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        if (this.props.selectedCostingListSimulation?.length > 0) {
-            this.props.selectedCostingListSimulation.map((item) => {
-                if (item.MachineId === props.node.data.MachineId) {
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
+                if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
                     props.node.setSelected(true)
                 }
                 return null
@@ -445,11 +453,8 @@ class MachineRateListing extends Component {
                 item.MachineTonnage = ' '
             } else if (item.EffectiveDate === null) {
                 item.EffectiveDate = ' '
-            } else if (item.IsVendor === true) {
-                item.IsVendor = 'Vendor Based'
-            } else if (item.IsVendor === false) {
-                item.IsVendor = 'Zero Based'
-            } else if (item.Plants === '-') {
+            }
+            else if (item.Plants === '-') {
                 item.Plants = ' '
             } else if (item.MachineTypeName === '-') {
                 item.MachineTypeName = ' '
@@ -480,7 +485,7 @@ class MachineRateListing extends Component {
         this.setState({ disableDownload: true })
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        let tempArr = this.props.selectedCostingListSimulation
+        let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -497,7 +502,7 @@ class MachineRateListing extends Component {
     onBtExport = () => {
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this.props.selectedCostingListSimulation
+        tempArr = this.props.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allMachineDataList ? this.props.allMachineDataList : [])
         return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
@@ -517,7 +522,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
 
         var filterParams = {
             date: "",
@@ -587,28 +592,28 @@ class MachineRateListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
 
             if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
-                selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+                selectedRows = this.props.selectedRowForPagination
+            } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
                 if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].MachineId === event.data.MachineId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                        if (this.props.selectedRowForPagination[i].MachineId === event.data.MachineId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
-                        finalData.push(this.props.selectedCostingListSimulation[i])
+                        finalData.push(this.props.selectedRowForPagination[i])
                     }
 
                 } else {
-                    finalData = this.props.selectedCostingListSimulation
+                    finalData = this.props.selectedRowForPagination
                 }
                 selectedRows = [...selectedRows, ...finalData]
             }
 
 
-            let uniqeArray = _.uniqBy(selectedRows, "MachineId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
             this.setState({ selectedRowData: selectedRows })
 
 
@@ -699,9 +704,10 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -722,7 +728,7 @@ class MachineRateListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
-                                    <AgGridColumn field="CostingHeadNew" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -791,12 +797,12 @@ function mapStateToProps(state) {
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist, allMachineDataList } = machine
-    const { selectedCostingListSimulation } = simulation;
+    const { selectedRowForPagination } = simulation;
 
     const { auth } = state;
     const { initialConfiguration } = auth;
 
-    return { technologySelectList, filterSelectList, machineDatalist, allMachineDataList, initialConfiguration, selectedCostingListSimulation }
+    return { technologySelectList, filterSelectList, machineDatalist, allMachineDataList, initialConfiguration, selectedRowForPagination }
 }
 
 /**
@@ -813,7 +819,7 @@ export default connect(mapStateToProps, {
     getListingForSimulationCombined,
     masterFinalLevelUser,
     getProcessGroupByMachineId,
-    setSelectedCostingListSimualtion
+    setSelectedRowForPagination
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -59,7 +59,9 @@ class AddIndivisualPart extends Component {
   * @description 
   */
   componentDidMount() {
-    this.props.getProductGroupSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getProductGroupSelectList(() => { })
+    }
     this.getDetails()
   }
 
@@ -338,7 +340,7 @@ class AddIndivisualPart extends Component {
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || String(oldProductGroup) !== String(ProductGroup))) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+        if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no, ECN no, and Effective date')
           return false
         } else {

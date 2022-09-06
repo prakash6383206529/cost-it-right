@@ -64,7 +64,7 @@ class AddAssemblyPart extends Component {
       updatedObjDraft: {},
       setDisable: false,
       disablePopup: false,
-      TechnologySelected: {},
+      TechnologySelected: [],
       isBomEditable: false,
       isDisableBomNo: false,
       minEffectiveDate: '',
@@ -689,7 +689,7 @@ class AddAssemblyPart extends Component {
           String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
           || BOMChanged)) {
           // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-          if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() || String(DataToCheck.BOMNumber).toLowerCase() === String(values.BOMNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
             Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
             return false
           } else {

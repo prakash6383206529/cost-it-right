@@ -133,7 +133,7 @@ export const decimalNumberLimit = value =>
 
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
-    let pattern = /[0-9a-zA-Z](?=@.#%\_!\^&\*\(\)-+\=\?<>,|)/;
+    let pattern = /[0-9a-zA-Z](?=@.#%_!\^&\*\(\)-+=\?<>,|)/;
     return value && !pattern.test(value)
         ? 'Invalid field' : undefined;
 }
@@ -366,3 +366,8 @@ export const strongPassword = value =>
     value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
         ? ""
         : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';
+
+//CHECK IS COSTING EFFECTIVE DATE SELECTED
+export const decimalAndNumberValidation = (value) => {
+    return value && !/^\d{0,4}(\.\d{0,7})?$/i.test(value) ? 'Maximum length for integer is 4 and for decimal is 7' : undefined;
+}

@@ -336,7 +336,7 @@ export const API = {
   getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details-by-filter`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
-  getFuelComboData: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
@@ -430,6 +430,8 @@ export const API = {
   getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
   labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
   getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
+  getLabourTypeDetailsForMachineType: `${BASE_URL}/masters-labour/get-labour-type-details`,
+  updateLabourTypeForMachineType: `${BASE_URL}/masters-labour/update-machine-type`,
 
   //OVERHEAD AND PROFIT API'S
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
@@ -1075,6 +1077,7 @@ export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
+export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 
 
 //RAW MATERIAL APPROVAL
@@ -1185,7 +1188,7 @@ export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS'
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS'
-export const GET_FULE_COMBO_SUCCESS = 'GET_FULE_COMBO_SUCCESS'
+export const GET_FUEL_BY_PLANT = 'GET_FUEL_BY_PLANT'
 export const GET_STATELIST_BY_FUEL = 'GET_STATELIST_BY_FUEL'
 export const GET_FULELIST_BY_STATE = 'GET_FULELIST_BY_STATE'
 export const GET_PLANT_SELECTLIST_BY_STATE = 'GET_PLANT_SELECTLIST_BY_STATE'
@@ -1260,6 +1263,8 @@ export const LABOUR_TYPE_VENDOR_SELECTLIST = 'LABOUR_TYPE_VENDOR_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_PLANT_SELECTLIST = 'GET_LABOUR_TYPE_BY_PLANT_SELECTLIST'
 export const GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST = 'GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST'
 export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
+export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
+export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
 //OVERHEAD AND PROFIT
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
@@ -1521,6 +1526,7 @@ export const GET_VOLUME_DATA_SUCCESS = 'GET_VOLUME_DATA_SUCCESS'
 export const GET_FINANCIAL_YEAR_SELECTLIST = 'GET_FINANCIAL_YEAR_SELECTLIST'
 export const GET_VOLUME_DATA_BY_PART_AND_YEAR = 'GET_VOLUME_DATA_BY_PART_AND_YEAR'
 export const GET_VOLUME_DATA_LIST = 'GET_VOLUME_DATA_LIST'
+export const GET_VOLUME_DATA_LIST_FOR_DOWNLOAD = 'GET_VOLUME_DATA_LIST_FOR_DOWNLOAD'
 
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
@@ -1569,7 +1575,7 @@ export const SET_KEY_FOR_API_CALLS = 'SET_KEY_FOR_API_CALLS'
 export const SET_TOKEN_FOR_SIMULATION = 'SET_TOKEN_FOR_SIMULATION'
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const GET_MASTER_SELECT_LIST_SIMUALTION = 'GET_MASTER_SELECT_LIST_SIMUALTION'
-export const SET_SELECTED_COSTING_LIST_SIMULATION = 'SET_SELECTED_COSTING_LIST_SIMULATION'
+export const SET_SELECTED_ROW_FOR_PAGINATION = 'SET_SELECTED_ROW_FOR_PAGINATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1727,45 +1733,80 @@ export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
-  zbc: 'ZBC v/s VBC',
-  costingName: '',
-  poPrice: 'PO Price',
+  costingHead: 'ZBC v/s VBC',
+  // costingName: '',
+  costingVersion: 'Costing Version',
+  PoPriceWithDate: 'PO Price (Effective from)',
+  partNumber: 'Part Number',
+  partName: 'Part Name',
+  RevisionNumber: 'Revision Number',
+  plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
+  rmRate: 'RM Rate',
+  scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
+  BurningLossWeight: 'BurningLost Weight',
+  ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
   netBOP: 'Net BOP Cost',
   pCost: 'Process Cost',
   oCost: 'Operation Cost',
-  sTreatment: 'Surface Treatment',
-  tCost: 'Transportation Cost',
+  netOtherOperationCost: 'Other Operation Cost',
   nConvCost: 'Net Conversion Cost',
+  sTreatment: 'Surface Treatment',
+  tCost: 'Extra Surface Treatment Cost',
+  netSurfaceTreatmentCost: 'Net Surface Treatment Cost',
+  //tCost: 'Transportation Cost',
+  //nConvCost: 'Net Conversion Cost',
   modelType: 'Model Type For Overhead/Profit',
-  aValue: '',
-  overheadOn: 'Overhead On',
-  profitOn: 'Profit On',
-  rejectionOn: 'Rejection On',
-  iccOn: 'ICC On',
-  paymentTerms: 'Payment Terms',
+  // aValue: '',
+  // overheadOn: 'Overhead On',
+  // profitOn: 'Profit On',
+  // rejectionOn: 'Rejection On',
+  // iccOn: 'ICC On',
+  // paymentTerms: 'Payment Terms',
+  overHeadApplicablity: 'OverHead Applicablity',
+  overHeadApplicablityValue: 'OverHead Value',
+  ProfitApplicablity: 'Profit Applicablity',
+  ProfitApplicablityValue: 'Profit Value',
+  rejectionApplicablity: 'Rejection Applicablity',
+  rejectionApplicablityValue: 'Rejection Value',
+  iccApplicablity: 'ICC Applicablity',
+  iccApplicablityValue: 'ICC Value',
+  paymentcApplicablity: 'Payment Applicablity',
+  paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging and Freight',
-  toolMaintenanceCost: 'Tool Maintenance Cost',
+  toolMaintenanceCostApplicablity: 'Tool MaintenanceCost Applicablity',
+  toolMaintenanceCost: 'Tool MaintenanceCost Value',
+  //toolMaintenanceCost: 'Tool Maintenance Cost',
   toolPrice: 'Tool Price',
   amortizationQty: 'Amortization Quantity',
-  totalToolCost: 'Total Tool Cost',
-  totalCost: 'Total Cost',
-  otherDiscount: 'Hundi/Other Discount',
-  otherDiscountValue: '',
+  toolAmortizationCost: 'Tool Amortization Cost',
+  totalToolCost: 'Net Tool Cost',
+  // totalCost: 'Total Cost',
+  // otherDiscount: 'Hundi/Other Discount',
+  // otherDiscountValue: '',
+  otherDiscountType: 'Other Discount Type',
+  otherDiscountApplicablity: 'Other Discount Applicablity',
+  otherDiscountValuePercent: 'Other Discount Value',
+  otherDiscountCost: 'Other Discount Cost',
+  anyOtherCostType: 'Any Other Cost Type',
+  anyOtherCostApplicablity: 'AnyOtherCostApplicablity',
+  anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
+  nPOPrice: 'Net PO Price (INR)',
+  currencyTitle: 'Currency',
+  currencyRate: 'Currency Rate',
+  nPoPriceCurrency: 'Net PO Price (In Currency)',
   remark: 'Remark',
-  nPOPriceWithCurrency: 'Net PO Price (INR)',
-  currency: 'Currency',
-  nPOPrice: 'Net PO Price',
-  attachment: 'Attachment',
-  approvalButton: '',
+  //nPOPrice: 'Net PO Price',
+  // attachment: 'Attachment',
+  // approvalButton: '',
 }
 
 //UOM ENUMS (Need to change name)
@@ -1942,4 +1983,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.445.1";
+export const VERSION = "V1.2.484.3";

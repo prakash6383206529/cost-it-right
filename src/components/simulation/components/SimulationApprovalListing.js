@@ -8,14 +8,14 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, checkForNull, getConfigurationKey } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -59,7 +59,7 @@ function SimulationApprovalListing(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
-
+    const [noData, setNoData] = useState(false)
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -129,6 +129,9 @@ function SimulationApprovalListing(props) {
             let array = isDashboard ? simualtionApprovalList : simualtionApprovalListDraft
             setTotalRecordCount(checkForNull(array[0].TotalRecordCount))
         }
+        else {
+            setNoData(false)
+        }
 
     }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
 
@@ -153,10 +156,18 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+            if (res?.data?.DataList?.length === 0) {
+                setTotalRecordCount(0)
+                setPageNo(0)
+            }
             if (res?.data?.Result) {
                 setIsLoader(false)
                 let isReset = true
                 if (res) {
+                    if (res && res.status === 204) {
+                        setTotalRecordCount(0)
+                        setPageNo(0)
+                    }
                     setTimeout(() => {
                         for (var prop in obj) {
                             if (obj[prop] !== "") {
@@ -183,6 +194,7 @@ function SimulationApprovalListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+        if (simualtionApprovalList?.length !== 0 || simualtionApprovalListDraft?.length !== 0) setNoData(searchNocontentFilter(value, noData))
 
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
@@ -256,7 +268,7 @@ function SimulationApprovalListing(props) {
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        dispatch(setSelectedCostingListSimualtion([]))
+        dispatch(setSelectedRowForPagination([]))
         getTableData(0, 10, true, floatingFilterData)
 
         setGlobalTake(10)
@@ -304,7 +316,6 @@ function SimulationApprovalListing(props) {
             setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
             setGlobalTake(50)
 
-            setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
                 getTableData(0, 50, true, floatingFilterData)
@@ -431,12 +442,6 @@ function SimulationApprovalListing(props) {
             return `U`
         }
 
-    }
-
-    const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -615,7 +620,6 @@ function SimulationApprovalListing(props) {
         // effectiveDateRenderer: this.effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
-        renderVendor: renderVendor,
         requestedByFormatter: requestedByFormatter,
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
@@ -663,13 +667,12 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div >
+                        <div className={`ag-grid-wrapper ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className="ag-theme-material">
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%', }}
                                     defaultColDef={defaultColDef}
@@ -705,7 +708,7 @@ function SimulationApprovalListing(props) {
 
 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

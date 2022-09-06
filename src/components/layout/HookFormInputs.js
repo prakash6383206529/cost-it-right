@@ -73,6 +73,7 @@ export const TextFieldHookForm = (field) => {
                   name={name}
                   className={InputClassName}
                   disabled={isDisabled}
+                  placeholder={isDisabled ? '-' : 'Enter'}
                   value={value}
                   onChange={(e) => {
                     handleChange(e);
@@ -94,7 +95,7 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -123,7 +124,7 @@ export const NumberFieldHookForm = (field) => {
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
-
+                placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)
@@ -144,7 +145,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName, isMulti } = field;
+    control, errors, register, isLoading, customClassName, isMulti } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -168,7 +169,7 @@ export const SearchableSelectHookForm = (field) => {
                 {...field}
                 {...register}
                 name={name}
-                placeholder={placeholder}
+                placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
                 isDisabled={isDisable}
                 onChange={(e, action) => {
                   handleChange(e, action);
@@ -258,10 +259,9 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, selected } = field
+    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
-  const InputClassName = `form-control ${field.className ? field.className : ''}`
   const isDisabled = field.disabled === true ? true : false
   return (
     <React.Fragment>
@@ -414,10 +414,8 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message, NoOptionMessage } = field;
+    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage } = field;
 
-
-  let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
 
