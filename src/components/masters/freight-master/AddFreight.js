@@ -411,6 +411,7 @@ class AddFreight extends Component {
         RateCriteria: [],
         gridEditIndex: "",
         isEditIndex: false,
+        effectiveDate: "",
       },
       () => this.props.change("Rate", 0)
     );
