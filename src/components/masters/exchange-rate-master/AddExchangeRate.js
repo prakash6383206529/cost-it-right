@@ -24,6 +24,7 @@ class AddExchangeRate extends Component {
     this.child = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       currency: [],
       effectiveDate: '',
       ExchangeRateId: '',

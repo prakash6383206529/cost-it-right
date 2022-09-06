@@ -33,6 +33,7 @@ class AddFreight extends Component {
     this.state = {
       FreightID: "",
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       IsVendor: false,
       TransportMode: [],
       FullTruckCapacity: [],
@@ -761,7 +762,7 @@ class AddFreight extends Component {
                               <input
                                 type="checkbox"
                                 checked={this.state.IsLoadingUnloadingApplicable}
-                                disabled={false}
+                                disabled={isViewMode}
                               />
                               <span
                                 className=" before-box"
@@ -859,9 +860,7 @@ class AddFreight extends Component {
                               options={this.renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.RateCriteria == null || this.state.RateCriteria.length == 0) ? [required] : []}
-                              //required={true}
+                              disabled={isViewMode}
                               handleChangeDescription={this.criteriaHandler}
                               valueDescription={this.state.RateCriteria}
                               required={true}
@@ -901,7 +900,7 @@ class AddFreight extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
@@ -975,8 +974,8 @@ class AddFreight extends Component {
                                           {item.EffectiveDate ? DayTime(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
                                         </td>
                                         <td>
-                                          <button className="Edit mr-2" type={"button"} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} onClick={() => this.deleteGridItem(index)} />
+                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode} onClick={() => this.editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );
