@@ -74,7 +74,7 @@ function SimulationApprovalSummary(props) {
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
 
     /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
-    // const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
+    const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -176,7 +176,7 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
-            // setShowPushButton(IsPushedButtonShow)
+            setShowPushButton(IsPushedButtonShow)
 
             // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
             if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
@@ -1509,7 +1509,7 @@ domLayout='autoHeight'
                         </Row>
                     }
                     {/* WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS */}
-                    {/* {
+                    {
                         showPushButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
@@ -1521,7 +1521,7 @@ domLayout='autoHeight'
                                 </Fragment>
                             </div>
                         </Row>
-                    } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />
