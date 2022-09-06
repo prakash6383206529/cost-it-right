@@ -703,6 +703,7 @@ export const searchableSelect = ({
         placeholder={placeholder}
         menuPlacement={menuPlacement}
         className={"searchable"}
+        onBlur={(e) => { }}
         onKeyDown={(onKeyDown) => {
           if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}
