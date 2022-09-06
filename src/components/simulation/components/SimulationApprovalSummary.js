@@ -160,7 +160,7 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
-            // setShowPushButton(IsPushedButtonShow)
+            setShowPushButton(IsPushedButtonShow)
 
             // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
             if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
@@ -877,25 +877,25 @@ function SimulationApprovalSummary(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter
     };
 
-    // const rePush = debounce(() => {
-    //     setIsDisabled(true)
-    //     let pushObj = {}
-    //     let temp = []
-    //     let uniqueArr = _.uniqBy(costingList, function (o) {
-    //         return o.CostingId;
-    //     });
-    //     uniqueArr && uniqueArr.map(item => {
-    //         const vendor = item.VendorName.split('(')[1]
-    //         temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
-    //     })
-    //     pushObj.LoggedInUserId = userLoggedIn
-    //     pushObj.AmmendentDataRequests = temp
-    //     dispatch(pushAPI(pushObj, () => { }))
-    //     Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
-    //     setShowListing(true)
-    //     setIsDisabled(false)
+    const rePush = debounce(() => {
+        setIsDisabled(true)
+        let pushObj = {}
+        let temp = []
+        let uniqueArr = _.uniqBy(costingList, function (o) {
+            return o.CostingId;
+        });
+        uniqueArr && uniqueArr.map(item => {
+            const vendor = item.VendorName.split('(')[1]
+            temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+        })
+        pushObj.LoggedInUserId = userLoggedIn
+        pushObj.AmmendentDataRequests = temp
+        dispatch(pushAPI(pushObj, () => { }))
+        Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
+        setShowListing(true)
+        setIsDisabled(false)
 
-    // }, 500)
+    }, 500)
 
     // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
     const fgWiseAccDisable = (data) => {
@@ -1426,7 +1426,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
                     {/* WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS */}
-                    {/* {
+                    {
                         showPushButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
@@ -1438,7 +1438,7 @@ function SimulationApprovalSummary(props) {
                                 </Fragment>
                             </div>
                         </Row>
-                    } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />
