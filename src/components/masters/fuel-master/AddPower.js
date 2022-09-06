@@ -1106,10 +1106,14 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged } = this.state;
+      handleChange, DeleteChanged, AddChanged, netContributionValue } = this.state;
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    if (checkForNull(netContributionValue) === 0) {
+      Toaster.warning('Net Contribution value should not be 0.')
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
