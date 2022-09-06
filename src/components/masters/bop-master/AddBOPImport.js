@@ -940,7 +940,7 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Insert (Import)
                         </h1>
                       </div>
                     </div>

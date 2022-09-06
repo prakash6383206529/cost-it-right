@@ -791,7 +791,7 @@ class BOPDomesticListing extends Component {
                         isEditFlag={false}
                         fileName={'InsertDomestic'}
                         isZBCVBCTemplate={true}
-                        messageLabel={'BOP Domestic'}
+                        messageLabel={'Insert Domestic'}
                         anchor={'right'}
                         isFinalApprovar={this.state.isFinalApprovar}
                     />

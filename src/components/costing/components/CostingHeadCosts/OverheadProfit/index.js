@@ -1392,7 +1392,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {'BOP'}
+                          {'Insert'}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1744,7 +1744,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {'BOP'}
+                          {'Insert'}
                         </label>
                       </Col>
                       <Col md="3">

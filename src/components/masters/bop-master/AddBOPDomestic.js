@@ -858,7 +858,7 @@ class AddBOPDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Insert (Domestic)
                         </h1>
                       </div>
                     </div>
