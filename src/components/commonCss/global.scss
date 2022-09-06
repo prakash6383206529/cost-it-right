@@ -751,11 +751,11 @@ a:hover {
           cursor: pointer;
         }
       }
-      &.no-tab-page {
-        .ag-grid-wrapper {
-          min-height: calc(100vh - 295px);
-        }
-      }
+      // &.no-tab-page {                           //IT WILL BE USE IN FUTURE DON'T REMOVE IT CODE
+      //   .ag-grid-wrapper {
+      //     min-height: calc(100vh - 295px);
+      //   }
+      // }
     }
     .levellisting-page-main {
       .ag-grid-react {
