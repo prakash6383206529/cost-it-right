@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
@@ -105,6 +105,7 @@ class AddPower extends Component {
       })
       this.props.getPlantListByState('', () => { })
       this.props.getPlantBySupplier('', () => { })
+      this.props.getPowerDetailData('', () => { })
     }
     this.getDetails();
   }
@@ -347,13 +348,14 @@ class AddPower extends Component {
               isSelfPowerGenerator: false,
             })
           }
-
+          this.props.change('SEBPowerContributaion', Data.SEBChargesDetails[0].PowerContributaionPersentage)
           if (Data.SGChargesDetails.length > 0) {
             let selfPowerArray = Data && Data.SGChargesDetails.map((item) => item)
             tempArray.push(...powerGrid, ...selfPowerArray)
           }
 
           setTimeout(() => {
+            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             console.log('Data: ', Data);
 
@@ -420,7 +422,7 @@ class AddPower extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
     })
   }
 
@@ -644,7 +646,11 @@ class AddPower extends Component {
   updateSEBGrid = () => {
     const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
-
+    if (checkForNull(fieldsObj?.MinDemandKWPerMont) === 0 && checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.AvgUnitConsumptionPerMonth) === 0 &&
+      checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.MeterRentAndOtherChargesPerAnnum) === 0 && checkForNull(fieldsObj?.DutyChargesAndFCA) === 0 &&
+      checkForNull(fieldsObj?.SEBPowerContributaion) === 0) {
+      return false;
+    }
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
@@ -950,7 +956,7 @@ class AddPower extends Component {
       });
 
     } else {
-      let UOMObj = UOMSelectList && UOMSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
+      let UOMObj = UOMSelectList && UOMSelectList.find(el => el.Value === tempData.UnitOfMeasurementId)
       this.setState({
         isEditFlagForStateElectricity: false,
         powerGridEditIndex: index,
@@ -1462,23 +1468,21 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
                                 <div className="fullinput-icon">
                                   <div className="form-group">
-                                    <label>Effective Date{/* <span className="asterisk-required">*</span> */}</label>
-                                    <div className="inputbox date-section">
-                                      <DatePicker
+                                    <div className="inputbox date-section form-group">
+                                      <Field
+                                        label="Effective Date"
                                         name="EffectiveDate"
-                                        selected={this.state.effectiveDate !== '' ? new Date(this.state.effectiveDate) : this.state.effectiveDate}
                                         onChange={this.handleEffectiveDateChange}
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()}
-                                        dropdownMode="select"
-                                        placeholderText="Select date"
-                                        className="withBorder"
+                                        type="text"
+                                        validate={[required]}
                                         autoComplete={'off'}
-                                        disabledKeyboardNavigation
-                                        onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={isEditFlag ? true : false}
+                                        required={true}
+                                        changeHandler={(e) => { }}
+                                        component={renderDatePicker}
+                                        className="form-control"
+                                        disabled={(isEditFlag || isViewMode) ? true : false}
+                                        placeholder={isViewMode ? '-' : "Select Date"}
+                                        onFocus={() => onFocus(this, true)}
                                       />
                                     </div>
                                   </div>
@@ -2060,7 +2064,7 @@ function mapStateToProps(state) {
       DutyChargesAndFCA: powerData && powerData.SEBChargesDetails[0].DutyChargesAndFCA,
       TotalUnitCharges: powerData && powerData.SEBChargesDetails[0].TotalUnitCharges,
       //effectiveDate: powerData && powerData.SEBChargesDetails[0].EffectiveDate,
-      SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
+      // SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
     }
   }
 

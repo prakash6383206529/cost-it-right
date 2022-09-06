@@ -14,6 +14,8 @@ import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
+var isFirstTabActive = false
+
 class User extends Component {
   constructor(props) {
     super(props);
@@ -58,31 +60,36 @@ class User extends Component {
 
         for (var prop in userData) {
           if (userData[prop] === true) {
+            isFirstTabActive = true
             this.setState({ ViewUserAccessibility: true, activeTab: '1' })
           }
         }
+      }
 
+      if (roleData !== undefined) {
         for (var propRole in roleData) {
           if (roleData[propRole] === true) {
-            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : '2' })
+            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' })
           }
         }
+      }
 
+      if (departmentData !== undefined) {
         for (var propDepart in departmentData) {
           if (departmentData[propDepart] === true) {
-            setTimeout(() => {
-              this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
-            }, 400);
-
+            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
           }
         }
+      }
 
+      if (levelsData !== undefined) {
         for (var propLevel in levelsData) {
           if (levelsData[propLevel] === true) {
             this.setState({ ViewLevelAccessibility: true })
           }
         }
       }
+
     }
   }
 
@@ -91,13 +98,11 @@ class User extends Component {
 
   }
 
-
   componentDidUpdate() {
     if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
       this.setState({ count: 1 })
       this.topAndLeftMenuFunction()
     }
-
   }
 
   /**

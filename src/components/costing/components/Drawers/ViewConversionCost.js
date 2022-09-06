@@ -232,7 +232,7 @@ function ViewConversionCost(props) {
             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
             <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
             </td>
-            <td>{item.Remark ?? item.Remark}</td>
+            <td>{item?.Remark ? item.Remark : "-"}</td>
           </tr>
         )
       })
@@ -308,7 +308,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
-                        <td className='remark-overflow'><span title={item.Remark ?? item.Remark}>{item.Remark ?? item.Remark}</span></td>
+                        <td className='remark-overflow'><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
                       </tr>
                       {isPDFShow && renderSingleProcess(item, index)}
                       {processAccObj[index] && <>

@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
@@ -320,12 +320,14 @@ function OverheadProfit(props) {
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
+        console.log('costData: ', costData);
         setModelType(newValue)
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
+          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData.IsVendor) ? costData.PlantId : EMPTY_GUID
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {

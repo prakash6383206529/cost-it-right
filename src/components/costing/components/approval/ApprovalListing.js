@@ -63,7 +63,7 @@ function ApprovalListing(props) {
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -82,6 +82,85 @@ function ApprovalListing(props) {
     }
 
   }, [approvalGridData])
+
+
+  var filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
+
+  var filterParamsSecond = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      setFloatingFilterData({ ...floatingFilterData, RequestedOn: newDate })
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
+
+  var filterParamsThird = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      setFloatingFilterData({ ...floatingFilterData, CreatedOn: newDate })
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
 
 
   /**
@@ -112,6 +191,27 @@ function ApprovalListing(props) {
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
+          setTotalRecordCount(0)
+          setPageNo(0)
+          let isReset = true
+          setTimeout(() => {
+            for (var prop in floatingFilterData) {
+              if (floatingFilterData[prop] !== "") {
+                isReset = false
+              }
+            }
+            // Sets the filter model via the grid API
+            isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+          }, 300);
+
+          setTimeout(() => {
+            setWarningMessage(false)
+          }, 330);
+
+          setTimeout(() => {
+            setIsFilterButtonClicked(false)
+          }, 600);
+
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
           let temp = []
@@ -190,6 +290,9 @@ function ApprovalListing(props) {
 
     } else {
 
+      if (value.column.colId === "EffectiveDate" || value.column.colId === "RequestedOn" || value.column.colId === "CreatedOn") {
+        return false
+      }
       setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
     }
   }
@@ -334,7 +437,7 @@ function ApprovalListing(props) {
     return (
       <>
         <img className={`${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
-        {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
+        {cell != null ? row.NetPOPriceNew : '-'}
       </>
     )
   }
@@ -345,7 +448,7 @@ function ApprovalListing(props) {
     return (
       <>
         {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
-        {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
+        {cell != null ? cell : '-'}
       </>
     )
   }
@@ -800,11 +903,11 @@ function ApprovalListing(props) {
                           <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
-                          <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
+                          <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                          <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
+                          <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" filter="agDateColumnFilter" filterParams={filterParamsThird}></AgGridColumn>
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
-                          <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                          <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
                           {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                         </AgGridReact>
 
@@ -818,9 +921,6 @@ function ApprovalListing(props) {
                             <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                           </div>
                         </div>
-
-
-
                         <div className="text-right pb-3">
                           <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                         </div>
