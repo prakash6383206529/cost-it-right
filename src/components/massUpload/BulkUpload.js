@@ -382,7 +382,7 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
         } else if (fileName === 'Machine' && costingHead === 'ZBC') {
-            this.props.bulkUploadMachineZBC(uploadData, (res) => {
+            this.props.bulkUploadMachineZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
