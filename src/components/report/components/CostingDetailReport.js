@@ -285,7 +285,7 @@ function ReportListing(props) {
     */
     const decimalPriceFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -293,7 +293,7 @@ function ReportListing(props) {
     */
     const decimalInputOutputFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForInputOutput) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -322,7 +322,7 @@ function ReportListing(props) {
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
-                > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div>} </> : '-';
+                > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
@@ -346,6 +346,10 @@ function ReportListing(props) {
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 setLoader(false)
                 let isReset = true
                 setLoader(false)
@@ -751,10 +755,8 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorName' headerName='Vendor' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorCode' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantName' headerName='Plant' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantCode' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>

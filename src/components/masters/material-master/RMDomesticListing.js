@@ -190,6 +190,11 @@ function RMDomesticListing(props) {
                     }, 500);
                 }
 
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
+
                 if (res) {
                     let isReset = true
                     setTimeout(() => {
@@ -415,12 +420,6 @@ function RMDomesticListing(props) {
             isEditbale = false
         }
 
-        if (EditAccessibility && !rowData.IsRMAssociated) {
-            isEditbale = true
-        } else {
-            isEditbale = false
-        }
-
         if (DeleteAccessibility && !rowData.IsRMAssociated) {
             isDeleteButton = true
         } else {
@@ -451,7 +450,7 @@ function RMDomesticListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value = cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '';
+        let value = cell != null ? cell : '';
         return value
     }
 
@@ -484,7 +483,7 @@ function RMDomesticListing(props) {
     */
     const commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
 

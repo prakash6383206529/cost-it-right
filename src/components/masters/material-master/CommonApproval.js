@@ -48,7 +48,6 @@ function CommonApproval(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [noData, setNoData] = useState(false)
-    console.log('noData: ss', noData);
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
@@ -127,6 +126,10 @@ function CommonApproval(props) {
             let obj = { ...floatingFilterData }
 
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 let isReset = true
                 setTimeout(() => {
 
@@ -355,8 +358,7 @@ function CommonApproval(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey() && getConfigurationKey().NoOfDecimalForPrice) : '';
+        return cell != null ? cell : '';
     }
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
@@ -548,6 +550,7 @@ function CommonApproval(props) {
                     valid = false
                     return false
                 }
+                return null
             })
             if (valid) {
                 setApprovalDrawer(true)

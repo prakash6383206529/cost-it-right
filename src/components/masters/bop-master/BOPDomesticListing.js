@@ -153,6 +153,10 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: [] })
                     }
 
+                    if (res && res.status === 204) {
+                        this.setState({ totalRecordCount: 0, pageNo: 0 })
+                    }
+
                     if (res && isPagination === false) {
                         this.setState({ disableDownload: false })
                         setTimeout(() => {
@@ -358,7 +362,7 @@ class BOPDomesticListing extends Component {
     */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
     /**

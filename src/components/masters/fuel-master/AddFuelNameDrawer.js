@@ -15,7 +15,7 @@ class AddFuelNameDrawer extends Component {
     super(props);
     this.state = {
       unitTypes: [],
-      UOM: {}
+      UOM: ''
     }
   }
 

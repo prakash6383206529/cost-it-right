@@ -116,7 +116,7 @@ class PowerListing extends Component {
   viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id?.PowerId,
+      Id: this.state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
       IsVendor: this.state.IsVendor,
       isViewMode: isViewMode,
       plantId: Id?.PlantId
@@ -174,7 +174,6 @@ class PowerListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.data;
     let obj = {}
     obj.PowerId = rowData?.PowerId
@@ -236,9 +235,8 @@ class PowerListing extends Component {
   }
 
   costFormatterForVBC = (props) => {
-    const { initialConfiguration } = this.props
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
+    return cellValue != null ? cellValue : '';
   }
 
   /**

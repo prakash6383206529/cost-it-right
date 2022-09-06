@@ -8724,3 +8724,11 @@ table.group-process-table {
     justify-content: flex-end !important;
   }
 }
+
+.min-height-simulation {
+  max-height: 400px;
+  overflow: hidden;
+  @media screen and (max-height: 768px) {
+    max-height: 100px;
+  }
+}
