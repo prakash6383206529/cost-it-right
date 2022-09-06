@@ -10,6 +10,7 @@ import {
     GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
     GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
 } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
 
@@ -28,10 +29,14 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 loading: false
             };
         case GET_OVERHEAD_PROFIT_SUCCESS:
+            let arr = action.payload && action.payload.map((item) => {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                return item
+            })
             return {
                 ...state,
                 loading: false,
-                overheadProfitList: action.payload
+                overheadProfitList: arr
             };
         case GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS:
             return {
