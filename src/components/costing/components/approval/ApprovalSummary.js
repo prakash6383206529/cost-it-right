@@ -184,7 +184,8 @@ function ApprovalSummary(props) {
           "Plant": approvalData.Plant,
           "MaterialCode": approvalData?.PartNumber,
           "NewPOPrice": approvalData.NewPOPrice,
-          "EffectiveDate": approvalData.EffectiveDate
+          "EffectiveDate": approvalData.EffectiveDate,
+          "TokenNumber": String(approvalData.ApprovalNumber)
         }
       ],
       "LoggedInUserId": loggedInUser
