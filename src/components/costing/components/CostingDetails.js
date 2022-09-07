@@ -683,21 +683,13 @@ function CostingDetails(props) {
    * @method checkSOBNegativeExist
    * @description HANDLE COSTING CHANGE
    */
-  const checkSOBNegativeExist = () => {
+  const checkSOBNegativeExist = (costingHead, array) => {
     let checkIfNegative = false
-
-    zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.filter(el => {
+    array && array.length > 0 && array.filter(el => {
       if (el.ShareOfBusinessPercent < 0) {
         checkIfNegative = true
       }
     }, 0)
-
-    vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.filter(el => {
-      if (el.ShareOfBusinessPercent < 0) {
-        checkIfNegative = true
-      }
-    }, 0)
-
     return checkIfNegative
   }
 
@@ -1525,6 +1517,9 @@ function CostingDetails(props) {
     if (findIndex !== -1) {
       Toaster.warning('SOB could not be empty.')
       return false;
+    } else if (checkSOBNegativeExist(ZBC, zbcPlantGrid)) {
+      Toaster.warning('SOB could not be negative.')
+      return false;
     } else {
       setZBCEnableSOBField(!isZBCSOBEnabled)
     }
@@ -1539,7 +1534,7 @@ function CostingDetails(props) {
     if (!checkSOBTotal()) {
       Toaster.warning('SOB Should not be greater than 100.')
       return false
-    } else if (checkSOBNegativeExist()) {
+    } else if (checkSOBNegativeExist(VBC, vbcVendorGrid)) {
       Toaster.warning('SOB could not be negative.')
       return false;
     } else if (findIndex !== -1) {
