@@ -18,6 +18,7 @@ import {
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
 
@@ -55,11 +56,16 @@ export default function fuelReducer(state = initialState, action) {
             };
         }
         case GET_FUEL_DATALIST_SUCCESS: {
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.Rate = checkForDecimalAndNull(el.Rate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
                 error: false,
-                fuelDataList: action.payload
+                fuelDataList: arr
             };
         }
         case GET_FUEL_UNIT_DATA_SUCCESS: {
@@ -141,11 +147,16 @@ export default function fuelReducer(state = initialState, action) {
                 error: true,
             };
         case GET_POWER_DATA_LIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el) => {
+                el.NetPowerCostPerUnit = checkForDecimalAndNull(el.NetPowerCostPerUnit, getConfigurationKey()?.NoOfDecimalForPrice)
+                return el
+            })
             return {
                 ...state,
                 loading: false,
                 error: false,
-                powerDataList: action.payload
+                powerDataList: arr
             }
         case GET_POWER_VENDOR_DATA_LIST:
             return {

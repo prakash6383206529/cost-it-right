@@ -228,7 +228,7 @@ class LabourListing extends Component {
 
   commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
 
 
