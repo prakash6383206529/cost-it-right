@@ -496,7 +496,7 @@ class InterestRateListing extends Component {
                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>

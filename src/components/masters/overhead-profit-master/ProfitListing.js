@@ -439,7 +439,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
                                     <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

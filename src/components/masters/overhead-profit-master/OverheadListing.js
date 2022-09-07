@@ -412,7 +412,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'plantFormatter'}></AgGridColumn> */}
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
                                     <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
