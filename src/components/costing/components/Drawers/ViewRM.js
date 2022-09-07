@@ -114,7 +114,7 @@ function ViewRM(props) {
           className="secondary-btn"
           type={'button'}
           onClick={() => { getWeightData(0) }}
-          disabled={(viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null) ? true : false}
+          disabled={(viewRM[0] && (viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null)) ? true : false}
         >
           <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
       </Col>
