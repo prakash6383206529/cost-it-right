@@ -2448,6 +2448,7 @@ td,
   .ApprovedBySimulation,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
+  .RejectedBySystem,
   .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
@@ -2479,7 +2480,7 @@ td,
   .History {
     background-color: #c2cbe8;
   }
-  .Rejected {
+  .Rejected, .RejectedBySystem {
     background-color: #fc5774;
   }
   .Error {
