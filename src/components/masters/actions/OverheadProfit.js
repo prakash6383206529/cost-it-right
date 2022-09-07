@@ -10,6 +10,7 @@ import {
     GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST,
     GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
     GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
+    GET_OVERHEAD_PROFIT_SUCCESS_ALL,
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -185,17 +186,24 @@ export function getProfitData(ID, callback) {
  * @method getOverheadDataList
  * @description get Overhead all record.
  */
-export function getOverheadDataList(data, callback) {
+export function getOverheadDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}`
+        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&OverheadApplicability=${obj.OverheadApplicabilityType ? obj.OverheadApplicabilityType : ""}&OverheadApplicabilityPercentage=${obj.OverheadPercentage ? obj.OverheadPercentage : ""}&OverheadOnRMPercentage=${obj.OverheadRMPercentage ? obj.OverheadRMPercentage : ""}&OverheadOnBOPPercentage=${obj.OverheadBOPPercentage ? obj.OverheadBOPPercentage : ""}&OverheadOnCCPercentage=${obj.OverheadMachiningCCPercentage ? obj.OverheadMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}	`
         axios.get(`${API.getOverheadDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    dispatch({
-                        type: GET_OVERHEAD_PROFIT_SUCCESS,
-                        payload: response.status === 204 ? [] : response.data.DataList,
-                    });
+                    if (isPagination) {
+                        dispatch({
+                            type: GET_OVERHEAD_PROFIT_SUCCESS,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        });
+                    } else {
+                        dispatch({
+                            type: GET_OVERHEAD_PROFIT_SUCCESS_ALL,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        })
+                    }
                 }
                 callback(response);
             }).catch((error) => {
@@ -210,17 +218,25 @@ export function getOverheadDataList(data, callback) {
  * @method getProfitDataList
  * @description get Overhead all record.
  */
-export function getProfitDataList(data, callback) {
+export function getProfitDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}`
+        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&ProfitApplicability=${obj.ProfitApplicabilityType ? obj.ProfitApplicabilityType : ""}&ProfitApplicabilityPercentage=${obj.ProfitPercentage ? obj.ProfitPercentage : ""}&ProfitOnRMPercentage=${obj.ProfitRMPercentage ? obj.ProfitRMPercentage : ""}&ProfitOnBOPPercentage=${obj.ProfitBOPPercentage ? obj.ProfitBOPPercentage : ""}&ProfitOnCCPercentage=${obj.ProfitMachiningCCPercentage ? obj.ProfitMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         axios.get(`${API.getProfitDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    dispatch({
-                        type: GET_OVERHEAD_PROFIT_SUCCESS,
-                        payload: response.status === 204 ? [] : response.data.DataList,
-                    });
+                    if (isPagination) {
+                        dispatch({
+                            type: GET_OVERHEAD_PROFIT_SUCCESS,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        });
+                    } else {
+
+                        dispatch({
+                            type: GET_OVERHEAD_PROFIT_SUCCESS_ALL,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        });
+                    }
                 }
                 callback(response);
             }).catch((error) => {
