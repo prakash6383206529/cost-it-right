@@ -5,6 +5,7 @@ import {
     GET_FINANCIAL_YEAR_SELECTLIST,
     GET_VOLUME_DATA_LIST,
     GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
+    GET_VOLUME_LIMIT
 } from '../../../config/constants';
 
 const initialState = {
@@ -47,6 +48,12 @@ export default function VolumeReducer(state = initialState, action) {
                 loading: false,
                 volumeDataListForDownload: action.payload
             }
+        case GET_VOLUME_LIMIT:
+            return {
+                ...state,
+                loading: false,
+                volumeLimitData: action.payload
+            };
         default:
             return state;
     }

@@ -870,7 +870,9 @@ export const API = {
   bulkUploadVolumeActualVBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-vbc-json`,
   bulkUploadVolumeBudgetedZBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-zbc-json`,
   bulkUploadVolumeBudgetedVBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-vbc-json`,
-
+  createVolumeLimit: `${BASE_URL}/masters-volume/create-add-limit`,
+  updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
+  getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
@@ -1511,7 +1513,7 @@ export const GET_FINANCIAL_YEAR_SELECTLIST = 'GET_FINANCIAL_YEAR_SELECTLIST'
 export const GET_VOLUME_DATA_BY_PART_AND_YEAR = 'GET_VOLUME_DATA_BY_PART_AND_YEAR'
 export const GET_VOLUME_DATA_LIST = 'GET_VOLUME_DATA_LIST'
 export const GET_VOLUME_DATA_LIST_FOR_DOWNLOAD = 'GET_VOLUME_DATA_LIST_FOR_DOWNLOAD'
-
+export const GET_VOLUME_LIMIT = 'GET_VOLUME_LIMIT'
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
