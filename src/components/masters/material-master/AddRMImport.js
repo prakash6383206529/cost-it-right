@@ -35,7 +35,6 @@ import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
@@ -107,7 +106,6 @@ class AddRMImport extends Component {
       approveDrawer: false,
       uploadAttachements: true,
       isFinalApprovar: false,
-      disablePopup: false,
       setDisable: false,
       inputLoader: false,
       attachmentLoader: false,
@@ -565,7 +563,7 @@ class AddRMImport extends Component {
 
   /**
   * @method closeGradeDrawer
-  * @description  used to toggle grade Popup/Drawer
+  * @description  used to toggle grade Drawer
   */
   closeGradeDrawer = (e = '') => {
     this.setState({ isOpenGrade: false }, () => {
@@ -784,7 +782,6 @@ class AddRMImport extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
-      showPopup: false,
       updatedObj: {}
     })
     this.props.getRMImportDataById('', false, res => { })
@@ -974,7 +971,14 @@ class AddRMImport extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateRMImportAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+            }
+          })
+          this.setState({ updatedObj: requestData })
           return
 
         } else {
@@ -995,19 +999,13 @@ class AddRMImport extends Component {
           return false
         }
         else {
-          if (isSourceChange) {
-            this.props.updateRMImportAPI(requestData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                this.clearForm('submit')
-
-              }
-            })
-          }
-          else {
-            this.setState({ showPopup: true, updatedObj: requestData })
-          }
+          this.props.updateRMImportAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+            }
+          })
           return false
 
         }
@@ -1066,7 +1064,6 @@ class AddRMImport extends Component {
           Toaster.warning('Please change data to send RM for approval')
           return false
         }
-        // this.setState({ setDisable: true, disablePopup: false })
 
 
         if (IsFinancialDataChanged) {
@@ -1120,21 +1117,6 @@ class AddRMImport extends Component {
     }
   }
 
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-        this.clearForm('submit');
-      }
-    })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
-
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1151,7 +1133,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1885,9 +1867,6 @@ class AddRMImport extends Component {
                 UOM={this.state.UOM}
               />
             )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

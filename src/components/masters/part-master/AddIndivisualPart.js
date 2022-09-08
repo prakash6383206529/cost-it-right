@@ -17,7 +17,6 @@ import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import { onFocus, showDataOnHover } from '../../../helper';
 
@@ -42,10 +41,8 @@ class AddIndivisualPart extends Component {
       DataToCheck: [],
       DropdownChanged: true,
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       isBomEditable: false,
       minEffectiveDate: '',
       disablePartName: false,
@@ -353,7 +350,7 @@ class AddIndivisualPart extends Component {
       }
 
 
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -412,19 +409,7 @@ class AddIndivisualPart extends Component {
       });
     }
   }, 500)
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updatePart(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -437,7 +422,7 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
       <>
@@ -749,9 +734,6 @@ class AddIndivisualPart extends Component {
               </Row>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
       </>
     );
