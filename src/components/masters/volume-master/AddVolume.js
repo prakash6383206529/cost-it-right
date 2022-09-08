@@ -884,7 +884,7 @@ class AddVolume extends Component {
                                 >
                                   <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
                                   <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
-                                  <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Approved Quantity"></AgGridColumn>
+                                  <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity"></AgGridColumn>
                                   <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
                                   <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
                                   <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
