@@ -19,7 +19,9 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
+import { isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
+import StatusFilter from './statusFilter';
 
 const gridOptions = {};
 
@@ -48,10 +50,12 @@ function CommonApproval(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [noData, setNoData] = useState(false)
+    const [resetValue, setResetValue] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]))
@@ -77,6 +81,15 @@ function CommonApproval(props) {
 
     }, [])
 
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+        }
+    }, [statusColumnData])
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -103,6 +116,10 @@ function CommonApproval(props) {
         minValidYear: 2000,
     };
 
+    var floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
     useEffect(() => {
         if (approvalList?.length > 0) {
             setTotalRecordCount(approvalList[0].TotalRecordCount)
@@ -214,6 +231,8 @@ function CommonApproval(props) {
 
 
     const resetState = () => {
+        dispatch(isResetClick(resetValue))
+        setResetValue(!resetValue)
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -440,10 +459,6 @@ function CommonApproval(props) {
         }
     }
 
-    // const onRowSelect = () => {
-    //     var selectedRows = gridApi.getSelectedRows();
-    //     setSelectedRowData(selectedRows)
-    // }
 
     const onRowSelect = (event) => {
 
@@ -532,12 +547,6 @@ function CommonApproval(props) {
         return thisIsFirstColumn;
     }
 
-    // const resetState = debounce(() => {
-    //     gridOptions.columnApi.resetColumnState();
-    //     gridOptions.api.setFilterModel(null);
-    //     setLoader(true)
-    //     getTableData()
-    // }, 500)
 
     const sendForApproval = () => {
 
@@ -576,10 +585,7 @@ function CommonApproval(props) {
     };
 
 
-
     const onPageSizeChanged = (newPageSize) => {
-
-
 
         var value = document.getElementById('page-size').value;
 
@@ -648,7 +654,8 @@ function CommonApproval(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        statusFilter: StatusFilter
     };
 
     const isRowSelectable = (rowNode) => {
@@ -739,8 +746,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
-
-                                    {props?.MasterId === RM_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 
 
 
@@ -757,7 +763,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
 
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
@@ -773,7 +779,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTonnage" headerName='Machine Tonnage' cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="ProcessName" headerName='Process Name'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {/* {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
@@ -788,7 +794,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
 
-                                    {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {/* {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>

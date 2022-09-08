@@ -9,6 +9,7 @@ import {
   GET_VOLUME_DATA_BY_PART_AND_YEAR,
   config,
   GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
+  GET_VOLUME_LIMIT
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
@@ -262,6 +263,68 @@ export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) 
         if (response.data.Result === true || response.status === 202) {
           dispatch({
             type: GET_VOLUME_DATA_BY_PART_AND_YEAR,
+            payload: response.data.Data,
+          });
+          callback(response);
+        }
+      }).catch((error) => {
+        // apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method createVolumeLimit
+ * @description CREATE VOLUME LIMIT 
+ */
+export function createVolumeLimit(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createVolumeLimit, data, config())
+    request
+      .then((response) => {
+        if (response.status === 200) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+        callback(error);
+      })
+  }
+}
+/**
+ * @method updateVolumeLimit
+ * @description UPDATE VOLUME LIMIT 
+ */
+export function updateVolumeLimit(data, callback) {
+  return (dispatch) => {
+    axios
+      .put(`${API.updateVolumeLimit}`, data, config())
+      .then((response) => {
+        callback(response)
+      })
+      .catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+        callback(error);
+      })
+  }
+}
+
+/**
+ * @method getVolumeLimit
+ * @description Get Volume Limit
+ */
+export function getVolumeLimit(technologyId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.get(`${API.getVolumeLimit}/${technologyId}`, config())
+      .then((response) => {
+        if (response.data.Result === true || response.status === 202) {
+          dispatch({
+            type: GET_VOLUME_LIMIT,
             payload: response.data.Data,
           });
           callback(response);
