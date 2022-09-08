@@ -2925,7 +2925,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
-    { label: "Cut Off Price", value: "CutOffPrice", },
+    // KEEP COMMENTED ON RE
+    //  { label: "Cut Off Price", value: "CutOffPrice", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
