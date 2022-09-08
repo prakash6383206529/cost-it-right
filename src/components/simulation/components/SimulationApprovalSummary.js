@@ -1068,6 +1068,7 @@ function SimulationApprovalSummary(props) {
                                 SimulationId={simulationDetail.SimulationId}
                                 isVerifyImpactDrawer={false}
                                 fgWiseAccDisable={fgWiseAccDisable}
+                                simulationDetail={simulationDetail}
                             />
                         }
 

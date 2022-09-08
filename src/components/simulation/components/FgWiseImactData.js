@@ -8,12 +8,15 @@ import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
 import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
+import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import TooltipCustom from '../../common/Tooltip'
+import DayTime from '../../common/DayTimeWrapper'
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType, simulationDetail } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -106,12 +109,12 @@ export function Fgwiseimactdata(props) {
                                     <th><span>Impact/Pc</span></th>
                                     <th><span>SOB(%)</span></th>
                                     <th><span>Impact/Pc(with SOB)</span></th>
-                                    <th><span>Volume/Year</span></th>
+                                    <th><span>Volume/Year</span><TooltipCustom customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')})`} /></th>
                                     <th><span>Impact/Quater</span></th>
                                     <th className="second-last-child"><span>Impact/Year</span></th>
                                     <th><span></span></th>
-                                </tr>
-                            </thead>
+                                </tr >
+                            </thead >
 
 
                             {showTableData && impactData && impactData.map((item, index) => {
@@ -161,16 +164,16 @@ export function Fgwiseimactdata(props) {
                             })
                             }
 
-                        </table>
+                        </table >
                         {!loader && !showTableData &&
 
                             <Col md="12">
                                 <NoContentFound title={EMPTY_DATA} />
                             </Col>
                         }
-                    </div>
-                </Col>
-            </Row>
+                    </div >
+                </Col >
+            </Row >
             {/* FG wise Impact section end */}
         </>
     )
