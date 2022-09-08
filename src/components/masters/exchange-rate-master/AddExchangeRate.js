@@ -5,7 +5,6 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
@@ -30,10 +29,8 @@ class AddExchangeRate extends Component {
       ExchangeRateId: '',
       DropdownChanged: true,
       DataToChange: [],
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       minEffectiveDate: '',
       isFinancialDataChange: false,
       showErrorOnFocusDate: false
@@ -215,7 +212,7 @@ class AddExchangeRate extends Component {
         }
       }
 
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -230,7 +227,16 @@ class AddExchangeRate extends Component {
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
+        // if(){
+
+        // }
+        this.props.updateExchangeRate(updateData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+            this.cancel('submit')
+          }
+        });
         // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
     } else {/** Add new detail for creating exchange master **/
@@ -258,19 +264,6 @@ class AddExchangeRate extends Component {
 
   }, 500)
 
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -283,7 +276,7 @@ class AddExchangeRate extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isViewMode, setDisable } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -449,9 +442,6 @@ class AddExchangeRate extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
       </div>
     );

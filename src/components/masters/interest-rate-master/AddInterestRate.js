@@ -15,7 +15,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import Toaster from '../../common/Toaster'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { SPACEBAR, ZBC } from '../../../config/constants';
@@ -34,7 +33,6 @@ class AddInterestRate extends Component {
       PaymentTermsApplicability: [],
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isEditFlag: false,
-      isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
       InterestRateId: '',
       effectiveDate: '',
@@ -44,7 +42,6 @@ class AddInterestRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
@@ -314,19 +311,6 @@ class AddInterestRate extends Component {
     }
   };
 
-
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateInterestRate(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-        this.setState({ showPopup: false })
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -363,10 +347,7 @@ class AddInterestRate extends Component {
         this.cancel('cancel')
         return false;
       }
-      else {
-
-      }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -386,26 +367,18 @@ class AddInterestRate extends Component {
         Plants: plantArray
       }
       if (this.state.isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-
-        const toastrConfirmOptions = {
-          onOk: () => {
-
-            this.props.updateInterestRate(updateData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-                this.setState({ showPopup: false })
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
+        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please update the effective date')
+          this.setState({ setDisable: false })
+          return false
         }
-
-
-
+        this.props.updateInterestRate(updateData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+            this.cancel('submit')
+          }
+        });
       }
 
 
@@ -441,10 +414,6 @@ class AddInterestRate extends Component {
 
   }, 500)
 
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
   /**
   * @method render
   * @description Renders the component
@@ -458,7 +427,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, isDataChanged } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -781,9 +750,6 @@ class AddInterestRate extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
 
       </div>

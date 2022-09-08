@@ -34,7 +34,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
@@ -108,10 +107,8 @@ class AddRMDomestic extends Component {
       approvalObj: {},
       uploadAttachements: true,
       isFinalApprovar: false,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
@@ -569,7 +566,7 @@ class AddRMDomestic extends Component {
 
   /**
    * @method closeGradeDrawer
-   * @description  used to toggle grade Popup/Drawer
+   * @description  used to toggle grade Drawer
    */
   closeGradeDrawer = (e = '') => {
     this.setState({ isOpenGrade: false }, () => {
@@ -812,7 +809,6 @@ class AddRMDomestic extends Component {
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       IsVendor: false,
-      showPopup: false,
       updatedObj: {}
     })
     this.props.getRawMaterialDetailsAPI('', false, (res) => { })
@@ -1008,7 +1004,15 @@ class AddRMDomestic extends Component {
       if (IsFinancialDataChanged) {
 
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateRMDomesticAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+
+            }
+          })
+          this.setState({ updatedObj: requestData })
           return
 
         } else {
@@ -1029,21 +1033,14 @@ class AddRMDomestic extends Component {
           return false
         }
         else {
-          // this.setState({ showPopup: true, updatedObj: requestData })
 
-          if (isSourceChange) {
-            this.props.updateRMDomesticAPI(requestData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                this.clearForm('submit')
-
-              }
-            })
-          }
-          else {
-            this.setState({ showPopup: true, updatedObj: requestData })
-          }
+          this.props.updateRMDomesticAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+            }
+          })
           return false
 
         }
@@ -1107,7 +1104,7 @@ class AddRMDomestic extends Component {
           Toaster.warning('Please change data to send RM for approval')
           return false
         }
-        this.setState({ setDisable: true, disablePopup: false })
+        this.setState({ setDisable: true })
 
         if (IsFinancialDataChanged) {
 
@@ -1159,21 +1156,6 @@ class AddRMDomestic extends Component {
     }
   }
 
-
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        this.clearForm('submit')
-        // this.cancel()
-      }
-    })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1197,7 +1179,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable } = this.state
 
 
     const filterList = (inputValue) => {
@@ -1960,9 +1942,6 @@ class AddRMDomestic extends Component {
                 IsImportEntery={false}
               />
             )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
 
         </div>

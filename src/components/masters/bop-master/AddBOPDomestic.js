@@ -29,7 +29,6 @@ import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
@@ -73,10 +72,8 @@ class AddBOPDomestic extends Component {
       DataToCheck: [],
       DropdownChanged: true,
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
       isSourceChange: false,
@@ -626,7 +623,6 @@ class AddBOPDomestic extends Component {
       //     return false;
       //   }
       // }
-      this.setState({ disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -650,7 +646,13 @@ class AddBOPDomestic extends Component {
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateBOPDomestic(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+              this.cancel('submit');
+            }
+          })
           return false
         } else {
           this.setState({ setDisable: false })
@@ -666,26 +668,15 @@ class AddBOPDomestic extends Component {
           return false;
         }
         else {
-          // this.setState({ showPopup: true, updatedObj: requestData })
-
-          if (isSourceChange) {
-
-            this.props.updateBOPDomestic(requestData, (res) => {
-
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-                this.cancel('submit');
-              }
-            })
-          }
-          else {
-            this.setState({ showPopup: true, updatedObj: requestData })
-          }
+          this.props.updateBOPDomestic(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+              this.cancel('submit');
+            }
+          })
           return false
-
         }
-
       }
 
     } else {
@@ -744,7 +735,6 @@ class AddBOPDomestic extends Component {
         else {
           this.setState({ approveDrawer: true, approvalObj: formData })
         }
-        this.setState({ disablePopup: false })
 
         if (DataToCheck.IsVendor) {
           if (DropdownChanged &&
@@ -761,11 +751,6 @@ class AddBOPDomestic extends Component {
             return false;
           }
         }
-        // if (isEditFlag) {
-        //   this.setState({ showPopup: true, updatedObj: formData })
-        //   return false
-        // }
-
         // if (((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) && uploadAttachements) {
         //   
         //   
@@ -796,21 +781,6 @@ class AddBOPDomestic extends Component {
     }
   }, 500)
 
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateBOPDomestic(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel('submit');
-      }
-    })
-
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -827,7 +797,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1359,9 +1329,6 @@ class AddBOPDomestic extends Component {
                 UOM={this.state.UOM}
               />
             )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

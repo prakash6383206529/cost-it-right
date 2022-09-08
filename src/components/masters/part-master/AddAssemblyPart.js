@@ -22,7 +22,6 @@ import BOMViewer from './BOMViewer';
 import { getRandomSixDigit, onFocus, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
@@ -59,12 +58,9 @@ class AddAssemblyPart extends Component {
       DropdownChanged: false,
       BOMChanged: false,
       GroupCode: '',
-      showPopup: false,
-      showPopupDraft: false,
       updatedObj: {},
       updatedObjDraft: {},
       setDisable: false,
-      disablePopup: false,
       TechnologySelected: [],
       isBomEditable: false,
       isDisableBomNo: false,
@@ -619,7 +615,6 @@ class AddAssemblyPart extends Component {
         this.cancel()
       }
     });
-    this.setState({ showPopupDraft: false })
   }
 
   /**
@@ -696,7 +691,7 @@ class AddAssemblyPart extends Component {
           isStructureChanges = false
         }
       }
-      this.setState({ setDisable: true, disablePopup: false, isLoader: true })
+      this.setState({ setDisable: true, isLoader: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -784,23 +779,6 @@ class AddAssemblyPart extends Component {
       e.preventDefault();
     }
   };
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateAssemblyPart(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-        this.cancel()
-      }
-    });
-  }, 500)
-  onPopupConfirmDraft = () => {
-    this.confirmDraftItem(this.state.updatedObjDraft)
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-    this.setState({ showPopupDraft: false })
-  }
 
   isFieldChange = (event, field) => {
     const { DataToCheck } = this.state
@@ -857,7 +835,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly, BOMViewerData } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1306,9 +1284,6 @@ class AddAssemblyPart extends Component {
               />
             </PartEffectiveDate.Provider>
           )}
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
 
         </div>
       </>
