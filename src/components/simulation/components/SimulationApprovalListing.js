@@ -336,6 +336,9 @@ function SimulationApprovalListing(props) {
         }
         gridApi.paginationSetPageSize(Number(newPageSize));
 
+        if (isDashboard) {
+            props.isPageNoChange('simulation')
+        }
     };
 
     /**
