@@ -8638,3 +8638,41 @@ padding-bottom: 3px;
   }
 }
 
+.ag-header {
+  overflow: visible !important;
+  .ag-pinned-right-header {
+    overflow: visible;
+    .ag-header-row {
+      overflow: visible;
+      .ag-header-cell {
+        overflow: visible;
+        .ag-floating-filter-full-body {
+          overflow: visible;
+          .ag-grid-multi {
+            margin: 0 -7px;
+            height: 40px;
+            .form-group {
+              margin-bottom: 0 !important;
+            }
+            label {
+              display: none;
+            }
+            .basic-multi-select
+              .select__control
+              .select__indicators
+              .select__indicator {
+              padding: 9px 0px;
+            }
+            .css-yk16xz-control,
+            .css-1pahdxg-control {
+              .css-g1d714-ValueContainer {
+                max-height: 43px;
+                max-width: 178px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
