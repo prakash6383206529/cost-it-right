@@ -2,6 +2,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_OVERHEAD_PROFIT_SUCCESS,
+    GET_OVERHEAD_PROFIT_SUCCESS_ALL,
     GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS,
     GET_OVERHEAD_PROFIT_DATA_SUCCESS,
     CREATE_SUCCESS,
@@ -29,14 +30,26 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 loading: false
             };
         case GET_OVERHEAD_PROFIT_SUCCESS:
-            let arr = action.payload && action.payload.map((item) => {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-                return item
+            let newArray = []
+            action.payload && action.payload.map((item) => {
+                item.EffectiveDateNew = item.EffectiveDate
+                newArray.push(item)
             })
             return {
                 ...state,
                 loading: false,
-                overheadProfitList: arr
+                overheadProfitList: newArray
+            };
+        case GET_OVERHEAD_PROFIT_SUCCESS_ALL:
+            let newArrayAll = []
+            action.payload && action.payload.map((item) => {
+                item.EffectiveDateNew = item.EffectiveDate
+                newArrayAll.push(item)
+            })
+            return {
+                ...state,
+                loading: false,
+                overheadProfitListAll: newArrayAll
             };
         case GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS:
             return {
