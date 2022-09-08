@@ -776,7 +776,9 @@ function ApprovalListing(props) {
     }
 
     gridApi.paginationSetPageSize(Number(newPageSize));
-
+    if (isDashboard) {
+      props?.isPageNoChange('costing')
+    }
   };
 
   const onFilterTextBoxChanged = (e) => {

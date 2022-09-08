@@ -630,7 +630,7 @@ function CommonApproval(props) {
         }
         if (props.isApproval) {
 
-            props?.isPageNoChange()
+            props?.isPageNoChange('master')
         }
     };
 
