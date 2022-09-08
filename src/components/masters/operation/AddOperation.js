@@ -20,7 +20,6 @@ import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -73,10 +72,8 @@ class AddOperation extends Component {
       dataToChange: '',
       uploadAttachements: true,
       isDisableCode: false,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
@@ -593,8 +590,13 @@ class AddOperation extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: updateData })
-          this.setState({ setDisable: true })
+          this.props.updateOperationAPI(updateData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+              this.cancel('submit')
+            }
+          });
           return false
 
         } else {
@@ -612,27 +614,16 @@ class AddOperation extends Component {
           return false
         }
         else {
-          this.setState({ disablePopup: true })
-          this.props.updateOperationAPI(updateData
-
-            , (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                this.cancel('submit')
-              }
-            });
+          this.props.updateOperationAPI(updateData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+              this.cancel('submit')
+            }
+          });
         }
 
       }
-
-      // if (isEditFlag) {
-      //   this.setState({ showPopup: true, updatedObj: updateData })
-      //   this.setState({ setDisable: true })
-      //   return false
-      // }
-
-
     } else {/** Add new detail for creating operation master **/
 
 
@@ -726,20 +717,6 @@ class AddOperation extends Component {
 
   }, 500)
 
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateOperationAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-
-  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -751,7 +728,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1203,9 +1180,6 @@ class AddOperation extends Component {
               IsImportEntery={false}
             />
           )
-        }
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
         }
       </div>
     );
