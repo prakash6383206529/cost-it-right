@@ -4375,13 +4375,18 @@ body {
 .red-value {
   background-color: #FEDCE2;
   border-color: #FEDCE2;
-  ;
   color: #FC5774;
   line-height: initial;
   min-width: 70px;
   // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
+}
+.red-text {
+  color: #FC5774;
+}
+.green-text {
+  color: #4DC771;
 }
 
 .change-version-block {
@@ -6189,6 +6194,7 @@ body {
       .Approved,
       .ApprovedBySimulation,
       .Rejected,
+      .RejectedBySystem,
       .History,
       .ApprovedByAssembly {
         min-width: calc(90px * 80 / 100);
@@ -8631,3 +8637,4 @@ padding-bottom: 3px;
     max-height: 100px;
   }
 }
+
