@@ -25,10 +25,11 @@ function StatusFilter(props) {
 
 
     useEffect(() => {
-        setValue("reason", [])
+        if (isReset) {
+            setValue("reason", [])
+        }
 
     }, [isReset])
-
 
 
     const valueChanged = (event) => {

@@ -50,7 +50,6 @@ function CommonApproval(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [noData, setNoData] = useState(false)
-    const [resetValue, setResetValue] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
@@ -72,12 +71,13 @@ function CommonApproval(props) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
         }))
-
+        dispatch(isResetClick(false))
         return () => {
             // Cleanup function
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
         }
+
 
     }, [])
 
@@ -158,6 +158,7 @@ function CommonApproval(props) {
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     setTimeout(() => {
+                        dispatch(isResetClick(false))
                         setWarningMessage(false)
                         setFloatingFilterData(obj)
                     }, 23);
@@ -231,8 +232,7 @@ function CommonApproval(props) {
 
 
     const resetState = () => {
-        dispatch(isResetClick(resetValue))
-        setResetValue(!resetValue)
+        dispatch(isResetClick(true))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
