@@ -1057,15 +1057,14 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                       }
-                      {console.log(viewCostingData, "viewCostingData")}
                       {!drawerDetailPDF ? <tr>
                         <td>
                           <span className="d-block small-grey-text">RM Name-Grade</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].RMRate, viewCostingData[1].netRMCostView[0].RMRate)}`}>RM Rate</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData[1].netRMCostView[0].ScrapRate)}`}>Scrap Rate</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].RMRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].RMRate)}`}>RM Rate</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].ScrapRate)}`}>Scrap Rate</span>
                           <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0].netRMCostView), reducer(viewCostingData[1].netRMCostView))}`}>Gross Weight</span>
                           <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducerFinish(viewCostingData[0].netRMCostView), reducerFinish(viewCostingData[1].netRMCostView))}`}>Finish Weight</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>Burning Loss Weight</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>Burning Loss Weight</span>
                           <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0]?.ScrapWeight, viewCostingData[1].netRMCostView[0]?.ScrapWeight)}`}>Scrap Weight</span>
                         </td>
                         {viewCostingData &&
@@ -1075,10 +1074,10 @@ const CostingSummaryTable = (props) => {
 
                               < td >
                                 <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : ''}</span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].RMRate, viewCostingData[1].netRMCostView[0].RMRate)}`}>
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].RMRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].RMRate)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData[1].netRMCostView[0].ScrapRate)}`}>
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].ScrapRate)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                                 <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0].netRMCostView), reducer(viewCostingData[1].netRMCostView))}`}>
@@ -1089,7 +1088,7 @@ const CostingSummaryTable = (props) => {
                                   {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : (data?.netRMCostView && reducerFinish(data?.netRMCostView)) : ''}
                                   {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                 </span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                                   {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                 </span>
