@@ -987,7 +987,8 @@ class AddPower extends Component {
     if (tempObj.SourcePowerType === 'SEB') {
       this.setState({
         isEditFlagForStateElectricity: false,
-        isAddedSEB: false
+        isAddedSEB: false,
+        isEditSEBIndex: false
       },
         () => {
           this.props.change('MinDemandKWPerMonth', 0)
@@ -1004,6 +1005,21 @@ class AddPower extends Component {
         }
       )
 
+    } else if (tempObj.SourcePowerType === 'Solar Power' || tempObj.SourcePowerType === 'Generator Diesel' ||
+      tempObj.SourcePowerType === 'Hydro Power' || tempObj.SourcePowerType === 'Wind Power') {
+      this.setState({
+        isEditIndex: false
+      },
+        () => {
+          this.props.change('AssetCost', 0)
+          this.props.change('AnnualCost', 0)
+          this.props.change('CostPerUnitOfMeasurement', 0)
+          this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+          this.props.change('UnitGeneratedPerAnnum', 0)
+          this.props.change('SelfGeneratedCostPerUnit', 0)
+          this.props.change('SelfPowerContribution', 0)
+        }
+      )
     }
     const tempNetContributionValue = (tempObj.CostPerUnit * tempObj.PowerContributionPercentage / 100)
     const finalNetContribution = netContributionValue - tempNetContributionValue
