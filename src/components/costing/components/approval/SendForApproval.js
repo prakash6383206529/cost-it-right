@@ -8,7 +8,7 @@ import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberF
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice } from '../../actions/Costing'
-import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
+import { getVolumeDataByPartAndYear, getVolumeLimit } from '../../../masters/actions/Volume'
 
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
@@ -60,6 +60,7 @@ const SendForApproval = (props) => {
   const [costingIdArray, setCostingIdArray] = useState([])
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState('')
+  const [dataToChange, setDataToChange] = useState([]);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -127,12 +128,17 @@ const SendForApproval = (props) => {
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
-    drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
+    drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
-
+    dispatch(getVolumeLimit(props.technologyId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data
+        setDataToChange(Data)
+      }
+    }))
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -449,6 +455,15 @@ const SendForApproval = (props) => {
   }
 
   const handleChangeQuantity = (e) => {
+    if (((e.target.value && e.target.value) > dataToChange.MaxDeviationLimit) && !isRegularize) {
+      Toaster.warning('Quantity should be less than Max Deviation')
+      setTimeout(() => {
+        setValue('Quantity', '')
+      }, 300);
+    }
+    else {
+      return e.target.value
+    }
   };
 
   useEffect(() => {
@@ -804,11 +819,12 @@ const SendForApproval = (props) => {
                             control={control}
                             register={register}
                             mandatory={true}
+                            rules={{ required: true }}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
                             handleChange={handleChangeQuantity}
-                            //errors={errors.remarks}
+                            errors={errors.Quantity}
                             disabled={false}
                           />
                         </Col>
