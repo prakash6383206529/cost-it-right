@@ -2756,7 +2756,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
     { label: "Destination City", value: "DestinationCity", },
 ]
@@ -2974,12 +2974,12 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
-    { label: "Plant", value: "Plant", },
+    { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
-    { label: "Approved Quantity", value: "ApprovedQuantity", },
+    { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
