@@ -436,7 +436,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
+        <img className={`arrow-ico mr-1 ${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice || cell === null) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-green' : 'arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? row.NetPOPriceNew : '-'}
       </>
     )
