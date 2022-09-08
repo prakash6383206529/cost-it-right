@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
+import Toaster from '../../common/Toaster';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -97,6 +98,14 @@ class FuelListing extends Component {
     }
 
     /**
+    * @method deleteItem
+    * @description confirm delete Raw Material details
+    */
+    deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
+    }
+
+    /**
     * @method renderPaginationShowsTotal
     * @description Pagination
     */
@@ -125,14 +134,36 @@ class FuelListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, ViewAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this?.deleteItem(rowData?.FuelDetailId)} />}
             </>
         )
     };
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete Raw Material details
+    */
+    confirmDelete = (ID) => {
+        this.props.deleteFuelDetailAPI(ID, (res) => {
+            if (res.data.Result === true) {
+                Toaster.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
+                this.getDataList()
+            }
+        });
+        this.setState({ showPopup: false })
+    }
+
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
 
     /**
     * @method indexFormatter
