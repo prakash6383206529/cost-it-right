@@ -206,7 +206,20 @@
 .link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
 
 .broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
-
+.excel-btn.user-btn { 
+    padding-right: 5px !important; 
+    padding-left: 8px !important;
+    img {
+        max-width: 24px;
+    } 
+    @media screen and (max-width: $max1367) {
+        padding-right: 5px !important; 
+        padding-left: 8px !important;
+        img {
+            max-width: 20px;
+        } 
+    }
+}
 .CalculatorIcon:disabled, .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled {
     border: none !important;
     opacity: 0.5;
