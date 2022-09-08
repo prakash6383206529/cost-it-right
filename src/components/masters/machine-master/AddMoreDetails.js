@@ -110,7 +110,6 @@ class AddMoreDetails extends Component {
       isProcessGroupOpen: false,
       UOM: [],
       effectiveDate: '',
-      showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
@@ -134,7 +133,8 @@ class AddMoreDetails extends Component {
       DataToChange: [],
       showErrorOnFocusDate: false,
       labourDetailId: '',
-      IsIncludeMachineRateDepreciation: false
+      IsIncludeMachineRateDepreciation: false,
+      powerIdFromAPI: EMPTY_GUID
     }
     this.dropzone = React.createRef();
   }
@@ -502,18 +502,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
   }
-  onPopupConfirm = () => {
-    this.props.reset()
-    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-        this.cancel()
-      }
-    });
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
+
   /**
   * @method handlePlants
   * @description called
@@ -539,14 +528,16 @@ class AddMoreDetails extends Component {
               Toaster.warning(res.data.Message)
               machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+                powerIdFromAPI: Data?.PowerId
               })
               this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
             } else {
               //  if(IsUsesSolarPower)
               machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+                powerIdFromAPI: Data?.PowerId
               })
               this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
             }
@@ -773,14 +764,16 @@ class AddMoreDetails extends Component {
           Toaster.warning(res.data.Message)
           machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
+            powerIdFromAPI: Data?.PowerId
           })
           this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
         } else {
           //  if(IsUsesSolarPower)
           machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
+            powerIdFromAPI: Data?.PowerId
           })
           this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -877,13 +870,15 @@ class AddMoreDetails extends Component {
             // this.setState
             machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
             this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
+              powerIdFromAPI: Data?.PowerId
             })
             this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           } else {
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
             this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
+              powerIdFromAPI: Data?.PowerId
             })
             this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           }
@@ -1822,7 +1817,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1914,7 +1909,8 @@ class AddMoreDetails extends Component {
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props.processGroupApiData,
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
-      IsIncludeMachineCost: IsIncludeMachineRateDepreciation
+      IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
+      PowerEntryId: powerIdFromAPI
       // LabourDetailId: labourType.value
     }
 
@@ -2049,7 +2045,8 @@ class AddMoreDetails extends Component {
         rowData: this.state.rowData,
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
-        IsIncludeMachineCost: IsIncludeMachineRateDepreciation
+        IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
+        PowerEntryId: powerIdFromAPI
       }
 
       let obj = {}
