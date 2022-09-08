@@ -1001,7 +1001,8 @@ class AddPower extends Component {
     } else if (tempObj.SourcePowerType === 'Solar Power' || tempObj.SourcePowerType === 'Generator Diesel' ||
       tempObj.SourcePowerType === 'Hydro Power' || tempObj.SourcePowerType === 'Wind Power') {
       this.setState({
-        isEditIndex: false
+        isEditIndex: false,
+        source: []
       },
         () => {
           this.props.change('AssetCost', 0)
