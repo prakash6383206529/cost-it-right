@@ -51,6 +51,7 @@ import {
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
   STATUS_COLUMN_DATA,
+  IS_RESET,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
@@ -1554,5 +1555,17 @@ export function agGridStatus(data, id) {
     })
 
   }
+}
+
+
+export function isResetClick(data) {
+  return (dispatch) => {
+    dispatch({
+      type: IS_RESET,
+      payload: data,
+    })
+
+  }
+
 
 }
