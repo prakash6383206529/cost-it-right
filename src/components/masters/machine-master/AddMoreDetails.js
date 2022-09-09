@@ -58,6 +58,7 @@ class AddMoreDetails extends Component {
       selectedPlants: [],
       machineType: [],
       isOpenMachineType: false,
+      machineRate: "",
 
       isOpenAvailability: false,
       WorkingHrPrYr: 0,
@@ -1237,19 +1238,22 @@ class AddMoreDetails extends Component {
     // 
     if (UOM.type === TIME) {
 
-      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      if (UOM.uom === "Hours") {
+        MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      }
 
       if (UOM.uom === "Minutes") {
 
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
       } else if (UOM.uom === "Seconds") {
 
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
       }
 
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
+    this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
     this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
   }
@@ -1483,7 +1487,12 @@ class AddMoreDetails extends Component {
       let MachineRate
       const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
 
-      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      if (UOM.type === TIME) {
+
+        MachineRate = this.state.machineRate
+      } else {
+        MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      }
 
       const tempArray = [];
 
@@ -1515,7 +1524,7 @@ class AddMoreDetails extends Component {
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
         this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
       });
-      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } })
+      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false }, machineRate: "" }) // RESETING THE STATE MACHINERATE
     }, 200);
   }
 
@@ -1553,15 +1562,8 @@ class AddMoreDetails extends Component {
 
     if (UOM.type === TIME) {
 
-      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      MachineRate = this.state.machineRate
 
-      if (UOM.uom === "Minutes") {
-
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
-      } else if (UOM.uom === "Seconds") {
-
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
-      }
 
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
@@ -1590,6 +1592,7 @@ class AddMoreDetails extends Component {
       lockUOMAndRate: isProcessGroup,
       processGridEditIndex: '',
       isEditIndex: false,
+      machineRate: ""
     }, () => {
 
       this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
@@ -1630,6 +1633,7 @@ class AddMoreDetails extends Component {
       isEditIndex: true,
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
+      machineRate: tempData.MachineRate
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
