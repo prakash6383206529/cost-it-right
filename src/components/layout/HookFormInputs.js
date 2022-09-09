@@ -145,11 +145,11 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
-
+  const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
       <label>
@@ -164,7 +164,7 @@ export const SearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
           return (
-            <div className={`${isLoader ? 'p-relative' : ''}`}>
+            <div className={className}>
               <Select
                 {...field}
                 {...register}
@@ -188,6 +188,9 @@ export const SearchableSelectHookForm = (field) => {
                 }}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
+              {buttonCross && <button type="button" className={'btn-cross'} onClick={buttonCross}>
+                <div className='cross-light'></div>
+              </button>}
             </div>
           )
 
