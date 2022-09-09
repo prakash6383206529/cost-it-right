@@ -1089,6 +1089,11 @@ function OverheadProfit(props) {
     }
   }
 
+  const resetData = () => {
+    setValue('ModelType', '')
+    setOverheadObj({})
+    setProfitObj({})
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1101,6 +1106,11 @@ function OverheadProfit(props) {
   * @method render
   * @description Renders the component
   */
+
+  const showValueInInput = () => {
+    let value = checkForDecimalAndNull(checkForNull(data.CostingPartDetails.OverheadCost) + checkForNull(data.CostingPartDetails.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
+    return value === 0 ? '' : value;
+  }
   return (
     <>
       <div className="user-page p-0">
@@ -1133,10 +1143,11 @@ function OverheadProfit(props) {
                     handleModelTypeChange(ModelTypeValues, true)
                   }}
                   errors={errors.ModelType}
+                  buttonCross={resetData}
                 />
               </Col>
 
-              <Col md="3">
+              <Col md="3" className='pl-0'>
                 <label>
                   {''}
                 </label>
@@ -1153,7 +1164,7 @@ function OverheadProfit(props) {
                 <label>
                   {'Net Overhead & Profit'}
                 </label>
-                <input className="form-control" disabled value={checkForDecimalAndNull(checkForNull(data.CostingPartDetails.OverheadCost) + checkForNull(data.CostingPartDetails.ProfitCost), initialConfiguration.NoOfDecimalForPrice)} />
+                <input placeholder='-' className="form-control" disabled value={showValueInInput()} />
               </Col>
 
               <Col md="12" className="">
