@@ -354,31 +354,30 @@ function CostingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        let temp = []
+        let tempArr = []
         selectedRows && selectedRows.map((item, index) => {
             // IsLockedBySimulation COMES TRUE WHEN THAT COSTING IS UNDER APPROVAL
             if (item.IsLockedBySimulation) {
-                temp.push(item.CostingNumber)
+                tempArr.push(item)
                 return false
             }
             return null
         })
 
 
-        if (temp.length > 1) {
+        if (tempArr.length > 1) {
             // IF MULTIPLE COSTING ARE SELECTED AND THEY ARE UNDER APPROVAL "IF" WILL GET EXECUTED
             setSelectedRowData([])
-            Toaster.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
+            Toaster.warning(`Costings ${tempArr.map(item => item.CostingNumber)} is already sent for approval through another token number.`)
             gridApi.deselectAll()
             return false
         }
 
-        else if (temp.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            let index = selectedRows.length - 1
-            if (selectedRows[index].LockedBySimulationProcessStep === '' || selectedRows[index].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'}`)
+        else if (tempArr.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
+            if (tempArr[0].LockedBySimulationProcessStep === '' || tempArr[0].LockedBySimulationProcessStep === null) {
+                Toaster.warning(`${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'}`)
             } else {
-                Toaster.warning(`This costing is under approval with token number ${selectedRows[index].LockedBySimulationToken ? selectedRows[index].LockedBySimulationToken : '-'} at ${selectedRows[index].LockedBySimulationProcessStep ? selectedRows[index].LockedBySimulationProcessStep : "-"} with ${selectedRows[index].LockedBySimulationStuckInWhichUser ? selectedRows[index].LockedBySimulationStuckInWhichUser : '-'} .`)
+                Toaster.warning(`This costing is under approval with token number ${tempArr[0].LockedBySimulationToken ? tempArr[0].LockedBySimulationToken : '-'} at ${tempArr[0].LockedBySimulationProcessStep ? tempArr[0].LockedBySimulationProcessStep : "-"} with ${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             }
             gridApi.deselectAll()
             return false

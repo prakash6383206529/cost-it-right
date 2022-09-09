@@ -19,7 +19,6 @@ import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { onFocus, showDataOnHover } from '../../../helper';
@@ -63,10 +62,8 @@ class AddProfit extends Component {
       DropdownChanged: true,
       DataToChange: [],
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       minEffectiveDate: '',
       isDataChanged: this.props.data.isEditFlag,
@@ -708,7 +705,7 @@ class AddProfit extends Component {
         this.cancel('cancel')
         return false
       }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })
@@ -740,7 +737,18 @@ class AddProfit extends Component {
         Plants: plantArray
       }
       if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please update the effective date')
+          this.setState({ setDisable: false })
+          return false
+        }
+        this.props.updateProfit(requestData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+            this.cancel('submit')
+          }
+        });
       }
 
 
@@ -776,19 +784,7 @@ class AddProfit extends Component {
       });
     }
   }, 500)
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateProfit(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-        this.cancel('submit')
-      }
-    });
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -802,7 +798,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, isEditFlag, costingHead,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1243,9 +1239,6 @@ class AddProfit extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
       </>
     );
