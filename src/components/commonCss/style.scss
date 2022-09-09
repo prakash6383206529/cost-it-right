@@ -8767,10 +8767,13 @@ table.group-process-table {
             }
             .css-yk16xz-control,
             .css-1pahdxg-control {
-              .css-g1d714-ValueContainer {
+              >div {
                 max-height: 43px;
                 max-width: 178px;
               }
+            }
+            .css-tlfecz-indicatorContainer, .css-1gtu0rj-indicatorContainer {
+              padding: 8px 2px !important;
             }
           }
         }
