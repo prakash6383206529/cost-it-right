@@ -210,8 +210,7 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost)) * item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
-
+        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing." : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">

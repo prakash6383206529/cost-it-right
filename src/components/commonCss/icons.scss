@@ -360,9 +360,8 @@
   .logo-container {
     display: flex;
     .border-left {
-      border-left: 1px solid #959cb6 !important;
-      margin-right: 15px;
-      margin-left: 15px;
+        border-left: 1px solid rgba(180, 197, 226, 0.51) !important;
+        margin:-3px 15px;
     }
     button {
       padding-top: 0.3125rem;

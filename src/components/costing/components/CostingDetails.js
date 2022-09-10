@@ -35,6 +35,7 @@ export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
 export const CopyCostingContext = React.createContext()
 export const VbcExistingCosting = React.createContext()
+export const CostingStatusContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -81,6 +82,7 @@ function CostingDetails(props) {
   const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
+  const [approvalStatus, setApprovalStatus] = useState('')
 
   //ROLE AND PERMISSION
   const [ViewAccessibility, setViewAccessibility] = useState(true)
@@ -492,6 +494,7 @@ function CostingDetails(props) {
       SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
       AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
     }
+    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
     setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
 
     let tempArray = []
@@ -2220,12 +2223,12 @@ function CostingDetails(props) {
 
                   </>
                 )}
-                {
-                  stepTwo && (
-                    <ViewCostingContext.Provider value={IsCostingViewMode} >
-                      <EditCostingContext.Provider value={IsCostingEditMode} >
-                        <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                          <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                {stepTwo && (
+                  <ViewCostingContext.Provider value={IsCostingViewMode} >
+                    <EditCostingContext.Provider value={IsCostingEditMode} >
+                      <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                        <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                          <CostingStatusContext.Provider value={approvalStatus}>
                             <CostingDetailStepTwo
                               backBtn={backToFirstStep}
                               partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
@@ -2234,14 +2237,14 @@ function CostingDetails(props) {
                               IsCostingViewMode={IsCostingViewMode}
                               IsCopyCostingMode={IsCopyCostingMode}
                             />
-                          </VbcExistingCosting.Provider>
-                        </CopyCostingContext.Provider>
-                      </EditCostingContext.Provider>
-                    </ViewCostingContext.Provider>
-                  )
-                }
-              </form >
-            </div >
+                          </CostingStatusContext.Provider>
+                        </VbcExistingCosting.Provider>
+                      </CopyCostingContext.Provider>
+                    </EditCostingContext.Provider>
+                  </ViewCostingContext.Provider>
+                )}
+              </form>
+            </div>
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
             }
