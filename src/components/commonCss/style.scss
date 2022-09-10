@@ -4312,7 +4312,7 @@ body {
 .text-warning {
   font-size: 14px;
   color: #a78610f2 !important;
-  font-weight: 500;
+  font-weight: 400;
   &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
@@ -8636,6 +8636,11 @@ padding-bottom: 3px;
   @media screen and (max-height: 768px) {
     max-height: 100px;
   }
+}
+.asm-message {
+  position: absolute;
+  right: 15px;
+  top: -10px;
 }
 
 .ag-header {

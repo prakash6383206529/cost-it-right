@@ -188,7 +188,7 @@ export const SearchableSelectHookForm = (field) => {
                 }}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
-              {buttonCross && <button type="button" className={'btn-cross'} onClick={buttonCross}>
+              {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisable} onClick={buttonCross}>
                 <div className='cross-light'></div>
               </button>}
             </div>
