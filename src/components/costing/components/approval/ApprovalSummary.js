@@ -20,6 +20,7 @@ import { Impactedmasterdata } from '../../../simulation/components/ImpactedMaste
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -48,6 +49,8 @@ function ApprovalSummary(props) {
   const [finalLevelUser, setFinalLevelUser] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
+  const [IsRegularizationLimit, setIsRegularizationLimit] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -105,9 +108,10 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, VendorId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, VendorId, IsRegularizationLimitCrossed } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
+      setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -202,6 +206,24 @@ function ApprovalSummary(props) {
     }))
 
   }
+
+  const onApproveButtonClick = () => {
+    if (IsRegularizationLimit) {
+      setShowPopup(true)
+    } else {
+      setApproveDrawer(true)
+    }
+  }
+
+  const onPopupConfirm = () => {
+    setShowPopup(false)
+    setApproveDrawer(true)
+  }
+
+  const closePopUp = () => {
+    setShowPopup(false)
+  }
+
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
@@ -527,7 +549,8 @@ function ApprovalSummary(props) {
                   <button
                     type="button"
                     className="approve-button mr5 approve-hover-btn"
-                    onClick={() => setApproveDrawer(true)}
+                    // onClick={() => setApproveDrawer(true)}
+                    onClick={() => onApproveButtonClick()}
                   >
                     <div className={'save-icon'}></div>
                     {'Approve'}
@@ -550,6 +573,13 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           }
+
+
+          {
+            showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
+          }
+
+
         </>
       }
 

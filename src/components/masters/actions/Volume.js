@@ -341,10 +341,11 @@ export function getVolumeLimit(technologyId, callback) {
  * @method checkRegularizationLimit
  * @description Get Volume Limit
  */
-export function checkRegularizationLimit(technologyId, callback) {
+export function checkRegularizationLimit(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.checkRegularizationLimit}/${technologyId}`, config())
+    let queryParams = `TechnologyId=${obj.technologyId}&PartId=${obj.partId}&PlantId=${obj.destinationPlantId}&VendorId=${obj.vendorId}`
+    axios.get(`${API.checkRegularizationLimit}?${queryParams}`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

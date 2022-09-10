@@ -38,6 +38,7 @@ const SendForApproval = (props) => {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
 
+
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -59,13 +60,13 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
-  console.log('IsLimitCrossed: ', IsLimitCrossed);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
     let obj = {}
+    let regularizationObj = {}
     obj.TechnologyId = props.technologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
@@ -76,7 +77,12 @@ const SendForApproval = (props) => {
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
-    dispatch(checkRegularizationLimit(props.technologyId, (res) => {
+    regularizationObj.technologyId = viewApprovalData[0].technologyId
+    regularizationObj.partId = viewApprovalData[0].partId
+    regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
+    regularizationObj.vendorId = viewApprovalData[0].vendorId
+
+    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
       if (res && res?.data && res?.data?.Data) {
         let Data = res.data.Data
         setDataToChange(Data)
@@ -303,9 +309,9 @@ const SendForApproval = (props) => {
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
-      Quantity: getValues('Quantity'),
-      Attachment: files,
-      IsLimitCrossed: IsLimitCrossed
+      // Quantity: getValues('Quantity'),
+      // Attachment: files,
+      // IsLimitCrossed: IsLimitCrossed
     }
 
     let temp = []
@@ -364,6 +370,11 @@ const SendForApproval = (props) => {
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
+      tempObj.NCCPartQuantity = getValues('Quantity')
+      tempObj.Attachment = files
+      tempObj.IsRegularized = isRegularize
+      tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+
       temp.push(tempObj)
       return null
     })
@@ -390,11 +401,18 @@ const SendForApproval = (props) => {
   }
 
   const checkQuantityLimitValue = (value, isRegularizeValue) => {
-    let limit = dataToChange?.RegularizationLimit + calculatePercentageValue(dataToChange?.RegularizationLimit, dataToChange?.MaxDeviationLimitPercentage)
+    let limit;
+    if (dataToChange?.QuantityUsed === 0) {
+      limit = dataToChange?.RegularizationLimit + calculatePercentageValue(dataToChange?.RegularizationLimit, dataToChange?.MaxDeviationLimitPercent)
+    } else {
+      limit = dataToChange?.QuantityUsed
+    }
+
     if (!isRegularizeValue) {
-      if ((value <= 5500)) {        // FOR TESTING PURPOSE 5500 and 5000 is written here set "limit" after API integration
-        // if ((value >= dataToChange?.RegularizationLimit) && (value <= limit)) {
-        if ((value >= 5000)) {
+
+      if ((value <= limit)) {
+
+        if ((value >= dataToChange?.RegularizationLimit) && (value <= limit)) {
           setIsLimitCrossed(true)
         } else {
           setIsLimitCrossed(false)
@@ -407,8 +425,10 @@ const SendForApproval = (props) => {
         Toaster.warning('Quantity should be less than Max Deviation Limit')
         return false
       }
+
+
     } else {
-      if ((value >= 5000)) {
+      if ((value >= dataToChange?.RegularizationLimit)) {
         setIsLimitCrossed(true)
       } else {
         setIsLimitCrossed(false)
