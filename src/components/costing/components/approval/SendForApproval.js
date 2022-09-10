@@ -913,6 +913,11 @@ const SendForApproval = (props) => {
                     </Col>
                   </Row>
                 ) : null}
+                <Row>
+                  <Col md="12" className='text-right my-n1'>
+                    <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
+                  </Col>
+                </Row>
                 <Row className="mb-4">
                   <Col
                     md="12"

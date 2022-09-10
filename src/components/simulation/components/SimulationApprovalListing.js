@@ -22,6 +22,8 @@ import WarningMessage from '../../common/WarningMessage'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
+import StatusFilter from '../../masters/material-master/statusFilter'
+import { isResetClick } from '../../../actions/Common'
 
 
 const gridOptions = {};
@@ -59,10 +61,16 @@ function SimulationApprovalListing(props) {
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
     const [noData, setNoData] = useState(false)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
+    var floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -119,7 +127,17 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         getTableData(0, defaultPageSize, true, floatingFilterData)
+        dispatch(isResetClick(false))
     }, [])
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+        }
+    }, [statusColumnData])
 
 
     useEffect(() => {
@@ -179,6 +197,7 @@ function SimulationApprovalListing(props) {
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
 
                         setTimeout(() => {
+                            dispatch(isResetClick(false))
                             setWarningMessage(false)
                             setFloatingFilterData(obj)
                         }, 23);
@@ -251,6 +270,7 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = () => {
+        dispatch(isResetClick(true))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -335,6 +355,9 @@ function SimulationApprovalListing(props) {
         }
         gridApi.paginationSetPageSize(Number(newPageSize));
 
+        if (isDashboard) {
+            props.isPageNoChange('simulation')
+        }
     };
 
     /**
@@ -627,7 +650,8 @@ function SimulationApprovalListing(props) {
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        statusFilter: StatusFilter
     };
 
     return (
@@ -714,7 +738,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
-                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>

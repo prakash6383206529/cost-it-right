@@ -30,7 +30,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper'
 import AsyncSelect from 'react-select/async';
@@ -89,10 +88,8 @@ class AddMachineRate extends Component {
       DropdownChange: true,
       effectiveDate: '',
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
@@ -1013,7 +1010,7 @@ class AddMachineRate extends Component {
       // if (DropdownChange) {
 
       // }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -1053,7 +1050,13 @@ class AddMachineRate extends Component {
 
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ showPopup: true, updatedObj: requestData })
+            this.props.updateMachine(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+                this.cancel('submit')
+              }
+            });
             return false
 
           } else {
@@ -1077,7 +1080,13 @@ class AddMachineRate extends Component {
           }
 
           this.setState({ setDisable: true })
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateMachine(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+              this.cancel('submit')
+            }
+          });
         }
 
 
@@ -1182,23 +1191,6 @@ class AddMachineRate extends Component {
     }
   }, 500)
 
-
-  onPopupConfirm = debounce(() => {
-
-    this.setState({ disablePopup: true })
-    this.props.updateMachine(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-        this.cancel('submit')
-
-      }
-    });
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
   /**
    * @method showFormData
    * @description SHOW FORM DATA ENTRY FROM ADD MORE DETAIL FORM
@@ -1287,7 +1279,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup, lockUOMAndRate, UniqueProcessId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1881,9 +1873,6 @@ class AddMachineRate extends Component {
               IsImportEntery={false}
             />
           )
-        }
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
         }
       </>
     );
