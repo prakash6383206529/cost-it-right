@@ -9,7 +9,8 @@ import {
   GET_VOLUME_DATA_BY_PART_AND_YEAR,
   config,
   GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
-  GET_VOLUME_LIMIT
+  GET_VOLUME_LIMIT,
+  CHECK_REGULARIZATION_LIMIT
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
@@ -325,6 +326,29 @@ export function getVolumeLimit(technologyId, callback) {
         if (response.data.Result === true || response.status === 202) {
           dispatch({
             type: GET_VOLUME_LIMIT,
+            payload: response.data.Data,
+          });
+          callback(response);
+        }
+      }).catch((error) => {
+        // apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method checkRegularizationLimit
+ * @description Get Volume Limit
+ */
+export function checkRegularizationLimit(technologyId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.get(`${API.checkRegularizationLimit}/${technologyId}`, config())
+      .then((response) => {
+        if (response.data.Result === true || response.status === 202) {
+          dispatch({
+            type: CHECK_REGULARIZATION_LIMIT,
             payload: response.data.Data,
           });
           callback(response);
