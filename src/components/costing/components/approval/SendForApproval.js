@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, VBC, ZBC } from "../../../../config/constants";
+import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -132,6 +132,7 @@ const SendForApproval = (props) => {
       }
 
     }))
+
   }, [])
   /**
    * @method renderDropdownListing
@@ -787,7 +788,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {true && <><Col md="6">
+                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}

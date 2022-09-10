@@ -627,7 +627,7 @@ const CostingSummaryTable = (props) => {
           obj.partNo = viewCostingData[index]?.partNumber // Part id id part number here  USE PART NUMBER KEY HERE      
           obj.partId = viewCostingData[index]?.partId
           obj.technologyId = viewCostingData[index]?.technologyId
-
+          obj.CostingHead = viewCostingData[index]?.costingHeadCheck
 
           obj.destinationPlantCode = viewCostingData[index]?.destinationPlantCode
           obj.destinationPlantName = viewCostingData[index]?.destinationPlantName
