@@ -90,7 +90,13 @@ function AddNCCDrawer(props) {
       setValue('Plant', { label: newValue.label, value: newValue.value })
       dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
         if (res && res.data && res.data.Data) {
-          setPlantData(res.data.Data)
+          let obj = res.data.Data
+          if (obj.DestinationPlantId == undefined) {
+            obj.DestinationPlantId = res.data.Data.PlantId
+            obj.DestinationPlantName = res.data.Data.PlantName
+            obj.DestinationPlantCode = res.data.Data.PlantCode
+          }
+          setPlantData(obj)
         }
       }))
     } else {
@@ -177,7 +183,7 @@ function AddNCCDrawer(props) {
                     register={register}
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
-                    mandatory={false}
+                    mandatory={true}
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
                   />
