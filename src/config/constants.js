@@ -871,7 +871,7 @@ export const API = {
   createVolumeLimit: `${BASE_URL}/masters-volume/create-add-limit`,
   updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
-  checkRegularizationLimit: `${BASE_URL}/masters-volume/check-regularization-limit`,
+  checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
