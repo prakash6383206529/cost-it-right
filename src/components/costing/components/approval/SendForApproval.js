@@ -8,9 +8,9 @@ import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberF
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
-import { getVolumeDataByPartAndYear, getVolumeLimit } from '../../../masters/actions/Volume'
+import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -30,7 +30,7 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const { isApprovalisting } = props
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -53,7 +53,7 @@ const SendForApproval = (props) => {
   const [approver, setApprover] = useState('')
   const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
-  const [isRegularize, setIsReggularize] = useState(false);
+  const [isRegularize, setIsRegularize] = useState(false);
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -61,6 +61,8 @@ const SendForApproval = (props) => {
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
+  const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  console.log('IsLimitCrossed: ', IsLimitCrossed);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -77,8 +79,8 @@ const SendForApproval = (props) => {
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
-    dispatch(getVolumeLimit(props.technologyId, (res) => {
-      if (res && res.data && res.data.Data) {
+    dispatch(checkRegularizationLimit(props.technologyId, (res) => {
+      if (res && res?.data && res?.data?.Data) {
         let Data = res.data.Data
         setDataToChange(Data)
       }
@@ -286,6 +288,10 @@ const SendForApproval = (props) => {
       Toaster.warning('Please select effective date for all the costing')
       return false
     }
+    if (isRegularize && files?.length === 0) {
+      Toaster.warning('Please upload file to send for approval.')
+      return false
+    }
     let obj = {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
@@ -300,6 +306,9 @@ const SendForApproval = (props) => {
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
+      Quantity: getValues('Quantity'),
+      Attachment: files,
+      IsLimitCrossed: IsLimitCrossed
     }
 
     let temp = []
@@ -389,16 +398,35 @@ const SendForApproval = (props) => {
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
 
+  const checkQuantityLimitValue = (value, isRegularizeValue) => {
+    let limit = dataToChange?.RegularizationLimit + calculatePercentageValue(dataToChange?.RegularizationLimit, dataToChange?.MaxDeviationLimitPercentage)
+    if (!isRegularizeValue) {
+      if ((value <= 5500)) {        // FOR TESTING PURPOSE 5500 and 5000 is written here set "limit" after API integration
+        // if ((value >= dataToChange?.RegularizationLimit) && (value <= limit)) {
+        if ((value >= 5000)) {
+          setIsLimitCrossed(true)
+        } else {
+          setIsLimitCrossed(false)
+        }
+      } else {
+        setTimeout(() => {
+          setValue('Quantity', 0)
+        }, 200);
+        setIsLimitCrossed(false)
+        Toaster.warning('Quantity should be less than Max Deviation Limit')
+        return false
+      }
+    } else {
+      if ((value >= 5000)) {
+        setIsLimitCrossed(true)
+      } else {
+        setIsLimitCrossed(false)
+      }
+    }
+  }
+
   const handleChangeQuantity = (e) => {
-    if (((e.target.value && e.target.value) > dataToChange.MaxDeviationLimit) && !isRegularize) {
-      Toaster.warning('Quantity should be less than Max Deviation')
-      setTimeout(() => {
-        setValue('Quantity', '')
-      }, 300);
-    }
-    else {
-      return e.target.value
-    }
+    checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
 
   useEffect(() => {
@@ -482,8 +510,11 @@ const SendForApproval = (props) => {
     );
   };
   const checkboxHandler = () => {
-    Toaster.warning("Please upload files");
-    setIsReggularize(!isRegularize);
+    if (isRegularize === false) {
+      Toaster.warning("Please upload files");
+    }
+    setIsRegularize(!isRegularize);
+    checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
 
   const reasonField = 'reasonField'
@@ -751,7 +782,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {false && <><Col md="6">
+                        {true && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
