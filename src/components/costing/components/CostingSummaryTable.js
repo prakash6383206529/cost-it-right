@@ -548,6 +548,7 @@ const CostingSummaryTable = (props) => {
     costingIds &&
       costingIds.map((id) => {
         let index = viewCostingData?.findIndex((data) => data?.costingId === id)
+
         if (index !== -1) {
           let obj = {}
           // add vendor key here
@@ -624,7 +625,10 @@ const CostingSummaryTable = (props) => {
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index]?.effectiveDate
           obj.isDate = viewCostingData[index]?.effectiveDate ? true : false
-          obj.partNo = viewCostingData[index]?.partNumber // Part id id part number here  USE PART NUMBER KEY HERE 
+          obj.partNo = viewCostingData[index]?.partNumber // Part id id part number here  USE PART NUMBER KEY HERE      
+          obj.partId = viewCostingData[index]?.partId
+          obj.technologyId = viewCostingData[index]?.technologyId
+
 
           obj.destinationPlantCode = viewCostingData[index]?.destinationPlantCode
           obj.destinationPlantName = viewCostingData[index]?.destinationPlantName
@@ -1073,7 +1077,7 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                       }
-                      {console.log(viewCostingData, "viewCostingData")}
+                      { }
                       {!drawerDetailPDF ? <tr>
                         <td>
                           <span className="d-block small-grey-text">RM Name-Grade</span>
