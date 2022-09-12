@@ -942,6 +942,7 @@ function ApprovalListing(props) {
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
@@ -949,6 +950,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="NCCPartQuantity" headerName="NCC Part Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
                           <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
