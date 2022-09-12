@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import StatusFilter from '../../../masters/material-master/statusFilter'
 import { isResetClick } from '../../../../actions/Common'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -47,6 +48,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [isOpen, setIsOpen] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
   const dispatch = useDispatch()
   const { selectedRowForPagination } = useSelector((state => state.simulation))
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -621,12 +623,21 @@ function ApprovalListing(props) {
     setSelectedRowData(uniqeArray)
   }
 
-
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
       Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
+
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+      setShowPopup(true)
+    } else {
+      sendForApprovalDrawer()
+    }
+  }
+
+  const sendForApprovalDrawer = () => {
+
     let temp = []
 
     selectedRowData && selectedRowData.map(item => {
@@ -809,6 +820,15 @@ function ApprovalListing(props) {
     gridApi.setQuickFilter(e.target.value);
   }
 
+  const onPopupConfirm = () => {
+    setShowPopup(false)
+    sendForApprovalDrawer()
+  }
+
+  const closePopUp = () => {
+    setShowPopup(false)
+  }
+
 
   const frameworkComponents = {
     renderPlant: renderPlant,
@@ -947,6 +967,9 @@ function ApprovalListing(props) {
                         <div className="text-right pb-3">
                           <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                         </div>
+                        {
+                          showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
+                        }
                       </div>
                     </div>
                   </div>
