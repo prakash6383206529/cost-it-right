@@ -281,15 +281,6 @@ class AddOverhead extends Component {
     this.setState({ DropdownChanged: false })
   };
 
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue });
-    } else {
-      this.setState({ plant: [] })
-    }
-    this.setState({ DropdownChanged: false })
-  }
-
   /**
   * @method handleClient
   * @description called

@@ -274,15 +274,6 @@ class AddProfit extends Component {
     }
   };
 
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue });
-    } else {
-      this.setState({ plant: [] })
-    }
-    this.setState({ DropdownChanged: false })
-  }
-
   /**
   * @method handleClient
   * @description called
