@@ -71,7 +71,7 @@ function CommonApproval(props) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
         }))
-        dispatch(isResetClick(false))
+        dispatch(isResetClick(false, "status"))
         return () => {
             // Cleanup function
             dispatch(setSelectedRowForPagination([]))
@@ -158,7 +158,7 @@ function CommonApproval(props) {
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     setTimeout(() => {
-                        dispatch(isResetClick(false))
+                        dispatch(isResetClick(false, "status"))
                         setWarningMessage(false)
                         setFloatingFilterData(obj)
                     }, 23);
@@ -232,7 +232,7 @@ function CommonApproval(props) {
 
 
     const resetState = () => {
-        dispatch(isResetClick(true))
+        dispatch(isResetClick(true, "status"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -699,7 +699,7 @@ function CommonApproval(props) {
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
+                            <div className={`ag-theme-material ${props?.isApproval ? "report-grid" : ""} ${loader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     floatingFilter={true}
@@ -728,7 +728,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
@@ -751,7 +751,7 @@ function CommonApproval(props) {
 
 
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} headerName="Status" ></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartNumber" headerName='BOP Part No'></AgGridColumn>}
@@ -768,7 +768,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
@@ -783,7 +783,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
