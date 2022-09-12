@@ -39,7 +39,7 @@ class AddProfit extends Component {
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
-
+      singlePlantSelected: [],
       ModelType: [],
       vendorName: [],
       client: [],
@@ -177,6 +177,7 @@ class AddProfit extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : "",
               selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
+              singlePlantSelected: { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId },
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -253,6 +254,14 @@ class AddProfit extends Component {
       })
       return temp
     }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -285,6 +294,9 @@ class AddProfit extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
     this.setState({ DropdownChanged: false })
+  }
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
   }
 
   componentDidUpdate(prevProps) {
@@ -663,14 +675,19 @@ class AddProfit extends Component {
   */
   onSubmit = debounce((values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     let plantArray = []
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value })
-      return plantArray
-    })
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    } else {
+
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+        return plantArray
+      })
+    }
     if (vendorName.length <= 0) {
 
       if (IsVendor && costingHead === 'vendor') {
@@ -956,6 +973,25 @@ class AddProfit extends Component {
                             />
                           </Col>)
                         )}
+                        {
+                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          <Col md="3">
+                            <Field
+                              label={'Plant'}
+                              name="DestinationPlant"
+                              placeholder={"Select"}
+                              options={this.renderListing("singlePlant")}
+                              handleChangeDescription={this.handleSinglePlant}
+                              validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                              required={true}
+                              component={searchableSelect}
+                              valueDescription={this.state.singlePlantSelected}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag || isViewMode}
+                            />
+                          </Col>
+                        }
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="3">
                             <Field
