@@ -169,11 +169,11 @@ export function Clientbasedcostingdrawer(props) {
 
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">BOP Cost</h5>
+                                    <h5 className="left-border">Insert Cost</h5>
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Net BOP Cost`}
+                                        label={`Net Insert Cost`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}

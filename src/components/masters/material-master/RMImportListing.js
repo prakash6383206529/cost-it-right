@@ -210,6 +210,11 @@ function RMImportListing(props) {
           setloader(false);
         }
 
+        if (res && res.status === 204) {
+          setTotalRecordCount(0)
+          setPageNo(0)
+        }
+
         if (res && isPagination === false) {
           setDisableDownload(false)
           setTimeout(() => {
@@ -444,9 +449,8 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== INR ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '';
+    return cellValue !== INR ? cellValue : '';
   }
 
   const companyFormatter = (props) => {
@@ -486,7 +490,7 @@ function RMImportListing(props) {
   */
   const shearingCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
 
 
@@ -496,7 +500,7 @@ function RMImportListing(props) {
   */
   const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
   /**
   * @method currencyFormatter

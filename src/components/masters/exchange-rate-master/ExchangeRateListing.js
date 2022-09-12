@@ -137,18 +137,16 @@ class ExchangeRateListing extends Component {
         });
     }
 
-
     /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    editItemDetails = (Id) => {
+     * @method viewOrEditItemDetails
+     * @description confirm edit or view  item
+     */
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
-            data: { isEditFlag: true, ID: Id },
+            data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
             toggleForm: true,
         })
     }
-
     /**
     * @method deleteItem
     * @description confirm delete Item.
@@ -210,7 +208,7 @@ class ExchangeRateListing extends Component {
     */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
     /**

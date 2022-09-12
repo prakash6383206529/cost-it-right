@@ -2,6 +2,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_OVERHEAD_PROFIT_SUCCESS,
+    GET_OVERHEAD_PROFIT_SUCCESS_ALL,
     GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS,
     GET_OVERHEAD_PROFIT_DATA_SUCCESS,
     CREATE_SUCCESS,
@@ -10,6 +11,7 @@ import {
     GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
     GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
 } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
 
@@ -28,10 +30,26 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 loading: false
             };
         case GET_OVERHEAD_PROFIT_SUCCESS:
+            let newArray = []
+            action.payload && action.payload.map((item) => {
+                item.EffectiveDateNew = item.EffectiveDate
+                newArray.push(item)
+            })
             return {
                 ...state,
                 loading: false,
-                overheadProfitList: action.payload
+                overheadProfitList: newArray
+            };
+        case GET_OVERHEAD_PROFIT_SUCCESS_ALL:
+            let newArrayAll = []
+            action.payload && action.payload.map((item) => {
+                item.EffectiveDateNew = item.EffectiveDate
+                newArrayAll.push(item)
+            })
+            return {
+                ...state,
+                loading: false,
+                overheadProfitListAll: newArrayAll
             };
         case GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS:
             return {

@@ -25,6 +25,7 @@ function Dashboard(props) {
   const [activeTab, setactiveTab] = useState('1');
   const [viewSimulation, setViewSimulation] = useState(true)
   const [viewCosting, setViewCosting] = useState(true)
+  const [pageDropDownRef, setPageDropDownRef] = useState('')
 
   const [viewMastersObj, setViewMAstersObj] = useState({
     RM: false,
@@ -89,12 +90,13 @@ function Dashboard(props) {
     }
   }
 
-  const isPageNoChange = () => {
+  const isPageNoChange = (data) => {
+    setPageDropDownRef(data)
     setTimeout(() => {
-      document.getElementById('go-top-top').scrollIntoView({
-        behavior: 'auto'
+      document.getElementById('refresh-to-top').scrollIntoView({
+        behavior: 'smooth'
       });
-    }, 30);
+    }, 100);
   }
 
   return (
@@ -112,7 +114,7 @@ function Dashboard(props) {
             <form onSubmit={handleSubmit}>
 
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
-                <div className="graph-box w-100">
+                <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
                     <Col md="4" className="text-right">
@@ -127,12 +129,12 @@ function Dashboard(props) {
                   </Row>
 
                   <Row>
-                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
+                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
                   </Row>
                 </div>
               </Row>}
 
-              {viewCosting && <Row className="m-0">
+              {viewCosting && <Row className="m-0" id={`${pageDropDownRef === 'costing' ? 'refresh-to-top' : ''}`}>
                 <div className={`graph-box w-100 ${acc1 ? "dashboard-height" : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
@@ -147,13 +149,13 @@ function Dashboard(props) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
+                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
                   </Row>
                 </div>
               </Row>}
 
               {getConfigurationKey().IsMasterApprovalAppliedConfigure && (viewMastersObj.RM || viewMastersObj.BOP || viewMastersObj.operation || viewMastersObj.machine) &&
-                <Row className="m-0" id="go-top-top">
+                <Row className="m-0" id={`${pageDropDownRef === 'master' ? 'refresh-to-top' : ''}`}>
                   <div className="graph-box w-100">
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
@@ -176,7 +178,7 @@ function Dashboard(props) {
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                            BOP Approval Status
+                            Insert Approval Status
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>

@@ -236,9 +236,8 @@ class PowerListing extends Component {
   }
 
   costFormatterForVBC = (props) => {
-    const { initialConfiguration } = this.props
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
+    return cellValue != null ? cellValue : '';
   }
 
   /**

@@ -59,7 +59,7 @@ function ViewRM(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -118,7 +118,6 @@ function ViewRM(props) {
         >
           <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
       </Col>
-
       <Col>
         <Table className="table cr-brdr-main" size="sm">
           <thead>
@@ -131,7 +130,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && <th>{`Calculator`}</th>}
+              {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <th>{`Calculator`}</th>}
               <th>{`Freight Cost`}</th>
               <th>{`Shearing Cost`}</th>
               <th>{`Burning Loss Weight`}</th>
@@ -152,7 +151,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && <td><button
+                  {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}

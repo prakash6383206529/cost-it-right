@@ -58,6 +58,7 @@ class AddMoreDetails extends Component {
       selectedPlants: [],
       machineType: [],
       isOpenMachineType: false,
+      machineRate: "",
 
       isOpenAvailability: false,
       WorkingHrPrYr: 0,
@@ -110,7 +111,6 @@ class AddMoreDetails extends Component {
       isProcessGroupOpen: false,
       UOM: [],
       effectiveDate: '',
-      showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
@@ -133,7 +133,9 @@ class AddMoreDetails extends Component {
       FuelEntryId: '',
       DataToChange: [],
       showErrorOnFocusDate: false,
-      labourDetailId: ''
+      labourDetailId: '',
+      IsIncludeMachineRateDepreciation: false,
+      powerIdFromAPI: EMPTY_GUID
     }
     this.dropzone = React.createRef();
   }
@@ -329,13 +331,8 @@ class AddMoreDetails extends Component {
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
           setTimeout(() => {
-            const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-              fuelDataByPlant, } = this.props;
+            const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
-
-
-            // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-            const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.PlantId === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
@@ -373,7 +370,7 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              selectedPlants: [{ label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId }],
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
@@ -394,7 +391,8 @@ class AddMoreDetails extends Component {
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               FuelEntryId: Data?.FuelEntryId,
               powerId: Data?.PowerId,
-              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit }
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
+              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -505,18 +503,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
   }
-  onPopupConfirm = () => {
-    this.props.reset()
-    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-        this.cancel()
-      }
-    });
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
+
   /**
   * @method handlePlants
   * @description called
@@ -542,14 +529,16 @@ class AddMoreDetails extends Component {
               Toaster.warning(res.data.Message)
               machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+                powerIdFromAPI: Data?.PowerId
               })
               this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
             } else {
               //  if(IsUsesSolarPower)
               machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
               this.setState({
-                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId }
+                machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+                powerIdFromAPI: Data?.PowerId
               })
               this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
             }
@@ -776,14 +765,16 @@ class AddMoreDetails extends Component {
           Toaster.warning(res.data.Message)
           machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
+            powerIdFromAPI: Data?.PowerId
           })
           this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
         } else {
           //  if(IsUsesSolarPower)
           machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
           this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId }
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
+            powerIdFromAPI: Data?.PowerId
           })
           this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -880,13 +871,15 @@ class AddMoreDetails extends Component {
             // this.setState
             machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
             this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
+              powerIdFromAPI: Data?.PowerId
             })
             this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           } else {
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
             this.setState({
-              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
+              powerIdFromAPI: Data?.PowerId
             })
             this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           }
@@ -1229,29 +1222,37 @@ class AddMoreDetails extends Component {
   */
   handleProcessCalculation = () => {
     const { fieldsObj, initialConfiguration, } = this.props
-    const { UOM } = this.state
+    const { UOM, IsIncludeMachineRateDepreciation } = this.state
 
     let MachineRate
     const OutputPerHours = checkForNull(fieldsObj?.OutputPerHours)
     const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
     // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
-    const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
-
+    let TotalMachineCostPerAnnum = 0
+    if (IsIncludeMachineRateDepreciation) {
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+    } else {
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+    }
+    // 
     if (UOM.type === TIME) {
 
-      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      if (UOM.uom === "Hours") {
+        MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      }
 
       if (UOM.uom === "Minutes") {
 
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
       } else if (UOM.uom === "Seconds") {
 
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
       }
 
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
+    this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
     this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
   }
@@ -1485,7 +1486,12 @@ class AddMoreDetails extends Component {
       let MachineRate
       const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
 
-      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      if (UOM.type === TIME) {
+
+        MachineRate = this.state.machineRate
+      } else {
+        MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      }
 
       const tempArray = [];
 
@@ -1517,7 +1523,7 @@ class AddMoreDetails extends Component {
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
         this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
       });
-      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } })
+      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false }, machineRate: "" }) // RESETING THE STATE MACHINERATE
     }, 200);
   }
 
@@ -1555,15 +1561,8 @@ class AddMoreDetails extends Component {
 
     if (UOM.type === TIME) {
 
-      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      MachineRate = this.state.machineRate
 
-      if (UOM.uom === "Minutes") {
-
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
-      } else if (UOM.uom === "Seconds") {
-
-        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
-      }
 
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
@@ -1592,6 +1591,7 @@ class AddMoreDetails extends Component {
       lockUOMAndRate: isProcessGroup,
       processGridEditIndex: '',
       isEditIndex: false,
+      machineRate: ""
     }, () => {
 
       this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
@@ -1632,6 +1632,7 @@ class AddMoreDetails extends Component {
       isEditIndex: true,
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
+      machineRate: tempData.MachineRate
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
@@ -1820,7 +1821,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1829,7 +1830,7 @@ class AddMoreDetails extends Component {
     }
 
     const { editDetails, fieldsObj } = this.props;
-    const { DataToChange } = this.state
+    const { DataToChange, IsIncludeMachineRateDepreciation } = this.state
 
     const userDetail = userDetails()
 
@@ -1912,6 +1913,8 @@ class AddMoreDetails extends Component {
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       MachineProcessGroup: this.props?.processGroupApiData,
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
+      PowerEntryId: powerIdFromAPI
       // LabourDetailId: labourType.value
     }
 
@@ -2046,6 +2049,8 @@ class AddMoreDetails extends Component {
         rowData: this.state.rowData,
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
+        IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
+        PowerEntryId: powerIdFromAPI
       }
 
       let obj = {}
@@ -2263,6 +2268,12 @@ class AddMoreDetails extends Component {
   DisplayMachineRateLabel = () => {
     return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
+
+  handleChangeIncludeMachineRateDepreciation = (value) => {
+    this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
+    this.handleProcessCalculation()
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -2270,7 +2281,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, IsIncludeMachineRateDepreciation } = this.state;
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -2596,6 +2607,23 @@ class AddMoreDetails extends Component {
                               {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
+                        </Col>
+                        <Col md="6" className='d-flex align-items-center mb-2'>
+                          <label
+                            className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
+                            onChange={this.handleChangeIncludeMachineRateDepreciation}
+                          > Include Total Cost in Machine Rate
+                            <input
+                              type="checkbox"
+                              checked={this.state.IsIncludeMachineRateDepreciation}
+                              disabled={isViewMode || this.state.processGrid?.length !== 0}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.IsIncludeMachineRateDepreciation}
+                              onChange={this.handleChangeIncludeMachineRateDepreciation}
+                            />
+                          </label>
                         </Col>
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}

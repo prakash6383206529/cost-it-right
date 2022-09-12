@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
@@ -322,12 +322,13 @@ function OverheadProfit(props) {
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
         setModelType(newValue)
+        console.log('costData: ', costData);
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-          Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
+          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
@@ -1087,6 +1088,11 @@ function OverheadProfit(props) {
     }
   }
 
+  const resetData = () => {
+    setValue('ModelType', '')
+    setOverheadObj({})
+    setProfitObj({})
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1099,6 +1105,11 @@ function OverheadProfit(props) {
   * @method render
   * @description Renders the component
   */
+
+  const showValueInInput = () => {
+    let value = checkForDecimalAndNull(checkForNull(data.CostingPartDetails.OverheadCost) + checkForNull(data.CostingPartDetails.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
+    return value === 0 ? '' : value;
+  }
   return (
     <>
       <div className="user-page p-0">
@@ -1131,10 +1142,11 @@ function OverheadProfit(props) {
                     handleModelTypeChange(ModelTypeValues, true)
                   }}
                   errors={errors.ModelType}
+                  buttonCross={resetData}
                 />
               </Col>
 
-              <Col md="3">
+              <Col md="3" className='pl-0'>
                 <label>
                   {''}
                 </label>
@@ -1151,7 +1163,7 @@ function OverheadProfit(props) {
                 <label>
                   {'Net Overhead & Profit'}
                 </label>
-                <input className="form-control" disabled value={checkForDecimalAndNull(checkForNull(data.CostingPartDetails.OverheadCost) + checkForNull(data.CostingPartDetails.ProfitCost), initialConfiguration.NoOfDecimalForPrice)} />
+                <input placeholder='-' className="form-control" disabled value={showValueInInput()} />
               </Col>
 
               <Col md="12" className="">
@@ -1392,7 +1404,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {'BOP'}
+                          {'Insert'}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1744,7 +1756,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {'BOP'}
+                          {'Insert'}
                         </label>
                       </Col>
                       <Col md="3">

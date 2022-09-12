@@ -422,7 +422,7 @@ export const Vendor = [
     { label: 'RawMaterialVendor', value: 'RawMaterialVendor' },//*
     { label: 'LabourVendor', value: 'LabourVendor', }, //*
     { label: 'PartVendor', value: 'PartVendor', }, //*
-    { label: 'BOPVendor', value: 'BOPVendor', },//*
+    { label: 'InsertVendor', value: 'BOPVendor', },//*
     { label: 'VendorName', value: 'VendorName', },//*
     { label: 'VendorCode', value: 'VendorCode', },//*
     { label: 'VendorEmail', value: 'VendorEmail', },//*
@@ -442,7 +442,7 @@ export const VendorTempData = [
         'RawMaterialVendor': 'YES OR NO',
         'LabourVendor': 'YES OR NO',
         'PartVendor': 'YES OR NO',
-        'BOPVendor': 'YES OR NO',
+        'InsertVendor': 'YES OR NO',
         'VendorName': 'TATA Steel',
         'VendorCode': 'VC01',
         'VendorEmail': 'Vendor@gmail.com',
@@ -818,9 +818,9 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'InsertPartNumber': 'BOP Part123',
+        'InsertPartName': 'Screw',
+        'InsertCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
@@ -1035,7 +1035,7 @@ export const MachineZBC = [
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
@@ -1053,7 +1053,7 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Stroke',
@@ -1077,7 +1077,7 @@ export const MHRMoreZBC = [
     { label: "MachineType", value: "MachineType", },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
-    { label: "MachineTonnage", value: "MachineTonnage", },
+    { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
     { label: "MachineCost(INR)", value: "MachineCost(INR)", }, //*
     { label: "AccessoriesCost(INR)", value: "AccessoriesCost(INR)", },
     { label: "InstallationCost(INR)", value: "InstallationCost(INR)", },
@@ -1148,7 +1148,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 40,
+        "MachineCapacityAndTonnage": 40,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
@@ -1204,7 +1204,7 @@ export const MHRMoreZBCTempData = [
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
-        "MachineTonnage": 50,
+        "MachineCapacityAndTonnage": 50,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
         "InstallationCost(INR)": 500,
@@ -2595,14 +2595,14 @@ export const CostingSimulationDownloadBOP = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
-    { label: "OldBOPRate", value: "OldBOPRate" },
-    { label: "NewBOPRate", value: "NewBOPRate" },
-    { label: "OldBOPCost", value: "OldBOPCost" },
-    { label: "NewBOPCost", value: "NewBOPCost" },
-    { label: "BOPVariance", value: "BOPVariance" },
+    { label: "InsertName", value: "BoughtOutPartName" },
+    { label: "InsertNumber", value: "BoughtOutPartNumber" },
+    { label: "Insert Quantity", value: "BoughtOutPartQuantity" },
+    { label: "OldInsertRate", value: "OldBOPRate" },
+    { label: "NewInsertRate", value: "NewBOPRate" },
+    { label: "OldInsertCost", value: "OldBOPCost" },
+    { label: "NewInsertCost", value: "NewBOPCost" },
+    { label: "InsertVariance", value: "BOPVariance" },
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
@@ -2716,11 +2716,11 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
 
-    { label: "BOP Name", value: "BoughtOutPartName" },
-    { label: "BOP Number", value: "BoughtOutPartNumber" },
-    { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
-    { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
-    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+    { label: "Insert Name", value: "BoughtOutPartName" },
+    { label: "Insert Number", value: "BoughtOutPartNumber" },
+    { label: "Old Insert Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "New Insert Cost", value: "NewNetBoughtOutPartCost" },
+    { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
@@ -2784,7 +2784,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
     { label: "Destination City", value: "DestinationCity", },
 ]
@@ -2922,6 +2922,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3002,16 +3003,17 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
-    { label: "Plant", value: "Plant", },
+    { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
-    { label: "Approved Quantity", value: "ApprovedQuantity", },
+    { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3185,10 +3187,10 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
-    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
-    { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
-    { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
-    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+    { label: "Insert Quantity", value: "BoughtOutPartQuantity" },
+    { label: "OldInsertCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewInsertCost", value: "NewNetBoughtOutPartCost" },
+    { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
 
 ]
 export const ERGridForToken = [
@@ -3288,11 +3290,11 @@ export const STGridForTokenSummary = [
 ]
 
 export const BOPGridForTokenSummary = [
-    { label: "BOP Name", value: "BoughtOutPartName" },
-    { label: "BOP Number", value: "BoughtOutPartNumber" },
-    { label: "Old BOP Cost", value: "OldBOPCost" },
-    { label: "New BOP Cost", value: "NewBOPCost" },
-    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+    { label: "Insert Name", value: "BoughtOutPartName" },
+    { label: "Insert Number", value: "BoughtOutPartNumber" },
+    { label: "Old Insert Cost", value: "OldBOPCost" },
+    { label: "New Insert Cost", value: "NewBOPCost" },
+    { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
 ]
 
 export const ImpactedRMDownload = [
@@ -3314,13 +3316,13 @@ export const ImpactedRMDownload = [
 ]
 
 export const ImpactedBOPDownload = [
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "InsertNumber", value: "BoughtOutPartNumber" },
+    { label: "InsertName", value: "BoughtOutPartName" },
     { label: "Category", value: "Category" },
     { label: "Vendor", value: "Vendor" },
     { label: "PartNumber", value: "PartNumber" },
-    { label: "OldBOPRate", value: "OldBOPRate" },
-    { label: "NewBOPRate", value: "NewBOPRate" },
+    { label: "OldInsertRate", value: "OldBOPRate" },
+    { label: "NewInsertRate", value: "NewBOPRate" },
     { label: "OldPOPrice", value: "OldPOPrice" },
     { label: "NewPOPrice", value: "NewPOPrice" },
     { label: "EffectiveDate", value: "EffectiveDate" },

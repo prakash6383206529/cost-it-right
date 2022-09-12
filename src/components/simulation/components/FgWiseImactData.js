@@ -7,11 +7,13 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import TooltipCustom from '../../common/Tooltip'
+import DayTime from '../../common/DayTimeWrapper'
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { headerName, dataForAssemblyImpact, impactType } = props
+    const { headerName, dataForAssemblyImpact, impactType, simulationDetail } = props
     const [loader, setLoader] = useState(false)
     const [count, setCount] = useState(0)
 
@@ -110,7 +112,7 @@ export function Fgwiseimactdata(props) {
                                     {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
                                     {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
                                     {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
-                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span></th>}
+                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span><TooltipCustom customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')})`} /></th>}
                                     {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
                                     {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
 

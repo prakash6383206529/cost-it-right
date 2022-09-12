@@ -3,24 +3,21 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
-import { renderDatePicker, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { SPACEBAR } from '../../../config/constants';
-import { onFocus } from '../../../helper';
+import { SPACEBAR, ZBC } from '../../../config/constants';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -33,7 +30,7 @@ class AddInterestRate extends Component {
       vendorName: [],
       ICCApplicability: [],
       PaymentTermsApplicability: [],
-      isViewMode: this.props?.data?.isViewMode ? true : false,
+      singlePlantSelected: [],
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
@@ -45,7 +42,6 @@ class AddInterestRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
@@ -69,16 +65,9 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
-    }
     this.getDetail()
-    if (!this.state.isViewMode) {
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
-    }
-
+    this.props.getICCAppliSelectList(() => { })
+    this.props.getPaymentTermsAppliSelectList(() => { })
   }
 
   componentDidUpdate(prevProps) {
@@ -100,7 +89,7 @@ class AddInterestRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
     const temp = [];
     if (label === 'VendorNameList') {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
@@ -127,15 +116,21 @@ class AddInterestRate extends Component {
       return temp;
     }
     if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.PlantId === '0') return false
-          temp.push({ label: item.PlantName, value: item.PlantId })
-          return null
-        })
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
       return temp
     }
-
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -159,15 +154,6 @@ class AddInterestRate extends Component {
       this.setState({ vendorName: [], })
     }
   };
-
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue });
-    } else {
-      this.setState({ plant: [] })
-    }
-    this.setState({ DropdownChanged: false })
-  }
 
   /**
   * @method handleICCApplicability
@@ -250,7 +236,17 @@ class AddInterestRate extends Component {
     this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
     this.setState({ DropdownChanged: false })
   };
-
+  /** 
+   * @method handlePlant
+   * @description Used handle plants
+   */
+  handlePlant = (e) => {
+    this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
+  }
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
   /**
   * @method getDetail
   * @description used to get user detail
@@ -277,10 +273,11 @@ class AddInterestRate extends Component {
               isEditFlag: true,
               IsVendor: Data.IsVendor,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
+              selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
+              singlePlantSelected: { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId },
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              plant: Data.PlantName !== undefined ? { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data.PlantId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -316,19 +313,6 @@ class AddInterestRate extends Component {
     }
   };
 
-
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateInterestRate(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-        this.setState({ showPopup: false })
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -336,9 +320,19 @@ class AddInterestRate extends Component {
 
   onSubmit = debounce((values) => {
 
-    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
+    let plantArray = []
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    } else {
+
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+        return plantArray
+      })
+    }
 
     if (vendorName.length <= 0) {
 
@@ -360,10 +354,7 @@ class AddInterestRate extends Component {
         this.cancel('cancel')
         return false;
       }
-      else {
-
-      }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -379,29 +370,22 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        PlantId: plant.value
+        // PlantId: plant.value
+        Plants: plantArray
       }
       if (this.state.isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-
-        const toastrConfirmOptions = {
-          onOk: () => {
-
-            this.props.updateInterestRate(updateData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-                this.setState({ showPopup: false })
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
+        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please update the effective date')
+          this.setState({ setDisable: false })
+          return false
         }
-
-
-
+        this.props.updateInterestRate(updateData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+            this.cancel('submit')
+          }
+        });
       }
 
 
@@ -420,7 +404,8 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        PlantId: plant.value
+        // PlantId: plant.value
+        Plants: plantArray
       }
 
       this.props.createInterestRate(formData, (res) => {
@@ -436,10 +421,6 @@ class AddInterestRate extends Component {
 
   }, 500)
 
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
   /**
   * @method render
   * @description Renders the component
@@ -453,7 +434,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, isDataChanged } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -519,52 +500,71 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
-                      <>
-                        {this.state.IsVendor && (
-                          <Col md="3" className='mb-4'>
-
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <div className='p-relative'>
-                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                              <AsyncSelect
-                                name="vendorName"
-                                ref={this.myRef}
-                                key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
-                                onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
-                                onKeyDown={(onKeyDown) => {
-                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                }}
-                                onFocus={() => onFocus(this)}
-                              />
-                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                            </div>
-                          </Col>
-                        )}
-                        <Col md="3" >
+                      {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        <Col md="3">
                           <Field
+                            label="Plant"
                             name="Plant"
-                            type="text"
-                            label={"Plant"}
-                            component={searchableSelect}
                             placeholder={"Select"}
+                            title={showDataOnHover(this.state.selectedPlants)}
+                            selection={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            selectionChanged={this.handlePlant}
                             validate={
-                              this.state.plant == null ||
-                                this.state.plant.length === 0
-                                ? [required]
-                                : []
-                            }
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             required={true}
-                            handleChangeDescription={this.handlePlant}
-                            valueDescription={this.state.plant}
-                            disabled={isEditFlag ? true : false}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            disabled={isEditFlag || isViewMode}
+                            className="multiselect-with-border"
+                          />
+                        </Col>)
+                      )}
+                      {this.state.IsVendor && (
+                        <Col md="3" className='mb-4'>
+
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          <div className='p-relative'>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                            <AsyncSelect
+                              name="vendorName"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                              onKeyDown={(onKeyDown) => {
+                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                              }}
+                              onFocus={() => onFocus(this)}
+                            />
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                          </div>
+                        </Col>
+                      )}
+                      {
+                        (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                        <Col md="3">
+                          <Field
+                            label={'Plant'}
+                            name="DestinationPlant"
+                            placeholder={"Select"}
+                            options={this.renderListing("singlePlant")}
+                            handleChangeDescription={this.handleSinglePlant}
+                            validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                            required={true}
+                            component={searchableSelect}
+                            valueDescription={this.state.singlePlantSelected}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag || isViewMode}
                           />
                         </Col>
-                      </>
+                      }
                     </Row>
 
                     <Row>
@@ -613,6 +613,7 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
+
                     </Row>
 
                     <Row>
@@ -753,9 +754,6 @@ class AddInterestRate extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
 
       </div>
@@ -788,7 +786,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, plantSelectList
+    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj
   }
 }
 
@@ -800,13 +798,13 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   updateInterestRate,
+  getPlantSelectListByType,
   createInterestRate,
   getInterestRateData,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
   getVendorListByVendorType,
   getVendorWithVendorCodeSelectList,
-  getPlantSelectListByType
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,

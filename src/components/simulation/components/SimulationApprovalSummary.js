@@ -1108,6 +1108,7 @@ function SimulationApprovalSummary(props) {
                                 SimulationId={simulationDetail.SimulationId}
                                 headerName={headerName}
                                 impactType={'FgWise'}
+                                simulationDetail={simulationDetail}
                             />
                         } */}
 

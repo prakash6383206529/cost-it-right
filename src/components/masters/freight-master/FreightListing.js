@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
@@ -9,8 +9,6 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
@@ -83,16 +81,16 @@ class FreightListing extends Component {
       }
     })
   }
-
   /**
-  * @method editItemDetails
-  * @description edit material type
-  */
-  editItemDetails = (Id, rowData) => {
+   * @method viewOrEditItemDetails
+   * @description edit or view material type
+   */
+  viewOrEditItemDetails = (Id, rowData, isViewMode) => {
     let data = {
       isEditFlag: true,
       Id: Id,
       IsVendor: rowData.CostingHead,
+      isViewMode: isViewMode
     }
     this.props.getDetails(data);
   }
@@ -365,7 +363,7 @@ class FreightListing extends Component {
                 >
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
                   <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

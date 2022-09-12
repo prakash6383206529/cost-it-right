@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
@@ -61,7 +61,8 @@ function Icc(props) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor,
-                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                // Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {

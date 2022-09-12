@@ -577,7 +577,7 @@ export function formViewData(costingSummary, header = '') {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-  obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
+  obj.RawMaterialCalculatorId = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
@@ -711,6 +711,7 @@ export function formViewData(costingSummary, header = '') {
   obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
+  obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
 
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
   obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
@@ -720,7 +721,6 @@ export function formViewData(costingSummary, header = '') {
   obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
   obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
   obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
-
 
   //USED FOR DOWNLOAD PURPOSE
 

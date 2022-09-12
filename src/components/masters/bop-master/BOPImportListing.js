@@ -173,6 +173,10 @@ class BOPImportListing extends Component {
             }
 
             if (res) {
+
+                if (res && res.status === 204) {
+                    this.setState({ totalRecordCount: 0, pageNo: 0 })
+                }
                 if (res && res.data && res.data.DataList.length > 0) {
                     this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                 }
@@ -342,7 +346,7 @@ class BOPImportListing extends Component {
     */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return cell != null ? cell : '-';
     }
 
     /**
@@ -373,8 +377,7 @@ class BOPImportListing extends Component {
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
-        const { initialConfiguration } = this.props
-        return checkForDecimalAndNull(row.Currency === INR ? row.NetLandedCost : row.NetLandedCostConversion, initialConfiguration && initialConfiguration.NoOfDecimalForPrice);
+        return row.Currency === INR ? row.NetLandedCost : row.NetLandedCostConversion;
     }
 
     /**

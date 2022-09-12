@@ -867,7 +867,10 @@ export const API = {
   bulkUploadVolumeActualVBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-vbc-json`,
   bulkUploadVolumeBudgetedZBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-zbc-json`,
   bulkUploadVolumeBudgetedVBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-vbc-json`,
-
+  createVolumeLimit: `${BASE_URL}/masters-volume/create-add-limit`,
+  updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
+  getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
+  checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
@@ -1062,6 +1065,7 @@ export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
+export const IS_RESET = 'IS_RESET'
 
 
 //RAW MATERIAL APPROVAL
@@ -1256,6 +1260,7 @@ export const GET_MODEL_TYPE_SELECTLIST = 'GET_MODEL_TYPE_SELECTLIST'
 export const GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST = 'GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST'
 export const GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST = 'GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST'
 export const GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST = 'GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST'
+export const GET_OVERHEAD_PROFIT_SUCCESS_ALL = 'GET_OVERHEAD_PROFIT_SUCCESS_ALL'
 
 //DEPRECIATION
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS'
@@ -1509,7 +1514,8 @@ export const GET_FINANCIAL_YEAR_SELECTLIST = 'GET_FINANCIAL_YEAR_SELECTLIST'
 export const GET_VOLUME_DATA_BY_PART_AND_YEAR = 'GET_VOLUME_DATA_BY_PART_AND_YEAR'
 export const GET_VOLUME_DATA_LIST = 'GET_VOLUME_DATA_LIST'
 export const GET_VOLUME_DATA_LIST_FOR_DOWNLOAD = 'GET_VOLUME_DATA_LIST_FOR_DOWNLOAD'
-
+export const GET_VOLUME_LIMIT = 'GET_VOLUME_LIMIT'
+export const CHECK_REGULARIZATION_LIMIT = 'CHECK_REGULARIZATION_LIMIT'
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
@@ -1951,4 +1957,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.472.4";
+export const VERSION = "V1.2.505.1";

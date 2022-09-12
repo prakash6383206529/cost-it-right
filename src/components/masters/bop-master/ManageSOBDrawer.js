@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -182,7 +182,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success('BOP Vendors SOB has been updated.')
+        Toaster.success('Insert Vendors SOB has been updated.')
         props.closeDrawer('a', 'submit')
       }
     }))

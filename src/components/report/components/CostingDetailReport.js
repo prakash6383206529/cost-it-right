@@ -291,7 +291,7 @@ function ReportListing(props) {
     */
     const decimalPriceFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -299,7 +299,7 @@ function ReportListing(props) {
   */
     const decimalInputOutputFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForInputOutput) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -328,7 +328,7 @@ function ReportListing(props) {
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
-                > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div>} </> : '-';
+                > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi, sapExcel, sapEncoded) => {
@@ -352,6 +352,10 @@ function ReportListing(props) {
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 setLoader(false)
                 let isReset = true
                 setLoader(false)
@@ -931,7 +935,7 @@ function ReportListing(props) {
                         <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net Insert Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
