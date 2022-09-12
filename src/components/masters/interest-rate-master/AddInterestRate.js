@@ -287,7 +287,6 @@ class AddInterestRate extends Component {
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              plant: Data.PlantName !== undefined ? { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data.PlantId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
