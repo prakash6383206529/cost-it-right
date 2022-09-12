@@ -960,27 +960,6 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         )}
-                        <Col md="3" >
-                          <Field
-                            name="Plant"
-                            type="text"
-                            label={"Plant"}
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.plant == null ||
-                                this.state.plant.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handlePlant}
-                            valueDescription={this.state.plant}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
                         {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field

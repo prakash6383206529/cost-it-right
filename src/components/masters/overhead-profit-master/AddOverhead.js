@@ -157,9 +157,8 @@ class AddOverhead extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { costingHead, plantSelectList } = this.props;
+            const { costingHead } = this.props;
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.PlantId === Data.PlantId)
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
               Head = 'vendor';
@@ -176,7 +175,6 @@ class AddOverhead extends Component {
               costingHead: Head,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.PlantNameCode, value: plantObj.PlantId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
@@ -210,9 +208,9 @@ class AddOverhead extends Component {
   }
 
   /**
-  * @method renderListing
-  * @description Used to show type of listing
-  */
+   * @method renderListing
+   * @description Used to show type of listing
+   */
   renderListing = (label) => {
     const { vendorWithVendorCodeSelectList, clientSelectList, modelTypes, plantSelectList, costingHead } = this.props;
     const temp = [];
@@ -980,27 +978,7 @@ class AddOverhead extends Component {
                             </div>
                           </Col>
                         )}
-                        <Col md="3" >
-                          <Field
-                            name="Plant"
-                            type="text"
-                            label={"Plant"}
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.plant == null ||
-                                this.state.plant.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handlePlant}
-                            valueDescription={this.state.plant}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
+
                         {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
@@ -1378,7 +1356,6 @@ export default connect(mapStateToProps, {
   getOverheadData,
   fileUploadOverHead,
   fileDeleteOverhead,
-  getPlantSelectListByType
 })(reduxForm({
   form: 'AddOverhead',
   enableReinitialize: true,

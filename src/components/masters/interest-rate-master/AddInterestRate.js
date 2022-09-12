@@ -13,7 +13,6 @@ import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import Toaster from '../../common/Toaster'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
@@ -34,7 +33,6 @@ class AddInterestRate extends Component {
       singlePlantSelected: [],
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
-      isEditFlag: false,
       isVendorNameNotSelected: false,
       InterestRateId: '',
       effectiveDate: '',
@@ -332,7 +330,7 @@ class AddInterestRate extends Component {
 
   onSubmit = debounce((values) => {
 
-    const { Data, IsVendor, vendorName, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     let plantArray = []
@@ -512,52 +510,6 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
-                      {/* <>
-                        {this.state.IsVendor && (
-                          <Col md="3" className='mb-4'>
-
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <div className='p-relative'>
-                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                              <AsyncSelect
-                                name="vendorName"
-                                ref={this.myRef}
-                                key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
-                                onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
-                                onKeyDown={(onKeyDown) => {
-                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                }}
-                                onFocus={() => onFocus(this)}
-                              />
-                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                            </div>
-                          </Col>
-                        )}
-                        <Col md="3" >
-                          <Field
-                            name="Plant"
-                            type="text"
-                            label={"Plant"}
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.plant == null ||
-                                this.state.plant.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handlePlant}
-                            valueDescription={this.state.plant}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
-                      </> */}
                       {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                         <Col md="3">
                           <Field
@@ -581,7 +533,6 @@ class AddInterestRate extends Component {
                           />
                         </Col>)
                       )}
-
                       {this.state.IsVendor && (
                         <Col md="3" className='mb-4'>
 
@@ -864,7 +815,6 @@ export default connect(mapStateToProps, {
   getICCAppliSelectList,
   getVendorListByVendorType,
   getVendorWithVendorCodeSelectList,
-  getPlantSelectListByType
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,
