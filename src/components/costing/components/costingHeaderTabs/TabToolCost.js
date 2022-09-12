@@ -76,13 +76,19 @@ function TabToolCost(props) {
       if (RMCCTabData[0].PartType === "Assembly") {
         setDisableSwitch(true)
       }
+
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
-        return { label: el.ProcessName, value: el.ProcessId };
+        if (el?.ProcessList?.length === 0) {
+          return { label: el.ProcessName, value: el.ProcessId };
+        } else {
+          return el.ProcessList && el.ProcessList.map((item) => {
+            return { label: item.ProcessName, value: item.ProcessId };
+          })
+        }
       })
       OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
         return { label: el.OperationName, value: el.OperationId };
       });
-
       setProcessArray(ProcessCostArray)
       setOperationArray(OperationCostArray)
     }
