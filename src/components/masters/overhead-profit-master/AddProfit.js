@@ -148,10 +148,9 @@ class AddProfit extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { costingHead, plantSelectList } = this.props;
+            const { costingHead } = this.props;
 
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.PlantId === Data.PlantId)
 
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -170,7 +169,6 @@ class AddProfit extends Component {
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.PlantNameCode, value: plantObj.PlantId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -960,27 +958,6 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         )}
-                        <Col md="3" >
-                          <Field
-                            name="Plant"
-                            type="text"
-                            label={"Plant"}
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.plant == null ||
-                                this.state.plant.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handlePlant}
-                            valueDescription={this.state.plant}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
                         {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
