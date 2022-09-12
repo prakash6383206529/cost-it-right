@@ -20,7 +20,6 @@ function AddPlantDrawer(props) {
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
-  const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
   useEffect(() => {
     const { zbcPlantGrid } = props;
@@ -58,15 +57,6 @@ function AddPlantDrawer(props) {
       });
       return temp;
     }
-    if (label === 'Vendor') {
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
   }
 
   /**
@@ -156,22 +146,6 @@ function AddPlantDrawer(props) {
                     mandatory={true}
                     handleChange={handlePlantChange}
                     errors={errors.Plant}
-                  />
-                </Col>
-                <Col md="12">
-                  <SearchableSelectHookForm
-                    label={"Vendor"}
-                    name={"Vendor"}
-                    placeholder={"-Select-"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={vendor.length !== 0 ? vendor : ""}
-                    options={renderListing("Vendor")}
-                    mandatory={true}
-                    handleChange={handleVendorChange}
-                    errors={errors.Vendor}
                   />
                 </Col>
               </Row>
