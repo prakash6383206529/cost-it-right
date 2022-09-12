@@ -1558,11 +1558,12 @@ export function agGridStatus(data, id) {
 }
 
 
-export function isResetClick(data) {
+export function isResetClick(data, component) {
+  let obj = { data: data, component: component }
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
-      payload: data,
+      payload: obj,
     })
 
   }
