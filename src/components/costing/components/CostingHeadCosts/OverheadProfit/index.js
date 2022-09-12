@@ -325,14 +325,14 @@ function OverheadProfit(props) {
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
-        console.log('costData: ', costData);
         setModelType(newValue)
+        console.log('costData: ', costData);
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
-          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData.IsVendor) ? costData.PlantId : EMPTY_GUID
+          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
