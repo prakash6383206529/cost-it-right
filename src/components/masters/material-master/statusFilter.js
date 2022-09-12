@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    agGridStatus,
+    agGridStatus, fetchCostingHeadsAPI,
 } from '../../../actions/Common';
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
-
 
 
 function StatusFilter(props) {
@@ -25,11 +24,34 @@ function StatusFilter(props) {
 
 
     useEffect(() => {
-        if (isReset) {
+
+        if (isReset && isReset?.data) {
             setValue("reason", [])
         }
 
     }, [isReset])
+
+
+    useEffect(() => {
+
+        dispatch(fetchCostingHeadsAPI('--Costing Heads--', res => {
+            if (res) {
+                let temp = []
+                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                })
+                setDropdownData(temp)
+            }
+        }))
+
+        if (isReset && isReset.component == "applicablity") {
+            setActivate(false)
+        }
+
+
+    }, [])
 
 
     const valueChanged = (event) => {
@@ -97,7 +119,7 @@ function StatusFilter(props) {
     return (
 
         <div className="ag-grid-multi">
-            {activate &&
+            {
                 <SearchableSelectHookForm
                     label={""}
                     name={"reason"}
@@ -107,7 +129,7 @@ function StatusFilter(props) {
                     rules={{ required: true }}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                    options={statusOptions}
+                    options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
                     isMulti={true}
                     mandatory={true}
                     handleChange={(e) => {
