@@ -719,7 +719,7 @@ function ProfitListing(props) {
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
+                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
