@@ -44,6 +44,7 @@ function RunSimulationDrawer(props) {
     const [toggleSwitchAdditionalOtherCOst, setToggleSwitchAdditionalOtherCOst] = useState(false)
     const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
     const [runSimulationDisable, setRunSimulationDisable] = useState(false)
+    const [disableDiscountAndOtherCostSecond, setDisableDiscountAndOtherCostSecond] = useState(false)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -92,7 +93,7 @@ function RunSimulationDrawer(props) {
 
         if (elementObj.Text === "Additional Other Cost") {
             setInputOtherCost(!inputOtherCost)
-            setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
+            setDisableDiscountAndOtherCostSecond(!disableDiscountAndOtherCostSecond)
             //sethideDiscountAndOtherCost(!hideDiscountAndOtherCost)
         }
 
@@ -280,7 +281,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
