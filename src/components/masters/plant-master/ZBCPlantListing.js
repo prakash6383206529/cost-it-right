@@ -22,7 +22,7 @@ import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { showTitleForActiveToggle } from '../../../helper';
+import { searchNocontentFilter, showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -515,6 +515,7 @@ class ZBCPlantListing extends Component {
                             rowSelection={'multiple'}
                             suppressRowClickSelection={true}
                             onSelectionChanged={this.onRowSelect}
+                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
