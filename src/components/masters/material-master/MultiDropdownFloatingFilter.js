@@ -28,9 +28,9 @@ function MultiDropdownFloatingFilter(props) {
     useEffect(() => {
 
         if (isReset && isReset?.data) {
-            setValue("reason", [])
+            setValue("multiDropDown", [])
         } else {
-            setValue("reason", statusColumnData?.arrReports[props?.maxValue])
+            setValue("multiDropDown", statusColumnData?.arrReports[props?.maxValue])
         }
 
     }, [isReset])
@@ -112,7 +112,7 @@ function MultiDropdownFloatingFilter(props) {
             {
                 <SearchableSelectHookForm
                     label={""}
-                    name={"reason"}
+                    name={"multiDropDown"}
                     placeholder={"Select"}
                     Controller={Controller}
                     control={control}
