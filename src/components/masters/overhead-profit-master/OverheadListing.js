@@ -22,7 +22,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import StatusFilter from '../material-master/statusFilter';
-import { isResetClick } from '../../../actions/Common';
+import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -242,6 +242,7 @@ function OverheadListing(props) {
 
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()

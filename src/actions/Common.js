@@ -1543,10 +1543,11 @@ export function getPartSelectList(callback) {
 }
 
 
-export function agGridStatus(data, id) {
+export function agGridStatus(data, id, arr = []) {
   let obj = {
     data: data,
-    id: id
+    id: id,
+    arr: arr
   }
   return (dispatch) => {
     dispatch({

@@ -16,6 +16,7 @@ function StatusFilter(props) {
     const [activate, setActivate] = useState(true)
     const dispatch = useDispatch()
     const isReset = useSelector((state) => state.comman.isReset);
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
     const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -27,6 +28,8 @@ function StatusFilter(props) {
 
         if (isReset && isReset?.data) {
             setValue("reason", [])
+        } else {
+            setValue("reason", statusColumnData?.arr)
         }
 
     }, [isReset])
@@ -64,7 +67,7 @@ function StatusFilter(props) {
                 plants = item.label
             }
         })
-        dispatch(agGridStatus(plants, props?.maxValue))
+        dispatch(agGridStatus(plants, props?.maxValue, event))
         setCurrentValue(event?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
 
