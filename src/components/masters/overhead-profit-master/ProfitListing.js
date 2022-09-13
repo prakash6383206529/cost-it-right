@@ -23,7 +23,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
-import StatusFilter from '../material-master/statusFilter';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -102,6 +102,7 @@ function ProfitListing(props) {
             }
         }, 300);
         dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
     }, [])
 
@@ -632,7 +633,7 @@ function ProfitListing(props) {
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
-        valuesFloatingFilter: StatusFilter,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
     return (

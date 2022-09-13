@@ -1559,12 +1559,12 @@ export function agGridStatus(data, id, arr = []) {
 }
 
 
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
 export function isResetClick(data, component) {
-  let obj = { data: data, component: component }
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
-      payload: obj,
+      payload: { data: data, component: component },
     })
 
   }
