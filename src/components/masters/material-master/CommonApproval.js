@@ -21,7 +21,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import { hyphenFormatter } from '../masterUtil';
 import { agGridStatus, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
-import StatusFilter from './statusFilter';
+import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 
 const gridOptions = {};
 
@@ -656,7 +656,7 @@ function CommonApproval(props) {
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: StatusFilter
+        statusFilter: SingleDropdownFloationFilter
     };
 
     const isRowSelectable = (rowNode) => {
