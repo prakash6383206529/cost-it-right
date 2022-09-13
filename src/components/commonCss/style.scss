@@ -8656,6 +8656,31 @@ padding-bottom: 3px;
   top: -10px;
 }
 
+@mixin ag-grid-multi {
+  margin: 0 -7px;
+  height: 40px;
+  .form-group {
+    margin-bottom: 0 !important;
+  }
+  label {
+    display: none;
+  }
+  .basic-multi-select .select__control .select__indicators .select__indicator {
+    padding: 9px 0px;
+  }
+  .css-yk16xz-control,
+  .css-1pahdxg-control {
+    > div {
+      max-height: 43px;
+      max-width: 178px;
+    }
+  }
+  .css-tlfecz-indicatorContainer,
+  .css-1gtu0rj-indicatorContainer {
+    padding: 8px 2px !important;
+  }
+}
+
 .ag-header {
   overflow: visible !important;
   .ag-pinned-right-header {
@@ -8667,33 +8692,53 @@ padding-bottom: 3px;
         .ag-floating-filter-full-body {
           overflow: visible;
           .ag-grid-multi {
-            margin: 0 -7px;
-            height: 40px;
-            .form-group {
-              margin-bottom: 0 !important;
-            }
-            label {
-              display: none;
-            }
-            .basic-multi-select
-              .select__control
-              .select__indicators
-              .select__indicator {
-              padding: 9px 0px;
-            }
-            .css-yk16xz-control,
-            .css-1pahdxg-control {
-              >div {
-                max-height: 43px;
-                max-width: 178px;
-              }
-            }
-            .css-tlfecz-indicatorContainer, .css-1gtu0rj-indicatorContainer {
-              padding: 8px 2px !important;
-            }
+            @include ag-grid-multi();
           }
         }
       }
     }
   }
+}
+
+.report-grid {
+  .ag-grid-multi {
+    @include ag-grid-multi();
+    margin: 0;
+  }
+  .css-yk16xz-control,
+  .css-1pahdxg-control {
+    > div {
+      max-height: 43px;
+      max-width: 165px !important;
+    }
+  }
+}
+.report-listing-page {
+  .loader_container {
+    z-index: 1000;
+  }
+}
+.report-grid .ag-header-viewport {
+  z-index: 999;
+}
+.report-grid .ag-focus-managed,
+.report-grid .ag-column-hover,
+.report-grid .ag-header-viewport,
+.report-grid .ag-header-row.ag-header-row-floating-filter {
+  overflow: visible !important;
+}
+.report-grid {
+  .css-2b097c-container {
+    position: static !important;
+  }
+  .css-2613qy-menu {
+    margin-top: 0px !important;
+    top: 50% !important;
+    position: absolute !important;
+  }
+}
+.report-grid .ag-pinned-right-header {
+  overflow: hidden !important;
+  background: #fff;
+  z-index: 999;
 }
