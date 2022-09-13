@@ -4312,7 +4312,7 @@ body {
 .text-warning {
   font-size: 14px;
   color: #a78610f2 !important;
-  font-weight: 500;
+  font-weight: 400;
   &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
@@ -8637,6 +8637,11 @@ padding-bottom: 3px;
     max-height: 100px;
   }
 }
+.asm-message {
+  position: absolute;
+  right: 15px;
+  top: -10px;
+}
 
 .ag-header {
   overflow: visible !important;
@@ -8665,10 +8670,13 @@ padding-bottom: 3px;
             }
             .css-yk16xz-control,
             .css-1pahdxg-control {
-              .css-g1d714-ValueContainer {
+              >div {
                 max-height: 43px;
                 max-width: 178px;
               }
+            }
+            .css-tlfecz-indicatorContainer, .css-1gtu0rj-indicatorContainer {
+              padding: 8px 2px !important;
             }
           }
         }

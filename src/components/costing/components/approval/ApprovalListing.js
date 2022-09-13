@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import StatusFilter from '../../../masters/material-master/statusFilter'
 import { isResetClick } from '../../../../actions/Common'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -47,6 +48,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [isOpen, setIsOpen] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
   const dispatch = useDispatch()
   const { selectedRowForPagination } = useSelector((state => state.simulation))
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -457,7 +459,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
+        <img className={`arrow-ico mr-1 ${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice || cell === null) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-green' : 'arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? row.NetPOPriceNew : '-'}
       </>
     )
@@ -621,12 +623,21 @@ function ApprovalListing(props) {
     setSelectedRowData(uniqeArray)
   }
 
-
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
       Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
+
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+      setShowPopup(true)
+    } else {
+      sendForApprovalDrawer()
+    }
+  }
+
+  const sendForApprovalDrawer = () => {
+
     let temp = []
 
     selectedRowData && selectedRowData.map(item => {
@@ -658,6 +669,9 @@ function ApprovalListing(props) {
       costingObj.destinationPlantCode = item.DestinationPlantCode
       costingObj.destinationPlantName = item.DestinationPlantName
       costingObj.destinationPlantId = item.DestinationPlantId
+      costingObj.technologyId = item?.TechnologyId
+      costingObj.CostingHead = item?.CostingHead
+
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -797,11 +811,22 @@ function ApprovalListing(props) {
     }
 
     gridApi.paginationSetPageSize(Number(newPageSize));
-
+    if (isDashboard) {
+      props?.isPageNoChange('costing')
+    }
   };
 
   const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
+  }
+
+  const onPopupConfirm = () => {
+    setShowPopup(false)
+    sendForApprovalDrawer()
+  }
+
+  const closePopUp = () => {
+    setShowPopup(false)
   }
 
 
@@ -913,13 +938,15 @@ function ApprovalListing(props) {
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                          <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="NCCPartQuantity" headerName="NCC Part Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
                           <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
@@ -942,6 +969,9 @@ function ApprovalListing(props) {
                         <div className="text-right pb-3">
                           <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                         </div>
+                        {
+                          showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
+                        }
                       </div>
                     </div>
                   </div>

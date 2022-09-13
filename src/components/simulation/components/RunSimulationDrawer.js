@@ -92,6 +92,7 @@ function RunSimulationDrawer(props) {
 
         if (elementObj.Text === "Additional Other Cost") {
             setInputOtherCost(!inputOtherCost)
+            setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
             //sethideDiscountAndOtherCost(!hideDiscountAndOtherCost)
         }
 

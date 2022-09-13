@@ -44,7 +44,7 @@ class AddOverhead extends Component {
       vendorName: [],
       vendorCode: '',
       client: [],
-
+      singlePlantSelected: [],
       overheadAppli: [],
 
       remarks: '',
@@ -136,6 +136,10 @@ class AddOverhead extends Component {
     this.setState({ selectedPlants: e })
     this.setState({ DropdownChanged: false })
   }
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
+
   /**
   * @method getDetails
   * @description Used to get Details
@@ -180,6 +184,7 @@ class AddOverhead extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
+              singlePlantSelected: { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId },
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -252,6 +257,14 @@ class AddOverhead extends Component {
       plantSelectList && plantSelectList.map((item) => {
         if (item.PlantId === '0') return false
         temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
+      return temp
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
@@ -682,14 +695,20 @@ class AddOverhead extends Component {
   */
   onSubmit = debounce((values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
+
     let plantArray = []
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value })
-      return plantArray
-    })
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    } else {
+
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+        return plantArray
+      })
+    }
 
     if (vendorName.length <= 0) {
 
@@ -976,6 +995,25 @@ class AddOverhead extends Component {
                             />
                           </Col>)
                         )}
+                        {
+                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          <Col md="3">
+                            <Field
+                              label={'Plant'}
+                              name="DestinationPlant"
+                              placeholder={"Select"}
+                              options={this.renderListing("singlePlant")}
+                              handleChangeDescription={this.handleSinglePlant}
+                              validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                              required={true}
+                              component={searchableSelect}
+                              valueDescription={this.state.singlePlantSelected}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag || isViewMode}
+                            />
+                          </Col>
+                        }
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="3">
                             <Field
