@@ -7055,6 +7055,12 @@ body {
   .ag-paging-row-summary-panel {
     display: none !important;
   }
+  .ag-root-wrapper-body.ag-layout-auto-height {
+    border-bottom: 1px solid #e5eaf9;
+  }
+  .nodate-section {
+    bottom: 61px !important;
+  }
 }
 
 .button-wrapper {

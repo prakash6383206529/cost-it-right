@@ -909,7 +909,7 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
@@ -973,14 +973,14 @@ function ApprovalListing(props) {
                             <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                           </div>
                         </div>
-                        <div className="text-right pb-3">
-                          <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                        </div>
                         {
                           showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
                         }
                       </div>
                     </div>
+                  </div>
+                  <div className="text-right pb-3">
+                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                   </div>
                 </Col>
               </Row>

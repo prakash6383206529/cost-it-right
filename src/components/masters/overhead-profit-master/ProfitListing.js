@@ -5,7 +5,7 @@ import {
     getProfitDataList, deleteProfit, activeInactiveProfit,
 } from '../actions/OverheadProfit';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -190,7 +190,9 @@ function ProfitListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -641,7 +643,7 @@ function ProfitListing(props) {
 
         <>
             {
-                isLoader ? <LoaderCustom /> :
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         <form noValidate>
                             <Row className="pt-4">

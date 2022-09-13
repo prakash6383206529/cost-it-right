@@ -829,7 +829,7 @@ class OperationListing extends Component {
 
                         </Row>
                     </form>
-                    <div className={`ag-grid-wrapper ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
