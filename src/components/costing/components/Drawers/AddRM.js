@@ -17,6 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddRM(props) {
@@ -54,7 +55,12 @@ function AddRM(props) {
       if (selectedRows?.length === 0) {
         setSelectedRowData([])
       } else {
-        setSelectedRowData([...selectedRowData, event.data])
+        if (_.includes(selectedRowData, event.data) === true) {
+          let arrayList = selectedRowData && selectedRowData.filter((item) => item.RawMaterialId !== event.data.RawMaterialId)
+          setSelectedRowData(arrayList)
+        } else {
+          setSelectedRowData([...selectedRowData, event.data])
+        }
       }
     } else {
       if (selectedRows?.length === 0) {
