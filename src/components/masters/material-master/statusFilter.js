@@ -15,6 +15,7 @@ function StatusFilter(props) {
     const [dropdownData, setDropdownData] = useState([])
     const [selectedPlants, setSelectedPlants] = useState([])
     const [activate, setActivate] = useState(true)
+    const [showInputData, setShowInputData] = useState([])
     const dispatch = useDispatch()
     const isReset = useSelector((state) => state.comman.isReset);
 
@@ -33,6 +34,7 @@ function StatusFilter(props) {
 
 
     const valueChanged = (event) => {
+        setShowInputData(event)
         setSelectedPlants(event)
         let plants = ""
         event && event.map((item, index) => {
@@ -92,13 +94,15 @@ function StatusFilter(props) {
         { label: "RejectedBySystem", value: "18" },
 
     ]
-
+    let temparr = showInputData && showInputData.map(item => item.label)
+    let showHoverData = temparr && temparr?.join(',')
 
     return (
 
         <div className="ag-grid-multi">
             {activate &&
                 <SearchableSelectHookForm
+                    title={showHoverData}
                     label={""}
                     name={"reason"}
                     placeholder={"Select"}
