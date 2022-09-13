@@ -22,7 +22,7 @@ import WarningMessage from '../../common/WarningMessage'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
-import StatusFilter from '../../masters/material-master/statusFilter'
+import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick } from '../../../actions/Common'
 
 
@@ -652,7 +652,7 @@ function SimulationApprovalListing(props) {
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: StatusFilter
+        statusFilter: SingleDropdownFloationFilter
     };
 
     return (

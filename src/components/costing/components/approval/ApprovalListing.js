@@ -27,7 +27,7 @@ import CostingDetailSimulationDrawer from '../../../simulation/components/Costin
 import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
-import StatusFilter from '../../../masters/material-master/statusFilter'
+import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
@@ -847,7 +847,7 @@ function ApprovalListing(props) {
     hyperLinkableFormatter: hyperLinkableFormatter,
     reasonFormatter: reasonFormatter,
     lastApprovalFormatter: lastApprovalFormatter,
-    statusFilter: StatusFilter
+    statusFilter: SingleDropdownFloationFilter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false

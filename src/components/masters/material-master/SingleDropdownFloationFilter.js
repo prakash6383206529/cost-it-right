@@ -5,9 +5,10 @@ import {
 } from '../../../actions/Common';
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
+import { statusOptions } from "../../../config/constants";
 
 
-function ValuesFloatingFilter(props) {
+function SingleDropdownFloationFilter(props) {
 
     const [maxValue, setMaxValue] = useState(props.maxValue)
     const [currentValue, setCurrentValue] = useState(0)
@@ -28,6 +29,8 @@ function ValuesFloatingFilter(props) {
 
         if (isReset && isReset?.data) {
             setValue("reason", [])
+        } else {
+            setValue("reason", statusColumnData?.arr)
         }
 
     }, [isReset])
@@ -92,31 +95,6 @@ function ValuesFloatingFilter(props) {
     }
 
 
-
-    let statusOptions = [
-
-        { label: "Draft", value: "1" },
-        { label: "PendingForApproval", value: "2" },
-        { label: "Approved", value: "3" },
-        { label: "Rejected", value: "4" },
-        { label: "History", value: "5" },
-        { label: "AwaitingApproval", value: "6" },
-        { label: "SendForApproval", value: "7" },
-        { label: "ApprovedByAssembly", value: "8" },
-        { label: "ApprovedBySimulation", value: "9" },
-        { label: "CreatedByAssembly", value: "10" },
-        { label: "CreatedBySimulation", value: "11" },
-        { label: "Error", value: "12" },
-        { label: "Pushed", value: "13" },
-        { label: "POUpdated", value: "14" },
-        { label: "Provisional", value: "15" },
-        { label: "ApprovedByASMSimulation", value: "16" },
-        { label: "Linked", value: "17" },
-        { label: "RejectedBySystem", value: "18" },
-
-    ]
-
-
     return (
 
         <div className="ag-grid-multi">
@@ -142,4 +120,4 @@ function ValuesFloatingFilter(props) {
     )
 }
 
-export default ValuesFloatingFilter;
+export default SingleDropdownFloationFilter;

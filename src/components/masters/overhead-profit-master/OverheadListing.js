@@ -21,7 +21,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import StatusFilter from '../material-master/statusFilter';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -99,6 +99,7 @@ function OverheadListing(props) {
             }
         }, 300);
         dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
     }, [])
 
@@ -617,7 +618,7 @@ function OverheadListing(props) {
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
         checkBoxRenderer: checkBoxRenderer,
-        valuesFloatingFilter: StatusFilter,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
 
