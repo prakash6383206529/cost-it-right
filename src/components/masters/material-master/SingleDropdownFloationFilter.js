@@ -28,9 +28,9 @@ function SingleDropdownFloationFilter(props) {
     useEffect(() => {
 
         if (isReset && isReset?.data) {
-            setValue("reason", [])
+            setValue("singleDropDown", [])
         } else {
-            setValue("reason", statusColumnData?.arr)
+            setValue("singleDropDown", statusColumnData?.arr)
         }
 
     }, [isReset])
@@ -101,7 +101,7 @@ function SingleDropdownFloationFilter(props) {
             {
                 <SearchableSelectHookForm
                     label={""}
-                    name={"reason"}
+                    name={"singleDropDown"}
                     placeholder={"Select"}
                     Controller={Controller}
                     control={control}
