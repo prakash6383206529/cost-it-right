@@ -152,7 +152,7 @@ class AddMachineTypeDrawer extends Component {
       this.props.reset()
       this.props.createMachineType(formData, (res) => {
         if (res?.data?.Result) {
-          this.props.getLabourTypeByMachineTypeSelectList(res?.data?.Identity, () => { })
+          this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: res?.data?.Identity }, () => { })
           Toaster.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         } else {
