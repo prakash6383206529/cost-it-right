@@ -11,6 +11,7 @@ import { statusOptions } from "../../../config/constants";
 function MultiDropdownFloatingFilter(props) {
 
     const [maxValue, setMaxValue] = useState(props.maxValue)
+    const [showInputData, setShowInputData] = useState([])
     const [currentValue, setCurrentValue] = useState(0)
     const [dropdownData, setDropdownData] = useState([])
     const [selectedPlants, setSelectedPlants] = useState([])
@@ -59,6 +60,7 @@ function MultiDropdownFloatingFilter(props) {
 
 
     const valueChanged = (event) => {
+        setShowInputData(event)
         setSelectedPlants(event)
         let plants = ""
         event && event.map((item, index) => {
@@ -104,7 +106,8 @@ function MultiDropdownFloatingFilter(props) {
             filterTo: null
         };
     }
-
+    let temparr = showInputData && showInputData.map(item => item.label)
+    let showHoverData = temparr && temparr?.join(', ')
 
     return (
 
@@ -112,6 +115,7 @@ function MultiDropdownFloatingFilter(props) {
             {
                 <SearchableSelectHookForm
                     label={""}
+                    title={showHoverData}
                     name={"multiDropDown"}
                     placeholder={"Select"}
                     Controller={Controller}
