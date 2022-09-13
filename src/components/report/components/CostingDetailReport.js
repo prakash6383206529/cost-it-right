@@ -20,6 +20,7 @@ import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import StatusFilter from '../../masters/material-master/statusFilter'
 import { isResetClick } from '../../../actions/Common'
+import ValuesFloatingFilter from '../../masters/material-master/valuesFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -610,7 +611,7 @@ function ReportListing(props) {
         decimalPriceFormatter: decimalPriceFormatter,
         rmHyperLinkFormatter: rmHyperLinkFormatter,
         remarkFormatter: remarkFormatter,
-        valuesFloatingFilter: StatusFilter,
+        valuesFloatingFilter: ValuesFloatingFilter,
         statusFilter: StatusFilter
     };
 

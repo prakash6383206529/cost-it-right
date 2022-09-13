@@ -23,7 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import StatusFilter from '../../masters/material-master/statusFilter'
-import { isResetClick } from '../../../actions/Common'
+import { agGridStatus, isResetClick } from '../../../actions/Common'
 
 
 const gridOptions = {};
@@ -129,6 +129,7 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
         getTableData(0, defaultPageSize, true, floatingFilterData)
         dispatch(isResetClick(false))
+        dispatch(agGridStatus("", ""))
     }, [])
 
     useEffect(() => {
@@ -271,6 +272,7 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
