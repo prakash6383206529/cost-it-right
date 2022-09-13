@@ -83,10 +83,9 @@ function AddSurfaceTreatment(props) {
     }
   }, []);
 
-  const onRowSelect = (row, isSelected, e) => {
+  const onRowSelect = (event) => {
 
-    var selectedRows = gridApi.getSelectedRows();
-    setSelectedRowData(selectedRows)
+    setSelectedRowData([...selectedRowData, event.data])
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
     //   setSelectedRowData(tempArr)
@@ -237,7 +236,7 @@ function AddSurfaceTreatment(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>

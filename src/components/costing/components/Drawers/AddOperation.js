@@ -86,9 +86,7 @@ function AddOperation(props) {
 
 
   const onRowSelect = (event) => {
-    var selectedRows = gridApi.getSelectedRows();
-    setSelectedRowData(selectedRows)
-
+    setSelectedRowData([...selectedRowData, event.data])
   }
 
   /**
@@ -229,9 +227,8 @@ function AddOperation(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
-                        // onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onRowSelected={onRowSelect}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
