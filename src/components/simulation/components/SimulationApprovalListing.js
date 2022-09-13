@@ -691,7 +691,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                        <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -755,12 +755,6 @@ function SimulationApprovalListing(props) {
                                         <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                                     </div>
                                 </div>
-
-
-                                <div className="text-right pb-3">
-                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                </div>
-
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={approveDrawer}
@@ -778,7 +772,9 @@ function SimulationApprovalListing(props) {
                             </div>
                         </div>
                     </div>
-
+                    <div className="text-right pb-3">
+                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                    </div>
                 </div>
 
             }

@@ -16,6 +16,7 @@ function SingleDropdownFloationFilter(props) {
     const [selectedPlants, setSelectedPlants] = useState([])
     const [activate, setActivate] = useState(true)
     const dispatch = useDispatch()
+    const [showInputData, setShowInputData] = useState([])
     const isReset = useSelector((state) => state.comman.isReset);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
@@ -59,6 +60,7 @@ function SingleDropdownFloationFilter(props) {
 
 
     const valueChanged = (event) => {
+        setShowInputData(event)
         setSelectedPlants(event)
         let plants = ""
         event && event.map((item, index) => {
@@ -93,13 +95,15 @@ function SingleDropdownFloationFilter(props) {
             filterTo: null
         };
     }
-
+    let temparr = showInputData && showInputData.map(item => item.label)
+    let showHoverData = temparr && temparr?.join(', ')
 
     return (
 
         <div className="ag-grid-multi">
             {
                 <SearchableSelectHookForm
+                    title={showHoverData}
                     label={""}
                     name={"singleDropDown"}
                     placeholder={"Select"}
