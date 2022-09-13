@@ -29,6 +29,8 @@ function MultiDropdownFloatingFilter(props) {
 
         if (isReset && isReset?.data) {
             setValue("reason", [])
+        } else {
+            setValue("reason", statusColumnData?.arrReports[props?.maxValue])
         }
 
     }, [isReset])
@@ -66,7 +68,18 @@ function MultiDropdownFloatingFilter(props) {
                 plants = item.label
             }
         })
-        dispatch(agGridStatus(plants, props?.maxValue, event))
+
+
+        let arr = []
+
+        if (statusColumnData) {
+            arr = [...statusColumnData?.arrReports]
+        }
+
+        let gridTempArr = Object.assign([...arr], { [props?.maxValue]: event })
+
+
+        dispatch(agGridStatus(plants, props?.maxValue, event, gridTempArr))
         setCurrentValue(event?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
 
