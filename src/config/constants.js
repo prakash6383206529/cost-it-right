@@ -1960,7 +1960,7 @@ export const statusOptions = [
   { label: "Rejected", value: "4" },
   { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
-  { label: "SendForApproval", value: "7" },
+  // { label: "SendForApproval", value: "7" },
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
   { label: "CreatedByAssembly", value: "10" },
