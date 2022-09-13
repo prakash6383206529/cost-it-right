@@ -27,6 +27,9 @@ import CostingDetailSimulationDrawer from '../../../simulation/components/Costin
 import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
+import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
+import { agGridStatus, isResetClick } from '../../../../actions/Common'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -45,6 +48,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [isOpen, setIsOpen] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
   const dispatch = useDispatch()
   const { selectedRowForPagination } = useSelector((state => state.simulation))
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -67,9 +71,17 @@ function ApprovalListing(props) {
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
+  const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+
+  var floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true
+  }
 
   useEffect(() => {
     getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+    dispatch(isResetClick(false))
+    dispatch(agGridStatus("", ""))
   }, [])
 
 
@@ -82,6 +94,16 @@ function ApprovalListing(props) {
     }
 
   }, [approvalGridData])
+
+
+  useEffect(() => {
+
+    if (statusColumnData) {
+      setDisableFilter(false)
+      setWarningMessage(true)
+      setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+    }
+  }, [statusColumnData])
 
 
   var filterParams = {
@@ -206,6 +228,7 @@ function ApprovalListing(props) {
 
           setTimeout(() => {
             setWarningMessage(false)
+            dispatch(isResetClick(false))
           }, 330);
 
           setTimeout(() => {
@@ -240,6 +263,7 @@ function ApprovalListing(props) {
 
             setTimeout(() => {
               setWarningMessage(false)
+              dispatch(isResetClick(false))
             }, 330);
 
             setTimeout(() => {
@@ -309,6 +333,8 @@ function ApprovalListing(props) {
   }
 
   const resetState = () => {
+    dispatch(agGridStatus("", ""))
+    dispatch(isResetClick(true))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -436,7 +462,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
+        <img className={`arrow-ico mr-1 ${(row.NetPOPrice === 0 || row.OldPOPrice === row.NetPOPrice || cell === null) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-green' : 'arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? row.NetPOPriceNew : '-'}
       </>
     )
@@ -605,12 +631,21 @@ function ApprovalListing(props) {
     setSelectedRowData(uniqeArray)
   }
 
-
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
       Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
+
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+      setShowPopup(true)
+    } else {
+      sendForApprovalDrawer()
+    }
+  }
+
+  const sendForApprovalDrawer = () => {
+
     let temp = []
 
     selectedRowData && selectedRowData.map(item => {
@@ -642,6 +677,9 @@ function ApprovalListing(props) {
       costingObj.destinationPlantCode = item.DestinationPlantCode
       costingObj.destinationPlantName = item.DestinationPlantName
       costingObj.destinationPlantId = item.DestinationPlantId
+      costingObj.technologyId = item?.TechnologyId
+      costingObj.CostingHead = item?.CostingHead
+
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -780,11 +818,22 @@ function ApprovalListing(props) {
     }
 
     gridApi.paginationSetPageSize(Number(newPageSize));
-
+    if (isDashboard) {
+      props?.isPageNoChange('costing')
+    }
   };
 
   const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
+  }
+
+  const onPopupConfirm = () => {
+    setShowPopup(false)
+    sendForApprovalDrawer()
+  }
+
+  const closePopUp = () => {
+    setShowPopup(false)
   }
 
 
@@ -801,7 +850,8 @@ function ApprovalListing(props) {
     linkableFormatter: linkableFormatter,
     hyperLinkableFormatter: hyperLinkableFormatter,
     reasonFormatter: reasonFormatter,
-    lastApprovalFormatter: lastApprovalFormatter
+    lastApprovalFormatter: lastApprovalFormatter,
+    statusFilter: SingleDropdownFloationFilter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false
@@ -859,7 +909,7 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
@@ -893,22 +943,24 @@ function ApprovalListing(props) {
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                          <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="NCCPartQuantity" headerName="NCC Part Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
                           <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
                           <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" filter="agDateColumnFilter" filterParams={filterParamsThird}></AgGridColumn>
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
-                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                         </AgGridReact>
 
                         <div className='button-wrapper'>
@@ -921,11 +973,14 @@ function ApprovalListing(props) {
                             <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                           </div>
                         </div>
-                        <div className="text-right pb-3">
-                          <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                        </div>
+                        {
+                          showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
+                        }
                       </div>
                     </div>
+                  </div>
+                  <div className="text-right pb-3">
+                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                   </div>
                 </Col>
               </Row>

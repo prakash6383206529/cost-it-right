@@ -2842,7 +2842,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Source City", value: "SourceCity", },
     { label: "Destination City", value: "DestinationCity", },
 ]
@@ -2925,7 +2925,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
-    { label: "Cut Off Price", value: "CutOffPrice", },
+    // KEEP COMMENTED ON RE
+    //  { label: "Cut Off Price", value: "CutOffPrice", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
@@ -2980,6 +2981,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
@@ -3060,16 +3062,17 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor (Code)", value: "VendorName", },
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
-    { label: "Plant", value: "Plant", },
+    { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
-    { label: "Approved Quantity", value: "ApprovedQuantity", },
+    { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(code)", value: "VendorName", },
     { label: "Client Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },

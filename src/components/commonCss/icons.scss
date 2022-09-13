@@ -162,6 +162,8 @@
 .refresh {  @include icons("../../assests/images/refresh-icon.svg", 14px, 14px);
     margin-right: 5px;
 }
+.cross-light {  @include icons("../../assests/images/cross_light.svg", 14px, 14px);
+}
 .Bulk {  @include icons("../../assests/images/Upload.svg");
     @include extra-icon-styles;
 }
@@ -206,7 +208,18 @@
 .link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
 
 .broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
-
+.excel-btn.user-btn { 
+    padding: 7px !important; 
+    img {
+        max-width: 24px;
+    } 
+    @media screen and (max-width: $max1367) {
+        padding: 7px !important; 
+        img {
+            max-width: 20px;
+        } 
+    }
+}
 .CalculatorIcon:disabled, .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled {
     border: none !important;
     opacity: 0.5;
@@ -345,9 +358,8 @@
   .logo-container {
     display: flex;
     .border-left {
-      border-left: 1px solid #959cb6 !important;
-      margin-right: 15px;
-      margin-left: 15px;
+        border-left: 1px solid rgba(180, 197, 226, 0.51) !important;
+        margin:-3px 15px;
     }
     button {
       padding-top: 0.3125rem;
@@ -360,5 +372,27 @@
       border-color: transparent !important;
       box-shadow: none !important;
       transition: none !important;
+    }
+  }
+  .cross-btn-container {
+    position: relative;
+    .css-1hb7zxy-IndicatorsContainer {
+        margin-right: 20px;
+    }
+    .btn-cross {
+        position: absolute;
+        right: 1px;
+        top: 1px;
+        height: calc(100% - 3px);
+        border-start-end-radius: 4px;
+        border-end-end-radius: 4px;
+        &:focus {
+            box-shadow: none !important;
+            border-color:transparent !important;
+
+        }
+        .cross-light {
+            opacity: 0.6;
+        }
     }
   }

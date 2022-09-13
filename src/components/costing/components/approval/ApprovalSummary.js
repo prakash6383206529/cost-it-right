@@ -15,12 +15,13 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
-import { EMPTY_GUID, VBC } from '../../../../config/constants'
+import { EMPTY_GUID, VBC, NCC } from '../../../../config/constants'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -51,6 +52,10 @@ function ApprovalSummary(props) {
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [fgWise, setFgWise] = useState(false)
+  const [IsRegularizationLimit, setIsRegularizationLimit] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
+  const [costingHead, setCostingHead] = useState("")
+  const [nccPartQuantity, setNccPartQuantity] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [accDisable, setAccDisable] = useState(false)
 
@@ -114,11 +119,14 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity } = res?.data?.Data?.Costings[0];
 
+      setNccPartQuantity(NCCPartQuantity)
+      setCostingHead(CostingHead)
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
 
+      setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -270,6 +278,23 @@ function ApprovalSummary(props) {
         setCostingSummary(true)
       }, 500);
     }))
+  }
+
+  const onApproveButtonClick = () => {
+    if (IsRegularizationLimit) {
+      setShowPopup(true)
+    } else {
+      setApproveDrawer(true)
+    }
+  }
+
+  const onPopupConfirm = () => {
+    setShowPopup(false)
+    setApproveDrawer(true)
+  }
+
+  const closePopUp = () => {
+    setShowPopup(false)
   }
 
   if (showListing) {
@@ -427,6 +452,9 @@ function ApprovalSummary(props) {
                       <th>{`Variance:`}</th>
                       <th>{`Consumption Quantity:`}</th>
                       <th>{`Remaining Quantity:`}</th>
+                      {costingHead === NCC && (
+                        <th>{`NCC Part Quantity:`}</th>
+                      )}
                       <th>{`Effective Date:`}</th>
                       <th>{`Annual Impact:`}</th>
                       <th>{`Impact of The Year:`}</th>
@@ -480,6 +508,13 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
                       </td>
+
+                      {costingHead === NCC &&
+                        <td>
+                          {nccPartQuantity !== null ? nccPartQuantity : '-'}
+                        </td>
+                      }
+
                       <td>
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
@@ -501,13 +536,13 @@ function ApprovalSummary(props) {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="12">
+                      <td colSpan="13">
                         <span className="grey-text">Reason: </span>
                         {approvalDetails.Reason ? approvalDetails.Reason : '-'}
                       </td>
                     </tr>
                     <tr>
-                      <td colSpan="12">
+                      <td colSpan="13">
                         <span className="grey-text">Remarks: </span>
                         {approvalDetails.Remark ? approvalDetails.Remark : ' -'}{' '}
                       </td>
@@ -610,7 +645,8 @@ function ApprovalSummary(props) {
                   <button
                     type="button"
                     className="approve-button mr5 approve-hover-btn"
-                    onClick={() => setApproveDrawer(true)}
+                    // onClick={() => setApproveDrawer(true)}
+                    onClick={() => onApproveButtonClick()}
                   >
                     <div className={'save-icon'}></div>
                     {'Approve'}
@@ -646,6 +682,13 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           } */}
+
+
+          {
+            showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
+          }
+
+
         </>
       }
 

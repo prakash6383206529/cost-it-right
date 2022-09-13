@@ -715,6 +715,7 @@ export function formViewData(costingSummary, header = '') {
   obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
+  obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
 
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
   obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
@@ -724,7 +725,6 @@ export function formViewData(costingSummary, header = '') {
   obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
   obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
   obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
-
 
   //USED FOR DOWNLOAD PURPOSE
 
@@ -1076,4 +1076,10 @@ export const scrollReset = (ID) => {
 
   let temp = document.getElementById(ID);
   temp.scrollLeft = 0;
+}
+
+//FOR SHOWING COLOR ON VALUE DECREASE AND INCREASE
+export const highlightCostingSummaryValue = (oldValue, newValue) => {
+  let className = oldValue === newValue ? '' : oldValue > newValue ? 'green-text' : 'red-text';
+  return className;
 }

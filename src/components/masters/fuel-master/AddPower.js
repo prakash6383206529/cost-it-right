@@ -987,7 +987,8 @@ class AddPower extends Component {
     if (tempObj.SourcePowerType === 'SEB') {
       this.setState({
         isEditFlagForStateElectricity: false,
-        isAddedSEB: false
+        isAddedSEB: false,
+        isEditSEBIndex: false
       },
         () => {
           this.props.change('MinDemandKWPerMonth', 0)
@@ -1004,6 +1005,22 @@ class AddPower extends Component {
         }
       )
 
+    } else if (tempObj.SourcePowerType === 'Solar Power' || tempObj.SourcePowerType === 'Generator Diesel' ||
+      tempObj.SourcePowerType === 'Hydro Power' || tempObj.SourcePowerType === 'Wind Power') {
+      this.setState({
+        isEditIndex: false,
+        source: []
+      },
+        () => {
+          this.props.change('AssetCost', 0)
+          this.props.change('AnnualCost', 0)
+          this.props.change('CostPerUnitOfMeasurement', 0)
+          this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+          this.props.change('UnitGeneratedPerAnnum', 0)
+          this.props.change('SelfGeneratedCostPerUnit', 0)
+          this.props.change('SelfPowerContribution', 0)
+        }
+      )
     }
     const tempNetContributionValue = (tempObj.CostPerUnit * tempObj.PowerContributionPercentage / 100)
     const finalNetContribution = netContributionValue - tempNetContributionValue
@@ -1108,10 +1125,14 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged } = this.state;
+      handleChange, DeleteChanged, AddChanged, netContributionValue } = this.state;
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    if (checkForNull(netContributionValue) === 0) {
+      Toaster.warning('Net Contribution value should not be 0.')
       return false
     }
     this.setState({ isVendorNameNotSelected: false })

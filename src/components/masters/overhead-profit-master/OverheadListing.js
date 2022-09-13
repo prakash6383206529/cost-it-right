@@ -1,15 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, } from "redux-form";
+import React, { useState, useEffect, Fragment } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
+import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { loggedInUserId, searchNocontentFilter, } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -19,9 +17,13 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { i } from 'react-dom-factories';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import WarningMessage from '../../common/WarningMessage';
+import _ from 'lodash';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -29,171 +31,368 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class OverheadListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpen: false,
-            isEditFlag: false,
-            tableData: [],
-            IsVendor: false,
-            shown: false,
-            costingHead: [],
-            ModelType: [],
-            vendorName: [],
-            overheadAppli: [],
-            showPopup: false,
-            deletedId: '',
-            selectedRowData: [],
-            isLoader: false,
-            noData: false
-        }
+function OverheadListing(props) {
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
+
+    const [showPopup, setShowPopup] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [isLoader, setIsLoader] = useState(false)
+    const dispatch = useDispatch()
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [disableFilter, setDisableFilter] = useState(true)
+    const [disableDownload, setDisableDownload] = useState(false)
+
+    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+    const [warningMessage, setWarningMessage] = useState(false)
+    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    const [filterModel, setFilterModel] = useState({});
+    const [pageNo, setPageNo] = useState(1)
+    const [pageNoNew, setPageNoNew] = useState(1)
+    const [totalRecordCount, setTotalRecordCount] = useState(1)
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [noData, setNoData] = useState(false)
+    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
+    let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
+    let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+
+
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true
     }
 
-    /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
-    componentDidMount() {
+    var filterParams = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDateNew: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+
+    useEffect(() => {
         setTimeout(() => {
-            if (!this.props.stopApiCallOnCancel) {
-                this.getDataList(null, null, null, null)
+            if (!props.stopApiCallOnCancel) {
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
-    }
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
-    // Get updated Table data list after any action performed.
-    getUpdatedData = () => {
-        this.getDataList(null, null, null, null)
+    }, [])
 
-    }
+    useEffect(() => {
+        if (overheadProfitList?.length > 0) {
+            setTotalRecordCount(overheadProfitList[0].TotalRecordCount)
+        }
+        else {
+            setNoData(false)
+        }
+    }, [overheadProfitList])
 
-    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
+
+    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
-        this.setState({ isLoader: true })
-        this.props.getOverheadDataList(filterData, (res) => {
-            this.setState({ isLoader: false })
-        })
+        if (isPagination === true) {
+            setIsLoader(true)
+        }
+        dispatch(getOverheadDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            setIsLoader(false)
+            if (res && res.status === 204) {
+                setTotalRecordCount(0)
+                setPageNo(0)
+            }
+
+            if (res && isPagination === false) {
+                setDisableDownload(false)
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-overhead')
+                    button && button.click()
+                }, 500);
+            }
+
+            if (res) {
+                let isReset = true
+                setTimeout(() => {
+                    for (var prop in floatingFilterData) {
+                        if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                }, 300);
+
+                setTimeout(() => {
+                    setWarningMessage(false)
+                    if (take == 100) {
+                        setTimeout(() => {
+                            setWarningMessage(false)
+                        }, 100);
+                    }
+                    dispatch(isResetClick(false, "applicablity"))
+                }, 330);
+
+                setTimeout(() => {
+                    setIsFilterButtonClicked(false)
+                }, 600);
+            }
+        }
+        ))
     }
+
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
+
+    const onFloatingFilterChanged = (value) => {
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+        setDisableFilter(false)
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model)
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            let isFilterEmpty = true
+
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+
+                    for (var property in floatingFilterData) {
+
+                        if (property === value.column.colId) {
+                            floatingFilterData[property] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+
+                if (isFilterEmpty) {
+                    setWarningMessage(false)
+                    for (var prop in floatingFilterData) {
+
+                        floatingFilterData[prop] = ""
+
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+            }
+
+        } else {
+
+            if (value.column.colId === "EffectiveDateNew" || value.column.colId === "CreatedDate" || value.column.colId === "EffectiveDate") {
+                return false
+            }
+
+            let valueString = value?.filterInstance?.appliedModel?.filter
+            if (valueString.includes("+")) {
+                valueString = encodeURIComponent(valueString)
+            }
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: valueString })
+        }
+    }
+
+
+    const onSearch = () => {
+
+        setWarningMessage(false)
+        setIsFilterButtonClicked(true)
+        setPageNo(1)
+        setPageNoNew(1)
+        setCurrentRowIndex(0)
+        gridOptions?.columnApi?.resetColumnState();
+        getDataList(null, null, null, null, 0, globalTake, true, floatingFilterData)
+    }
+
+
+
+    const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
+        setIsFilterButtonClicked(false)
+        gridApi.deselectAll()
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+
+        for (var prop in floatingFilterData) {
+            floatingFilterData[prop] = ""
+
+        }
+
+        setFloatingFilterData(floatingFilterData)
+        setWarningMessage(false)
+        setPageNo(1)
+        setPageNoNew(1)
+        setCurrentRowIndex(0)
+        getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+        dispatch(setSelectedRowForPagination([]))
+        setGlobalTake(10)
+        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    }
+
+
+    const onBtPrevious = () => {
+        if (currentRowIndex >= 10) {
+            setPageNo(pageNo - 1)
+            setPageNoNew(pageNo - 1)
+            const previousNo = currentRowIndex - 10;
+            getDataList(null, null, null, null, previousNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(previousNo)
+        }
+    }
+
+    const onBtNext = () => {
+
+        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
+            return false
+        }
+
+        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
+            return false
+        }
+
+        if (currentRowIndex < (totalRecordCount - 10)) {
+            setPageNo(pageNo + 1)
+            setPageNoNew(pageNo + 1)
+            const nextNo = currentRowIndex + 10;
+            getDataList(null, null, null, null, nextNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(nextNo)
+        }
+    };
+
 
     /**
     * @method viewOrEditItemDetails
     * @description edit or view material type
     */
-    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode
         }
-        this.props.getDetails(data);
+        props.getDetails(data);
     }
 
     /**
     * @method deleteItem
     * @description confirm delete
     */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
+    const deleteItem = (Id) => {
+
+        setShowPopup(true)
+        setDeletedId(Id)
     }
 
     /**
     * @method confirmDelete
     * @description confirm delete
     */
-    confirmDelete = (ID) => {
-        this.props.deleteOverhead(ID, (res) => {
+    const confirmDelete = (ID) => {
+        dispatch(deleteOverhead(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
-                this.getDataList(null, null, null, null)
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
-        });
-        this.setState({ showPopup: false })
-    }
-    onPopupConfirm = () => {
-        this.confirmDelete(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-    }
-    /**
-    * @method renderPaginationShowsTotal
-    * @description Pagination
-    */
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
+        }))
+        setShowPopup(false)
     }
 
-    /**
-    * @method dashFormatter
-    * @description Renders dash
-    */
-    dashFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell == null ? '-' : cell;
+
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
     }
+
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+
 
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (props) => {
+    const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
-
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
 
     /**
-     * @method hyphenFormatter
-     */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
+        return value
     }
 
     /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
+     * @method hyphenFormatter
+     */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
-
 
 
     /**
     * @method statusButtonFormatter
     * @description Renders buttons
     */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+    const statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
                     <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                        onChange={() => handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
                         background="#ff6600"
                         onColor="#4DC771"
@@ -206,7 +405,7 @@ class OverheadListing extends Component {
         )
     }
 
-    handleChange = (cell, row, enumObject, rowIndex) => {
+    const handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
             Id: row.OverheadId,
             LoggedInUserId: loggedInUserId(),
@@ -219,46 +418,121 @@ class OverheadListing extends Component {
                 } else {
                     Toaster.success(MESSAGES.OVERHEAD_ACTIVE_SUCCESSFULLY)
                 }
-                this.getDataList(null, null, null, null)
+                getDataList(null, null, null, null)
             }
         })
     }
 
 
-
-    formToggle = () => {
-        this.props.formToggle()
+    const formToggle = () => {
+        props.formToggle()
     }
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    const onSubmit = (values) => {
 
     }
 
 
-    onGridReady = (params) => {
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    const onGridReady = (params) => {
+
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows })
-    }
-    onBtExport = () => {
-        let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.overheadProfitList ? this.props.overheadProfitList : [])
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+
+    const onPageSizeChanged = (newPageSize) => {
+
+        if (Number(newPageSize) === 10) {
+            getDataList(null, null, null, null, currentRowIndex, 10, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+            setGlobalTake(10)
+            setPageNo(pageNoNew)
+        }
+        else if (Number(newPageSize) === 50) {
+            getDataList(null, null, null, null, currentRowIndex, 50, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+            setGlobalTake(50)
+            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
+                setPageNo(Math.ceil(totalRecordCount / 50))
+                getDataList(null, null, null, null, 0, 50, true, floatingFilterData)
+            }
+        }
+        else if (Number(newPageSize) === 100) {
+            getDataList(null, null, null, null, currentRowIndex, 100, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+            setGlobalTake(100)
+            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
+                setPageNo(Math.ceil(totalRecordCount / 100))
+                getDataList(null, null, null, null, 0, 100, true, floatingFilterData)
+            }
+        }
+
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
     };
 
-    returnExcelColumn = (data = [], TempData) => {
+
+    const onRowSelect = (event) => {
+
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].OverheadId === event.data.OverheadId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "OverheadId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+
+    }
+
+
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                let button = document.getElementById('Excel-Downloads-overhead')
+                button && button.click()
+            }, 400);
+
+        } else {
+            getDataList(null, null, null, null, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
+
+    const onBtExport = () => {
+
+        let tempArr = []
+        tempArr = selectedRowForPagination
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
+        return returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
@@ -289,14 +563,24 @@ class OverheadListing extends Component {
             </ExcelSheet>);
     }
 
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        this.state.gridApi.deselectAll()
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+
+    const checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.OverheadId === props.node.data.OverheadId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
     }
 
 
@@ -304,167 +588,156 @@ class OverheadListing extends Component {
     * @method render
     * @description Renders the component
     */
-    render() {
-        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const isFirstColumn = (params) => {
-            var displayedColumns = params.columnApi.getAllDisplayedColumns();
-            var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
 
-        }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+        return thisIsFirstColumn;
 
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
-            headerCheckboxSelectionFilteredOnly: true,
-            checkboxSelection: isFirstColumn
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter,
-            customNoRowsOverlay: NoContentFound
-        };
-
-
-        return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 ">
-
-                        <Col md="6" className="search-user-block mb-3 pl-0">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ?
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div>
-                                        </button>
-                                        :
-                                        ""
-                                    }
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-
-                                            <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
-
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
-                                    }
-
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </form>
-                <Row>
-                    <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0) || this.state.noData ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                                {this.state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                <AgGridReact
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-                                    rowData={this.props.overheadProfitList}
-                                    pagination={true}
-                                    paginationPageSize={defaultPageSize}
-                                    onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
-                                    frameworkComponents={frameworkComponents}
-                                    rowSelection={'multiple'}
-                                    onSelectionChanged={this.onRowSelect}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
-                                >
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {/* MAY BE USED LATER */}
-                                    {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-                                    <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                    <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
-                                    <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'hyphenFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn field="OverheadId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                </AgGridReact>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                            </div>
-                        </div>
-
-                    </Col>
-                </Row>
-                {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
-                }
-            </div >
-        );
     }
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        checkboxSelection: isFirstColumn
+    };
+
+    const frameworkComponents = {
+        totalValueRenderer: buttonFormatter,
+        effectiveDateFormatter: effectiveDateFormatter,
+        statusButtonFormatter: statusButtonFormatter,
+        hyphenFormatter: hyphenFormatter,
+        customNoRowsOverlay: NoContentFound,
+        checkBoxRenderer: checkBoxRenderer,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
+    };
+
+
+    return (
+        <>
+            {
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
+                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
+                        <form onSubmit={(onSubmit)} noValidate>
+                            <Row className="pt-4 ">
+
+                                <Col md="6" className="search-user-block mb-3 pl-0">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+
+                                        <div className="warning-message d-flex align-items-center">
+                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        </div>
+
+                                        {AddAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={formToggle}
+                                                title="Add"
+                                            >
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                </button></div> :
+                                                    <>
+                                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>
+                                                        <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                            <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
+                                                            </button>}>
+                                                            {onBtExport()}
+                                                        </ExcelFile>
+                                                    </>
+                                                }
+                                            </>
+                                        }
+
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
+
+                                    </div>
+                                </Col>
+                            </Row>
+                        </form>
+                        <Row>
+                            <Col>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    </div>
+                                    <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                        <AgGridReact
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
+                                            rowData={overheadProfitList}
+                                            pagination={true}
+                                            paginationPageSize={globalTake}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: 'imagClass'
+                                            }}
+                                            frameworkComponents={frameworkComponents}
+                                            rowSelection={'multiple'}
+                                            onRowSelected={onRowSelect}
+                                            onFilterModified={onFloatingFilterChanged}
+                                        >
+                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
+                                            <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
+                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
+                                            <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                            <AgGridColumn field="OverheadId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                        </AgGridReact>
+                                        <div className='button-wrapper'>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                            {
+                                                <div className="d-flex pagination-button-container">
+                                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                                    {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                                    {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                                    {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+                        {
+                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
+                        }
+
+                    </div >
+            }
+        </>
+
+    );
+
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps(state) {
-    const { overheadProfit, comman } = state;
-
-    const { costingHead } = comman;
-
-    const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
-
-    return { filterOverheadSelectList, overheadProfitList, costingHead }
-
-}
-
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-    getOverheadDataList,
-    deleteOverhead,
-    activeInactiveOverhead,
-    getVendorFilterByModelTypeSelectList,
-    getModelTypeFilterByVendorSelectList,
-})(reduxForm({
-    form: 'OverheadListing',
-    enableReinitialize: true,
-    touchOnChange: true
-})(OverheadListing));
+export default OverheadListing

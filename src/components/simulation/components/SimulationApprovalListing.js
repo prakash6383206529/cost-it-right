@@ -22,6 +22,8 @@ import WarningMessage from '../../common/WarningMessage'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
+import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
+import { agGridStatus, isResetClick } from '../../../actions/Common'
 
 
 const gridOptions = {};
@@ -60,10 +62,16 @@ function SimulationApprovalListing(props) {
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
     const [noData, setNoData] = useState(false)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
+    var floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -120,7 +128,18 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         getTableData(0, defaultPageSize, true, floatingFilterData)
+        dispatch(isResetClick(false))
+        dispatch(agGridStatus("", ""))
     }, [])
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+        }
+    }, [statusColumnData])
 
 
     useEffect(() => {
@@ -180,6 +199,7 @@ function SimulationApprovalListing(props) {
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
 
                         setTimeout(() => {
+                            dispatch(isResetClick(false))
                             setWarningMessage(false)
                             setFloatingFilterData(obj)
                         }, 23);
@@ -252,6 +272,8 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -336,6 +358,9 @@ function SimulationApprovalListing(props) {
         }
         gridApi.paginationSetPageSize(Number(newPageSize));
 
+        if (isDashboard) {
+            props.isPageNoChange('simulation')
+        }
     };
 
     /**
@@ -628,7 +653,8 @@ function SimulationApprovalListing(props) {
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        statusFilter: SingleDropdownFloationFilter
     };
 
     return (
@@ -667,7 +693,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -698,7 +724,7 @@ function SimulationApprovalListing(props) {
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
@@ -717,7 +743,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
-                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact >
@@ -732,14 +758,7 @@ function SimulationApprovalListing(props) {
                                         <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                                     </div>
                                 </div>
-
-
-                                <div className="text-right pb-3">
-                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                </div>
-
-                                {
-                                    approveDrawer &&
+                                {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={isApprovalDrawer}
                                         anchor={'right'}
@@ -753,11 +772,13 @@ function SimulationApprovalListing(props) {
                                         IsFinalLevel={showFinalLevelButtons}
                                     />
                                 }
-                            </div >
-                        </div >
-                    </div >
-
-                </div >
+                            </div>
+                        </div>
+                    </div>
+                    <div className="text-right pb-3">
+                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                    </div>
+                </div>
 
             }
             {

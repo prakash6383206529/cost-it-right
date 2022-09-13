@@ -14,7 +14,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { SPACEBAR, ZBC } from '../../../config/constants';
@@ -32,7 +31,7 @@ class AddInterestRate extends Component {
       vendorName: [],
       ICCApplicability: [],
       PaymentTermsApplicability: [],
-
+      singlePlantSelected: [],
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
@@ -40,10 +39,8 @@ class AddInterestRate extends Component {
       effectiveDate: '',
       Data: [],
       DropdownChanged: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
@@ -121,6 +118,14 @@ class AddInterestRate extends Component {
       plantSelectList && plantSelectList.map((item) => {
         if (item.PlantId === '0') return false
         temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
+      return temp
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
@@ -238,6 +243,9 @@ class AddInterestRate extends Component {
     this.setState({ selectedPlants: e })
     this.setState({ DropdownChanged: false })
   }
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
   /**
   * @method getDetail
   * @description used to get user detail
@@ -266,6 +274,7 @@ class AddInterestRate extends Component {
               IsVendor: Data.IsVendor,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
               selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
+              singlePlantSelected: { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId },
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
@@ -304,19 +313,6 @@ class AddInterestRate extends Component {
     }
   };
 
-
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateInterestRate(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-        this.setState({ showPopup: false })
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -324,14 +320,19 @@ class AddInterestRate extends Component {
 
   onSubmit = debounce((values) => {
 
-    const { Data, IsVendor, vendorName, ICCApplicability, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     let plantArray = []
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value })
-      return plantArray
-    })
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    } else {
+
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+        return plantArray
+      })
+    }
 
     if (vendorName.length <= 0) {
 
@@ -353,10 +354,7 @@ class AddInterestRate extends Component {
         this.cancel('cancel')
         return false;
       }
-      else {
-
-      }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -375,11 +373,18 @@ class AddInterestRate extends Component {
         Plants: plantArray
       }
       if (this.state.isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-
-
-
-
+        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please update the effective date')
+          this.setState({ setDisable: false })
+          return false
+        }
+        this.props.updateInterestRate(updateData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+            this.cancel('submit')
+          }
+        });
       }
 
 
@@ -414,10 +419,6 @@ class AddInterestRate extends Component {
 
   }, 500)
 
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
   /**
   * @method render
   * @description Renders the component
@@ -431,7 +432,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, isDataChanged } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -497,6 +498,30 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
+                      {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        <Col md="3">
+                          <Field
+                            label="Plant"
+                            name="Plant"
+                            placeholder={"Select"}
+                            title={showDataOnHover(this.state.selectedPlants)}
+                            selection={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                            options={this.renderListing("plant")}
+                            selectionChanged={this.handlePlant}
+                            validate={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                            required={true}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            disabled={isEditFlag || isViewMode}
+                            className="multiselect-with-border"
+                          />
+                        </Col>)
+                      )}
+
                       {this.state.IsVendor && (
                         <Col md="3" className='mb-4'>
 
@@ -520,6 +545,25 @@ class AddInterestRate extends Component {
                           </div>
                         </Col>
                       )}
+                      {
+                        (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                        <Col md="3">
+                          <Field
+                            label={'Plant'}
+                            name="DestinationPlant"
+                            placeholder={"Select"}
+                            options={this.renderListing("singlePlant")}
+                            handleChangeDescription={this.handleSinglePlant}
+                            validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                            required={true}
+                            component={searchableSelect}
+                            valueDescription={this.state.singlePlantSelected}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag || isViewMode}
+                          />
+                        </Col>
+                      }
                     </Row>
 
                     <Row>
@@ -568,29 +612,7 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
-                      {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
-                        <Col md="3">
-                          <Field
-                            label="Plant"
-                            name="Plant"
-                            placeholder={"Select"}
-                            title={showDataOnHover(this.state.selectedPlants)}
-                            selection={
-                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                            options={this.renderListing("plant")}
-                            selectionChanged={this.handlePlant}
-                            validate={
-                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            required={true}
-                            optionValue={(option) => option.Value}
-                            optionLabel={(option) => option.Text}
-                            component={renderMultiSelectField}
-                            mendatory={true}
-                            disabled={isEditFlag || isViewMode}
-                            className="multiselect-with-border"
-                          />
-                        </Col>)
-                      )}
+
                     </Row>
 
                     <Row>
@@ -715,9 +737,6 @@ class AddInterestRate extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
 
       </div>

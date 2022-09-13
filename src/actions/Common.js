@@ -51,6 +51,7 @@ import {
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
   STATUS_COLUMN_DATA,
+  IS_RESET,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
@@ -1542,17 +1543,31 @@ export function getPartSelectList(callback) {
 }
 
 
-export function agGridStatus(data, id) {
-  let obj = {
-    data: data,
-    id: id
-  }
+export function agGridStatus(data, id, arr = [], arrReports = []) {
   return (dispatch) => {
     dispatch({
       type: STATUS_COLUMN_DATA,
-      payload: obj,
+      payload: {
+        data: data,
+        id: id,
+        arr: arr,
+        arrReports: arrReports
+      },
     })
 
   }
+}
+
+
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function isResetClick(data, component) {
+  return (dispatch) => {
+    dispatch({
+      type: IS_RESET,
+      payload: { data: data, component: component },
+    })
+
+  }
+
 
 }

@@ -86,10 +86,8 @@ class AddBOPImport extends Component {
       DropdownChange: true,
       showWarning: false,
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
       isSourceChange: false,
@@ -706,7 +704,7 @@ class AddBOPImport extends Component {
     // }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -733,7 +731,13 @@ class AddBOPImport extends Component {
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateBOPImport(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+              this.cancel('submit')
+            }
+          });
           return false
 
         } else {
@@ -752,25 +756,18 @@ class AddBOPImport extends Component {
           return false;
         }
         else {
-          if (isSourceChange) {
-            this.props.updateBOPImport(requestData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-                this.cancel('submit')
-              }
-            });
-          }
-          else {
-            this.setState({ showPopup: true, updatedObj: requestData })
-          }
+          // if (isSourceChange) {
+          this.props.updateBOPImport(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+              this.cancel('submit')
+            }
+          });
+          // }
           return false
         }
       }
-      // if (isEditFlag) {
-      //   this.setState({ showPopup: true, updatedObj: requestData })
-      //   return false
-      // }
 
     } else {
 
@@ -828,8 +825,6 @@ class AddBOPImport extends Component {
           Toaster.warning('Please change data to send BOP for approval')
           return false;
         }
-        this.setState({ disablePopup: false })
-
 
         if (DataToChange.IsVendor) {
           if (DropdownChange &&
@@ -859,12 +854,6 @@ class AddBOPImport extends Component {
         }
 
 
-        // if (isEditFlag) {
-        //   this.setState({ showPopup: true, updatedObj: formData })
-        //   return false
-        // }
-
-
       } else {
         this.props.createBOPImport(formData, (res) => {
           this.setState({ setDisable: false })
@@ -880,19 +869,6 @@ class AddBOPImport extends Component {
 
   }, 500)
 
-  onPopupConfirm = debounce(() => {
-    this.setState({ disablePopup: true })
-    this.props.updateBOPImport(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel('submit')
-      }
-    });
-  }, 500)
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -905,7 +881,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, IsFinancialDataChanged, isViewMode, setDisable, disablePopup, DropdownChange, DataToChange } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, isViewMode, setDisable, DropdownChange, DataToChange } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1444,9 +1420,6 @@ class AddBOPImport extends Component {
                 currency={this.state.currency}
               />
             )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>
