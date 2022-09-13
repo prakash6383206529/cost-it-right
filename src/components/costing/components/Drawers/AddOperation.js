@@ -14,6 +14,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddOperation(props) {
@@ -86,7 +87,12 @@ function AddOperation(props) {
 
 
   const onRowSelect = (event) => {
-    setSelectedRowData([...selectedRowData, event.data])
+    if (_.includes(selectedRowData, event.data) === true) {
+      let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+      setSelectedRowData(arrayList)
+    } else {
+      setSelectedRowData([...selectedRowData, event.data])
+    }
   }
 
   /**
