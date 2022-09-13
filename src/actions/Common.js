@@ -1543,10 +1543,11 @@ export function getPartSelectList(callback) {
 }
 
 
-export function agGridStatus(data, id) {
+export function agGridStatus(data, id, arr = []) {
   let obj = {
     data: data,
-    id: id
+    id: id,
+    arr: arr
   }
   return (dispatch) => {
     dispatch({
@@ -1558,11 +1559,12 @@ export function agGridStatus(data, id) {
 }
 
 
-export function isResetClick(data) {
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function isResetClick(data, component) {
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
-      payload: data,
+      payload: { data: data, component: component },
     })
 
   }
