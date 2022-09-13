@@ -28,7 +28,7 @@ import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import StatusFilter from '../../../masters/material-master/statusFilter'
-import { isResetClick } from '../../../../actions/Common'
+import { agGridStatus, isResetClick } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
@@ -81,6 +81,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
     dispatch(isResetClick(false))
+    dispatch(agGridStatus("", ""))
   }, [])
 
 
@@ -262,6 +263,7 @@ function ApprovalListing(props) {
 
             setTimeout(() => {
               setWarningMessage(false)
+              dispatch(isResetClick(false))
             }, 330);
 
             setTimeout(() => {
@@ -331,6 +333,7 @@ function ApprovalListing(props) {
   }
 
   const resetState = () => {
+    dispatch(agGridStatus("", ""))
     dispatch(isResetClick(true))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);

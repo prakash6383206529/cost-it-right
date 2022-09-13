@@ -19,7 +19,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { isResetClick } from '../../../actions/Common'
+import { agGridStatus, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import StatusFilter from './statusFilter';
 
@@ -57,6 +57,7 @@ function CommonApproval(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
     useEffect(() => {
+        dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         getTableData(0, 10, true, floatingFilterData)
@@ -77,7 +78,6 @@ function CommonApproval(props) {
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
         }
-
 
     }, [])
 
@@ -232,6 +232,7 @@ function CommonApproval(props) {
 
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
