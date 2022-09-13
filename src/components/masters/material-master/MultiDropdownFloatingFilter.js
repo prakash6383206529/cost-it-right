@@ -28,7 +28,9 @@ function MultiDropdownFloatingFilter(props) {
     useEffect(() => {
 
         if (isReset && isReset?.data) {
-            setValue("reason", [])
+            setValue("multiDropDown", [])
+        } else {
+            setValue("multiDropDown", statusColumnData?.arrReports[props?.maxValue])
         }
 
     }, [isReset])
@@ -66,7 +68,18 @@ function MultiDropdownFloatingFilter(props) {
                 plants = item.label
             }
         })
-        dispatch(agGridStatus(plants, props?.maxValue, event))
+
+
+        let arr = []
+
+        if (statusColumnData) {
+            arr = [...statusColumnData?.arrReports]
+        }
+
+        let gridTempArr = Object.assign([...arr], { [props?.maxValue]: event })
+
+
+        dispatch(agGridStatus(plants, props?.maxValue, event, gridTempArr))
         setCurrentValue(event?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
 
@@ -99,7 +112,7 @@ function MultiDropdownFloatingFilter(props) {
             {
                 <SearchableSelectHookForm
                     label={""}
-                    name={"reason"}
+                    name={"multiDropDown"}
                     placeholder={"Select"}
                     Controller={Controller}
                     control={control}
