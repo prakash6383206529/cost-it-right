@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -159,7 +159,9 @@ function OverheadListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -595,7 +597,7 @@ function OverheadListing(props) {
     return (
         <>
             {
-                isLoader ? <LoaderCustom /> :
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
                         <form onSubmit={(onSubmit)} noValidate>
@@ -649,11 +651,12 @@ function OverheadListing(props) {
                         </form>
                         <Row>
                             <Col>
-                                <div className={`ag-grid-wrapper height-width-wrapper ${props.overheadProfitList && props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                         <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
