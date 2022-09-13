@@ -20,7 +20,7 @@ import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilte
 import { getCostingReport } from '.././actions/ReportListing'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { isResetClick } from '../../../actions/Common'
+import { agGridStatus, isResetClick } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -415,7 +415,7 @@ function ReportListing(props) {
         setLoader(true)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
         dispatch(isResetClick(false, "applicablity"))
-
+        dispatch(agGridStatus("", ""))
     }, [])
 
     const onBtNext = () => {
@@ -640,7 +640,7 @@ function ReportListing(props) {
 
 
     const resetState = () => {
-
+        dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
