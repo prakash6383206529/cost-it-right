@@ -340,7 +340,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return DayTime((excelDate - (25567 + 2)) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss');
+    return (DayTime((excelDate - (25567 + 2)) * 86400 * 1000)).format('YYYY-MM-DD 00:00:00');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
