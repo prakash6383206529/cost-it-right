@@ -8706,13 +8706,9 @@ padding-bottom: 3px;
     }
   }
 }
-.report-listing-page {
-  .loader_container {
-    z-index: 1000;
-  }
-}
+
 .report-grid .ag-header-viewport {
-  z-index: 999;
+  z-index: 1;
 }
 .report-grid .ag-focus-managed,
 .report-grid .ag-column-hover,
@@ -8733,5 +8729,5 @@ padding-bottom: 3px;
 .report-grid .ag-pinned-right-header {
   overflow: hidden !important;
   background: #fff;
-  z-index: 999;
+  z-index: 1;
 }
