@@ -48,11 +48,10 @@ function AddBOP(props) {
   }, []);
 
   const onRowSelect = (event) => {
-    var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows?.length === 0) {
+    if ((gridApi && gridApi?.getSelectedRows())?.length === 0) {
       setSelectedRowData([])
     } else {
-      setSelectedRowData(selectedRows)
+      setSelectedRowData([...selectedRowData, event.data])
     }
   }
 

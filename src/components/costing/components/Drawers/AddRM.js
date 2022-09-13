@@ -54,7 +54,7 @@ function AddRM(props) {
       if (selectedRows?.length === 0) {
         setSelectedRowData([])
       } else {
-        setSelectedRowData(selectedRows)
+        setSelectedRowData([...selectedRowData, event.data])
       }
     } else {
       if (selectedRows?.length === 0) {
