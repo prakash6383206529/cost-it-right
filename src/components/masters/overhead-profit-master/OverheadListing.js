@@ -21,6 +21,8 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +57,13 @@ function OverheadListing(props) {
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
+
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -90,6 +98,8 @@ function OverheadListing(props) {
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
     }, [])
 
@@ -147,6 +157,7 @@ function OverheadListing(props) {
                             setWarningMessage(false)
                         }, 100);
                     }
+                    dispatch(isResetClick(false, "applicablity"))
                 }, 330);
 
                 setTimeout(() => {
@@ -157,6 +168,15 @@ function OverheadListing(props) {
         ))
     }
 
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
 
     const onFloatingFilterChanged = (value) => {
         if (overheadProfitList?.length !== 0) {
@@ -225,6 +245,8 @@ function OverheadListing(props) {
 
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -590,7 +612,8 @@ function OverheadListing(props) {
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
-        checkBoxRenderer: checkBoxRenderer
+        checkBoxRenderer: checkBoxRenderer,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
 
@@ -681,7 +704,7 @@ function OverheadListing(props) {
                                             <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
+                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
