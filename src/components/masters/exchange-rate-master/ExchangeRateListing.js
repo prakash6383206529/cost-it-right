@@ -75,6 +75,7 @@ class ExchangeRateListing extends Component {
                 }
             }
             else {
+
                 this.getTableListData()
             }
         }, 500);
@@ -166,6 +167,7 @@ class ExchangeRateListing extends Component {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+
                 this.getTableListData()
             }
         });

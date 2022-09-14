@@ -20,7 +20,8 @@ import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilte
 import { getCostingReport } from '.././actions/ReportListing'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import valuesFloatingFilter from '../../masters/material-master/valuesFloatingFilter'
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
+import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -110,6 +111,13 @@ function ReportListing(props) {
         suppressFilterButton: true
     }
 
+    var floatingFilterStatus = {
+        maxValue: 5,
+        suppressFilterButton: true
+    }
+
+
+
     let filterClick = false
     const dispatch = useDispatch()
     const { handleSubmit, getValues } = useForm({
@@ -139,7 +147,10 @@ function ReportListing(props) {
                     setFloatingFilterData(prevState => ({ ...prevState, RejectionApplicability: encodeURIComponent(statusColumnData?.data) }))
                     break;
                 case 4:
-                    setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    setFloatingFilterData(prevState => ({ ...prevState, ICCApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 5:
+                    setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: encodeURIComponent(statusColumnData?.data) }))
                     break;
                 default:
                     setFloatingFilterData(prevState => ({ ...prevState, ICCApplicability: encodeURIComponent(statusColumnData?.data) }))
@@ -377,6 +388,7 @@ function ReportListing(props) {
                 }, 300);
 
                 setTimeout(() => {
+                    dispatch(isResetClick(false, "applicablity"))
                     setWarningMessage(false)
                 }, 330);
 
@@ -402,7 +414,8 @@ function ReportListing(props) {
 
         setLoader(true)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
-
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
     }, [])
 
     const onBtNext = () => {
@@ -454,6 +467,7 @@ function ReportListing(props) {
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
         setNoData(false)
+        dispatch(getGridHeight(reportListingData?.length))
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
@@ -622,12 +636,13 @@ function ReportListing(props) {
         decimalPriceFormatter: decimalPriceFormatter,
         rmHyperLinkFormatter: rmHyperLinkFormatter,
         remarkFormatter: remarkFormatter,
-        valuesFloatingFilter: valuesFloatingFilter
+        valuesFloatingFilter: MultiDropdownFloatingFilter,
     };
 
 
     const resetState = () => {
-
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
@@ -884,10 +899,7 @@ function ReportListing(props) {
 
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                {/* <div className="ag-grid-header">
-                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
-                </div> */}
-                <div className="ag-theme-material" >
+                <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
@@ -978,9 +990,9 @@ function ReportListing(props) {
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn width={"240px"} pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
-                    </AgGridReact>
+                    </AgGridReact >
                     <div className='button-wrapper'>
                         {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                         <div className="d-flex pagination-button-container">
@@ -991,8 +1003,8 @@ function ReportListing(props) {
                             <p><button className="next-btn" type="button" disabled={disableNextButtton} onClick={() => onBtNext()}> </button></p>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
             {
                 isOpen &&
                 <CostingDetailSimulationDrawer

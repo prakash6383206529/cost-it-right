@@ -541,7 +541,6 @@ function TabRMCC(props) {
    * @description SET BOP COST WITH BOP HANDLING CHARGE 
    */
   const setBOPCost = (bopGrid, params, item, BOPHandlingFields = {}) => {
-
     setBOPCostInDataList(bopGrid, params, RMCCTabData, item, BOPHandlingFields)
   }
 
@@ -1349,12 +1348,10 @@ function TabRMCC(props) {
             let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let subAssembObj = tempArrForCosting[subAssemblyIndex]
             let tempArr = tempArrForCosting && tempArrForCosting.filter((x) => x.AssemblyPartNumber === subAssembObj.PartNumber)
-
             subAssembObj.CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges;
             subAssembObj.CostingPartDetails.BOPHandlingChargeApplicability = obj.BOPHandlingChargeApplicability;
             subAssembObj.CostingPartDetails.BOPHandlingPercentage = obj.BOPHandlingPercentage;
             subAssembObj.CostingPartDetails.BOPHandlingCharges = obj.BOPHandlingCharges;
-
             subAssembObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostForhandling(tempArr) + checkForNull(subAssembObj.CostingPartDetails.BOPHandlingCharges)
             let GrandTotalCost = checkForNull(subAssembObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(subAssembObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(subAssembObj.CostingPartDetails.TotalConversionCost)
             subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;

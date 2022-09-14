@@ -5,7 +5,7 @@ import {
     getProfitDataList, deleteProfit, activeInactiveProfit,
 } from '../actions/OverheadProfit';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -23,6 +23,8 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,6 +61,7 @@ function ProfitListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
 
     var filterParams = {
@@ -87,6 +90,10 @@ function ProfitListing(props) {
         minValidYear: 2000,
     };
 
+    var floatingFilterProfit = {
+        maxValue: 2,
+        suppressFilterButton: true
+    }
 
     useEffect(() => {
         setTimeout(() => {
@@ -94,6 +101,8 @@ function ProfitListing(props) {
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
     }, [])
 
@@ -105,7 +114,17 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight(overheadProfitList?.length))
     }, [overheadProfitList])
+
+    useEffect(() => {
+
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
 
     const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         const filterData = {
@@ -160,6 +179,7 @@ function ProfitListing(props) {
                             setWarningMessage(false)
                         }, 100);
                     }
+                    dispatch(isResetClick(false, "applicablity"))
                 }, 330);
 
                 setTimeout(() => {
@@ -171,7 +191,9 @@ function ProfitListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -234,6 +256,8 @@ function ProfitListing(props) {
 
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -611,7 +635,8 @@ function ProfitListing(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
-        customNoRowsOverlay: NoContentFound
+        customNoRowsOverlay: NoContentFound,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
     return (
@@ -619,7 +644,7 @@ function ProfitListing(props) {
 
         <>
             {
-                isLoader ? <LoaderCustom /> :
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         <form noValidate>
                             <Row className="pt-4">
@@ -671,7 +696,7 @@ function ProfitListing(props) {
                         <Row>
                             <Col>
 
-                                <div className={`ag-grid-wrapper height-width-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
@@ -703,8 +728,8 @@ function ProfitListing(props) {
                                             <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
-                                            <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
+                                            <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                                             <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

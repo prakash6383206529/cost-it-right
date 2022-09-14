@@ -15,6 +15,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -48,11 +49,19 @@ function AddBOP(props) {
   }, []);
 
   const onRowSelect = (event) => {
-    var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows?.length === 0) {
-      setSelectedRowData([])
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if ((gridApi && gridApi?.getSelectedRows())?.length === 0) {
+        setSelectedRowData([])
+      } else {
+        if (_.includes(selectedRowData, event.data) === true) {
+          let arrayList = selectedRowData && selectedRowData.filter((item) => item.BoughtOutPartId !== event.data.BoughtOutPartId)
+          setSelectedRowData(arrayList)
+        } else {
+          setSelectedRowData([...selectedRowData, event.data])
+        }
+      }
     } else {
-      setSelectedRowData(selectedRows)
+      setSelectedRowData(gridApi?.getSelectedRows())
     }
   }
 

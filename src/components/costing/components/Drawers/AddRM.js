@@ -17,6 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddRM(props) {
@@ -51,10 +52,19 @@ function AddRM(props) {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData?.TechnologyId)) {
-      if (selectedRows?.length === 0) {
-        setSelectedRowData([])
+      if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+        if (selectedRows?.length === 0) {
+          setSelectedRowData([])
+        } else {
+          if (_.includes(selectedRowData, event.data) === true) {
+            let arrayList = selectedRowData && selectedRowData.filter((item) => item.RawMaterialId !== event.data.RawMaterialId)
+            setSelectedRowData(arrayList)
+          } else {
+            setSelectedRowData([...selectedRowData, event.data])
+          }
+        }
       } else {
-        setSelectedRowData(selectedRows)
+        setSelectedRowData(gridApi?.getSelectedRows())
       }
     } else {
       if (selectedRows?.length === 0) {

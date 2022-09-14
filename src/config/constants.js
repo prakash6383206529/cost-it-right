@@ -1213,6 +1213,7 @@ export const GET_CITY_BY_SUPPLIER = 'GET_CITY_BY_SUPPLIER'
 export const GET_PLANTS_BY_SUPPLIER_AND_CITY = 'GET_PLANTS_BY_SUPPLIER_AND_CITY'
 export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY'
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY'
+export const GET_GRID_HEIGHT = 'GET_GRID_HEIGHT'
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -1722,6 +1723,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
+  vendorCode: 'Vendor Code',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
@@ -1949,12 +1951,34 @@ export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
-// TECHNOLOGY
-export const FERROUSCASTINGID = '6'
+
+//STATUS FILTER DROPDOWN OPTIONS
+export const statusOptions = [
+
+  { label: "Draft", value: "1" },
+  { label: "PendingForApproval", value: "2" },
+  { label: "Approved", value: "3" },
+  { label: "Rejected", value: "4" },
+  { label: "History", value: "5" },
+  { label: "AwaitingApproval", value: "6" },
+  // { label: "SendForApproval", value: "7" },
+  { label: "ApprovedByAssembly", value: "8" },
+  { label: "ApprovedBySimulation", value: "9" },
+  { label: "CreatedByAssembly", value: "10" },
+  { label: "CreatedBySimulation", value: "11" },
+  { label: "Error", value: "12" },
+  { label: "Pushed", value: "13" },
+  { label: "POUpdated", value: "14" },
+  { label: "Provisional", value: "15" },
+  { label: "ApprovedByASMSimulation", value: "16" },
+  { label: "Linked", value: "17" },
+  { label: "RejectedBySystem", value: "18" },
+
+]
 
 // KEY AND IV
 export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.505.2";
+export const VERSION = "V1.2.518";

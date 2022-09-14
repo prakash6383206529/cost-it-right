@@ -22,8 +22,8 @@ import WarningMessage from '../../common/WarningMessage'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
-import StatusFilter from '../../masters/material-master/statusFilter'
-import { isResetClick } from '../../../actions/Common'
+import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
+import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
 
 
 const gridOptions = {};
@@ -128,6 +128,7 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
         getTableData(0, defaultPageSize, true, floatingFilterData)
         dispatch(isResetClick(false))
+        dispatch(agGridStatus("", ""))
     }, [])
 
     useEffect(() => {
@@ -149,7 +150,7 @@ function SimulationApprovalListing(props) {
         else {
             setNoData(false)
         }
-
+        dispatch(getGridHeight(isDashboard ? simualtionApprovalList?.length : simualtionApprovalListDraft?.length))
     }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
 
 
@@ -270,6 +271,7 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
@@ -650,7 +652,7 @@ function SimulationApprovalListing(props) {
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: StatusFilter
+        statusFilter: SingleDropdownFloationFilter
     };
 
     return (
@@ -689,7 +691,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -719,7 +721,7 @@ function SimulationApprovalListing(props) {
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
@@ -752,12 +754,6 @@ function SimulationApprovalListing(props) {
                                         <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                                     </div>
                                 </div>
-
-
-                                <div className="text-right pb-3">
-                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                </div>
-
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={approveDrawer}
@@ -775,7 +771,9 @@ function SimulationApprovalListing(props) {
                             </div>
                         </div>
                     </div>
-
+                    <div className="text-right pb-3">
+                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                    </div>
                 </div>
 
             }

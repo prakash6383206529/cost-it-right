@@ -242,7 +242,6 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-
     const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',

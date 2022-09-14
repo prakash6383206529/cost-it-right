@@ -209,14 +209,12 @@
 
 .broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
 .excel-btn.user-btn { 
-    padding-right: 5px !important; 
-    padding-left: 8px !important;
+    padding: 7px !important; 
     img {
         max-width: 24px;
     } 
     @media screen and (max-width: $max1367) {
-        padding-right: 5px !important; 
-        padding-left: 8px !important;
+        padding: 7px !important; 
         img {
             max-width: 20px;
         } 

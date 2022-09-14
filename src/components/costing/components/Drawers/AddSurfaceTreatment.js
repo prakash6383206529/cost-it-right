@@ -14,6 +14,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 
@@ -83,10 +84,17 @@ function AddSurfaceTreatment(props) {
     }
   }, []);
 
-  const onRowSelect = (row, isSelected, e) => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    setSelectedRowData(selectedRows)
+  const onRowSelect = (event) => {
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if (_.includes(selectedRowData, event.data) === true) {
+        let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+        setSelectedRowData(arrayList)
+      } else {
+        setSelectedRowData([...selectedRowData, event.data])
+      }
+    } else {
+      setSelectedRowData(gridApi?.getSelectedRows())
+    }
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
     //   setSelectedRowData(tempArr)
@@ -95,7 +103,6 @@ function AddSurfaceTreatment(props) {
     //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
     //   setSelectedRowData(tempArr)
     // }
-
   }
 
 
@@ -237,7 +244,7 @@ function AddSurfaceTreatment(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>

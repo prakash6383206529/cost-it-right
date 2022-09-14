@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -21,6 +21,8 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +57,13 @@ function OverheadListing(props) {
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
+
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -90,6 +98,8 @@ function OverheadListing(props) {
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
 
     }, [])
 
@@ -100,6 +110,7 @@ function OverheadListing(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight(overheadProfitList?.length))
     }, [overheadProfitList])
 
 
@@ -147,6 +158,7 @@ function OverheadListing(props) {
                             setWarningMessage(false)
                         }, 100);
                     }
+                    dispatch(isResetClick(false, "applicablity"))
                 }, 330);
 
                 setTimeout(() => {
@@ -158,8 +170,19 @@ function OverheadListing(props) {
     }
 
 
-    const onFloatingFilterChanged = (value) => {
+    useEffect(() => {
 
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
+
+    const onFloatingFilterChanged = (value) => {
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -223,6 +246,8 @@ function OverheadListing(props) {
 
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -595,14 +620,15 @@ function OverheadListing(props) {
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
-        checkBoxRenderer: checkBoxRenderer
+        checkBoxRenderer: checkBoxRenderer,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
 
     return (
         <>
             {
-                isLoader ? <LoaderCustom /> :
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
                         <form onSubmit={(onSubmit)} noValidate>
@@ -656,11 +682,12 @@ function OverheadListing(props) {
                         </form>
                         <Row>
                             <Col>
-                                <div className={`ag-grid-wrapper height-width-wrapper ${props.overheadProfitList && props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                         <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
@@ -685,7 +712,7 @@ function OverheadListing(props) {
                                             <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
+                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

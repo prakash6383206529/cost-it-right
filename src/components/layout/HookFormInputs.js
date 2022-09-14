@@ -144,11 +144,38 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
   const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
+  let temp = 300;
+  if (dropdownHeight < 6) {
+    if (dropdownHeight === 0) {
+      temp = 130
+    }
+    else {
+      temp = dropdownHeight * 47;
+    }
+  }
+
+  const customStyles = {
+    menuList: (provided) => ({
+      ...provided,
+      maxHeight: temp,
+      marginTop: 0,
+      left: 0,
+      overflowX: 'hidden'
+    }),
+    menu: (provided) => ({
+      ...provided,
+      marginTop: "7px",
+      left: 0,
+      marginRight: "5px",
+      marginLeft: "5px",
+      width: 'calc(100% - 10px)',
+    }),
+  };
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
       <label>
@@ -163,7 +190,7 @@ export const SearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
           return (
-            <div className={className}>
+            <div className={className} title={title}>
               <Select
                 {...field}
                 {...register}
@@ -176,6 +203,7 @@ export const SearchableSelectHookForm = (field) => {
 
                 }}
                 menuPlacement="auto"
+                styles={customStyles}
                 options={options}
                 onBlur={onBlur}
                 selected={value}

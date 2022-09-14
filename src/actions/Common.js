@@ -53,6 +53,7 @@ import {
   STATUS_COLUMN_DATA,
   IS_RESET,
   config,
+  GET_GRID_HEIGHT,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1543,29 +1544,39 @@ export function getPartSelectList(callback) {
 }
 
 
-export function agGridStatus(data, id) {
-  let obj = {
-    data: data,
-    id: id
-  }
+export function agGridStatus(data, id, arr = [], arrReports = []) {
   return (dispatch) => {
     dispatch({
       type: STATUS_COLUMN_DATA,
-      payload: obj,
+      payload: {
+        data: data,
+        id: id,
+        arr: arr,
+        arrReports: arrReports
+      },
     })
 
   }
 }
 
 
-export function isResetClick(data) {
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function isResetClick(data, component) {
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
-      payload: data,
+      payload: { data: data, component: component },
     })
 
   }
+}
 
-
+//GET HEIGHT FOR DROPDOWN
+export function getGridHeight(value) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_GRID_HEIGHT,
+      payload: value,
+    })
+  }
 }

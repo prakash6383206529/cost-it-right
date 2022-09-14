@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
@@ -27,8 +27,8 @@ import CostingDetailSimulationDrawer from '../../../simulation/components/Costin
 import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
-import StatusFilter from '../../../masters/material-master/statusFilter'
-import { isResetClick } from '../../../../actions/Common'
+import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
+import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
@@ -67,6 +67,7 @@ function ApprovalListing(props) {
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+  const [gridHeight, setGridHeight] = useState('')
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
   const isApproval = props.isApproval;
@@ -81,6 +82,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
     dispatch(isResetClick(false))
+    dispatch(agGridStatus("", ""))
   }, [])
 
 
@@ -91,12 +93,11 @@ function ApprovalListing(props) {
     else {
       setNoData(false)
     }
-
+    dispatch(getGridHeight(approvalGridData?.length))
   }, [approvalGridData])
 
 
   useEffect(() => {
-
     if (statusColumnData) {
       setDisableFilter(false)
       setWarningMessage(true)
@@ -262,6 +263,7 @@ function ApprovalListing(props) {
 
             setTimeout(() => {
               setWarningMessage(false)
+              dispatch(isResetClick(false))
             }, 330);
 
             setTimeout(() => {
@@ -331,6 +333,7 @@ function ApprovalListing(props) {
   }
 
   const resetState = () => {
+    dispatch(agGridStatus("", ""))
     dispatch(isResetClick(true))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
@@ -780,7 +783,6 @@ function ApprovalListing(props) {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
-
   };
 
   const onPageSizeChanged = (newPageSize) => {
@@ -844,7 +846,7 @@ function ApprovalListing(props) {
     hyperLinkableFormatter: hyperLinkableFormatter,
     reasonFormatter: reasonFormatter,
     lastApprovalFormatter: lastApprovalFormatter,
-    statusFilter: StatusFilter
+    statusFilter: SingleDropdownFloationFilter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false
@@ -902,7 +904,7 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
@@ -936,7 +938,7 @@ function ApprovalListing(props) {
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
@@ -966,14 +968,14 @@ function ApprovalListing(props) {
                             <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                           </div>
                         </div>
-                        <div className="text-right pb-3">
-                          <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                        </div>
                         {
                           showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Quantity for this costing lies between regularization limit & maximum deviation limit. Do you wish to continue?`} />
                         }
                       </div>
                     </div>
+                  </div>
+                  <div className="text-right pb-3">
+                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                   </div>
                 </Col>
               </Row>

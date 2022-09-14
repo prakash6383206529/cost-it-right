@@ -55,7 +55,8 @@ import {
   GET_LAST_SIMULATION_DATA,
   GET_IMPACTED_MASTER_DATA,
   STATUS_COLUMN_DATA,
-  IS_RESET
+  IS_RESET,
+  GET_GRID_HEIGHT
 } from '../config/constants';
 
 const initialState = {
@@ -455,6 +456,11 @@ export default function commanReducer(state = initialState, action) {
       return {
         ...state,
         isReset: action.payload
+      };
+    case GET_GRID_HEIGHT:
+      return {
+        ...state,
+        getGridHeight: action.payload
       };
     default:
       return state;
