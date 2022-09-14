@@ -93,22 +93,24 @@ function AddTool(props) {
     }
 
     if (label === 'ToolProcessOperation') {
+
       ProcessOperationArray && ProcessOperationArray.map((item) => {
 
-        if (Array.isArray(item)) {
-          item.map((el) => {
-            if (el.Value === '' || (selectedTools && selectedTools.includes(el.label))) return false
-            temp.push(el)
+        if (item !== undefined) {
+          if (Array.isArray(item)) {
+            item.map((el) => {
+              if (el.Value === '' || (selectedTools && selectedTools.includes(el.label))) return false
+              temp.push(el)
+              return null;
+            })
+
+          } else {
+
+            if (item?.Value === '' || (selectedTools && selectedTools.includes(item?.label))) return false
+            temp.push(item)
             return null;
-          })
-
-        } else {
-
-          if (item.Value === '' || (selectedTools && selectedTools.includes(item.label))) return false
-          temp.push(item)
-          return null;
+          }
         }
-
       })
       return temp
     }
