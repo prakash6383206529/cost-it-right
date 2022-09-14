@@ -1723,6 +1723,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
+  vendorCode: 'Vendor Code',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
