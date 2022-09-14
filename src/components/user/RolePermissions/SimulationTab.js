@@ -39,6 +39,7 @@ class SimulationTab extends Component {
                 if (ele.ModuleName === 'Simulation') {
                     this.setState({ checkBox: ele.IsChecked })
                 }
+                return null
             })
         }
     }
@@ -71,7 +72,7 @@ class SimulationTab extends Component {
         let actionNames = actionData && actionData.find(el => el.ModuleName === SIMULATION)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
-                if (item.Value == 0) return false;
+                if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                     return (
                         <th className="crud-label">
@@ -80,6 +81,7 @@ class SimulationTab extends Component {
                         </th>
                     )
                 }
+                return null
             })
         }
     }
@@ -166,7 +168,7 @@ class SimulationTab extends Component {
     }
 
     selectAllHandlerEvery = () => {
-        const { Modules, checkBox } = this.state;
+        const { Modules } = this.state;
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
         let isCheckedSelectAll = !booleanVal
@@ -183,6 +185,7 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
+                return null
             })
             if (item?.Sequence === 0) {
                 item.IsChecked = false
@@ -207,23 +210,62 @@ class SimulationTab extends Component {
     * @method actionCheckHandler
     * @description Used to check/uncheck action's checkbox
     */
-    actionCheckHandler = (parentIndex, childIndex) => {
+    actionCheckHandler = (parentIndex, childIndex, actions) => {
         const { Modules } = this.state;
+        let runActionIndex;
+        let addActionIndex;
+        let boolean = false
+
+        actions && actions.map((item, index) => {
+            if (item.ActionName === 'Run') {
+                runActionIndex = index
+            }
+            if (item.ActionName === 'Add') {
+                addActionIndex = index
+            }
+            return null
+        })
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
             if (childIndex === index) {
+                boolean = !el.IsChecked
                 el.IsChecked = !el.IsChecked
             }
             return el;
         })
+
+
+        if (childIndex === runActionIndex) {
+            actionArray = actionRow && actionRow.map((el, index) => {              // IF RUN ACTION TOGGLE IS TRUE THEN ADD ACTION TOGGLE WILL ALSO BE MADE TRUE
+                if (addActionIndex === index) {
+
+                    if (boolean === true) {
+                        el.IsChecked = true
+                    }
+                }
+                return el;
+            })
+        }
+
+        if (childIndex === addActionIndex) {
+            actionArray = actionRow && actionRow.map((el, index) => {        // IF ADD ACTION TOGGLE IS FALSE THEN RUN ACTION TOGGLE WILL ALSO BE MADE FALSE
+                if (runActionIndex === index) {
+                    if (boolean === false) {
+                        el.IsChecked = false
+                    }
+                }
+                return el;
+            })
+        }
+
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
-            let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-            let checkedActions = aa.filter(item => item.IsChecked === true)
-            let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
-            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
+            let actionTemp = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
+            let checkedActions = actionTemp.filter(item => item.IsChecked === true)
+            let tempValue = checkedActions && checkedActions.length !== 0 ? true : false;
+            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: tempValue, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
         })
     }
@@ -312,7 +354,7 @@ class SimulationTab extends Component {
                                                     <span className=" before-box">Select All</span>
                                                 </label>
                                                 </td>
-
+                                                { }
                                                 {this.renderAction(item.Actions, index)}
                                             </tr>
                                         );

@@ -11,6 +11,7 @@ import {
   GET_SELECTED_COSTING_STATUS,
   GET_APPROVAL_LIST_DRAFT
 } from '../../../config/constants'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 
 const initialState = {}
 
@@ -63,16 +64,26 @@ export default function ApprovalReducer(state = initialState, action) {
         reasonsList: action.payload,
       }
     case GET_APPROVAL_LIST:
+      let arr = action.payload && action.payload.map((item) => {
+        item.NetPOPriceNew = checkForDecimalAndNull(item.NetPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        item.OldPOPriceNew = checkForDecimalAndNull(item.OldPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        return item
+      })
       return {
         ...state,
         loading: false,
-        approvalList: action.payload,
+        approvalList: arr,
       }
     case GET_APPROVAL_LIST_DRAFT:
+      let temp = action.payload && action.payload.map((item) => {
+        item.NetPOPriceNew = checkForDecimalAndNull(item.NetPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        item.OldPOPriceNew = checkForDecimalAndNull(item.OldPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        return item
+      })
       return {
         ...state,
         loading: false,
-        approvalListDraft: action.payload,
+        approvalListDraft: temp,
       }
     case GET_APPROVAL_SUMMARY:
       return {

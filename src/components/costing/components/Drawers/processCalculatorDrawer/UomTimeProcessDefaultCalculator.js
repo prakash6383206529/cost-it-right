@@ -16,6 +16,7 @@ function UomTimeProcessDefaultCalculator(props) {
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
     let TotalCycleTimeSecGlobal = 0
 
     const defaultValues = {
@@ -80,7 +81,6 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
     const { calculateMachineTime } = props
-    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setSpindleSpeed = () => {
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
@@ -180,8 +180,8 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
-        obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
+        obj.TotalMachiningTime = totalMachiningTime
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)
@@ -229,7 +229,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -253,7 +253,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -304,7 +304,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -328,7 +328,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -376,7 +376,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -400,7 +400,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -423,7 +423,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -494,7 +494,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 mandatory={false}
@@ -519,7 +519,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -543,7 +543,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -567,7 +567,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}

@@ -9,8 +9,6 @@ import { getPlantSelectListByType } from '../../../actions/Common';
 import { ZBC } from '../../../config/constants';
 
 
-
-
 const FetchDrawer = (props) => {
     const { register, handleSubmit, formState: { errors }, control } = useForm();
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
@@ -18,21 +16,18 @@ const FetchDrawer = (props) => {
     const [partCode, setPartCode] = useState("");
     const dispatch = useDispatch()
 
-
-
+    // Post api and get Api integration is pending.
     const renderListing = () => {
 
         let temp = []
         plantSelectList && plantSelectList.map(item => {
-            if (item.Value === '0') return false;
-            let plantName = item.Text.split('(')[1]
-            temp.push({ label: plantName.split(')')[0], value: item.Value })
+            if (item.PlantId === '0') return false;
+            temp.push({ label: item.PlantCode, value: item.PlantId })
             return null;
         });
 
         return temp
     }
-
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, () => { }))
@@ -43,34 +38,24 @@ const FetchDrawer = (props) => {
     }
 
     const onSubmit = data => {
-
-
         let obj = {
             productNumber: partCode,
             plantCode: plantCode
-
         }
-
         dispatch(createMBOMAssembly(obj, () => { }))
-
         props.toggleDrawer()
-
     }
 
     const handlePlantCodeChange = (e) => {
         setPlantCode(e.label)
-
     }
 
     const handlePartCodeChange = (e) => {
         setPartCode(e.target.value)
     }
 
-
-
     return (
         <>
-
             <Drawer className="BOM-Drawer" open={props.isOpen} anchor={props.anchor}
             // onClose={(e) => this.toggleDrawer(e)}
             >
@@ -96,7 +81,7 @@ const FetchDrawer = (props) => {
                                     <SearchableSelectHookForm
                                         label={"Plant code"}
                                         name={"plantCode"}
-                                        placeholder={"-Select-"}
+                                        placeholder={"Select"}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: false }}

@@ -18,6 +18,7 @@ import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { hyphenFormatter } from '../../../masters/masterUtil';
 
 const gridOptions = {};
 
@@ -151,9 +152,10 @@ function AddProcess(props) {
 
     if (isTabSwitch) {
       selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
-        if (item.ProcessId == rowData.ProcessId && item.MachineRateId == rowData.MachineRateId) {
+        if (item.ProcessId === rowData.ProcessId && item.MachineRateId === rowData.MachineRateId) {
           Execute = false
         }
+        return null
       })
     }
 
@@ -168,11 +170,12 @@ function AddProcess(props) {
       processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
 
-    dispatch(setSelectedDataOfCheckBox(processData))
-
     var selectedRows = gridApi.getSelectedRows();
-
-    // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    if (selectedRows?.length === 0) {
+      dispatch(setSelectedDataOfCheckBox([]))
+    } else {
+      dispatch(setSelectedDataOfCheckBox(processData))
+    }
     setSelectedRowData(selectedRows)
   }
 
@@ -181,7 +184,7 @@ function AddProcess(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedProcessAndGroup.length === 0) {
+    if (selectedProcessAndGroup?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -238,9 +241,10 @@ function AddProcess(props) {
 
     if (selectedRowData?.length > 0) {
       selectedRowData.map((item) => {
-        if (item.ProcessId == props.node.data.ProcessId && item.MachineRateId == props.node.data.MachineRateId) {
+        if (item.ProcessId === props.node.data.ProcessId && item.MachineRateId === props.node.data.MachineRateId) {
           props.node.setSelected(true)
         }
+        return null
       })
       return cellValue
     } else {
@@ -259,7 +263,8 @@ function AddProcess(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    hyphenFormatter: hyphenFormatter
   };
 
   useEffect(() => {
@@ -318,7 +323,7 @@ function AddProcess(props) {
                 </Col>
               </Row>
               <Row>
-                <Col className='px-3'>
+                <Col className="hidepage-size">
                   {processGroup && groupMachineId === '' && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
@@ -346,8 +351,7 @@ function AddProcess(props) {
                     {activeTab === '1' && (
                       <TabPane tabId="1">
                         <Row className="mx-0">
-                          <Col className="hidepage-size mt-2 px-0">
-
+                          <Col className="pt-2 px-0">
                             <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -384,9 +388,9 @@ function AddProcess(props) {
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
@@ -409,8 +413,8 @@ function AddProcess(props) {
               </Row>
 
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left d-flex justify-content-end">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-left d-flex justify-content-end bluefooter-butn">
                   <button
                     type={'button'}
                     className="reset cancel-btn mr5"

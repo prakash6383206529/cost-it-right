@@ -19,6 +19,7 @@ import {
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
 } from '../../../config/constants';
@@ -268,11 +269,20 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
                     payload = []
                 }
                 else {
+
                     payload = response?.data?.DataList
-                    dispatch({
-                        type: GET_OPERATION_COMBINED_DATA_LIST,
-                        payload: payload
-                    })
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    } else {
+
+                        dispatch({
+                            type: GET_ALL_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    }
                 }
                 callback(response);
             }).catch((error) => {
@@ -374,9 +384,6 @@ export function deleteOperationAPI(OperationId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -752,6 +759,7 @@ export function getOperationApprovalList(callback) {
  * @description setOperationList
  */
 export function setOperationList(data) {
+
     return (dispatch) => {
         dispatch({
             type: SET_OPERATION_DATA,

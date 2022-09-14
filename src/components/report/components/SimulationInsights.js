@@ -147,6 +147,11 @@ function SimulationInsights(props) {
       setSimulationInsight(data[0].Data)
       setSimulationInsightsReportExcelData(data[0].Data)
 
+      if ((res && res.status === 204) || res?.data?.DataList[0]?.Data?.length === 0) {
+        setTotalRecordCount(0)
+        setPageNo(0)
+      }
+
       let arr = [];
       let simulationInsightExcel = [];
 

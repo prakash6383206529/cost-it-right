@@ -7,12 +7,12 @@ import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
-import { getPlantCode, getVendorCode } from '../../../helper/validation';
+import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 
 function AddNCCDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control, reset, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -90,7 +90,13 @@ function AddNCCDrawer(props) {
       setValue('Plant', { label: newValue.label, value: newValue.value })
       dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
         if (res && res.data && res.data.Data) {
-          setPlantData(res.data.Data)
+          let obj = res.data.Data
+          if (obj.DestinationPlantId == undefined) {
+            obj.DestinationPlantId = res.data.Data.PlantId
+            obj.DestinationPlantName = res.data.Data.PlantName
+            obj.DestinationPlantCode = res.data.Data.PlantCode
+          }
+          setPlantData(obj)
         }
       }))
     } else {
@@ -154,7 +160,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -170,14 +176,14 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: false }}
                     register={register}
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
-                    mandatory={false}
+                    mandatory={true}
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
                   />

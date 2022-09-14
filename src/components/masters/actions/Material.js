@@ -6,10 +6,7 @@ import {
     CREATE_MATERIAL_SUCCESS,
     CREATE_MATERIAL_FAILURE,
     GET_RM_LIST_SUCCESS,
-    GET_RM_GRADE_LIST_SUCCESS,
     GET_GRADE_DATA_SUCCESS,
-    GET_RM_CATEGORY_LIST_SUCCESS,
-    GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_SPECIFICATION_DATA_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
@@ -21,7 +18,6 @@ import {
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
-    GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
     GET_MACHINE_DATALIST_SUCCESS,
@@ -43,8 +39,15 @@ import {
     MACHINE_MASTER_ID,
     config,
     GET_RM_DOMESTIC_LIST,
+    GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST
+    GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT,
+    GET_MANAGE_SPECIFICATION,
+    GET_UNASSOCIATED_RM_NAME_SELECTLIST,
+    SET_FILTERED_RM_DATA,
+    GET_RM_APPROVAL_LIST,
+    GET_ALL_MASTER_APPROVAL_DEPARTMENT,
+    EMPTY_GUID
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -717,7 +720,7 @@ export function createRMDomestic(data, callback) {
  */
 export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
     return (dispatch) => {
-        if (RawMaterialDetailsId != '') {
+        if (RawMaterialDetailsId !== '') {
             axios.get(`${API.getRawMaterialDetailsDataAPI}/${RawMaterialDetailsId}`, config())
                 .then((response) => {
                     dispatch({
@@ -1027,18 +1030,23 @@ export function getVendorWithVendorCodeSelectList(callback) {
  */
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-
-        dispatch({ type: GET_RM_DOMESTIC_LIST });
         const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
-                dispatch({
-                    type: GET_RM_DOMESTIC_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -1146,10 +1154,18 @@ export function getRMImportDataList(data, skip, take, isPagination, obj, callbac
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}& ${queryParamsSecond} `, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_RM_IMPORT_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_RM_IMPORT_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -1166,9 +1182,6 @@ export function getRMImportDataList(data, skip, take, isPagination, obj, callbac
  */
 export function fileUpdateRMDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.put(API.fileUpdateRMDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -1527,9 +1540,10 @@ export function getMaterialTypeSelectList(callback) {
  * @method checkAndGetOperationCode
  * @description CHECK AND GET OPERATION CODE
  */
-export function checkAndGetRawMaterialCode(code, callback) {
+export function checkAndGetRawMaterialCode(obj, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', config());
+        let queryParams = `materialNameId=${obj?.materialNameId ? obj.materialNameId : EMPTY_GUID}&materialGradeId=${obj.materialGradeId ? obj.materialGradeId : EMPTY_GUID}&materialSpec=${obj.materialSpec}&materialCode=${obj.materialCode}`
+        const request = axios.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -1555,12 +1569,13 @@ export function setFilterForRM(filteredValue) {
  * @method getRMApprovalList
  * @description Used to get RM Approval List
  */
-export function getRMApprovalList(callback) {
+export function getRMApprovalList(masterId, skip, take, isPagination, obj, callback) {
 
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${1}`, config());
+        const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}`
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${masterId}&${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -1572,6 +1587,7 @@ export function getRMApprovalList(callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error)

@@ -17,6 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddRM(props) {
@@ -46,44 +47,42 @@ function AddRM(props) {
     getDataList()
   }, []);
 
-  const onRowSelect = (row, isSelected, e) => {
+  const onRowSelect = (event) => {
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
 
-    var selectedRows = gridApi.getSelectedRows();
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData?.TechnologyId)) {
-      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
-      setSelectedRowData(selectedRows)
-      // if (isSelected) {
-      //   let tempArr = [...selectedRowData, row]
-      //   setSelectedRowData(tempArr)
-      // } else {
-      //   const RawMaterialId = row.RawMaterialId;
-      //   let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
-      //   setSelectedRowData(tempArr)
-      // }
+      if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+        if (selectedRows?.length === 0) {
+          setSelectedRowData([])
+        } else {
+          if (_.includes(selectedRowData, event.data) === true) {
+            let arrayList = selectedRowData && selectedRowData.filter((item) => item.RawMaterialId !== event.data.RawMaterialId)
+            setSelectedRowData(arrayList)
+          } else {
+            setSelectedRowData([...selectedRowData, event.data])
+          }
+        }
+      } else {
+        setSelectedRowData(gridApi?.getSelectedRows())
+      }
     } else {
-
-      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
-      setSelectedRowData(selectedRows[0])
-      // if (isSelected) {
-      //   setSelectedRowData(row)
-      // } else {
-      //   setSelectedRowData({})
-      // }
+      if (selectedRows?.length === 0) {
+        setSelectedRowData([])
+      } else {
+        setSelectedRowData(selectedRows[0])
+      }
     }
   }
 
-
   const netLandedFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.EntryType === 'Import' ? checkForDecimalAndNull(rowData.NetLandedCostConversion, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+    return checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice)
   }
 
   const netLandedConversionFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.EntryType === 'Import' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData.NetLandedCostCurrency !== '-' ? checkForDecimalAndNull(rowData.NetLandedCostCurrency, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -103,7 +102,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (Object.keys(selectedRowData).length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -324,7 +323,7 @@ function AddRM(props) {
                         suppressRowClickSelection={true}
                         rowSelection={isMultipleRMAllow(costData?.TechnologyId) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
@@ -339,8 +338,8 @@ function AddRM(props) {
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'currencyFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
@@ -349,7 +348,7 @@ function AddRM(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                   <button
                     type={'button'}

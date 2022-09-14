@@ -1,23 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
-import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -31,14 +29,7 @@ function AddBOP(props) {
   const costData = useContext(costingInfoContext)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
-  const { bopCategorySelectList } = useSelector(state => state.boughtOutparts)
   const { bopDrawerList } = useSelector(state => state.costing)
-
-
-  const { register, handleSubmit, control, setValue, getValues } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  })
 
   /**
   * @method toggleDrawer
@@ -57,40 +48,31 @@ function AddBOP(props) {
 
   }, []);
 
-
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
+  const onRowSelect = (event) => {
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if ((gridApi && gridApi?.getSelectedRows())?.length === 0) {
+        setSelectedRowData([])
+      } else {
+        if (_.includes(selectedRowData, event.data) === true) {
+          let arrayList = selectedRowData && selectedRowData.filter((item) => item.BoughtOutPartId !== event.data.BoughtOutPartId)
+          setSelectedRowData(arrayList)
+        } else {
+          setSelectedRowData([...selectedRowData, event.data])
+        }
+      }
+    } else {
+      setSelectedRowData(gridApi?.getSelectedRows())
+    }
   }
-
-  const onRowSelect = () => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    // } else {
-    //   const BoughtOutPartId = row.BoughtOutPartId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
-    //   setSelectedRowData(tempArr)
-    // }
-
-  }
-
 
   const netLandedFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+    return checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice)
   }
 
   const netLandedConversionFormat = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.Currency !== '-' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData.NetLandedCostCurrency !== '-' ? checkForDecimalAndNull(rowData.NetLandedCostCurrency, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -108,7 +90,7 @@ function AddBOP(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -162,46 +144,11 @@ function AddBOP(props) {
   }
 
   /**
-* @method filterList
-* @description Filter user listing on the basis of role and department
-*/
-  const filterList = () => {
-    const categoryId = getValues('Category') ? getValues('Category').value : null;
-    getDataList(categoryId)
-  }
-
-  const renderListing = (label) => {
-    const temp = [];
-    if (label === 'category') {
-      bopCategorySelectList && bopCategorySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
-  /**
- * @method resetFilter
- * @description Reset user filter
- */
-  const resetFilter = () => {
-    setValue('Category', '')
-    dispatch(getBOPCategorySelectList(res => { }))
-    getDataList()
   }
 
   const isFirstColumn = (params) => {
@@ -231,8 +178,7 @@ function AddBOP(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -320,7 +266,7 @@ function AddBOP(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
@@ -332,8 +278,8 @@ function AddBOP(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
-                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
@@ -342,7 +288,7 @@ function AddBOP(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                   <button
                     type={'button'}

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
-import { Loader } from '../../common/Loader';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -19,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -39,7 +39,9 @@ class RMListing extends Component {
             rowData: null,
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -50,7 +52,6 @@ class RMListing extends Component {
     componentDidMount() {
         this.getListData();
     }
-
     /**+-
     * @method getListData
     * @description Get list data
@@ -64,10 +65,12 @@ class RMListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
-        this.setState({ isLoader: true })
+    closeDrawer = (e = '', formData, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getListData()
+            if (type === 'submit') {
+                this.setState({ isLoader: true })
+                this.getListData()
+            }
         })
     }
 
@@ -109,7 +112,7 @@ class RMListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                Toaster.warning(res.data.Message)
+                Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
@@ -212,9 +215,15 @@ class RMListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
 
     onBtExport = () => {
-        let tempArr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.rawMaterialTypeDataList ? this.props.rawMaterialTypeDataList : [])
         return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -240,6 +249,7 @@ class RMListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -249,24 +259,22 @@ class RMListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID } = this.state;
+        const { isOpen, isEditFlag, ID, noData } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
+        const isFirstColumn = (params) => {
+
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -304,14 +312,17 @@ class RMListing extends Component {
                         {
                             DownloadAccessibility &&
                             <>
-                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={
-                                    <button title={"Download"} type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                    {this.onBtExport()}
-                                </ExcelFile>
+                                <>
+                                    <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
+                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                        {this.onBtExport()}
+                                    </ExcelFile>
+                                </>
                             </>
-                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                        }
 
+                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                        }
                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
@@ -322,11 +333,12 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -343,7 +355,10 @@ class RMListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                     frameworkComponents={frameworkComponents}
+                                    onSelectionChanged={this.onRowSelect}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

@@ -12,6 +12,7 @@ import {
     GET_BOP_SOB_VENDOR_DATA_SUCCESS,
     GET_INITIAL_SOB_VENDORS_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
+    GET_ALL_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
     GET_BOP_APPROVAL_LIST,
     config,
@@ -69,20 +70,28 @@ export function createBOPImport(data, callback) {
 export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         // dispatch({ type: API_REQUEST});
-        dispatch({
-            type: GET_BOP_DOMESTIC_DATA_LIST,
-            payload: undefined
-        })
+        if (isPagination === true) {
+            dispatch({
+                type: GET_BOP_DOMESTIC_DATA_LIST,
+                payload: undefined
+            })
+        }
         const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-
-                dispatch({
-                    type: GET_BOP_DOMESTIC_DATA_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -105,10 +114,17 @@ export function getBOPImportDataList(data, skip, take, isPagination, obj, callba
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_BOP_IMPORT_DATA_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_BOP_IMPORT_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {
@@ -349,9 +365,6 @@ export function getPlantSelectListByVendor(VendorId, callback) {
  */
 export function fileUploadBOPDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadBOPDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -511,11 +524,12 @@ export function getManageBOPSOBDataList(data, callback) {
  * @method getManageBOPSOBById
  * @description GET MANAGE BOP SOB BY ID
  */
-export function getManageBOPSOBById(bopId, callback) {
+export function getManageBOPSOBById(boughtOutPartNumber, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (bopId !== '') {
-            axios.get(`${API.getManageBOPSOBById}/${bopId}`, config())
+        if (boughtOutPartNumber !== '') {
+            const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`
+            axios.get(`${API.getManageBOPSOBById}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({

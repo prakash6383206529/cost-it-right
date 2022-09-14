@@ -85,9 +85,9 @@ function AddBOPHandling(props) {
           <Container className="add-bop-drawer">
             <div className={'drawer-wrapper'}>
               <Row className="drawer-heading">
-                <Col>
+                <Col className='pl-0'>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD BOP Handling Charge'}</h3>
+                    <h3>{'Add BOP Handling Charge'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}

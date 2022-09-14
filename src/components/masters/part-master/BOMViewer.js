@@ -25,6 +25,8 @@ class BOMViewer extends Component {
       displayEditIcon: false,
       EditIndex: '',
       updatedQuantity: '',
+      BOPUom: '',
+      BOPUomCreateMode: '',
       isOpenVisualDrawer: false,
       selected_point: null,
       flowpoints: [],
@@ -139,7 +141,8 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
-    this.setState({ isOpenChildDrawer: false }, () => {
+
+    this.setState({ isOpenChildDrawer: false, BOPUomCreateMode: childData?.UnitOfMeasurementType }, () => {
       this.setChildPartsData(childData)
     })
   }
@@ -153,7 +156,7 @@ class BOMViewer extends Component {
 
     let tempArray = [];
     let outputArray = [];
-    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
+    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
 
     if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
 
@@ -242,8 +245,8 @@ class BOMViewer extends Component {
   * @method editLevelOne
   * @description EDIT LEVEL 1 QUANTITY IN DRAWER
   */
-  editLevelOne(index, quantity, partType) {
-    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity, partType: partType })
+  editLevelOne(index, quantity, partType, BoughtOutPartUOM) {
+    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity, partType: partType, BOPUom: BoughtOutPartUOM })
   }
 
   /**
@@ -449,8 +452,7 @@ class BOMViewer extends Component {
                             width={200}
                             height={120}
                             onClick={() => {
-                              var selected_point = this.state
-                                .selected_point;
+                              var selected_point = this.state.selected_point;
                               if (selected_point === el.PartNumber) {
                                 selected_point = null;
                               } else {
@@ -478,7 +480,7 @@ class BOMViewer extends Component {
                                     <button
                                       className="Edit"
                                       onClick={() =>
-                                        this.editLevelOne(i, el.Quantity, el.PartType)
+                                        this.editLevelOne(i, el.Quantity, el.PartType, el.BoughtOutPartUOMType)
                                       }
                                     />
                                   </span>
@@ -551,6 +553,7 @@ class BOMViewer extends Component {
                 anchor={"right"}
                 updatedQuantity={this.state.updatedQuantity}
                 partType={this.state.partType}
+                BOPUom={this.state.BOPUom ? this.state.BOPUom : this.state.BOPUomCreateMode}
               />
             )}
           </>
@@ -584,4 +587,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMViewer',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMViewer));

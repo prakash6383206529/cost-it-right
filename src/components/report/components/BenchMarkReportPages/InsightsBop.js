@@ -14,7 +14,7 @@ import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutPart
 import { PaginationWrapper } from '../../../common/commonPagination';
 
 function Insights(props) {
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -39,7 +39,6 @@ function Insights(props) {
     }, []);
 
     const CategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
-    // console.log(filterRMSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
@@ -100,7 +99,6 @@ function Insights(props) {
         setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // console.log(rowData);
     }
 
     const renderListing = (label) => {
@@ -116,7 +114,6 @@ function Insights(props) {
             }
         }
         else {
-            // console.log('genrated');
         }
     }
 

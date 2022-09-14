@@ -21,16 +21,16 @@ function SummaryDrawer(props) {
     * @method toggleDrawer
     * @description TOGGLE DRAWER
     */
-    const toggleDrawer = (event) => {
+    const toggleDrawer = (event, type = 'cancel') => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        props.closeDrawer('')
+        props.closeDrawer('', type)
     };
 
 
-    const cancel = () => {
-        props.closeDrawer('')
+    const cancel = (type) => {
+        props.closeDrawer('', type)
     }
 
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
@@ -66,7 +66,6 @@ function SummaryDrawer(props) {
                 setFiles(Data.ImpactedMasterDataListMachine[0].Files)
                 Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
-            console.log(Data, "Data");
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
         }))
 
@@ -87,11 +86,10 @@ function SummaryDrawer(props) {
     // const [approvalData, setApprovalData] = useState('')
 
     const closeApproveRejectDrawer = (e, type) => {
-
         setApprovalDrawer(false)
         setRejectDrawer(false)
         if (type === 'submit') {
-            cancel()
+            cancel('submit')
         }
     }
 
@@ -130,7 +128,7 @@ function SummaryDrawer(props) {
 
 
                                 <Row>
-                                    <Col md="12">
+                                    <Col md="12" className='mt-2'>
                                         <h5 className="left-border">Attachments</h5>
                                     </Col>
                                     <Col md="12">
@@ -161,8 +159,8 @@ function SummaryDrawer(props) {
                         </Row>
                         {
                             !approvalDetails.IsSent &&
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
+                                <div className="col-sm-12 text-right bluefooter-butn ml-0">
                                     <Fragment>
                                         <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                                             <div className={'cancel-icon-white mr5'}></div>

@@ -1,6 +1,8 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
 @import "./drawers.scss";
+@import "./masters.scss";
+@import "./costing.scss";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
@@ -119,6 +121,9 @@ a:hover {
 .disabled {
   opacity: 0.5;
     cursor: default;
+}
+.zindex-2 {
+  z-index: 2;
 }
 
 ::-webkit-input-placeholder {
@@ -746,11 +751,11 @@ a:hover {
           cursor: pointer;
         }
       }
-      &.no-tab-page {
-        .ag-grid-wrapper {
-          min-height: calc(100vh - 295px);
-        }
-      }
+      // &.no-tab-page {                           //IT WILL BE USE IN FUTURE DON'T REMOVE IT CODE
+      //   .ag-grid-wrapper {
+      //     min-height: calc(100vh - 295px);
+      //   }
+      // }
     }
     .levellisting-page-main {
       .ag-grid-react {
@@ -840,6 +845,13 @@ a:hover {
       font-weight: 500;
     }
   }
+.ag-ltr .ag-floating-filter-button {
+  margin-left: 4px !important;
+}
+input[type="date"].ag-input-field-input {
+    padding-bottom:0!important ;
+    min-width: 95px;
+}
 }
 .ag-root-wrapper-body.ag-layout-normal {
   border: 1px solid #e5eaf9;
@@ -2267,7 +2279,7 @@ input:disabled,
 .form-control:disabled,
 .form-control[readonly] {
   &::placeholder {
-    color: #616366;
+    color: #A4ABC5;
   }
 }
 .select--is-disabled {
@@ -2437,6 +2449,7 @@ td,
   .ApprovedBySimulation,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
+  .RejectedBySystem,
   .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
@@ -2468,7 +2481,7 @@ td,
   .History {
     background-color: #c2cbe8;
   }
-  .Rejected {
+  .Rejected, .RejectedBySystem {
     background-color: #fc5774;
   }
   .Error {
@@ -2978,5 +2991,44 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
         min-height: calc(100vh - 385px) !important;
       }
     }
+  }
+}
+.custom-select-grid {
+  margin: 0 2px;
+  position: relative;
+  select {
+    padding: 5px;
+    border-color: $borderColor;
+    width: 100%;
+    border-radius: 4px;
+    color: $grid-font;
+    option {
+      color: $grid-font;
+      font-size: 14px;
+      color: $grid-font;
+      // padding:5px;
+      display: block;
+    }
+    &:focus {
+      box-shadow: 0 0 5px $inputBorderFocusColor !important;
+      border: 1px solid $inputBorderFocusColor !important;
+      animation-name: example;
+      animation-duration: 0.3s;
+    }
+  }
+  .chevron:before {
+    border-style: solid;
+    border-color: #959cb6;
+    border-width: 0.18em 0.18em 0 0;
+    content: "";
+    display: inline-block;
+    height: 0.65em;
+    position: absolute;
+    top: 0.55em;
+    transform: rotate(135deg);
+    vertical-align: top;
+    width: 0.65em;
+    background-color: #ffff;
+    right: 6px;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -25,7 +25,6 @@ function TransportationCost(props) {
   const [uom, setUOM] = useState([])
   const [Quantity, setQuantity] = useState('')
   const [Rate, setRate] = useState('')
-  const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
   const [percentageLimit, setPercentageLimit] = useState(false);
@@ -89,8 +88,6 @@ function TransportationCost(props) {
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
   }, []);
-
-  const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
 
   /**
   * @method handleUOMChange
@@ -208,8 +205,6 @@ function TransportationCost(props) {
   */
   const renderListing = (label) => {
 
-    const temp = [];
-
     if (label === 'UOM') {
       // UOMSelectList && UOMSelectList.map(item => {
       //   if (item.Value === '0') return false;
@@ -257,7 +252,7 @@ function TransportationCost(props) {
                 <SearchableSelectHookForm
                   label={'Type'}
                   name={'UOM'}
-                  placeholder={'-Select-'}
+                  placeholder={'Select'}
                   Controller={Controller}
                   control={control}
                   rules={{ required: true }}

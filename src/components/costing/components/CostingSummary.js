@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
@@ -19,13 +19,12 @@ import LoaderCustom from '../../common/LoaderCustom';
 
 function CostingSummary(props) {
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const dispatch = useDispatch()
-  let history = useHistory();
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
@@ -228,10 +227,10 @@ function CostingSummary(props) {
                       '00000000-0000-0000-0000-000000000000',
                       (res) => {
 
-                        if (res.data.Result == true) {
+                        if (res.data.Result === true) {
                           if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
                             setShowWarningMsg(true)
-                            dispatch(setCostingViewData(temp))
+                            dispatch(setCostingViewData([]))
                             setIsLoader(false)
                           } else {
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
@@ -460,6 +459,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.PartName}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -479,6 +479,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.Description}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -496,6 +497,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ECNNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -513,6 +515,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.DrawingNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -530,6 +533,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.RevisionNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -547,6 +551,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ShareOfBusiness}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -564,7 +569,7 @@ function CostingSummary(props) {
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText="-"
                               className="withBorder"
                               autoComplete={'off'}
                               disabledKeyboardNavigation

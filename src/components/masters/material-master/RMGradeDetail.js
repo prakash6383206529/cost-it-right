@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteRMGradeAPI } from '../../actions/Material';
@@ -17,8 +16,8 @@ class RMGradeDetail extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -56,14 +55,14 @@ class RMGradeDetail extends Component {
                 this.props.getRowMaterialDataAPI(res => { });
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method render
     * @description Renders the component
@@ -108,8 +107,8 @@ class RMGradeDetail extends Component {
                     </Col>
                 </Row>
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.RM_GRADE_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.RM_GRADE_DELETE_ALERT}`} />
+                }
             </div>
         );
     }

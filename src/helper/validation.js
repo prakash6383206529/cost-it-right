@@ -41,6 +41,7 @@ export const maxLength25 = maxLength(25);
 export const maxLength20 = maxLength(20);
 export const maxLength26 = maxLength(26);
 export const maxLength30 = maxLength(30);
+export const maxLength32 = maxLength(32);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
 export const maxLength70 = maxLength(70);
@@ -126,9 +127,13 @@ export const positiveAndDecimalNumber = value =>
     value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
+export const decimalNumberLimit = value =>
+    value && !/^\d{0,6}(\.\d{0,4})?$/.test(value)
+        ? 'Maximum length for integer is 6 and for decimal is 4' : undefined;
+
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
-    let pattern = /[0-9a-zA-Z](?=@.#%\_!\^&\*\(\)-+\=\?<>,|)/;
+    let pattern = /[0-9a-zA-Z](?=@.#%_!\^&\*\(\)-+=\?<>,|)/;
     return value && !pattern.test(value)
         ? 'Invalid field' : undefined;
 }
@@ -335,7 +340,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return DayTime((excelDate - (25567 + 2)) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss');
+    return (DayTime((excelDate - (25567 + 2)) * 86400 * 1000)).format('YYYY-MM-DD 00:00:00');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
@@ -361,3 +366,8 @@ export const strongPassword = value =>
     value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
         ? ""
         : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';
+
+//CHECK IS COSTING EFFECTIVE DATE SELECTED
+export const decimalAndNumberValidation = (value) => {
+    return value && !/^\d{0,4}(\.\d{0,7})?$/i.test(value) ? 'Maximum length for integer is 4 and for decimal is 7' : undefined;
+}

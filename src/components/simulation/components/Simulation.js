@@ -4,13 +4,14 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getListingForSimulationCombined, getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation';
+import {
+    getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedRowForPagination
+} from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, COMBINED_PROCESS, EMPTY_GUID } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, COMBINED_PROCESS } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
-import Toaster from '../../common/Toaster';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -21,7 +22,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { applyEditCondSimulation, getFilteredData, isUploadSimulation, loggedInUserId } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -30,8 +31,6 @@ import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
 import ScrollToTop from '../../common/ScrollToTop';
-import OverheadSimulation from './SimulationPages/OverheadSimulation';
-import ProfitSimulation from './SimulationPages/ProfitSimulation';
 import LoaderCustom from '../../common/LoaderCustom';
 import _ from 'lodash'
 
@@ -39,7 +38,6 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
-    const { location } = props;
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -57,6 +55,7 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
+    /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
     const [vendor, setVendor] = useState({})
     const [vendorDropdown, setVendorDropdown] = useState([])
     const [filterStatus, setFilterStatus] = useState(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
@@ -127,7 +126,8 @@ function Simulation(props) {
                 technologyId: value.value,
                 loggedInUserId: loggedInUserId(),
                 simulationTechnologyId: (String(master.value) === BOPDOMESTIC || String(master.value) === BOPIMPORT || String(master.value) === EXCHNAGERATE || master.value === undefined) ? 0 : master.value,
-                vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
+                /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+                // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
@@ -154,7 +154,8 @@ function Simulation(props) {
                     technologyId: value.value,
                     loggedInUserId: loggedInUserId(),
                     simulationTechnologyId: master.value,
-                    vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
+                    /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+                    // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
                 }
                 dispatch(getTokenSelectListAPI(obj, () => { }))
                 if (value !== '' && Object.keys(master).length > 0) {
@@ -271,17 +272,6 @@ function Simulation(props) {
 
 
     const renderModule = (value) => {
-        let temp = userDetails().Department
-        temp = temp && temp.map((item) => {
-            item = item.DepartmentCode
-            return item
-        })
-        // let tempValue = token
-        // tempValue = tempValue && tempValue.map((item) => {
-        //     let object = {}
-        //     object.SimulationId = item.value
-        //     return object
-        // })
         let tempValue = [{ SimulationId: tokenForSimulation?.value }]
 
         let obj = {
@@ -421,9 +411,8 @@ function Simulation(props) {
     }
 
     const editTable = (Data, length) => {
-        // let Data = selectedCostingListSimulation
         let uniqeArray = _.uniq(Data)
-        dispatch(setSelectedCostingListSimualtion(uniqeArray))
+        dispatch(setSelectedRowForPagination(uniqeArray))
         setTableData(Data)
         // alert('Hello')
         let flag = true;
@@ -750,13 +739,6 @@ function Simulation(props) {
     const openEditPage = () => {
         setShowEditTable(true)
     }
-    const openEditPageReload = () => {
-        setShowEditTable(false)
-        setTimeout(() => {
-
-            setShowEditTable(true)
-        }, 1);
-    }
 
     const editMasterPage = (page) => {
         // let tempObject = token && token.map((item) => {
@@ -939,7 +921,9 @@ function Simulation(props) {
                     </Row>
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {showMasterList && renderModule(master)}
+                    {showMasterList &&
+                        <div className={`${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
+                    }
 
                     {
                         showMasterList &&
@@ -966,26 +950,28 @@ function Simulation(props) {
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
 
                                 </div>
-                            </div>
-                        </Row>
+                            </div >
+                        </Row >
                     }
-                </div>
+                </div >
             }
 
-            {loader ? <LoaderCustom customClass="simulation-Loader" /> :
+            {loader ? <LoaderCustom customClass="simulation-loader" /> :
 
                 <div className="simulation-edit">
                     {showEditTable && editMasterPage(master.value)}
                 </div>
             }
-            {showUploadDrawer &&
+            {
+                showUploadDrawer &&
                 <SimulationUploadDrawer
                     isOpen={showUploadDrawer}
                     closeDrawer={closeDrawer}
                     anchor={"right"}
                     master={master}
-                />}
-        </div>
+                />
+            }
+        </div >
     );
 }
 

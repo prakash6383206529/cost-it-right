@@ -15,9 +15,11 @@ import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/const
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
+import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,13 +33,9 @@ function ReportListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [createDate, setCreateDate] = useState(Date);
-    const [costingVersionChange, setCostingVersion] = useState('');
-    const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
@@ -56,7 +54,10 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [noData, setNoData] = useState(false)
+    const [disableDownload, setDisableDownload] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -83,6 +84,34 @@ function ReportListing(props) {
         minValidYear: 2000,
     };
 
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterProfit = {
+        maxValue: 2,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterRejection = {
+
+        maxValue: 3,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterIcc = {
+        maxValue: 4,
+        suppressFilterButton: true
+    }
+
+    var floatingFilterStatus = {
+        maxValue: 5,
+        suppressFilterButton: true
+    }
+
+
+
     let filterClick = false
     const dispatch = useDispatch()
     const { handleSubmit, getValues } = useForm({
@@ -91,7 +120,38 @@ function ReportListing(props) {
     })
 
     let reportListingData = useSelector((state) => state.report.reportListing)
+    let allReportListingData = useSelector((state) => state.report.allReportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+
+    useEffect(() => {
+
+        if (statusColumnData?.data) {
+            setEnableSearchFilterButton(false)
+            setWarningMessage(true)
+
+            switch (statusColumnData?.id) {
+                case 1:
+                    setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 2:
+                    setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 3:
+                    setFloatingFilterData(prevState => ({ ...prevState, RejectionApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 4:
+                    setFloatingFilterData(prevState => ({ ...prevState, ICCApplicability: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                case 5:
+                    setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: encodeURIComponent(statusColumnData?.data) }))
+                    break;
+                default:
+                    setFloatingFilterData(prevState => ({ ...prevState, ICCApplicability: encodeURIComponent(statusColumnData?.data) }))
+            }
+        }
+
+    }, [statusColumnData])
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -99,16 +159,10 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const createDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        setCreateDate(cellValue)
-    }
-
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
-        setCostingVersion(temp);
         return temp
     }
 
@@ -145,13 +199,11 @@ function ReportListing(props) {
             ))
         }
         setIsOpen(true)
-        setUserId(UserId)
     }
 
     const closeUserDetails = () => {
         setIsViewRM(false)
         setIsOpen(false)
-
     }
 
     const dateFormatter = (props) => {
@@ -244,7 +296,7 @@ function ReportListing(props) {
     */
     const decimalPriceFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -252,7 +304,7 @@ function ReportListing(props) {
     */
     const decimalInputOutputFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForInputOutput) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -264,7 +316,6 @@ function ReportListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
@@ -282,11 +333,14 @@ function ReportListing(props) {
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
-                > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div>} </> : '-';
+                > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
-        setLoader(true)
+
+        if (isPagination === true) {
+            setLoader(true)
+        }
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -301,7 +355,12 @@ function ReportListing(props) {
             newData = data
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
+
             if (res) {
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    setPageNo(0)
+                }
                 setLoader(false)
                 let isReset = true
                 setLoader(false)
@@ -316,12 +375,21 @@ function ReportListing(props) {
                 }, 300);
 
                 setTimeout(() => {
+                    dispatch(isResetClick(false, "applicablity"))
                     setWarningMessage(false)
                 }, 330);
 
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
+            }
+
+            if (res && isPagination === false) {  // CODE WRITTEN FOR EXCEL DOWNLOAD
+                setTimeout(() => {
+                    setDisableDownload(false)
+                    let button = document.getElementById('Excel-Downloads')
+                    button.click()
+                }, 800);
             }
         }))
     }
@@ -330,7 +398,8 @@ function ReportListing(props) {
 
         setLoader(true)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
-
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
     }, [])
 
     const onBtNext = () => {
@@ -381,10 +450,12 @@ function ReportListing(props) {
 
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
-
+        setNoData(false)
+        dispatch(getGridHeight(reportListingData?.length))
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
+        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API
@@ -414,9 +485,12 @@ function ReportListing(props) {
             //     setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
             // }
             else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+                let valueString = value?.filterInstance?.appliedModel?.filter
+                if (valueString.includes("+")) {
+                    valueString = encodeURIComponent(valueString)
+                }
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: valueString })
             }
-
         }
         filterClick = false
 
@@ -434,12 +508,6 @@ function ReportListing(props) {
 
 
         // getTableData(0, 100, true, floatingFilterData, false);
-
-        let departmentList = JSON.parse(localStorage.getItem('departmentList'))
-        departmentList = departmentList.split(",")
-        const found = departmentList.find(element => {
-            return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
-        })
 
         // if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin')) {  MAY BE USED LATER
 
@@ -529,14 +597,8 @@ function ReportListing(props) {
             }, 1400);
         }
     };
-
-    useEffect(() => {
-
-    }, [tableData])
-
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
         hyphenFormatter: hyphenFormatter,
         partTypeAssemblyFormatter: partTypeAssemblyFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
@@ -548,14 +610,17 @@ function ReportListing(props) {
         decimalInputOutputFormatter: decimalInputOutputFormatter,
         decimalPriceFormatter: decimalPriceFormatter,
         rmHyperLinkFormatter: rmHyperLinkFormatter,
-        remarkFormatter: remarkFormatter
+        remarkFormatter: remarkFormatter,
+        valuesFloatingFilter: MultiDropdownFloatingFilter,
     };
 
     const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
-
+        gridApi.deselectAll()
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
@@ -586,16 +651,32 @@ function ReportListing(props) {
 
     }
 
+
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+        } else {
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
+
+
     const renderColumn = (fileName) => {
 
-        let tempData
-        if (selectedRowData.length === 0) {
-            tempData = reportListingData
-        }
-        else {
-            tempData = selectedRowData
-        }
-        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+        let tempArr = []
+        tempArr = gridApi && gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allReportListingData ? allReportListingData : [])
+
+        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempArr)
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -616,19 +697,13 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-    const lastWeekFilter = () => {
-
-        setPageNo(1)
-        setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true, true);
-    }
 
     return (
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Details Report</h1>
+                <h1 className="mb-0">Costing Details</h1>
 
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
@@ -639,24 +714,38 @@ function ReportListing(props) {
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                            <div>
-                                <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn(ReportMaster)}
-                                </ExcelFile>
+                            <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
 
-                            </div>
+                            {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                            </button></div> :
+
+                                <>
+                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        {/* DOWNLOAD */}
+                                    </button>
+
+                                    <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                                        <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                                        </button>}>
+                                        {renderColumn(ReportMaster)}
+                                    </ExcelFile>
+
+                                </>
+
+                            }
+
                         </div>
 
                     </Col>
                 </Row>
             </form>
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <= 0 ? "overlay-contain" : ""}`}>
-                <div className={`ag-theme-material mt-2 ${isLoader && "max-loader-height"}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
+                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
@@ -681,10 +770,8 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorName' headerName='Vendor' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorCode' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantName' headerName='Plant' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantCode' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -710,17 +797,17 @@ function ReportListing(props) {
                         <AgGridColumn field='TransportationCost' headerName='Extra Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead} ></AgGridColumn>
                         <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit} ></AgGridColumn>
                         <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
                         <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
                         <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -743,7 +830,7 @@ function ReportListing(props) {
                         <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn width={"240px"} pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
                     </AgGridReact>
                     <div className='button-wrapper'>
@@ -773,16 +860,18 @@ function ReportListing(props) {
                     isReportLoader={isReportLoader}
                 />
             }
-            {isViewRM && <ViewRM
-                isOpen={isViewRM}
-                viewRMData={viewRMData}
-                closeDrawer={closeUserDetails}
-                isAssemblyCosting={isAssemblyCosting}
-                anchor={'right'}
-                technologyId={viewCostingData[0].technologyId}
-                rmMBDetail={rmMBDetail}
-                index={0}
-            />}
+            {
+                isViewRM && <ViewRM
+                    isOpen={isViewRM}
+                    viewRMData={viewRMData}
+                    closeDrawer={closeUserDetails}
+                    isAssemblyCosting={isAssemblyCosting}
+                    anchor={'right'}
+                    technologyId={viewCostingData[0].technologyId}
+                    rmMBDetail={rmMBDetail}
+                    index={0}
+                />
+            }
         </div >
     );
 }

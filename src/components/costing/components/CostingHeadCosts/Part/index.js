@@ -8,7 +8,6 @@ import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
   setComponentDiscountOtherItemData,
   saveAssemblyPartRowCostingCalculation,
-  setAllCostingInArray,
   isDataChange,
   savePartNumber,
   setPartNumberArrayAPICALL,
@@ -22,8 +21,6 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../../CostingUtil';
-import DayTime from '../../../../common/DayTimeWrapper';
-import _ from 'lodash';
 
 
 function PartCompoment(props) {
@@ -33,7 +30,6 @@ function PartCompoment(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
-  const [openForAccordian, setOpenForAccordian] = useState(false);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
 
@@ -60,7 +56,7 @@ function PartCompoment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
-          AssemCostingId: costData.CostingId,
+          AssemCostingId: item.AssemblyCostingId,
           subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
           EffectiveDate: CostingEffectiveDate
         }
@@ -116,10 +112,6 @@ function PartCompoment(props) {
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && item.IsOpen && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
-      const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
       let requestData = {
@@ -218,8 +210,7 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost)) * item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
-
+        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing." : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">

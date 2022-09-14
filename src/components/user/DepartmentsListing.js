@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Row, Col, Button, Table
+  Row, Col
 } from 'reactstrap';
-import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { getConfigurationKey } from '../../helper/auth';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -39,7 +39,8 @@ class DepartmentsListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      noData: false
 
     }
   }
@@ -89,9 +90,11 @@ class DepartmentsListing extends Component {
    * @method closeDrawer
    * @description  used to cancel filter form
    */
-  closeDrawer = (e = '') => {
+  closeDrawer = (e = '', type) => {
     this.setState({ isOpen: false }, () => {
-      this.getDepartmentListData()
+      if (type === 'submit') {
+        this.getDepartmentListData()
+      }
     })
   }
 
@@ -142,7 +145,7 @@ class DepartmentsListing extends Component {
       if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
         this.getDepartmentListData();
-      } else if (res.data.Result === false && res.statusText == "Found") {
+      } else if (res.data.Result === false && res.statusText === "Found") {
         Toaster.warning(res.data.Message)
       }
     });
@@ -197,17 +200,7 @@ class DepartmentsListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={EMPTY_DATA} />,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
+    const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = this.state;
 
     const defaultColDef = {
       resizable: true,
@@ -250,11 +243,12 @@ class DepartmentsListing extends Component {
 
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -267,6 +261,7 @@ class DepartmentsListing extends Component {
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'
@@ -318,7 +313,6 @@ function mapStateToProps({ auth }) {
 export default connect(mapStateToProps,
   {
     getAllDepartmentAPI,
-    deleteDepartmentAPI,
-    getLeftMenu,
+    deleteDepartmentAPI
   })(DepartmentsListing);
 

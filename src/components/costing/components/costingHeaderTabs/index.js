@@ -18,7 +18,7 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
-import { EditCostingContext, ViewCostingContext } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -31,22 +31,23 @@ function CostingHeaderTabs(props) {
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+  const [warningMessageObj, setWarningMessageObj] = useState({
+    tabName: '',
+    messageShow: false
+  })
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-
-  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
-
+  const costingApprovalStatus = useContext(CostingStatusContext);
   useEffect(() => {
-
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
@@ -237,7 +238,6 @@ function CostingHeaderTabs(props) {
 
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
-      let assemblyWorkingRow = []
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
@@ -271,6 +271,46 @@ function CostingHeaderTabs(props) {
       if (tab === '1') {
         setIsCalledAPI(true)
       }
+    }
+    switch (tab) {
+      case "1":
+        setWarningMessageObj({
+          tabName: '',
+          messageShow: false
+        })
+        break
+      case "2":
+        setWarningMessageObj({
+          tabName: '',
+          messageShow: false
+        })
+        break
+      case "3":
+        setWarningMessageObj({
+          tabName: 'Overheads & Profits',
+          messageShow: true
+        })
+        break;
+      case "4":
+        setWarningMessageObj({
+          tabName: 'Packaging & Freight',
+          messageShow: true
+        })
+        break;
+      case "5":
+        setWarningMessageObj({
+          tabName: 'Tool Cost',
+          messageShow: true
+        })
+        break;
+      case "6":
+        setWarningMessageObj({
+          tabName: 'Discount & Other Cost',
+          messageShow: true
+        })
+        break;
+      default:
+        break;
     }
   }
 
@@ -339,10 +379,13 @@ function CostingHeaderTabs(props) {
                 <span>View BOM</span>
               </button>
               {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
-              {messageForAssembly !== '' && <div className='mb-n2'>
+              {messageForAssembly !== '' && <div className={'mb-n2'}>
                 <WarningMessage message={warningMessage} />
               </div>}
             </Col>}
+          {warningMessageObj.messageShow && costingApprovalStatus === "ApprovedByAssembly" && <Col md="12"> <div className='asm-message'>
+            <WarningMessage message={`${warningMessageObj.tabName} values are entered for assembly only`} />
+          </div></Col>}
         </Row>
 
         <div className='costing-tabs-container'>

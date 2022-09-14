@@ -13,7 +13,6 @@ import { ViewCostingContext } from '../CostingDetails';
 function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
-  const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
   const [isPressedST, setIsPressST] = useState(false)
   const dispatch = useDispatch()
@@ -41,9 +40,6 @@ function TabOverheadProfit(props) {
     }
   }, [OverheadProfitTabData])
 
-
-  //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
-  const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -488,14 +484,6 @@ function TabOverheadProfit(props) {
     }
     return tempArr;
 
-  }
-
-  /**
-  * @method onPressApplicability
-  * @description SET ASSEMBLY LEVEL APPLICABILITY
-  */
-  const onPressApplicability = () => {
-    setIsApplicableForChildParts(!IsApplicableForChildParts)
   }
 
   /**

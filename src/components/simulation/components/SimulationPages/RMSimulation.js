@@ -4,7 +4,6 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -23,6 +22,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 
 const gridOptions = {
 
@@ -34,7 +34,6 @@ function RMSimulation(props) {
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -45,6 +44,8 @@ function RMSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [titleObj, setTitleObj] = useState({})
+    const [showPopup, setShowPopup] = useState(false)
+    const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -81,44 +82,7 @@ function RMSimulation(props) {
 
     }, [list])
 
-    const verifySimulation = debounce(() => {
-        if (!isEffectiveDateSelected) {
-            setIsWarningMessageShow(true)
-            return false
-        }
-
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        let isScrapRateGreaterThanBasiRate = false
-        list && list.map((li) => {
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-
-                basicRateCount = basicRateCount + 1
-            }
-            if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-                basicScrapCount = basicScrapCount + 1
-            }
-            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                isScrapRateGreaterThanBasiRate = true
-            }
-            if (isScrapRateGreaterThanBasiRate) {
-                li.NewBasicRate = li?.BasicRate
-                li.NewScrapRate = li?.ScrapRate
-                Toaster.warning('Scrap Rate should be less than Basic Rate')
-                return false
-            }
-            return null;
-        })
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            return false
-        }
-
-        setIsDisable(true)
-
-        basicRateCount = 0
-        basicScrapCount = 0
-        // setShowVerifyPage(true)
+    const setValueFunction = () => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
@@ -174,6 +138,53 @@ function RMSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+    }
+
+    const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+        let basicRateCount = 0
+        let isScrapRateGreaterThanBasiRate = false
+        let scrapRateChangeArr = [];
+        list && list.map((li) => {
+
+            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
+                basicRateCount = basicRateCount + 1
+            }
+
+            if ((li.NewBasicRate && Number(li.BasicRate) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
+                scrapRateChangeArr.push(li)
+
+            }
+            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                isScrapRateGreaterThanBasiRate = true
+            }
+            if (isScrapRateGreaterThanBasiRate) {
+                li.NewBasicRate = li?.BasicRate
+                li.NewScrapRate = li?.ScrapRate
+                Toaster.warning('Scrap Rate should be less than Basic Rate')
+                return false
+            }
+            return null;
+        })
+        if (basicRateCount === list.length) {
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            return false
+        }
+        if (scrapRateChangeArr.length !== 0) {
+            let rmName = []
+            scrapRateChangeArr.map(item => rmName.push(item.RawMaterialCode))
+            let rmNameString = rmName.join(', ')
+            setPopupMessage(`Scrap rate is not changed for some raw material (${rmNameString}). Do you still wish to continue?`)
+            setShowPopup(true)
+            return false
+        }
+        setIsDisable(true)
+
+        basicRateCount = 0
+        setValueFunction();
     }, 600)
 
 
@@ -296,7 +307,7 @@ function RMSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
@@ -311,27 +322,6 @@ function RMSimulation(props) {
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
-    }
-
-
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
     }
 
     const cancel = () => {
@@ -376,9 +366,7 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     }
-
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
@@ -399,8 +387,13 @@ function RMSimulation(props) {
         oldScrapRateFormatter: oldScrapRateFormatter
     };
 
-
-
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+    const onPopupConfirm = () => {
+        setValueFunction()
+        setShowPopup(false)
+    }
     return (
 
         <div>
@@ -586,6 +579,9 @@ function RMSimulation(props) {
                 {
                     showverifyPage &&
                     <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                }
+                {
+                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={popupMessage} />
                 }
 
                 {

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {
-  API, API_REQUEST, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+  API, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
   GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS, GET_APPROVAL_LIST_DRAFT,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
@@ -277,7 +277,7 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
       type: GET_APPROVAL_LIST_DRAFT,
       payload: [],
     })
-    const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&Status=${obj.Status !== undefined ? obj.Status : ""}&type_of_costing=''`
+    const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&type_of_costing=''`
     const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingNumber=${obj.CostingNumber !== undefined ? obj.CostingNumber : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.PlantName !== undefined ? obj.PlantName : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&NewPrice=${obj.NetPOPrice !== undefined ? obj.NetPOPrice : ""}&OldPrice=${obj.OldPOPrice !== undefined ? obj.OldPOPrice : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.CreatedBy !== undefined ? obj.CreatedBy : ""}&CreatedOn=${obj.CreatedOn !== undefined ? obj.CreatedOn : ""}&LastApprovedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request

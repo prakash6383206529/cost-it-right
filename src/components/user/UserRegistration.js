@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword,
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25,
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
@@ -16,7 +16,6 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
@@ -26,7 +25,9 @@ import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
+import { showDataOnHover } from "../../helper";
 var CryptoJS = require('crypto-js')
+const selector = formValueSelector('UserRegistration');
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -361,7 +362,7 @@ class UserRegistration extends Component {
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId }
             })
-
+            this.props.change('UserName', Data?.UserName)
             if (Data.IsAdditionalAccess) {
               this.getUserPermission(data.UserId)
             }
@@ -495,12 +496,14 @@ class UserRegistration extends Component {
             isSelectAll = false
           }
         }
+        return null
       })
     } else {
       temp111 && temp111.map((ele, index) => {
         if (ele.IsChecked === false) {
           isSelectAll = false
         }
+        return null
       })
     }
 
@@ -1254,7 +1257,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15, checkWhiteSpaces]}
+                          validate={[required, minLength3, maxLength25, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1268,7 +1271,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength15]}
+                          validate={[minLength3, maxLength25]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
@@ -1347,7 +1350,6 @@ class UserRegistration extends Component {
                             type="text"
                             placeholder={'Enter'}
                             component={renderText}
-                            isDisabled={false}
                             validate={[required, minLength3, maxLength15]}
                             required={true}
                             maxLength={70}
@@ -1371,6 +1373,7 @@ class UserRegistration extends Component {
                               required={true}
                               // maxLength={26}
                               isEyeIcon={true}
+                              autoComplete={"new-password"}
                               customClassName={'withBorderPWD'}
                             />
                           </div>
@@ -1479,6 +1482,7 @@ class UserRegistration extends Component {
                             <Field
                               name="DepartmentId"
                               type="text"
+                              title={showDataOnHover(this.state.department)}
                               label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               component={renderMultiSelectField}
                               placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
@@ -1969,6 +1973,7 @@ const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
     initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList } = auth;
   const { cityList } = comman;
+  const fieldsObj = selector('UserName', 'Password');
 
   let initialValues = {};
 
@@ -1992,7 +1997,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList, fieldsObj
   };
 };
 
@@ -2036,4 +2041,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(UserRegistration));

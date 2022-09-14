@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -13,7 +13,6 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -23,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,13 +48,15 @@ class VBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
+            noData: false
 
         }
     }
 
     componentDidMount() {
-        this.getTableListData();
-        this.props.fetchCountryDataAPI(() => { })
+        setTimeout(() => {
+            this.getTableListData();
+        }, 300);
     }
 
     /**
@@ -132,7 +134,17 @@ class VBCPlantListing extends Component {
             </>
         )
     }
+    onFloatingFilterChanged = (value) => {
+        if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
 
+            this.setState({ noData: true })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
+        } else {
+            this.setState({ noData: false })
+            document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
+        }
+
+    }
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
             Id: row.PlantId,
@@ -145,7 +157,7 @@ class VBCPlantListing extends Component {
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
@@ -165,6 +177,7 @@ class VBCPlantListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { ActivateAccessibility } = this.props;
+        showTitleForActiveToggle(props)
         if (ActivateAccessibility) {
             return (
                 <>
@@ -179,6 +192,7 @@ class VBCPlantListing extends Component {
                             offColor="#FC5774"
                             id="normal-switch"
                             height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
                         />
                     </label>
                 </>
@@ -344,14 +358,17 @@ class VBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-            //this.getTableListData()
+            if (type === 'submit') {
+                this.filterList()
+                this.getTableListData()
+            }
+
         })
     }
 
@@ -382,6 +399,15 @@ class VBCPlantListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            } else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
+            }
+            return temp;
+        })
         return (
             <ExcelSheet data={TempData} name={PlantVbc}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -405,20 +431,7 @@ class VBCPlantListing extends Component {
     }
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isEditFlag, isOpenVendor, } = this.state;
-
-
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            exportCSVBtn: this.createCustomExportCSVButton,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+        const { isEditFlag, isOpenVendor, noData } = this.state;
 
         const defaultColDef = {
             resizable: true,
@@ -471,11 +484,12 @@ class VBCPlantListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -488,6 +502,7 @@ class VBCPlantListing extends Component {
                             gridOptions={gridOptions}
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
+                            onFilterModified={this.onFloatingFilterChanged}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
@@ -550,7 +565,6 @@ function mapStateToProps({ comman, auth, plant }) {
 export default connect(mapStateToProps, {
     getPlantDataAPI,
     activeInactiveStatus,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getFilteredPlantList,
@@ -561,4 +575,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VBCPlantListing));

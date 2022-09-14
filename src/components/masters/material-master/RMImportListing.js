@@ -18,13 +18,13 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
@@ -40,7 +40,6 @@ function RMImportListing(props) {
   const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, apply, ListFor } = props;
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
-  const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -49,10 +48,12 @@ function RMImportListing(props) {
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
-  const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+  const { selectedRowForPagination } = useSelector((state => state.simulation))
+  const allRmDataList = useSelector((state) => state.material.allRmDataList);
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
+  const [disableDownload, setDisableDownload] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
@@ -64,8 +65,8 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
-
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+  const [noData, setNoData] = useState(false)
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -97,43 +98,71 @@ function RMImportListing(props) {
     if (rmImportDataList?.length > 0) {
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
     }
+    else {
+      setNoData(false)
+    }
   }, [rmImportDataList])
 
   useEffect(() => {
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    dispatch(masterFinalLevelUser(obj, (res) => {
-      if (res?.data?.Result) {
-        setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-      }
-    }))
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        let obj = {
+          MasterId: RM_MASTER_ID,
+          DepartmentId: userDetails().DepartmentId,
+          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+          LoggedInUserId: loggedInUserId()
+        }
+        dispatch(masterFinalLevelUser(obj, (res) => {
+          if (res?.data?.Result) {
+            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+          }
+        }))
 
-    return () => {
-      dispatch(setSelectedCostingListSimualtion([]))
-    }
+        return () => {
+          dispatch(setSelectedRowForPagination([]))
+        }
+      }
+    }, 300);
+
   }, [])
 
   useEffect(() => {
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+          props?.changeSetLoader(true)
+          dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+            props?.changeSetLoader(false)
 
-    if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-      props?.changeSetLoader(true)
-      dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-        props?.changeSetLoader(false)
+          }))
 
-      }))
+        } else {
+          if (isSimulation) {
+            props?.changeTokenCheckBox(false)
+          }
+          getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+        }
 
-    } else {
-      if (isSimulation) {
-        props?.changeTokenCheckBox(false)
+        setvalue({ min: 0, max: 0 });
       }
-      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-    }
+    }, 300);
+    if (!props.stopApiCallOnCancel) {
+      if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
 
-    setvalue({ min: 0, max: 0 });
+        }))
+
+      } else {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(false)
+        }
+        getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+      }
+
+      setvalue({ min: 0, max: 0 });
+    }
   }, [])
 
 
@@ -159,7 +188,10 @@ function RMImportListing(props) {
       ListFor: ListFor,
       StatusId: statusString
     }
-    setloader(true)
+
+    if (isPagination === true) {
+      setloader(true)
+    }
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
@@ -168,25 +200,41 @@ function RMImportListing(props) {
           props?.changeTokenCheckBox(true)
         }
         if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          let DynamicData = res.data.DynamicData;
-          setmaxRange(DynamicData.MaxRange);
           setloader(false);
 
         } else if (res && res.response && res.response.status === 412) {
-          setmaxRange(0);
           setloader(false);
 
         } else {
-          setmaxRange(0);
           setloader(false);
         }
+
+        if (res && res.status === 204) {
+          setTotalRecordCount(0)
+          setPageNo(0)
+        }
+
+        if (res && isPagination === false) {
+          setDisableDownload(false)
+          setTimeout(() => {
+            let button = document.getElementById('Excel-Downloads-rm-import')
+            button && button.click()
+          }, 500);
+        }
+
         if (res) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
-                isReset = false
+              if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                if (floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
+              } else {
+
+                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
               }
             }
             // Sets the filter model via the grid API
@@ -211,6 +259,10 @@ function RMImportListing(props) {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
+
+    if (rmImportDataList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
     if (!isFilterButtonClicked) {
       setWarningMessage(true)
     }
@@ -235,7 +287,11 @@ function RMImportListing(props) {
           setWarningMessage(false)
           for (var prop in floatingFilterData) {
 
-            if (prop !== "DepartmentCode") {
+            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+              if (prop !== "DepartmentName") {
+                floatingFilterData[prop] = ""
+              }
+            } else {
               floatingFilterData[prop] = ""
             }
           }
@@ -324,7 +380,7 @@ function RMImportListing(props) {
   const confirmDelete = (ID) => {
     dispatch(deleteRawMaterialAPI(ID, (res) => {
       if (res.status === 417 && res.data.Result === false) {
-        Toaster.warning(res.data.Message)
+        Toaster.error(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
         resetState()
@@ -392,9 +448,8 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== INR ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '';
+    return cellValue !== INR ? cellValue : '';
   }
 
   /**
@@ -420,34 +475,42 @@ function RMImportListing(props) {
   */
   const shearingCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
   }
 
   const statusFormatter = (props) => {
-    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     // CHANGE IN STATUS IN AFTER KAMAL SIR API
     return <div className={row.Status}>{row.DisplayStatus}</div>
   }
 
   /**
-  * @method freightCostFormatter
+  * @method commonCostFormatter
   * @description Renders buttons
   */
-  const freightCostFormatter = (props) => {
+  const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    return cell != null ? cell : '-';
+  }
+  /**
+  * @method currencyFormatter
+  * @description Renders buttons
+  */
+  const currencyFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? cell : '-';
   }
 
 
   const checkBoxRenderer = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-    if (selectedCostingListSimulation?.length > 0) {
-      selectedCostingListSimulation.map((item) => {
-        if (item.RawMaterialId == props.node.data.RawMaterialId) {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
+        if (item.RawMaterialId === props.node.data.RawMaterialId) {
           props.node.setSelected(true)
         }
+        return null
       })
       return cellValue
     } else {
@@ -499,7 +562,6 @@ function RMImportListing(props) {
       getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
-      setPageNo(pageNoNew)
       if (pageNo > Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
@@ -508,7 +570,6 @@ function RMImportListing(props) {
     else if (Number(newPageSize) === 100) {
       getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-      setGlobalTake(100)
       setGlobalTake(100)
       if (pageNo > Math.ceil(totalRecordCount / 100)) {
         setPageNo(Math.ceil(totalRecordCount / 100))
@@ -540,16 +601,34 @@ function RMImportListing(props) {
       </ExcelSheet>);
   }
 
+
+  const onExcelDownload = () => {
+    setDisableDownload(true)
+
+    //let tempArr = gridApi && gridApi?.getSelectedRows()
+    let tempArr = selectedRowForPagination
+    if (tempArr?.length > 0) {
+      setTimeout(() => {
+        setDisableDownload(false)
+        let button = document.getElementById('Excel-Downloads-rm-import')
+        button && button.click()
+      }, 400);
+
+    } else {
+
+      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+
+  }
+
+
   const onBtExport = () => {
     let tempArr = []
-    if (isSimulation === true) {
-      const data = gridApi && gridApi.getModel().rowsToDisplay
-      data && data.map((item => {
-        tempArr.push(item.data)
-      }))
-    } else {
-      tempArr = rmImportDataList
-    }
+
+    //tempArr = gridApi && gridApi?.getSelectedRows()
+    tempArr = selectedRowForPagination
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
+
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -564,7 +643,11 @@ function RMImportListing(props) {
     gridOptions?.api?.setFilterModel(null);
 
     for (var prop in floatingFilterData) {
-      if (prop !== "DepartmentCode") {
+      if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+        if (prop !== "DepartmentName") {
+          floatingFilterData[prop] = ""
+        }
+      } else {
         floatingFilterData[prop] = ""
       }
     }
@@ -574,53 +657,51 @@ function RMImportListing(props) {
     setPageNoNew(1)
     setCurrentRowIndex(0)
     getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
-    dispatch(setSelectedCostingListSimualtion([]))
+    dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
   }
 
 
   const isFirstColumn = (params) => {
-    if (isSimulation) {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
 
-      return thisIsFirstColumn;
-    } else {
-      return false
-    }
   }
 
   const onRowSelect = (event) => {
 
     var selectedRows = gridApi && gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedCostingListSimulation
-    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
       let finalData = []
       if (event.node.isSelected() === false) {      // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {       // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {       // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedCostingListSimulation[i])
+          finalData.push(selectedRowForPagination[i])
         }
 
       } else {
-        finalData = selectedCostingListSimulation
+        finalData = selectedRowForPagination
       }
       selectedRows = [...selectedRows, ...finalData]
     }
 
+
+    let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    let finalArr = selectedRows
+    let length = finalArr?.length
+    let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+
     if (isSimulation) {
-      let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-      dispatch(setSelectedCostingListSimualtion(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
-      let finalArr = selectedRows
-      let length = finalArr?.length
-      let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
       apply(uniqueArray, length)
     }
   }
@@ -631,7 +712,7 @@ function RMImportListing(props) {
     filter: true,
     sortable: true,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isFirstColumn,
+    headerCheckboxSelection: isSimulation ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -642,11 +723,12 @@ function RMImportListing(props) {
     costingHeadRenderer: costingHeadFormatter,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
-    freightCostFormatter: freightCostFormatter,
+    commonCostFormatter: commonCostFormatter,
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    currencyFormatter: currencyFormatter
 
   };
 
@@ -706,12 +788,23 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                              {/* DOWNLOAD */}
-                            </button>}>
-                            {onBtExport()}
-                          </ExcelFile>
+                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                          </button></div> :
+
+                            <>
+                              <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                {/* DOWNLOAD */}
+                              </button>
+
+                              <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
+                                </button>}>
+                                {onBtExport()}
+                              </ExcelFile>
+
+                            </>
+
+                          }
                         </>
                       }
                     </>
@@ -725,8 +818,9 @@ function RMImportListing(props) {
           </Row>
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper ${rmImportDataList && rmImportDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     style={{ height: '100%', width: '100%' }}
                     defaultColDef={defaultColDef}
@@ -760,11 +854,12 @@ function RMImportListing(props) {
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
-                    <AgGridColumn field="Currency"></AgGridColumn>
-                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>

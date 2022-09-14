@@ -1,9 +1,9 @@
 import DayTime from '../../../common/DayTimeWrapper'
-import React, { useEffect, useState } from 'react'
-import { APPROVED, REJECTED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
+import React, { useEffect } from 'react'
+import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
 
 function ApprovalWorkFlow(props) {
-  const { approvalLevelStep, approvalNo } = props
+  const { approvalLevelStep } = props
 
 
 

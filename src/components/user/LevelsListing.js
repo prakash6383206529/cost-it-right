@@ -7,8 +7,8 @@ import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { getConfigurationKey } from '../../helper/auth';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
@@ -56,7 +56,8 @@ class LevelsListing extends Component {
 			showPopupToggle: false,
 			isLoader: false,
 			updateApi: false,
-			cancelButton: false
+			cancelButton: false,
+			noData: false
 
 		}
 	}
@@ -227,7 +228,7 @@ class LevelsListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { EditAccessibility, DeleteAccessibility } = this.state;
+		const { EditAccessibility } = this.state;
 		return (
 			<>
 				{EditAccessibility && <button title='Edit' type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
@@ -236,38 +237,12 @@ class LevelsListing extends Component {
 		)
 	}
 
-	afterSearch = (searchText, result) => {
-
-	}
-
-	handleChange = (cell, row, enumObject, rowIndex) => {
-		let data = {
-			Id: row.LevelId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-	}
-
-	confirmDeactivateItem = (data, cell) => {
-		//   this.props.activeInactiveStatus(data, res => {
-		//     if (res && res.data && res.data.Result) {
-		//         // if (cell == true) {
-		//         //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-		//         // } else {
-		//         //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-		//         // }
-		//         // this.getTableListData()
-		//         this.filterList()
-		//     }
-		// })
-	}
 
 	/**
 	 * @method statusButtonFormatter
 	 * @description Renders buttons
 	 */
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { ActivateAccessibility } = this.props;
 		// if (ActivateAccessibility) {
 		return (
 			<>
@@ -354,7 +329,7 @@ class LevelsListing extends Component {
 	*/
 	render() {
 		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
-			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
+			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact, noData } = this.state;
 
 
 		const defaultColDef = {
@@ -407,11 +382,12 @@ class LevelsListing extends Component {
 									<Row>
 										<Col className="mt-0 level-table" md="12">
 
-											<div className="ag-grid-wrapper height-width-wrapper">
+											<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.usersListByTechnologyAndLevel && this.props.usersListByTechnologyAndLevel?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 												<div className="ag-grid-header">
 													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 												</div>
 												<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+													{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 													<AgGridReact
 														defaultColDef={defaultColDef}
 														domLayout='autoHeight'
@@ -423,6 +399,7 @@ class LevelsListing extends Component {
 														onGridReady={this.onGridReady}
 														gridOptions={gridOptions}
 														noRowsOverlayComponent={'customNoRowsOverlay'}
+														onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
 														noRowsOverlayComponentParams={{
 															title: EMPTY_DATA,
 														}}

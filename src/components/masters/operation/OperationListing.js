@@ -12,14 +12,13 @@ import {
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
     getTechnologyListByVendor, getOperationListByVendor, setOperationList
 } from '../actions/OtherOperation';
-import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { userDepartmetList } from '../../../helper'
+import { checkForDecimalAndNull, userDepartmetList, getConfigurationKey } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -28,12 +27,11 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion, } from '../../simulation/actions/Simulation'
+import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -66,9 +64,10 @@ class OperationListing extends Component {
             isLoader: false,
             isFinalApprovar: false,
             disableFilter: true,
+            disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -77,46 +76,45 @@ class OperationListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            noData: false
         }
     }
-
     componentDidMount() {
+
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
-
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            } else {
-                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-            }
-            let obj = {
-                MasterId: OPERATIONS_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            this.props.masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            if (!this.props.stopAPICall) {
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-            })
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
 
             if (this.props.stopAPICall === true) {
-                this.setState({ tableData: this.props.setOperationData })
+                this.setState({ tableData: this.props.operationDataHold })
             }
         }, 300);
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -159,7 +157,7 @@ class OperationListing extends Component {
     * @description Get user list data
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 100, isPagination = true, dataObj) => {
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
@@ -188,6 +186,7 @@ class OperationListing extends Component {
             }
 
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
+                this.setState({ noData: false })
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
@@ -196,22 +195,43 @@ class OperationListing extends Component {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: res.data.DataList })
+                    this.props.setOperationList(res.data.DataList)
+                }
+                // CODE FOR DOWNLOAD BUTTON LOGIC
+                if (res && isPagination === false) {
+                    this.setState({ disableDownload: false })
+                    setTimeout(() => {
+                        let button = document.getElementById('Excel-Downloads-operation')
+                        button && button.click()
+                    }, 500);
                 }
 
                 // PAGINATION CODE
+                if (res && res.status === 204) {
+                    this.setState({ totalRecordCount: 0, pageNo: 0 })
+                }
                 let FloatingfilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }
-                this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                this.setState({ totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount })
                 let isReset = true
                 setTimeout(() => {
 
                     for (var prop in obj) {
-                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                            isReset = false
+                        if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                isReset = false
+                            }
+                        } else {
+                            if (obj[prop] !== "") {
+                                isReset = false
+                            }
                         }
                     }
                     // SETS  THE FILTER MODEL VIA THE GRID API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
                 }, 300);
 
                 setTimeout(() => {
@@ -231,6 +251,9 @@ class OperationListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
+        if (this.state.tableData?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -241,7 +264,7 @@ class OperationListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
-        this.props.setSelectedCostingListSimualtion([])
+        this.props.setSelectedRowForPagination([])
     }
 
     onBtPrevious = () => {
@@ -377,15 +400,6 @@ class OperationListing extends Component {
         )
     };
 
-    handleChange = (cell, row) => {
-        let data = {
-            Id: row.VendorId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-
-    }
-
     /**
     * @method handleHeadChange
     * @description called
@@ -465,37 +479,19 @@ class OperationListing extends Component {
     };
 
     /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (
-            <>
-                <label htmlFor="normal-switch" className="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cellValue, rowData)}
-                        checked={cellValue}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
-    }
-
-    /**
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
+    /**
+    * @method commonCostFormatter
+    */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? cell : '-';
     }
 
     /**
@@ -505,14 +501,12 @@ class OperationListing extends Component {
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
-
-
-
-        if (this.props.selectedCostingListSimulation?.length > 0) {
-            this.props.selectedCostingListSimulation.map((item) => {
-                if (item.OperationId == props.node.data.OperationId) {
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
+                if (item.OperationId === props.node.data.OperationId) {
                     props.node.setSelected(true)
                 }
+                return null
             })
             return data
         } else {
@@ -573,16 +567,36 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        if (this.props.isSimulation) {
+        if (this.props.isSimulation || this.props.isMasterSummaryDrawer) {
             window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
-
     };
 
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-operation')
+                button && button.click()
+            }, 400);
+
+        } else {
+            this.getTableListData(null, null, null, null, 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
-        let tempArr = this.state.tableData && this.state.tableData
+        let tempArr = []
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this.props.selectedRowForPagination
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allOperationList ? this.props.allOperationList : [])
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -591,11 +605,8 @@ class OperationListing extends Component {
         temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
-            } else if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            } else if (item.Plants === '-') {
+            }
+            else if (item.Plants === '-') {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
@@ -619,7 +630,7 @@ class OperationListing extends Component {
     */
     render() {
         const { isSimulation } = this.props;
-        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, tableData } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -668,65 +679,56 @@ class OperationListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (selectedRows === undefined || selectedRows === null) {     //CONDITION FOR FIRST RENDERING OF COMPONENT
-                selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+                selectedRows = this.props.selectedRowForPagination
+            } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
                 if (event.node.isSelected() === false) {  // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].OperationId === event.data.OperationId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                        if (this.props.selectedRowForPagination[i].OperationId === event.data.OperationId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
-                        finalData.push(this.props.selectedCostingListSimulation[i])
+                        finalData.push(this.props.selectedRowForPagination[i])
                     }
                 } else {
-                    finalData = this.props.selectedCostingListSimulation
+                    finalData = this.props.selectedRowForPagination
                 }
                 selectedRows = [...selectedRows, ...finalData]
             }
 
+
+            let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedRowForPagination(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
+            let finalArr = selectedRows
+            let length = finalArr?.length
+            let uniqueArray = _.uniqBy(finalArr, "OperationId")
+
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                this.props.setSelectedCostingListSimualtion(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
-                let finalArr = selectedRows
-                let length = finalArr?.length
-                let uniqueArray = _.uniqBy(finalArr, "OperationId")
+
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
         }
 
         const isFirstColumn = (params) => {
-            const { isSimulation } = this.props
-            if (isSimulation) {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-
-
-                return thisIsFirstColumn;
-
-            } else {
-
+            if (this.props?.isMasterSummaryDrawer) {
                 return false
-
+            } else {
+                return thisIsFirstColumn;
             }
-
-
-
         }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -735,8 +737,8 @@ class OperationListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            commonCostFormatter: this.commonCostFormatter
         };
         return (
             <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -799,13 +801,21 @@ class OperationListing extends Component {
                                             DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                             <>
 
-                                                <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
-                                                    </button>}>
+                                                {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                </button></div> :
+                                                    <>
+                                                        <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>
 
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
+                                                        <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                                            <button id={'Excel-Downloads-operation'} className="p-absolute" type="button" >
+                                                            </button>}>
+                                                            {this.onBtExport()}
+                                                        </ExcelFile>
+                                                    </>
+                                                }
+
                                             </>
                                         }
                                     </>
@@ -819,8 +829,9 @@ class OperationListing extends Component {
 
                         </Row>
                     </form>
-                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.state.tableData && this.state.tableData.length <= 0 ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -843,15 +854,17 @@ class OperationListing extends Component {
                                 onRowSelected={onRowSelect}
                                 suppressRowClickSelection={true}
                                 onFilterModified={this.onFloatingFilterChanged}
+                                enableBrowserTooltips={true}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
-                                <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
+                                {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>}
+                                <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant(Code)" ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
@@ -860,7 +873,7 @@ class OperationListing extends Component {
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(Number(this.state.totalRecordCount ? this.state.totalRecordCount : 0 / 10))}</p>}
                                         {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
                                         {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                         <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
@@ -895,10 +908,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
+    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
+    const { selectedRowForPagination } = simulation;
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
 }
 
 /**
@@ -921,7 +934,7 @@ export default connect(mapStateToProps, {
     getOperationListByVendor,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedCostingListSimualtion,
+    setSelectedRowForPagination,
     setOperationList
 })(reduxForm({
     form: 'OperationListing',

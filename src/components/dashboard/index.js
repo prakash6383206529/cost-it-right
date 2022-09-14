@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
-import RMApproval from "../masters/material-master/RMApproval";
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
-import BOPApproval from "../masters/bop-master/BOPApproval";
-import OperationApproval from "../masters/operation/OperationApproval";
-import MachineApproval from "../masters/machine-master/MachineApproval";
 import classnames from 'classnames';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
+import CommonApproval from "../masters/material-master/CommonApproval";
+import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 
 
 function Dashboard(props) {
@@ -27,6 +25,7 @@ function Dashboard(props) {
   const [activeTab, setactiveTab] = useState('1');
   const [viewSimulation, setViewSimulation] = useState(true)
   const [viewCosting, setViewCosting] = useState(true)
+  const [pageDropDownRef, setPageDropDownRef] = useState('')
 
   const [viewMastersObj, setViewMAstersObj] = useState({
     RM: false,
@@ -36,6 +35,7 @@ function Dashboard(props) {
   })
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
 
+  const dispatch = useDispatch()
 
   const closeDashboard = () => {
     setShowHideDash(true)
@@ -83,8 +83,20 @@ function Dashboard(props) {
   const toggle = (tab) => {
 
     if (activeTab !== tab) {
-      setactiveTab(tab);
+      dispatch(setSelectedRowForPagination([]))
+      setTimeout(() => {
+        setactiveTab(tab);
+      }, 300);
     }
+  }
+
+  const isPageNoChange = (data) => {
+    setPageDropDownRef(data)
+    setTimeout(() => {
+      document.getElementById('refresh-to-top').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }, 100);
   }
 
   return (
@@ -102,7 +114,7 @@ function Dashboard(props) {
             <form onSubmit={handleSubmit}>
 
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
-                <div className="graph-box w-100">
+                <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
                     <Col md="4" className="text-right">
@@ -117,12 +129,12 @@ function Dashboard(props) {
                   </Row>
 
                   <Row>
-                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
+                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
                   </Row>
                 </div>
               </Row>}
 
-              {viewCosting && <Row className="m-0">
+              {viewCosting && <Row className="m-0" id={`${pageDropDownRef === 'costing' ? 'refresh-to-top' : ''}`}>
                 <div className={`graph-box w-100 ${acc1 ? "dashboard-height" : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
@@ -137,13 +149,13 @@ function Dashboard(props) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
+                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
                   </Row>
                 </div>
               </Row>}
 
               {getConfigurationKey().IsMasterApprovalAppliedConfigure && (viewMastersObj.RM || viewMastersObj.BOP || viewMastersObj.operation || viewMastersObj.machine) &&
-                <Row className="m-0">
+                <Row className="m-0" id={`${pageDropDownRef === 'master' ? 'refresh-to-top' : ''}`}>
                   <div className="graph-box w-100">
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
@@ -184,19 +196,19 @@ function Dashboard(props) {
                       <TabContent activeTab={activeTab}>
                         {(Number(activeTab) === 1 && viewMastersObj.RM) &&
                           <TabPane tabId="1">
-                            <RMApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 2 && viewMastersObj.BOP) &&
                           <TabPane tabId="2">
-                            <BOPApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 3 && viewMastersObj.operation) &&
                           <TabPane tabId="3">
-                            <OperationApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 4 && viewMastersObj.machine) &&
                           <TabPane tabId="4">
-                            <MachineApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                       </TabContent>
                     </>}
@@ -235,4 +247,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,
+  touchOnChange: true
 })(Dashboard));

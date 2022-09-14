@@ -19,7 +19,6 @@ export function Clientbasedcostingdrawer(props) {
         props.closeDrawer('')
     };
 
-    const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
     const [attachmentLoader, setAttachmentLoader] = useState(false)
@@ -29,15 +28,9 @@ export function Clientbasedcostingdrawer(props) {
     const CostingViewMode = useContext(ViewCostingContext);
 
     // dropzone start
-    // specify upload params and url for your files
-    const getUploadParams = ({ file, meta }) => {
-        setAttachmentLoader(true)
-        return { url: 'https://httpbin.org/post', }
-    }
-
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
-
+        setAttachmentLoader(true)
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
@@ -83,7 +76,6 @@ export function Clientbasedcostingdrawer(props) {
     }
 
     const Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -552,12 +544,11 @@ export function Clientbasedcostingdrawer(props) {
                                         </div>
                                     ) : (
                                         <Dropzone
-                                            getUploadParams={getUploadParams}
                                             onChangeStatus={handleChangeStatus}
                                             PreviewComponent={Preview}
                                             //onSubmit={this.handleSubmit}
                                             accept="*"
-                                            initialFiles={initialFiles}
+                                            initialFiles={[]}
                                             maxFiles={4}
                                             maxSizeBytes={2000000000}
                                             inputContent={(files, extra) =>

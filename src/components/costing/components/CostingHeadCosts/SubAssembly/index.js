@@ -42,7 +42,7 @@ function AssemblyPart(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId,
+        AssemCostingId: item.AssemblyCostingId,
         subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate
       }
@@ -65,6 +65,7 @@ function AssemblyPart(props) {
           array = JSON.parse(localStorage.getItem('costingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('costingArray', JSON.stringify(uniqueArary));
@@ -129,6 +130,7 @@ function AssemblyPart(props) {
         subAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {
@@ -211,7 +213,7 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td>
+        <td width={"0"}>
 
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>

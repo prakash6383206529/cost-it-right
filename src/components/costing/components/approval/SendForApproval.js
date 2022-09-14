@@ -8,26 +8,27 @@ import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberF
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice } from '../../actions/Costing'
-import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
+import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, VBC, ZBC } from "../../../../config/constants";
+import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
+import TooltipCustom from '../../../common/Tooltip'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const { isApprovalisting } = props
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -35,6 +36,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -48,7 +50,7 @@ const SendForApproval = (props) => {
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [isDisable, setIsDisable] = useState('')
-  const [isRegularize, setIsReggularize] = useState(false);
+  const [isRegularize, setIsRegularize] = useState(false);
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [isDisabledSAP, setIsDisabledSAP] = useState(false);
@@ -58,6 +60,9 @@ const SendForApproval = (props) => {
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   const [costingIdArray, setCostingIdArray] = useState([])
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [effectiveDate, setEffectiveDate] = useState('')
+  const [dataToChange, setDataToChange] = useState([]);
+  const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -120,17 +125,28 @@ const SendForApproval = (props) => {
     }
 
     let obj = {}
+    let regularizationObj = {}
     obj.TechnologyId = props.technologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
-    drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
+    drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
+    regularizationObj.technologyId = viewApprovalData[0].technologyId
+    regularizationObj.partId = viewApprovalData[0].partId
+    regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
+    regularizationObj.vendorId = viewApprovalData[0].vendorId
 
+    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res.data.Data
+        setDataToChange(Data)
+      }
+    }))
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -175,6 +191,7 @@ const SendForApproval = (props) => {
       }
 
     }))
+
   }, [])
 
   useEffect(() => {
@@ -349,6 +366,10 @@ const SendForApproval = (props) => {
       Toaster.warning('Please select effective date for all the costing')
       return false
     }
+    if (isRegularize && files?.length === 0) {
+      Toaster.warning('Please upload file to send for approval.')
+      return false
+    }
     let obj = {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
@@ -363,6 +384,9 @@ const SendForApproval = (props) => {
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
+      // Quantity: getValues('Quantity'),
+      // Attachment: files,
+      // IsLimitCrossed: IsLimitCrossed
     }
 
     let temp = []
@@ -421,7 +445,13 @@ const SendForApproval = (props) => {
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
+      tempObj.NCCPartQuantity = getValues('Quantity')
+      tempObj.Attachment = files
+      tempObj.IsRegularized = isRegularize
+      tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+
       temp.push(tempObj)
+      return null
     })
 
     obj.CostingsList = temp
@@ -445,10 +475,49 @@ const SendForApproval = (props) => {
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
 
+  const checkQuantityLimitValue = (value, isRegularizeValue) => {
+    let limit;
+    if (dataToChange?.QuantityUsed === 0) {
+      limit = dataToChange?.RegularizationLimit + calculatePercentageValue(dataToChange?.RegularizationLimit, dataToChange?.MaxDeviationLimitPercent)
+    } else {
+      limit = dataToChange?.QuantityUsed
+    }
+
+    if (!isRegularizeValue) {
+
+      if ((value <= limit)) {
+
+        if ((value >= dataToChange?.RegularizationLimit) && (value <= limit)) {
+          setIsLimitCrossed(true)
+        } else {
+          setIsLimitCrossed(false)
+        }
+      } else {
+        setTimeout(() => {
+          setValue('Quantity', 0)
+        }, 200);
+        setIsLimitCrossed(false)
+        Toaster.warning('Quantity should be less than Max Deviation Limit')
+        return false
+      }
+
+
+    } else {
+      if ((value >= dataToChange?.RegularizationLimit)) {
+        setIsLimitCrossed(true)
+      } else {
+        setIsLimitCrossed(false)
+      }
+    }
+  }
+
   const handleChangeQuantity = (e) => {
+    checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
 
-  useEffect(() => { }, [viewApprovalData])
+  useEffect(() => {
+    viewApprovalData && viewApprovalData.map(item => setEffectiveDate(item.effectiveDate !== "" ? DayTime(item.effectiveDate).format('DD/MM/YYYY') : ""))
+  }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
     if (
@@ -461,13 +530,9 @@ const SendForApproval = (props) => {
     props.closeDrawer('', 'Cancel')
   }
 
-  // specify upload params and url for your files
-  const getUploadParams = ({ file, meta }) => {
-    setAttachmentLoader(true)
-    return { url: "https://httpbin.org/post" };
-  };
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    setAttachmentLoader(true)
     if (status === "removed") {
       const removedFileName = file.name;
       let tempArr =
@@ -531,8 +596,11 @@ const SendForApproval = (props) => {
     );
   };
   const checkboxHandler = () => {
-    Toaster.warning("Please upload files");
-    setIsReggularize(!isRegularize);
+    if (isRegularize === false) {
+      Toaster.warning("Please upload files");
+    }
+    setIsRegularize(!isRegularize);
+    checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
 
   const reasonField = 'reasonField'
@@ -543,6 +611,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
+
   return (
     <Fragment>
       <Drawer
@@ -595,7 +664,7 @@ const SendForApproval = (props) => {
                               label={"Reason"}
                               // name={"reason"}
                               name={`${reasonField}reason[${index}]`}
-                              placeholder={"-Select-"}
+                              placeholder={"Select"}
                               Controller={Controller}
                               control={control}
                               rules={{ required: true }}
@@ -714,6 +783,7 @@ const SendForApproval = (props) => {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
+                              <TooltipCustom tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                               <label>Annual Impact</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -759,7 +829,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                             name={"dept"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
@@ -776,7 +846,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={"Approver"}
                             name={"approver"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
@@ -793,7 +863,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {false && <><Col md="6">
+                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -801,11 +871,12 @@ const SendForApproval = (props) => {
                             control={control}
                             register={register}
                             mandatory={true}
+                            rules={{ required: true }}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
                             handleChange={handleChangeQuantity}
-                            //errors={errors.remarks}
+                            errors={errors.Quantity}
                             disabled={false}
                           />
                         </Col>
@@ -875,7 +946,6 @@ const SendForApproval = (props) => {
                         </div>
                       ) : (
                         <Dropzone
-                          getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           mandatory={true}
@@ -940,6 +1010,11 @@ const SendForApproval = (props) => {
                   </Row>
                 ) : null}
                 {showErrorMessage && <WarningMessage dClass="pl-3" message={warningMessage} />}
+                <Row>
+                  <Col md="12" className='text-right my-n1'>
+                    <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
+                  </Col>
+                </Row>
                 <Row className="mb-4">
                   <Col
                     md="12"

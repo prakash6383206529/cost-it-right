@@ -36,8 +36,8 @@ function PartSurfaceTreatment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
-          AssemCostingId: costData.CostingId,
-          SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
+          AssemCostingId: item.AssemblyCostingId,
+          SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -90,7 +90,7 @@ function PartSurfaceTreatment(props) {
           <td>{item?.Quantity}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost * item.Quantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
-        <td>
+        <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
             {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 

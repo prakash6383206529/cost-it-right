@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Fragment, useContext } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
@@ -108,7 +107,6 @@ function ColdForging(props) {
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
   const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
   const [isDisable, setIsDisable] = useState(false)
-  const costData = useContext(costingInfoContext)
   useEffect(() => {
     if (!CostingViewMode) {
       calculateForgeWeight()
@@ -433,7 +431,7 @@ function ColdForging(props) {
                             required: true,
                             pattern: {
                               value: /^\d{0,4}(\.\d{0,7})?$/i,
-                              message: 'Maximum length for interger is 4 and for decimal is 7',
+                              message: 'Maximum length for integer is 4 and for decimal is 7',
                             },
 
                           }}
@@ -509,7 +507,7 @@ function ColdForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -523,7 +521,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length(mm)`}
+                  label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -533,7 +531,7 @@ function ColdForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}

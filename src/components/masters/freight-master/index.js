@@ -8,8 +8,6 @@ import FreightListing from './FreightListing';
 import PackagListing from './PackagListing';
 import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import ScrollToTop from '../../common/ScrollToTop';
 
 class FreightMaster extends Component {
@@ -26,7 +24,8 @@ class FreightMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
-            DownloadAccessibility: false
+            DownloadAccessibility: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -70,7 +69,8 @@ class FreightMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -95,8 +95,12 @@ class FreightMaster extends Component {
     * @method hideForm
     * @description HIDE FREIGHT AND PACKAGING FORMS
     */
-    hideForm = () => {
-        this.setState({ isFreightForm: false, isPackageForm: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+
+        }
     }
 
     /**
@@ -165,7 +169,7 @@ class FreightMaster extends Component {
 
                             <TabContent activeTab={this.state.activeTab}>
 
-                                {this.state.activeTab == 1 &&
+                                {this.state.activeTab === '1' &&
                                     <TabPane tabId="1">
                                         <FreightListing
                                             displayForm={this.displayFreightForm}
@@ -175,10 +179,11 @@ class FreightMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 2 &&
+                                {this.state.activeTab === '2' &&
                                     <TabPane tabId="2">
                                         <PackagListing
                                             displayForm={this.displayPackagForm}

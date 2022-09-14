@@ -35,8 +35,8 @@ function AssemblySurfaceTreatment(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId,
-        SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
+        AssemCostingId: item.AssemblyCostingId,
+        SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
@@ -46,6 +46,7 @@ function AssemblySurfaceTreatment(props) {
           array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
@@ -88,9 +89,10 @@ function AssemblySurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
-        SubAssembId={item.CostingId}
+        subAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {
@@ -106,7 +108,7 @@ function AssemblySurfaceTreatment(props) {
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       IsAssemblyCalculation={true}
-      SubAssembId={item.CostingId}
+      subAssembId={item.CostingId}
     />
   })
 

@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch } from 'react-redux'
 import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
@@ -13,7 +12,6 @@ import { debounce } from 'lodash'
 
 function NonFerrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
-    const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
 
     const defaultValues = {
@@ -247,7 +245,7 @@ function NonFerrous(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
 
                                                 }}
@@ -271,7 +269,7 @@ function NonFerrous(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -330,7 +328,7 @@ function NonFerrous(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Casting Weight(${activeTab === '3' ? `before machining` : `kg`})`}
+                                        label={`Casting Weight${activeTab === '3' ? ` (before machining)` : `(kg)`}`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -340,7 +338,7 @@ function NonFerrous(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -374,7 +372,7 @@ function NonFerrous(props) {
                             <Row className={'mt25'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Gross Weight (Kg)`}
+                                        label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -409,7 +407,7 @@ function NonFerrous(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
 
                                         }}

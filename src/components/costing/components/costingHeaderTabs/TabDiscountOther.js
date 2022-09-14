@@ -75,9 +75,12 @@ function TabDiscountOther(props) {
           DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType: checkForNull(discountObj !== undefined && discountObj.DiscountCostType),
+          DiscountCostType: discountObj !== undefined && discountObj.DiscountCostType,
           HundiOrDiscountValue: discountObj && checkForDecimalAndNull(discountObj.HundiOrDiscountValue !== null ? discountObj.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-          DiscountApplicability: discountObj && discountObj.DiscountApplicability
+          DiscountApplicability: discountObj && discountObj.DiscountApplicability,
+          OtherCostType: otherCostType.label,
+          PercentageOtherCost: discountObj.OtherCostPercentage,
+          OtherCostApplicability: discountObj.OtherCostApplicability,
         }
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
@@ -564,12 +567,6 @@ function TabDiscountOther(props) {
 
   }
 
-  // specify upload params and url for your files
-  const getUploadParams = ({ file, meta }) => {
-    setAttachmentLoader(true)
-    return { url: 'https://httpbin.org/post', }
-  }
-
   /**
  * @method setDisableFalseFunction
  * @description setDisableFalseFunction
@@ -752,24 +749,16 @@ function TabDiscountOther(props) {
 
   const handleOherCostApplicabilityChange = (value) => {
     setOtherCostApplicability(value)
-    setValue('AnyOtherCost', 0)
-    setValue('PercentageOtherCost', 0)
     setDiscountObj({
       ...discountObj,
-      AnyOtherCost: 0,
-      OtherCostPercentage: 0,
       OtherCostApplicability: value.label
     })
   }
 
   const handleDiscountApplicabilityChange = (value) => {
     setDiscountCostApplicability(value)
-    setValue('HundiOrDiscountValue', 0)
-    setValue('HundiOrDiscountPercentage', 0)
     setDiscountObj({
       ...discountObj,
-      HundiOrDiscountPercentage: 0,
-      HundiOrDiscountValue: 0,
       DiscountApplicability: value.label
     })
   }
@@ -806,7 +795,7 @@ function TabDiscountOther(props) {
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
                         name={"OtherCostType"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
@@ -825,7 +814,7 @@ function TabDiscountOther(props) {
                         <SearchableSelectHookForm
                           label={'Other Cost Applicability'}
                           name={'OtherCostApplicability'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -921,7 +910,7 @@ function TabDiscountOther(props) {
                       <SearchableSelectHookForm
                         label={"Discount Type"}
                         name={"HundiDiscountType"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
@@ -940,7 +929,7 @@ function TabDiscountOther(props) {
                         <SearchableSelectHookForm
                           label={'Discount Applicability'}
                           name={'DiscountCostApplicability'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -1057,7 +1046,7 @@ function TabDiscountOther(props) {
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
@@ -1133,7 +1122,6 @@ function TabDiscountOther(props) {
                       <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone
                           ref={dropzone}
-                          getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}

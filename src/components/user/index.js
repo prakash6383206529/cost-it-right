@@ -5,14 +5,16 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { getLeftMenu, } from '../../actions/auth/AuthActions';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
+import { reactLocalStorage } from 'reactjs-localstorage';
+
+var isFirstTabActive = false
 
 class User extends Component {
   constructor(props) {
@@ -58,35 +60,43 @@ class User extends Component {
 
         for (var prop in userData) {
           if (userData[prop] === true) {
+            isFirstTabActive = true
             this.setState({ ViewUserAccessibility: true, activeTab: '1' })
           }
         }
+      }
 
+      if (roleData !== undefined) {
         for (var propRole in roleData) {
           if (roleData[propRole] === true) {
-            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : '2' })
+            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' })
           }
         }
+      }
 
+      if (departmentData !== undefined) {
         for (var propDepart in departmentData) {
           if (departmentData[propDepart] === true) {
-            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
           }
         }
+      }
 
+      if (levelsData !== undefined) {
         for (var propLevel in levelsData) {
           if (levelsData[propLevel] === true) {
             this.setState({ ViewLevelAccessibility: true })
           }
         }
       }
+
     }
   }
 
   componentDidMount() {
     this.topAndLeftMenuFunction()
-  }
 
+  }
 
   componentDidUpdate() {
     if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {

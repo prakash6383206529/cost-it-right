@@ -7,6 +7,7 @@ import {
     GET_MACHINE_TYPE_DATALIST_SUCCESS,
     GET_MACHINE_TYPE_DATA_SUCCESS,
     GET_MACHINE_DATALIST_SUCCESS,
+    GET_ALL_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_DATA_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
@@ -16,6 +17,7 @@ import {
     SET_PROCESS_GROUP_LIST,
     STORE_PROCESS_LIST,
 } from '../../../config/constants';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
     processGroupApiData: [],
@@ -69,16 +71,24 @@ export default function MachineReducer(state = initialState, action) {
                 machineTypeData: action.payload
             };
         case GET_MACHINE_DATALIST_SUCCESS:
-            let arr = []
-            action.payload && action.payload.map((item) => {
-                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
-                arr.push(item)
-            })
+            let arr = [];
+            arr = action.payload && action.payload.filter((item) => {
+                item.MachineRate = checkForDecimalAndNull(item.MachineRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                return item
+            }
+            )
             return {
                 ...state,
                 loading: false,
                 error: true,
                 machineDatalist: arr
+            };
+        case GET_ALL_MACHINE_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allMachineDataList: action.payload
             };
         case GET_MACHINE_DATA_SUCCESS:
             return {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
+import { getLabourTypeByMachineTypeSelectList, getLabourTypeDetailsForMachineType, updateLabourTypeForMachineType } from '../actions/Labour'
 import { required, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
@@ -10,12 +11,15 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import { showDataOnHover } from '../../../helper';
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       labourType: [],
+      DropdownChanged: true,
+      labourIdFromTable: []
     }
   }
 
@@ -25,8 +29,34 @@ class AddMachineTypeDrawer extends Component {
  */
   componentDidMount() {
     this.props.getLabourTypeSelectList(() => { })
+    this.props.isEditFlag && this.getDetails();
+    let tempArray = [];
+    this.props.gridTable.map(e => {
+      if (this.props.machineTypeId === e.MachineTypeId.toString()) {
+        tempArray.push(e.LabourTypeId.toString())
+        return e.LabourTypeId
+      }
+      return null
+    }
+    )
+    this.setState({ labourIdFromTable: tempArray })
   }
-
+  getDetails = () => {
+    this.props.getLabourTypeDetailsForMachineType(this.props.machineTypeId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let tempArr = [];
+        Data && Data.LabourTypes && Data.LabourTypes.map(item => {
+          tempArr.push({ Text: item.LabourTypeName, Value: item.LabourTypeId.toString() })
+          return null;
+        })
+        setTimeout(() => {
+          this.setState({ labourType: tempArr })
+          this.props.change('MachineType', Data.MachineTypeName)
+        }, 400);
+      }
+    })
+  }
   toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -53,12 +83,15 @@ class AddMachineTypeDrawer extends Component {
 
   }
 
-  /**
-  * @method labourHandler
-  * @description called
-  */
-  labourHandler = (e) => {
-    this.setState({ labourType: e });
+
+  labourHandler = (e, option) => {
+
+    if (this.state.labourIdFromTable.includes(option.removedValue && option.removedValue.Value)) {
+      Toaster.warning("This labour type exist in the table");
+      return;
+    }
+
+    this.setState({ labourType: e, DropdownChanged: false });
   };
 
   /**
@@ -78,18 +111,37 @@ class AddMachineTypeDrawer extends Component {
   */
   onSubmit = (values) => {
     const { labourType } = this.state;
-
     let labourTypeIds = labourType && labourType.map(el => el.Value)
+    // let entryInGrid = this.props.gridTable && this.props.gridTable.map(item => item.LabourTypeId)
+    // let filteredMachineTypeLabour = this.props.gridTable && this.props.gridTable.filter(e => 
+    //   )
 
+    let labourTypeArray = [];
+    labourType && labourType.map(item => {
+      labourTypeArray.push({ LabourTypeName: item.Text, LabourTypeId: item.Value, IsAssociated: false })
+      return null
+    })
+    if (labourTypeArray.length === 0) {
+      return false
+    }
     /** Update existing detail of supplier master **/
     if (this.props.isEditFlag) {
 
-      // this.props.updateSupplierAPI(formData, (res) => {
-      //     if (res.data.Result) {
-      //         toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-      //         this.toggleDrawer('')
-      //     }
-      // });
+      if (this.state.DropdownChanged) {
+        this.toggleDrawer('', 'cancel')
+        return false
+      }
+      let formData = {
+        MachineTypeId: Number(this.props.machineTypeId),
+        MachineTypeName: values.MachineType,
+        LabourTypes: labourTypeArray
+      }
+      this.props.updateLabourTypeForMachineType(formData, (res) => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.UPDATE_MACHINE_TYPE_SUCESS);
+          this.toggleDrawer('', formData)
+        }
+      })
 
     } else {/** Add new detail for creating supplier master **/
       let formData = {
@@ -99,9 +151,12 @@ class AddMachineTypeDrawer extends Component {
       }
       this.props.reset()
       this.props.createMachineType(formData, (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
+          this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: res?.data?.Identity }, () => { })
           Toaster.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
           this.toggleDrawer('', formData)
+        } else {
+          this.setState({ labourType: [] })
         }
       });
     }
@@ -154,12 +209,13 @@ class AddMachineTypeDrawer extends Component {
                       label={`Machine Type`}
                       name={"MachineType"}
                       type="text"
-                      placeholder={""}
+                      placeholder={"Enter"}
                       validate={[required, checkWhiteSpaces]}
                       component={renderText}
-                      required={true}
+                      required={!isEditFlag}
                       className=" "
                       customClassName=" withBorder"
+                      disabled={isEditFlag}
                     />
                   </Col>
                   <Col md="12" className="mb-3">
@@ -167,6 +223,7 @@ class AddMachineTypeDrawer extends Component {
                       label="Labour Type"
                       name="LabourTypeIds"
                       placeholder="Select"
+                      title={showDataOnHover(this.state.labourType)}
                       selection={
                         this.state.labourType == null || this.state.labourType.length === 0 ? [] : this.state.labourType}
                       options={this.renderListing("labourList")}
@@ -214,16 +271,17 @@ class AddMachineTypeDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps(state) {
+  const { comman, labour } = state
   const { labourTypeSelectList } = comman;
-
+  const { labourTypeDetailsForMachineType } = labour;
   let initialValues = {};
   // if (supplierData && supplierData !== undefined) {
   //     initialValues = {
   //         VendorName: supplierData.VendorName,
   //     }
   // }
-  return { labourTypeSelectList, initialValues }
+  return { labourTypeSelectList, labourTypeDetailsForMachineType, initialValues }
 }
 
 /**
@@ -235,7 +293,11 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
   createMachineType,
   getLabourTypeSelectList,
+  getLabourTypeByMachineTypeSelectList,
+  getLabourTypeDetailsForMachineType,
+  updateLabourTypeForMachineType
 })(reduxForm({
   form: 'AddMachineTypeDrawer',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddMachineTypeDrawer));

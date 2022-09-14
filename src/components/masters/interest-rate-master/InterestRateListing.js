@@ -7,17 +7,14 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
+import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
@@ -29,6 +26,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -41,7 +39,6 @@ class InterestRateListing extends Component {
     super(props);
     this.state = {
       tableData: [],
-
       vendorName: [],
       ICCApplicability: [],
       PaymentTermsApplicability: [],
@@ -49,7 +46,6 @@ class InterestRateListing extends Component {
       data: { isEditFlag: false, ID: '' },
       toggleForm: false,
       isBulkUpload: false,
-
       ViewAccessibility: false,
       AddAccessibility: false,
       EditAccessibility: false,
@@ -63,7 +59,9 @@ class InterestRateListing extends Component {
       showData: false,
       isLoader: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false,
+      noData: false
     }
   }
 
@@ -72,9 +70,6 @@ class InterestRateListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
     }, 500);
   }
@@ -197,7 +192,6 @@ class InterestRateListing extends Component {
   buttonFormatter = (props) => {
 
     const cellValue = props?.value;
-    const rowData = props?.data;
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
@@ -208,43 +202,6 @@ class InterestRateListing extends Component {
       </>
     )
   };
-
-  handleChange = (cell, row, enumObject, rowIndex) => {
-    let data = {
-      Id: row.VendorId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !cell, //Status of the user.
-    }
-
-  }
-
-
-
-  /**
-  * @method statusButtonFormatter
-  * @description Renders buttons
-  */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <label htmlFor="normal-switch" className="normal-switch">
-          {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-          />
-        </label>
-      </>
-    )
-  }
-
-
   /**
   * @method indexFormatter
   * @description Renders serial number
@@ -300,13 +257,15 @@ class InterestRateListing extends Component {
     this.setState({ toggleForm: true })
   }
 
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState({
       toggleForm: false,
       data: { isEditFlag: false, ID: '' }
     }, () => {
-      this.getTableListData()
-    })
+      if (type === 'submit')
+        this.getTableListData()
+    }
+    )
   }
 
   bulkToggle = () => {
@@ -328,6 +287,7 @@ class InterestRateListing extends Component {
   onSubmit(values) {
   }
 
+
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
@@ -341,8 +301,15 @@ class InterestRateListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    let tempArr = this.props.interestRateDataList && this.props.interestRateDataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.interestRateDataList ? this.props.interestRateDataList : [])
     return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -353,11 +320,8 @@ class InterestRateListing extends Component {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
         item.PaymentTermPercent = ' '
-      } else if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
+      }
+      else if (item.VendorName === '-') {
         item.VendorName = ' '
       }
       return item
@@ -374,13 +338,10 @@ class InterestRateListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
-
-
-
-
 
   /**
   * @method render
@@ -388,7 +349,8 @@ class InterestRateListing extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
       return (
@@ -398,11 +360,18 @@ class InterestRateListing extends Component {
         />
       )
     }
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
+
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -491,11 +460,12 @@ class InterestRateListing extends Component {
           </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -512,9 +482,13 @@ class InterestRateListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
+                rowSelection={'multiple'}
+                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
-                <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -571,14 +545,11 @@ export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
   getVendorListByVendorType,
-  getPaymentTermsAppliSelectList,
-  getICCAppliSelectList,
-  getLeftMenu,
-  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(InterestRateListing));

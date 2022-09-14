@@ -9,6 +9,7 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
 import { renderActionCommon } from '../userUtil';
+import { scrollReset } from '../../../helper/util';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -26,9 +27,15 @@ class CostingTab extends Component {
   }
 
 
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
-      const { data, actionData, actionSelectList } = nextProps;
+      const { data, actionData, actionSelectList, scrollRef } = nextProps;
+      if (scrollRef) {
+        scrollReset('costingTab')
+      } else {
+        scrollReset('costingTab')
+      }
       this.setState({
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
@@ -39,6 +46,7 @@ class CostingTab extends Component {
         if (ele.ModuleName === 'Costing') {
           this.setState({ checkBox: ele.IsChecked })
         }
+        return null
       })
     }
   }
@@ -72,7 +80,7 @@ class CostingTab extends Component {
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
 
           if (item.Text === 'Reject') {
@@ -93,6 +101,7 @@ class CostingTab extends Component {
             )
           }
         }
+        return null
       })
     }
   }
@@ -182,7 +191,7 @@ class CostingTab extends Component {
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
 
@@ -199,6 +208,7 @@ class CostingTab extends Component {
         } else {
           item1.IsChecked = isCheckedSelectAll;
         }
+        return null
       })
       if (item?.Sequence === 0) {
         item.IsChecked = false
@@ -262,7 +272,7 @@ class CostingTab extends Component {
       <div>
         <div className="row form-group grant-user-grid user-costing-tab">
           <div className="col-md-12">
-            <div className='overflow-auto'>
+            <div className='overflow-auto' id="costingTab">
               <Table className="table table-bordered" size="sm">
                 <thead>
                   <tr>

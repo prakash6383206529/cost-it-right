@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
-import { checkForNull, loggedInUserId } from "../../helper";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { Col, Container, Row } from "reactstrap";
-import { DashboardMaster } from "../../config/constants";
 import { Field, reduxForm } from "redux-form";
 import { searchableSelect } from '../layout/FormInputs'
 import { Costmovementgraph } from "./CostMovementGraph";
@@ -15,7 +12,7 @@ import { Costratiobuyinggraph } from './CostRatioBuyingGraph';
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 export function Dashboardwithgraph(props) {
-    const { handleSubmit, menusData } = props
+    const { handleSubmit } = props
 
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
@@ -160,4 +157,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'Dashboardwithgraph',
     enableReinitialize: true,
+    touchOnChange: true
 })(Dashboardwithgraph));

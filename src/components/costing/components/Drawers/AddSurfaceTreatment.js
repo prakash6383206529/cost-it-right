@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -15,6 +14,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 
@@ -22,10 +22,8 @@ function AddSurfaceTreatment(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
 
   const dispatch = useDispatch()
 
@@ -86,25 +84,17 @@ function AddSurfaceTreatment(props) {
     }
   }, []);
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-
-  };
-
-  const onRowSelect = (row, isSelected, e) => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    setSelectedRowData(selectedRows)
+  const onRowSelect = (event) => {
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if (_.includes(selectedRowData, event.data) === true) {
+        let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+        setSelectedRowData(arrayList)
+      } else {
+        setSelectedRowData([...selectedRowData, event.data])
+      }
+    } else {
+      setSelectedRowData(gridApi?.getSelectedRows())
+    }
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
     //   setSelectedRowData(tempArr)
@@ -113,24 +103,8 @@ function AddSurfaceTreatment(props) {
     //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
     //   setSelectedRowData(tempArr)
     // }
-
   }
 
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
 
   /**
   * @method addRow
@@ -150,10 +124,6 @@ function AddSurfaceTreatment(props) {
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
   }
 
   const isFirstColumn = (params) => {
@@ -207,7 +177,7 @@ function AddSurfaceTreatment(props) {
     customNoRowsOverlay: NoContentFound,
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -242,8 +212,8 @@ function AddSurfaceTreatment(props) {
               </Row>
 
 
-              <Row className="mx-0 mb-3">
-                <Col>
+              <Row className="mx-0">
+                <Col className="hidepage-size">
                   <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -273,7 +243,7 @@ function AddSurfaceTreatment(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
@@ -292,23 +262,23 @@ function AddSurfaceTreatment(props) {
                 </Col>
               </Row>
 
-
-              <div className="col-sm-12 text-left d-flex justify-content-end">
-                <button
-                  type={'button'}
-                  className="reset cancel-btn mr5"
-                  onClick={cancel} >
-                  <div className={'cancel-icon'}></div> {'Cancel'}
-                </button>
-                <button
-                  type={'button'}
-                  className="submit-button save-btn"
-                  onClick={addRow} >
-                  <div className={'save-icon'}></div>
-                  {'SELECT'}
-                </button>
+              <div className='drawer-sticky-btn '>
+                <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
+                  <button
+                    type={'button'}
+                    className="reset cancel-btn mr5"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button save-btn"
+                    onClick={addRow} >
+                    <div className={'save-icon'}></div>
+                    {'SELECT'}
+                  </button>
+                </div>
               </div>
-
 
             </div>
           </Container>

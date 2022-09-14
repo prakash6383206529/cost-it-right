@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList, getRawMaterialNameChild,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -22,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,8 +49,9 @@ class SpecificationListing extends Component {
             showPopup: false,
             showPopup2: false,
             deletedId: '',
-            isLoader: false
-
+            isLoader: false,
+            selectedRowData: false,
+            noData: false
         }
     }
 
@@ -58,7 +60,6 @@ class SpecificationListing extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getRawMaterialFilterSelectList(() => { })
         this.getSpecificationListData('', '');
     }
 
@@ -86,29 +87,13 @@ class SpecificationListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
+    closeDrawer = (e = '', data, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getSpecificationListData('', '');
+            if (type === 'submit')
+                this.getSpecificationListData('', '');
         })
+
     }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of row material
-    */
-
-
-    /**
-    * @method handleGrade
-    * @description  used to handle type of listing change
-    */
-
-
-    /**
-    * @method handleMaterialChange
-    * @description  used to material change and get grade's
-    */
-
 
     /**
     * @method editItemDetails
@@ -149,7 +134,7 @@ class SpecificationListing extends Component {
         this.props.deleteRMSpecificationAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
                 //Toaster.warning(res.data.Message)
-                Toaster.warning('The specification is associated in the system. Please remove the association to delete')
+                Toaster.error('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
@@ -271,7 +256,10 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.rmSpecificationList ? this.props.rmSpecificationList : [])
         return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -298,6 +286,7 @@ class SpecificationListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -305,29 +294,33 @@ class SpecificationListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
+
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
+        const { isOpen, isEditFlag, ID, isBulkUpload, noData } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-        };
+        const isFirstColumn = (params) => {
 
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -370,13 +363,14 @@ class SpecificationListing extends Component {
                                 DownloadAccessibility &&
                                 <>
 
-                                    <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={
-                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                            {/* DOWNLOAD */}
-                                        </button>}>
+                                    <>
 
-                                        {this.onBtExport()}
-                                    </ExcelFile>
+                                        <ExcelFile filename={'RMSpecification'} fileExtension={'.xls'} element={
+                                            <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
+
+                                    </>
 
                                 </>
 
@@ -393,11 +387,12 @@ class SpecificationListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -408,12 +403,15 @@ class SpecificationListing extends Component {
                                     paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
+                                    rowSelection={'multiple'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
+                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -469,7 +467,6 @@ function mapStateToProps({ material }) {
 export default connect(mapStateToProps, {
     getRMSpecificationDataList,
     deleteRMSpecificationAPI,
-    getRawMaterialNameChild,
     getRMGradeSelectListByRawMaterial,
     getGradeSelectList,
     getRawMaterialFilterSelectList,

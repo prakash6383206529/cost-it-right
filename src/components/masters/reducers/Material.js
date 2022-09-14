@@ -7,9 +7,9 @@ import {
     GET_GRADE_SELECTLIST_BY_RAWMATERIAL, GET_GRADE_SELECTLIST_SUCCESS, GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA, GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
     GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST, GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST, GET_VENDOR_FILTER_BY_GRADE_SELECTLIST, GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST, GET_ALL_RM_DOMESTIC_LIST
 } from '../../../config/constants';
-import { userDetails } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
     filterRMSelectList: {}
@@ -259,6 +259,11 @@ export default function materialReducer(state = initialState, action) {
         case GET_RM_DOMESTIC_LIST:
             let arr = [];
             arr = action.payload && action.payload.filter((item) => {
+                item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.ScrapRate = checkForDecimalAndNull(item.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 return item.IsAVCCosting === false
             }
             )
@@ -268,10 +273,27 @@ export default function materialReducer(state = initialState, action) {
                 error: true,
                 rmDataList: arr
             }
+        case GET_ALL_RM_DOMESTIC_LIST:
+            let arry = [];
+            arry = action.payload && action.payload.filter((item) => {
+                return item.IsAVCCosting === false
+            }
+            )
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allRmDataList: arry
+            }
         case GET_RM_IMPORT_LIST:
-
             let arr2 = [];
             arr2 = action.payload && action.payload.filter((item) => {
+                item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.ScrapRate = checkForDecimalAndNull(item.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.NetLandedCostConversion = checkForDecimalAndNull(item.NetLandedCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)
                 return item.IsAVCCosting === false
 
             }
@@ -324,10 +346,58 @@ export default function materialReducer(state = initialState, action) {
             //     }
             // })
 
+            let array = []
+            if (action?.payload[0]?.Plant !== undefined) {
+                array = action.payload && action.payload.filter((item) => {
+                    return item.Plants = item.Plant
+                })
+            }
+
+            if (action?.payload[0]?.OperationId !== undefined && action?.payload[0]?.OperationId !== null) {
+                array = action.payload && action.payload.filter((item) => {
+                    return (item.TechnologyName = item.Technology,
+                        item.UOM = item.UnitOfMeasurement,
+                        item.BasicRate = item.Rate
+
+                    )
+                })
+            }
+
+            if (action?.payload[0]?.MachineId !== undefined && action?.payload[0]?.MachineId !== null) {
+                array = action.payload && action.payload.filter((item) => {
+                    return (
+                        item.BasicRate = item.MachineRate
+
+                    )
+                })
+            }
+            if (action?.payload[0]?.RawMaterialId !== undefined && action?.payload[0]?.RawMaterialId !== null) {
+                array = action.payload && action.payload.map((item) => {
+                    item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.ScrapRate = checkForDecimalAndNull(item.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    return item
+
+                })
+            }
+            else if (action?.payload[0]?.BoughtOutPartId !== undefined && action?.payload[0]?.BoughtOutPartId !== null) {
+                array = action.payload && action.payload.filter((item) => {
+                    return (
+                        item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice),
+                        item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    )
+                })
+            }
+
+            if (array.length === 0) {
+                array = action.payload
+            }
             return {
                 ...state,
                 loading: false,
-                approvalList: action.payload
+                approvalList: array
             }
         default:
             return state;

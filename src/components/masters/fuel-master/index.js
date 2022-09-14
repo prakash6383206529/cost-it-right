@@ -8,8 +8,6 @@ import FuelListing from './FuelListing';
 import PowerListing from './PowerListing';
 import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import ScrollToTop from '../../common/ScrollToTop';
 
 class FuelMaster extends Component {
@@ -28,7 +26,8 @@ class FuelMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
-            DownloadAccessibility: false
+            DownloadAccessibility: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -73,7 +72,8 @@ class FuelMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -86,8 +86,12 @@ class FuelMaster extends Component {
         this.setState({ isPowerForm: true, isFuelForm: false, data: {} })
     }
 
-    hideForm = () => {
-        this.setState({ isFuelForm: false, isPowerForm: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+
+        }
     }
 
     getDetails = (data) => {
@@ -116,6 +120,7 @@ class FuelMaster extends Component {
             return <AddPower
                 data={data}
                 hideForm={this.hideForm}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -149,7 +154,7 @@ class FuelMaster extends Component {
 
                                 <TabContent activeTab={this.state.activeTab}>
 
-                                    {this.state.activeTab == 1 &&
+                                    {this.state.activeTab === '1' &&
                                         <TabPane tabId="1">
                                             <FuelListing
                                                 formToggle={this.displayFuelForm}
@@ -160,10 +165,11 @@ class FuelMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 2 &&
+                                    {this.state.activeTab === '2' &&
                                         <TabPane tabId="2">
                                             <PowerListing
                                                 formToggle={this.displayPowerForm}
@@ -174,6 +180,7 @@ class FuelMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                             />
                                         </TabPane>}
 

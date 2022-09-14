@@ -29,7 +29,7 @@ function SheetMetalBaicDrawer(props) {
     ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onBlur',
     defaultValues: defaultValues,
@@ -358,7 +358,7 @@ function SheetMetalBaicDrawer(props) {
                         required: true,
                         pattern: {
                           value: /^\d{0,6}(\.\d{0,4})?$/i,
-                          message: 'Maximum length for interger is 6 and for decimal is 4',
+                          message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
                       }}
                       handleChange={calculateProcessCost}

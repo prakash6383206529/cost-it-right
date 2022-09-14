@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces } from "../../../helper/validation";
+import { required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
 import { focusOnError, renderText, } from "../../layout/FormInputs";
 import { createBOPCategory } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
@@ -102,7 +102,7 @@ class AddBOPCategory extends Component {
                                             name={"Category"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                                            validate={[required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
                                             className=" "

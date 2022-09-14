@@ -2,16 +2,15 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, alphabetsOnlyForName, number } from "../../helper/validation";
-import { renderText, searchableSelect, renderSelectField } from "../layout/FormInputs";
+import { required } from "../../helper/validation";
+import { renderText, searchableSelect } from "../layout/FormInputs";
 import {
     getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser, getPermissionByUser,
     setUserAdditionalPermission, getActionHeadsSelectList, revertDefaultPermission,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import Toaster from "../common/Toaster";
-import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
-import { EAccessType } from "../../config/masterData";
+import { Table } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
 import { EMPTY_DATA } from '../../config/constants';
 
@@ -49,6 +48,7 @@ class PermissionsUserWise extends Component {
         this.props.getModuleSelectList(() => {
             selectedModules.map((item, index) => {
                 permissions.push(item.Value)
+                return null
             })
             this.setState({ permissions })
         })
@@ -59,13 +59,14 @@ class PermissionsUserWise extends Component {
     * @description Used show select listings
     */
     renderTypeOfListing = (label) => {
-        const { userList, roleSelectList } = this.props;
+        const { userList } = this.props;
         const temp = [];
 
         if (label === 'user') {
             userList && userList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -128,13 +129,13 @@ class PermissionsUserWise extends Component {
     //     let tempArray = [];
     //     let tempObj = {}
     //     if (checkedAll) {
-    //         this.setState({ permissions: tempArray, checkedAll: false }, () => { console.log('All', this.state.permissions) })
+    //         this.setState({ permissions: tempArray, checkedAll: false }, () => {  })
     //     } else {
     //         moduleSelectList && moduleSelectList.map((item, index) => {
     //             if (item.Value == 0) return false;
     //             return tempArray.push(item.Value)
     //         })
-    //         this.setState({ permissions: tempArray, checkedAll: true }, () => { console.log('All', this.state.permissions) })
+    //         this.setState({ permissions: tempArray, checkedAll: true }, () => {  })
     //     }
     // }
 
@@ -263,12 +264,11 @@ class PermissionsUserWise extends Component {
     * @description used to check Module checkbox, if select all and actions checked
     */
     isCheckModuleAll = (parentIndex, parentIsChecked, actionData) => {
-        const { Modules } = this.state;
         const { actionSelectList } = this.props;
 
-        let tempArray = actionData.filter(item => item.IsChecked == true)
-        if (actionData && actionData != undefined) {
-            return tempArray.length == actionSelectList.length - 1 ? true : false;
+        let tempArray = actionData.filter(item => item.IsChecked === true)
+        if (actionData && actionData !== undefined) {
+            return tempArray.length === actionSelectList.length - 1 ? true : false;
         }
     }
 
@@ -278,7 +278,7 @@ class PermissionsUserWise extends Component {
     */
     renderActionHeads = (actionHeads) => {
         return actionHeads && actionHeads.map((item, index) => {
-            if (item.Value == 0) return false;
+            if (item.Value === 0) return false;
             return (
                 <th >{item.Text}</th>
             )
@@ -294,7 +294,7 @@ class PermissionsUserWise extends Component {
 
         return actionSelectList && actionSelectList.map((el, i) => {
             return actions && actions.map((item, index) => {
-                if (el.Text != item.ActionName) return false;
+                if (el.Text !== item.ActionName) return false;
                 return (
                     <td key={index}>
                         {<input
@@ -316,9 +316,9 @@ class PermissionsUserWise extends Component {
     actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
 
-        let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+        let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
-            if (childIndex == index) {
+            if (childIndex === index) {
                 el.IsChecked = !el.IsChecked
             }
             return el;
@@ -349,7 +349,7 @@ class PermissionsUserWise extends Component {
     };
 
     getRolePermission = () => {
-        const { user, permissions } = this.state;
+        const { user } = this.state;
         this.props.getPermissionByUser(user.value, (res) => {
             if (res && res.data && res.data.Data) {
 
@@ -365,6 +365,7 @@ class PermissionsUserWise extends Component {
                         ModuleId: el.ModuleId,
                     }
                     moduleCheckedArray.push(tempObj)
+                    return null
                 })
                 this.props.change('Role', Data.RoleName);
                 this.props.change('Description', Data.Description);
@@ -389,7 +390,7 @@ class PermissionsUserWise extends Component {
         const { moduleSelectList } = this.props;
 
         return moduleSelectList && moduleSelectList.map((item, index) => {
-            if (DefaultModuleIds.includes(item.Value) == false) return false;
+            if (DefaultModuleIds.includes(item.Value) === false) return false;
             return (
                 <div key={index} className={'col-md-2 additional'}>
                     <label
@@ -413,13 +414,13 @@ class PermissionsUserWise extends Component {
     */
     moduleHandler = (index) => {
         //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
         let tempArray = [];
 
-        let actionRow = (Modules && Modules != undefined) ? Modules[index].Actions : [];
+        let actionRow = (Modules && Modules !== undefined) ? Modules[index].Actions : [];
         if (isModuleChecked) {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = false;
@@ -446,27 +447,25 @@ class PermissionsUserWise extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, moduleCheckedAll } = this.state;
         const { actionSelectList } = this.props;
 
         //let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
 
-        let tempArray = actionData.filter(item => item.IsChecked == true)
-        if (actionData && actionData != undefined) {
-            return tempArray.length == actionSelectList.length - 1 ? true : false;
+        let tempArray = actionData.filter(item => item.IsChecked === true)
+        if (actionData && actionData !== undefined) {
+            return tempArray.length === actionSelectList.length - 1 ? true : false;
         }
     }
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules, checkedAll } = this.state;
-        const { moduleSelectList, actionSelectList } = this.props;
+        const { Modules } = this.state;
+        const { actionSelectList } = this.props;
 
         //let actionRows = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
-        let checkedActions = actionRows.filter(item => item.IsChecked == true)
+        let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
         let tempArray = [];
-        let tempObj = {}
-        let isCheckedSelectAll = (checkedActions.length == actionSelectList.length - 1) ? true : false;
+        let isCheckedSelectAll = (checkedActions.length === actionSelectList.length - 1) ? true : false;
 
         if (isCheckedSelectAll) {
             let actionArray = actionRows && actionRows.map((item, index) => {
@@ -530,7 +529,7 @@ class PermissionsUserWise extends Component {
      */
     onSubmit(values) {
         const { reset } = this.props;
-        const { user, roleId, DefaultModuleIds, Modules } = this.state;
+        const { user, Modules } = this.state;
 
         this.setState({ isLoader: true })
 
@@ -578,8 +577,8 @@ class PermissionsUserWise extends Component {
 
 
     render() {
-        const { handleSubmit, pristine, reset, submitting, actionSelectList } = this.props;
-        const { isLoader, isSubmitted, isOpen } = this.state;
+        const { handleSubmit, pristine, submitting, actionSelectList } = this.props;
+        const { isLoader, isSubmitted } = this.state;
 
         return (
             <div>
@@ -720,7 +719,7 @@ class PermissionsUserWise extends Component {
                                             </tr>
                                         )
                                     })}
-                                    {this.state.Modules.length == 0 && <NoContentFound title={EMPTY_DATA} />}
+                                    {this.state.Modules.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                                 </tbody>
                             </Table>
 
@@ -784,4 +783,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'PermissionsUserWise',
     enableReinitialize: true,
+    touchOnChange: true
 })(PermissionsUserWise));

@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, isToolDataChange,
 } from '../../actions/Costing';
-import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -16,7 +16,6 @@ import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -29,7 +28,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, setValue, getValues, formState: { errors } } = useForm();
+  const { handleSubmit } = useForm();
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
@@ -77,13 +76,19 @@ function TabToolCost(props) {
       if (RMCCTabData[0].PartType === "Assembly") {
         setDisableSwitch(true)
       }
+
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
-        return { label: el.ProcessName, value: el.ProcessId };
+        if (el?.ProcessList?.length === 0) {
+          return { label: el.ProcessName, value: el.ProcessId };
+        } else {
+          return el.ProcessList && el.ProcessList.map((item) => {
+            return { label: item.ProcessName, value: item.ProcessId };
+          })
+        }
       })
       OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
         return { label: el.OperationName, value: el.OperationId };
       });
-
       setProcessArray(ProcessCostArray)
       setOperationArray(OperationCostArray)
     }
@@ -130,7 +135,7 @@ function TabToolCost(props) {
   * @description SET OVERALL APPLICABILITY DEATILS
   */
   const setOverAllApplicabilityCost = (OverAllToolObj) => {
-    let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
+    dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
     //dispatch(setToolTabData(arr, () => { }))
   }
   const onGridReady = (params) => {
@@ -157,11 +162,10 @@ function TabToolCost(props) {
     // headerCheckboxSelection: isFirstColumn,
     // checkboxSelection: isFirstColumn
   };
-
   /**
-  * @method dispatchOverallApplicabilityCost
-  * @description SET OVERALL APPLICABILITY DEATILS
-  */
+   * @method dispatchOverallApplicabilityCost
+   * @description SET OVERALL APPLICABILITY DEATILS
+   */
   const dispatchOverallApplicabilityCost = (OverAllToolObj, arr) => {
     let tempArr = [];
     try {
@@ -181,7 +185,6 @@ function TabToolCost(props) {
     return tempArr;
 
   }
-
   /**
 * @method setToolCost
 * @description SET TOOL COST
@@ -245,25 +248,10 @@ function TabToolCost(props) {
   }, [IsApplicableProcessWise, props.activeTab])
 
   /**
-  * @method getTotal
-  * @description GET TOTAL COST
-  */
-  const getTotal = () => {
-    let cost = 0;
-
-    cost = ToolsDataList && ToolsDataList.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetToolCost);
-    }, 0)
-
-    return cost;
-  }
-
-  /**
   * @method saveCosting
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
-    console.log('checkIsToolTabChange: ', checkIsToolTabChange);
     if (checkIsToolTabChange) {
 
       const tabData = RMCCTabData[0]
@@ -289,7 +277,7 @@ function TabToolCost(props) {
         }
       }
 
-      console.log('bbbbb');
+
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
@@ -326,14 +314,6 @@ function TabToolCost(props) {
     setIsEditFlag(true)
     setRowObjData(tempArr)
     setDrawerOpen(true)
-  }
-
-  /**
-* @method renderPaginationShowsTotal
-* @description Pagination
-*/
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
   }
 
   // const options = {
@@ -410,12 +390,6 @@ function TabToolCost(props) {
     }
     setDrawerOpen(false)
   }
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
 
   return (
     <>
