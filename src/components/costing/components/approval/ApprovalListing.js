@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
@@ -28,7 +28,7 @@ import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick } from '../../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 const gridOptions = {};
@@ -67,6 +67,7 @@ function ApprovalListing(props) {
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+  const [gridHeight, setGridHeight] = useState('')
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
   const isApproval = props.isApproval;
@@ -92,12 +93,11 @@ function ApprovalListing(props) {
     else {
       setNoData(false)
     }
-
+    dispatch(getGridHeight(approvalGridData?.length))
   }, [approvalGridData])
 
 
   useEffect(() => {
-
     if (statusColumnData) {
       setDisableFilter(false)
       setWarningMessage(true)
@@ -783,7 +783,6 @@ function ApprovalListing(props) {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
-
   };
 
   const onPageSizeChanged = (newPageSize) => {
