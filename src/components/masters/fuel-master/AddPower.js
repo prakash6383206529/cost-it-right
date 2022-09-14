@@ -357,7 +357,6 @@ class AddPower extends Component {
           setTimeout(() => {
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-            console.log('Data: ', Data);
 
             this.setState({
               isEditFlag: true,
@@ -496,7 +495,6 @@ class AddPower extends Component {
           return false
         }
 
-        console.log('StateName: ', StateName);
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;
@@ -1125,13 +1123,16 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, netContributionValue } = this.state;
+      handleChange, DeleteChanged, AddChanged } = this.state;
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
-    if (checkForNull(netContributionValue) === 0) {
+    const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+    }, 0)
+    if (checkForNull(NetPowerCostPerUnit) === 0) {
       Toaster.warning('Net Contribution value should not be 0.')
       return false
     }
@@ -1139,11 +1140,6 @@ class AddPower extends Component {
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
-
-    const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
-    }, 0)
-
 
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 

@@ -99,7 +99,6 @@ class AddOperation extends Component {
    */
   componentDidMount() {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      console.log("OMING HERE");
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }

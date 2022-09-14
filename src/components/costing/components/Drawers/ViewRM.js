@@ -3,10 +3,10 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA, FERROUSCASTINGID } from '../../../../config/constants';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../actions/CostWorking'
@@ -110,7 +110,7 @@ function ViewRM(props) {
         <div className="left-border">Raw Material</div>
       </Col>
       <Col md="6" className='btn-container mt-1' >
-        {!isPDFShow && String(viewCostingData[props.index].technologyId) === FERROUSCASTINGID && <button
+        {!isPDFShow && viewCostingData[props.index].technologyId === Ferrous_Casting && <button
           className="secondary-btn"
           type={'button'}
           onClick={() => { getWeightData(0) }}
@@ -130,7 +130,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <th>{`Calculator`}</th>}
+              {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId) !== Ferrous_Casting && <th>{`Calculator`}</th>}
               {/* <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th> */}
               <th>{`Burning Loss Weight`}</th>
@@ -151,7 +151,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && String(viewCostingData[props.index].technologyId) !== FERROUSCASTINGID && <td><button
+                  {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId) !== Ferrous_Casting && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}

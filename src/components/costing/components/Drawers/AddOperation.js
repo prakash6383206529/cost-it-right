@@ -87,11 +87,15 @@ function AddOperation(props) {
 
 
   const onRowSelect = (event) => {
-    if (_.includes(selectedRowData, event.data) === true) {
-      let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
-      setSelectedRowData(arrayList)
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if (_.includes(selectedRowData, event.data) === true) {
+        let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+        setSelectedRowData(arrayList)
+      } else {
+        setSelectedRowData([...selectedRowData, event.data])
+      }
     } else {
-      setSelectedRowData([...selectedRowData, event.data])
+      setSelectedRowData(gridApi?.getSelectedRows())
     }
   }
 

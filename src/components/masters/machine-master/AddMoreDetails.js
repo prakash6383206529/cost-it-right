@@ -2415,9 +2415,10 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            // RE SPECIFIC MACHINE NAME REQUIRED
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
-                            required={false}
+                            required={true}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"

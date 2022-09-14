@@ -1231,6 +1231,7 @@ export const GET_CITY_BY_SUPPLIER = 'GET_CITY_BY_SUPPLIER'
 export const GET_PLANTS_BY_SUPPLIER_AND_CITY = 'GET_PLANTS_BY_SUPPLIER_AND_CITY'
 export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY'
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY'
+export const GET_GRID_HEIGHT = 'GET_GRID_HEIGHT'
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -1746,6 +1747,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
+  vendorCode: 'Vendor Code',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
@@ -2005,13 +2007,10 @@ export const statusOptions = [
 
 ]
 
-// TECHNOLOGY
-export const FERROUSCASTINGID = '6'
-
 // KEY AND IV
 export const KEY = 'ewswymuinfzfskjz';
 export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.513";
+export const VERSION = "V1.2.518";

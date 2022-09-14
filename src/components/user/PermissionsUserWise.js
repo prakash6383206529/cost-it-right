@@ -129,13 +129,13 @@ class PermissionsUserWise extends Component {
     //     let tempArray = [];
     //     let tempObj = {}
     //     if (checkedAll) {
-    //         this.setState({ permissions: tempArray, checkedAll: false }, () => { console.log('All', this.state.permissions) })
+    //         this.setState({ permissions: tempArray, checkedAll: false }, () => {  })
     //     } else {
     //         moduleSelectList && moduleSelectList.map((item, index) => {
     //             if (item.Value == 0) return false;
     //             return tempArray.push(item.Value)
     //         })
-    //         this.setState({ permissions: tempArray, checkedAll: true }, () => { console.log('All', this.state.permissions) })
+    //         this.setState({ permissions: tempArray, checkedAll: true }, () => {  })
     //     }
     // }
 

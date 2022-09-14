@@ -146,7 +146,6 @@ function ManageSOBDrawer(props) {
   * @description TOGGLE DRAWER
   */
   const toggleDrawer = (event) => {
-    console.log("COMING IN TOGGLE DRAWER");
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }

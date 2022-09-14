@@ -24,7 +24,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, isResetClick } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -114,6 +114,7 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight(overheadProfitList?.length))
     }, [overheadProfitList])
 
     useEffect(() => {
