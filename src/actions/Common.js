@@ -53,6 +53,7 @@ import {
   STATUS_COLUMN_DATA,
   IS_RESET,
   config,
+  GET_GRID_HEIGHT,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1568,6 +1569,16 @@ export function isResetClick(data, component) {
     })
 
   }
+}
 
+//GET HEIGHT FOR DROPDOWN
+export function getGridHeight(value) {
+  console.log('value: ', value);
 
+  return (dispatch) => {
+    dispatch({
+      type: GET_GRID_HEIGHT,
+      payload: value,
+    })
+  }
 }

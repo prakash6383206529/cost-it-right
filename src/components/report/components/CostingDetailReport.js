@@ -18,7 +18,7 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, isResetClick } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -451,6 +451,7 @@ function ReportListing(props) {
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
         setNoData(false)
+        dispatch(getGridHeight(reportListingData?.length))
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {

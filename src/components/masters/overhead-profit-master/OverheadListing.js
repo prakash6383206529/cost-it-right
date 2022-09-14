@@ -23,7 +23,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, isResetClick } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -111,6 +111,7 @@ function OverheadListing(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight(overheadProfitList?.length))
     }, [overheadProfitList])
 
 

@@ -23,7 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick } from '../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
 
 
 const gridOptions = {};
@@ -151,7 +151,7 @@ function SimulationApprovalListing(props) {
         else {
             setNoData(false)
         }
-
+        dispatch(getGridHeight(isDashboard ? simualtionApprovalList?.length : simualtionApprovalListDraft?.length))
     }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
 
 
