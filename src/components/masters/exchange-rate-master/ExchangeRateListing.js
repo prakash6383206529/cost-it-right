@@ -71,12 +71,11 @@ class ExchangeRateListing extends Component {
                     })
                 }
                 if (this.props.selectionForListingMasterAPI === 'Master') {
-                    console.log('in api call 1');
                     this.getTableListData()
                 }
             }
             else {
-                console.log('in api call');
+
                 this.getTableListData()
             }
         }, 500);
@@ -168,7 +167,7 @@ class ExchangeRateListing extends Component {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
-                console.log('in api call 3');
+
                 this.getTableListData()
             }
         });

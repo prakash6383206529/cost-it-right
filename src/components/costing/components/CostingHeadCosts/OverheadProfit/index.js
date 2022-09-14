@@ -322,7 +322,6 @@ function OverheadProfit(props) {
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
         setModelType(newValue)
-        console.log('costData: ', costData);
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,

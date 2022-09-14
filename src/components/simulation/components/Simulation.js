@@ -583,7 +583,6 @@ function Simulation(props) {
                     return false
                 }
                 Data && Data.forEach((element, index) => {
-                    console.log('element: ', element);
                     if (index !== 0) {
                         // if (element.IsVendor !== Data[index - 1].IsVendor) {
                         //     (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
