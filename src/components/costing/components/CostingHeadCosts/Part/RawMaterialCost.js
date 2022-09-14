@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA, FERROUSCASTINGID, } from '../../../../../config/constants'
+import { EMPTY_DATA } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
@@ -1019,7 +1019,7 @@ function RawMaterialCost(props) {
                   <div className={'plus'}></div>RM
                 </button>
               }
-              {((String(costData?.TechnologyId) === FERROUSCASTINGID) && gridData.length !== 0) && <button
+              {((costData?.TechnologyId === Ferrous_Casting) && gridData.length !== 0) && <button
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0)}
@@ -1043,7 +1043,7 @@ function RawMaterialCost(props) {
                       {getTechnology.includes(costData?.TechnologyId) && <th className="text-center weight-calculator">{`Weight Calculator`}</th>}
                       <th>{`Gross Weight`}</th>
                       <th>{`Finish Weight`}</th>
-                      {(String(costData?.TechnologyId) === FERROUSCASTINGID) && <th>Percentage</th>}
+                      {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery(%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
                       <th>{`Scrap Weight`}</th>
