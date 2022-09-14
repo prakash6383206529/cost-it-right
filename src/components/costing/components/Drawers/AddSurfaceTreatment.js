@@ -85,11 +85,15 @@ function AddSurfaceTreatment(props) {
   }, []);
 
   const onRowSelect = (event) => {
-    if (_.includes(selectedRowData, event.data) === true) {
-      let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
-      setSelectedRowData(arrayList)
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if (_.includes(selectedRowData, event.data) === true) {
+        let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+        setSelectedRowData(arrayList)
+      } else {
+        setSelectedRowData([...selectedRowData, event.data])
+      }
     } else {
-      setSelectedRowData([...selectedRowData, event.data])
+      setSelectedRowData(gridApi?.getSelectedRows())
     }
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
@@ -99,7 +103,6 @@ function AddSurfaceTreatment(props) {
     //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
     //   setSelectedRowData(tempArr)
     // }
-
   }
 
 
