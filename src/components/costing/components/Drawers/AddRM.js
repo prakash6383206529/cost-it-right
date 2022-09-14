@@ -52,15 +52,19 @@ function AddRM(props) {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData?.TechnologyId)) {
-      if (selectedRows?.length === 0) {
-        setSelectedRowData([])
-      } else {
-        if (_.includes(selectedRowData, event.data) === true) {
-          let arrayList = selectedRowData && selectedRowData.filter((item) => item.RawMaterialId !== event.data.RawMaterialId)
-          setSelectedRowData(arrayList)
+      if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+        if (selectedRows?.length === 0) {
+          setSelectedRowData([])
         } else {
-          setSelectedRowData([...selectedRowData, event.data])
+          if (_.includes(selectedRowData, event.data) === true) {
+            let arrayList = selectedRowData && selectedRowData.filter((item) => item.RawMaterialId !== event.data.RawMaterialId)
+            setSelectedRowData(arrayList)
+          } else {
+            setSelectedRowData([...selectedRowData, event.data])
+          }
         }
+      } else {
+        setSelectedRowData(gridApi?.getSelectedRows())
       }
     } else {
       if (selectedRows?.length === 0) {

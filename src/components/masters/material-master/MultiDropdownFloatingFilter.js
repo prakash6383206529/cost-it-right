@@ -32,7 +32,7 @@ function MultiDropdownFloatingFilter(props) {
         if (isReset && isReset?.data) {
             setValue("multiDropDown", [])
         } else {
-            setValue("multiDropDown", statusColumnData?.arrReports[props?.maxValue])
+            setValue("multiDropDown", (statusColumnData?.arrReports[props?.maxValue]) ? (statusColumnData?.arrReports[props?.maxValue]) : [])
         }
 
     }, [isReset])
