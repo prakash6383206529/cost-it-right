@@ -1975,9 +1975,6 @@ export const statusOptions = [
 
 ]
 
-// TECHNOLOGY
-export const FERROUSCASTINGID = '6'
-
 // KEY AND IV
 export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
