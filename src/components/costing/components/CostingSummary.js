@@ -229,7 +229,7 @@ function CostingSummary(props) {
                         if (res.data.Result === true) {
                           if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
                             setShowWarningMsg(true)
-                            dispatch(setCostingViewData(temp))
+                            dispatch(setCostingViewData([]))
                             setIsLoader(false)
                           } else {
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
