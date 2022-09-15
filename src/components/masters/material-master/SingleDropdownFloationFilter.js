@@ -19,6 +19,7 @@ function SingleDropdownFloationFilter(props) {
     const [showInputData, setShowInputData] = useState([])
     const isReset = useSelector((state) => state.comman.isReset);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const getGridHeight = useSelector(state => state.comman.getGridHeight)
 
     const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -110,6 +111,7 @@ function SingleDropdownFloationFilter(props) {
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
+                    dropdownHeight={getGridHeight}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
