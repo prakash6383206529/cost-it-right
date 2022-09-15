@@ -1913,7 +1913,7 @@ export const BOPImportSimulation = [
 
 export const OverheadProfitSimulation = [
     { label: "CostingHead", value: "IsVendor" },
-    { label: "ClientName", value: "ClientName" },
+    { label: "CustomerName", value: "ClientName" },
     { label: "VendorName", value: "VendorName" },
     { label: "ModelType", value: "ModelType" },
     { label: "OverheadApplicabilityType", value: "OverheadApplicabilityType", },
@@ -2783,6 +2783,7 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
@@ -2896,7 +2897,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
-    { label: "Client Name", value: "ClientName", },
+    { label: "Customer Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
     { label: "Overhead Applicability(%)", value: "OverheadPercentage", },
@@ -2987,7 +2988,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(code)", value: "VendorName", },
-    { label: "Client Name", value: "ClientName", },
+    { label: "Customer Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Profit Applicability", value: "ProfitApplicabilityType", },
     { label: "Profit Applicability(%)", value: "ProfitPercentage", },

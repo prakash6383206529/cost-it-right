@@ -53,6 +53,9 @@ function RunSimulationDrawer(props) {
 
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
+        if (runSimulationDisable) {
+            return false
+        }
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
@@ -275,8 +278,10 @@ function RunSimulationDrawer(props) {
                                                     {"Apply Simulation Applicability"}
                                                 </h3>
                                             </div>
+
                                             <div
                                                 onClick={(e) => toggleDrawer(e)}
+                                                disabled={runSimulationDisable}
                                                 className={"close-button right"}
                                             ></div>
                                         </Col>
