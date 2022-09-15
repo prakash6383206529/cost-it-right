@@ -199,7 +199,6 @@ class AddMoreDetails extends Component {
         plantId: selectedPlants?.value ? selectedPlants?.value : '',
         effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
       }
-
       this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       this.props.change('MachineName', fieldsObj.MachineName)
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
@@ -336,7 +335,6 @@ class AddMoreDetails extends Component {
             effectiveDate: effectiveDate
           }
           this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
-
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
@@ -401,7 +399,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
-          }, 1200)
+          }, 2000)
         }
       })
     }
@@ -684,7 +682,7 @@ class AddMoreDetails extends Component {
 
           const data = {
             fuelId: fuelType.value,
-            plantId: selectedPlants.value,
+            plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value,
             effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('DD/MM/YYYY') : ''
           }
           this.props.getFuelUnitCost(data, res => {
@@ -779,13 +777,12 @@ class AddMoreDetails extends Component {
       effectiveDate: date,
       isDateChange: true,
     }, () => this.callLabourTypeApi());
-
     const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
     const { initialConfiguration } = this.props
 
-    if (Object.keys(selectedPlants)?.length > 0) {
+    if (Array.isArray(selectedPlants) ? selectedPlants.length !== 0 : Object.keys(selectedPlants)?.length > 0) {
       setTimeout(() => {
-        this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        this.props.getPowerCostUnit(Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value, date, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -894,7 +891,7 @@ class AddMoreDetails extends Component {
 
       if (selectedPlants) {
         setTimeout(() => {
-          this.props.getPowerCostUnit(selectedPlants?.value, effectiveDate, res => {
+          this.props.getPowerCostUnit(Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value, effectiveDate, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               Toaster.warning(res.data.Message)
@@ -938,7 +935,7 @@ class AddMoreDetails extends Component {
         const data = {
           labourTypeId: labourType.value,
           machineTypeId: machineType.value,
-          plantId: selectedPlants.value
+          plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value
         }
         this.props.getLabourCost(data, effectiveDate, res => {
           let Data = res.data.DynamicData;
@@ -1500,6 +1497,18 @@ class AddMoreDetails extends Component {
         count++;
       }
       if (count > 0) {
+        return false
+      }
+      if (maxLength10(fieldsObj.MachineRate)) {
+        Toaster.warning("Max length must be 10")
+        return false
+      }
+      if (decimalLengthsix(fieldsObj.MachineRate)) {
+        Toaster.warning("Decimal value should not be more than 6")
+        return false
+      }
+      if (positiveAndDecimalNumber(fieldsObj.MachineRate)) {
+        Toaster.warning("Enter valid value")
         return false
       }
       if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
@@ -2320,7 +2329,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disable, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, IsIncludeMachineRateDepreciation } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disable, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
     return (
       <>
         {(isLoader) && <LoaderCustom />}
