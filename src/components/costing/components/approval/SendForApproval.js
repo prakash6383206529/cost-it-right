@@ -560,10 +560,12 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={"close-button right"}
-                ></div>
+                {!isDisable &&
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    className={"close-button right"}
+                  ></div>
+                }
               </Col>
             </Row>
             {viewApprovalData &&
