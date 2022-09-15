@@ -520,6 +520,9 @@ const SendForApproval = (props) => {
   }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
+    if (isDisable) {
+      return false
+    }
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -625,12 +628,12 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
-                {!isDisable &&
-                  <div
-                    onClick={(e) => toggleDrawer(e)}
-                    className={"close-button right"}
-                  ></div>
-                }
+
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  disabled={isDisable}
+                  className={"close-button right"}
+                ></div>
               </Col>
             </Row>
             {viewApprovalData &&
