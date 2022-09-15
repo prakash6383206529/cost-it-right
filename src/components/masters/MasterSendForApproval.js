@@ -38,6 +38,9 @@ function MasterSendForApproval(props) {
     const { initialConfiguration } = useSelector(state => state.auth)
 
     const toggleDrawer = (event, type = 'cancel') => {
+        if (isDisable) {
+            return false
+        }
         if (
             event.type === 'keydown' &&
             (event.key === 'Tab' || event.key === 'Shift')
@@ -350,12 +353,12 @@ function MasterSendForApproval(props) {
                                     <div className={'header-wrapper left'}>
                                         <h3>{type === 'Sender' ? 'Send For Approval' : `${type} ${getHeaderNameForApproveReject()}`}</h3>
                                     </div>
-                                    {!isDisable &&
-                                        <div
-                                            onClick={(e) => toggleDrawer(e)}
-                                            className={'close-button right'}
-                                        ></div>
-                                    }
+
+                                    <div
+                                        onClick={(e) => toggleDrawer(e)}
+                                        disabled={isDisable}
+                                        className={'close-button right'}
+                                    ></div>
                                 </Col>
                             </Row>
 
