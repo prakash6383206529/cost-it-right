@@ -2809,7 +2809,7 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor(Code)", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
     { label: "Payment Term Applicability", value: "PaymentTermApplicability", },
