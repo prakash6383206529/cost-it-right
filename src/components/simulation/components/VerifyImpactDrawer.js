@@ -179,6 +179,7 @@ function VerifyImpactDrawer(props) {
                     parentField={parentField}
                     childField={childField}
                     impactType={'FgWise'}
+                    tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
                   />
                 </Col>
               </Row>}
