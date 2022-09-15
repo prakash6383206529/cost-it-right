@@ -669,10 +669,6 @@ class AddMachineRate extends Component {
         Toaster.warning("Decimal value should not be more than 6")
         return false
       }
-      if (positiveAndDecimalNumber(fieldsObj.MachineRate)) {
-        Toaster.warning("Enter valid value")
-        return false
-      }
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
@@ -1598,7 +1594,7 @@ class AddMachineRate extends Component {
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
-                            type="text"
+                            type="number"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
