@@ -1506,10 +1506,6 @@ class AddMoreDetails extends Component {
         Toaster.warning("Decimal value should not be more than 6")
         return false
       }
-      if (positiveAndDecimalNumber(fieldsObj.MachineRate)) {
-        Toaster.warning("Enter valid value")
-        return false
-      }
       if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
         return false;
