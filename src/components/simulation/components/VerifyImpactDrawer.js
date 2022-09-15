@@ -185,6 +185,7 @@ function VerifyImpactDrawer(props) {
                     approvalSummaryTrue={approvalSummaryTrue}
                     isVerifyImpactDrawer={true}
                     fgWiseAccDisable={fgWiseAccDisable}
+                    tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
                   />
                 </Col>
               </Row>}
