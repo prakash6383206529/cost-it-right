@@ -1761,7 +1761,7 @@ export const VIEW_COSTING_DATA = {
   rejectionApplicablityValue: 'Rejection Value',
   iccApplicablity: 'ICC Applicablity',
   iccApplicablityValue: 'ICC Value',
-  paymentcApplicablity: 'Payment Applicablity',
+  paymentApplicablity: 'Payment Applicablity',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
@@ -1982,4 +1982,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.519";
+export const VERSION = "V1.2.520";
