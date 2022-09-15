@@ -695,18 +695,23 @@ const CostingSummaryTable = (props) => {
 
 
   const reducer = (array) => {
-    const arr = array.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.GrossWeight
-    }, 0)
-
+    let arr = 0
+    if (Array.isArray(array)) {
+      arr = array && array?.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.GrossWeight
+      }, 0)
+    }
     return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
 
 
   const reducerFinish = (array) => {
-    const arr = array.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.FinishWeight
-    }, 0)
+    let arr = 0
+    if (Array.isArray(array)) {
+      arr = array.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.FinishWeight
+      }, 0)
+    }
 
     return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
@@ -802,6 +807,7 @@ const CostingSummaryTable = (props) => {
 
     function checkAssembly(obj) {
       if (obj.IsAssemblyCosting) {
+
         obj.rm = "Multiple RM"
         obj.gWeight = "Multiple RM"
         obj.fWeight = "Multiple RM"
@@ -809,8 +815,19 @@ const CostingSummaryTable = (props) => {
         obj.oCost = "Multiple Operation"
         obj.sTreatment = "Multiple Surface Treatment"
         return obj
-      } else {
+      } else if (obj.CostingHeading !== VARIANCE) {
+
+        obj.gWeight = (obj?.netRMCostView && reducer(obj?.netRMCostView))
+        obj.fWeight = (obj?.netRMCostView && reducerFinish(obj?.netRMCostView))
         return obj
+      } else {
+        let objNew = { ...obj }
+        for (var prop in objNew) {
+          if (prop !== "netRM" && prop !== "nConvCost" && prop !== "nPOPrice" && prop !== "nPoPriceCurrency" && prop !== "netBOP" && prop !== "netSurfaceTreatmentCost" && prop !== "nOverheadProfit" && prop !== "nPackagingAndFreight" && prop !== "totalToolCost") {
+            objNew[prop] = "-"
+          }
+        }
+        return objNew
       }
     }
 
@@ -825,8 +842,13 @@ const CostingSummaryTable = (props) => {
       if (index === 0) {
         masterDataArray.push({ label: "", value: `columnA${index}` })
         masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
-      } else {
+
+      } else if (item?.CostingHeading !== VARIANCE) {
         masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+      }
+
+      if (item?.CostingHeading === VARIANCE) {
+        masterDataArray.push({ label: `Variance`, value: `columnB${index}` })
       }
       // dummy.push({ label: "", value: "" })
       // dummy.push({ label: "", value: "" })
