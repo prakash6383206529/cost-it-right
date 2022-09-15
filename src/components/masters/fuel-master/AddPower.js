@@ -1417,6 +1417,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1521,7 +1522,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                   {this.state.errorObj.minDemand && (this.props.fieldsObj.MinDemandKWPerMonth === undefined || Number(this.props.fieldsObj.MinDemandKWPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -1540,7 +1541,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                   {this.state.errorObj.demandCharge && (this.props.fieldsObj.DemandChargesPerKW === undefined || Number(this.props.fieldsObj.DemandChargesPerKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -1575,7 +1576,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                   {this.state.errorObj.avgUnit && (this.props.fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(this.props.fieldsObj.AvgUnitConsumptionPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -1612,7 +1613,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                   {this.state.errorObj.maxDemand && (this.props.fieldsObj.MaxDemandChargesKW === undefined || Number(this.props.fieldsObj.MaxDemandChargesKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -1629,7 +1630,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={!isCostPerUnitConfigurable ? true : false}
+                                    disabled={!isCostPerUnitConfigurable || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1646,7 +1647,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1663,7 +1664,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1700,7 +1701,7 @@ class AddPower extends Component {
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
-                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
+                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity || isViewMode ? true : false}
                                 />
                                 {this.state.errorObj.statePowerCont && (this.props.fieldsObj.SEBPowerContributaion === undefined || Number(this.props.fieldsObj.SEBPowerContributaion) === 0) && <div className='text-help p-absolute bottom-37'>This field is required.</div>}
                               </div>
@@ -1762,7 +1763,7 @@ class AddPower extends Component {
                                     required={true}
                                     handleChangeDescription={this.handleSource}
                                     valueDescription={this.state.source}
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                   {this.state.errorObj.source && (this.state.source.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                                 </div>
@@ -1780,7 +1781,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1797,7 +1798,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1812,14 +1813,14 @@ class AddPower extends Component {
                                         type="text"
                                         label="UOM"
                                         component={searchableSelect}
-                                        placeholder={'Select'}
+                                        placeholder={isViewMode ? '-' : 'Enter'}
                                         options={this.renderListing('UOM')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
                                         //required={true}
                                         handleChangeDescription={this.handleUOM}
                                         valueDescription={this.state.UOM}
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                     </div>
                                   </div>
@@ -1836,7 +1837,7 @@ class AddPower extends Component {
                                         component={renderNumberInputField}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                     </div>
                                   </div>
@@ -1854,7 +1855,7 @@ class AddPower extends Component {
                                         required={true}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                       {this.state.errorObj.unitGeneratedDiesel && (this.props.fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(this.props.fieldsObj.UnitGeneratedPerUnitOfFuel) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                     </div>
@@ -1875,7 +1876,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                   {this.state.errorObj.unitGenerated && (this.props.fieldsObj.UnitGeneratedPerAnnum === undefined || Number(this.props.fieldsObj.UnitGeneratedPerAnnum) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -1910,7 +1911,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
 
                                   />
                                   {this.state.errorObj.selfPowerCont && (this.props.fieldsObj.SelfPowerContribution === undefined || Number(this.props.fieldsObj.SelfPowerContribution) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
@@ -1976,8 +1977,8 @@ class AddPower extends Component {
                                           {/* Ask which value to use for trim */}
                                           <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                            <button className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
+                                            <button className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
                                           </td>
                                         </tr>
                                       )
