@@ -275,10 +275,12 @@ function RunSimulationDrawer(props) {
                                                     {"Apply Simulation Applicability"}
                                                 </h3>
                                             </div>
-                                            <div
-                                                onClick={(e) => toggleDrawer(e)}
-                                                className={"close-button right"}
-                                            ></div>
+                                            {!runSimulationDisable &&
+                                                <div
+                                                    onClick={(e) => toggleDrawer(e)}
+                                                    className={"close-button right"}
+                                                ></div>
+                                            }
                                         </Col>
                                     </Row>
 

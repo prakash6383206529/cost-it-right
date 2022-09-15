@@ -689,10 +689,12 @@ function ApproveRejectDrawer(props) {
                   <div className={'header-wrapper left'}>
                     <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${type} Costing`} `}</h3>
                   </div>
-                  <div
-                    onClick={(e) => toggleDrawer(e)}
-                    className={'close-button right'}
-                  ></div>
+                  {!isDisable &&
+                    <div
+                      onClick={(e) => toggleDrawer(e)}
+                      className={'close-button right'}
+                    ></div>
+                  }
                 </Col>
               </Row>
 
