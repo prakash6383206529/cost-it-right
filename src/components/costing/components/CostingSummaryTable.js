@@ -200,9 +200,10 @@ const CostingSummaryTable = (props) => {
       let data = viewCostingData[index]?.netBOPCostView
       let bopPHandlingCharges = viewCostingData[index]?.bopPHandlingCharges
       let bopHandlingPercentage = viewCostingData[index]?.bopHandlingPercentage
+      let bopHandlingChargeType = viewCostingData[index]?.bopHandlingChargeType
       let childPartBOPHandlingCharges = viewCostingData[index]?.childPartBOPHandlingCharges
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage, childPartBOPHandlingCharges: childPartBOPHandlingCharges, IsAssemblyCosting: IsAssemblyCosting })
+      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingChargeType, bopHandlingPercentage: bopHandlingPercentage, childPartBOPHandlingCharges: childPartBOPHandlingCharges, IsAssemblyCosting: IsAssemblyCosting })
     }
   }
 
