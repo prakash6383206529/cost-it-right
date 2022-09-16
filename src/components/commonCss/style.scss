@@ -6981,27 +6981,6 @@ body {
   }
 }
 
-.drawer-side-input-other {
-  width: 100%;
-  margin-bottom: -1rem;
-
-  .toggle-button-per-and-fix {
-    margin-top: 0.5rem;
-    display: flex !important;
-    justify-content: space-between;
-
-    .form-group.inputbox.withBorder {
-      min-width: 12rem;
-      margin-right: 1rem;
-      min-height: 0;
-      margin-bottom: 0 !important;
-
-      label {
-        display: none;
-      }
-    }
-  }
-}
 
 .combine-tooltip {
   right: -20px;
