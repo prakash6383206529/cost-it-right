@@ -13,6 +13,7 @@ import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
+import { toast } from 'react-toastify';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
@@ -355,30 +356,34 @@ function CostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let tempArr = []
-        selectedRows && selectedRows.map((item, index) => {
+        selectedRows && selectedRows?.map((item, index) => {
             // IsLockedBySimulation COMES TRUE WHEN THAT COSTING IS UNDER APPROVAL
-            if (item.IsLockedBySimulation) {
-                tempArr.push(item)
+            if (item?.IsLockedBySimulation) {
+                tempArr?.push(item)
                 return false
             }
             return null
         })
-
+        console.log(tempArr, "tempArr");
 
         if (tempArr.length > 1) {
+
             // IF MULTIPLE COSTING ARE SELECTED AND THEY ARE UNDER APPROVAL "IF" WILL GET EXECUTED
             setSelectedRowData([])
-            Toaster.warning(`Costings ${tempArr.map(item => item.CostingNumber)} is already sent for approval through another token number.`)
+            let approvalLockArray = []
+            approvalLockArray = tempArr && tempArr.map(item => {
+                return <p className='toaster-message'>{item.ApprovalLockedMessage}</p>
+            })
             gridApi.deselectAll()
+            Toaster.warning(<div>{approvalLockArray}</div>)
+            setTimeout(() => {
+                document.getElementsByClassName('custom-toaster')[0].classList.add('custom-class')
+            }, 200);
             return false
         }
 
         else if (tempArr.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            if (tempArr[0].LockedBySimulationProcessStep === '' || tempArr[0].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'}`)
-            } else {
-                Toaster.warning(`This costing is under approval with token number ${tempArr[0].LockedBySimulationToken ? tempArr[0].LockedBySimulationToken : '-'} at ${tempArr[0].LockedBySimulationProcessStep ? tempArr[0].LockedBySimulationProcessStep : "-"} with ${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'} .`)
-            }
+            Toaster.warning(tempArr[0]?.ApprovalLockedMessage)
             gridApi.deselectAll()
             return false
         } else {
