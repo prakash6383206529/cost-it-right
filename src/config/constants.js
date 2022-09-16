@@ -1719,7 +1719,7 @@ export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
-  costingHead: 'ZBC v/s VBC',
+  costingHeadCheck: 'ZBC v/s VBC v/s NCC',
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'PO Price (Effective from)',
@@ -1790,6 +1790,8 @@ export const VIEW_COSTING_DATA = {
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net PO Price (In Currency)',
+  NCCPartQuantity: "Quantity",
+  IsRegularized: "Is Regularized",
   remark: 'Remark',
   //nPOPrice: 'Net PO Price',
   // attachment: 'Attachment',
@@ -1983,4 +1985,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.528";
+export const VERSION = "V1.2.529";
