@@ -33,7 +33,7 @@ function CopyCosting(props) {
       fromDestinationPlant: type === VBC || type === NCC ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      fromNcccostingId: selectedCostingId.zbcCosting,
+      fromNcccostingId: selectedCostingId.nccCosting,
       toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
@@ -624,23 +624,6 @@ function CopyCosting(props) {
 
               {isFromNcc && (
                 <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Vendor"}
-                      name={"fromVendorName"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorName}
-                      mandatory={true}
-                      handleChange={handleFromVendorName}
-                      errors={errors.fromVendorName}
-                      disabled={true}
-                    />
-                  </div>
 
                   {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -661,6 +644,24 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
+
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={"Vendor"}
+                      name={"fromVendorName"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={vendorName}
+                      mandatory={true}
+                      handleChange={handleFromVendorName}
+                      errors={errors.fromVendorName}
+                      disabled={true}
+                    />
+                  </div>
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
@@ -917,7 +918,7 @@ function CopyCosting(props) {
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Plant"}
-                        name={"Plant"}
+                        name={"nccToPlant"}
                         placeholder={"Select"}
                         Controller={Controller}
                         control={control}
@@ -937,7 +938,7 @@ function CopyCosting(props) {
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
                       label={"Vendor"}
-                      name={"toVendorName"}
+                      name={"nccToVendorName"}
                       placeholder={"Select"}
                       Controller={Controller}
                       control={control}
