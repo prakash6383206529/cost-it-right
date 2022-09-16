@@ -52,7 +52,7 @@ function AddBOPHandling(props) {
       if (BOPHandlingType === 'Percentage') {
         setValue('BOPHandlingCharges', checkForDecimalAndNull(getValues('BOPCost') * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
       } else {
-        setValue('BOPHandlingFixed', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('BOPHandlingCharges', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
       }
       dispatch(isDataChange(true))
     } else {
