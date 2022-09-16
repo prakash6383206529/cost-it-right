@@ -298,9 +298,8 @@ function RunSimulationDrawer(props) {
                                         </Col>
                                     </Row>
 
-                                    <Row className="ml-0 pt-3">
-                                        <Col md="12" className="mb-3">
-
+                                    <Row className="ml-0 pt-2">
+                                        <Col md="12" className="mb-3 pr-0">
                                             {
                                                 masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
@@ -352,7 +351,7 @@ function RunSimulationDrawer(props) {
 
                                                                             {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
 
-                                                                                <Col md="6">
+                                                                                <div className='additonal-discount-container'>
                                                                                     <SearchableSelectHookForm
                                                                                         label={'Other Cost Applicability'}
                                                                                         name={'otherCostApplicability'}
@@ -363,13 +362,14 @@ function RunSimulationDrawer(props) {
                                                                                         register={register}
                                                                                         defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
                                                                                         options={renderListing('Applicability')}
-                                                                                        mandatory={false}
+                                                                                        mandatory={true}
                                                                                         disabled={false}
+                                                                                        customClassName={"auto-width"}
                                                                                         handleChange={handleOherCostApplicabilityChange}
                                                                                         errors={errors.otherCostApplicability}
                                                                                     />
                                                                                     <NumberFieldHookForm
-                                                                                        label=""
+                                                                                        label="Percentage"
                                                                                         name={"OtherCostPercent"}
                                                                                         Controller={Controller}
                                                                                         rules={{
@@ -390,16 +390,16 @@ function RunSimulationDrawer(props) {
                                                                                         handleChange={() => { }}
                                                                                         defaultValue={""}
                                                                                         className=""
-                                                                                        customClassName={"withBorder"}
+                                                                                        customClassName={"auto-width"}
                                                                                         errors={errors.OtherCostPercent}
                                                                                         disabled={false}
                                                                                     />
-                                                                                </Col>
+                                                                                </div>
                                                                             }
 
                                                                             {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
                                                                                 <NumberFieldHookForm
-                                                                                    label=""
+                                                                                    label="Fixed"
                                                                                     name={"OtherCost"}
                                                                                     Controller={Controller}
                                                                                     rules={
@@ -449,7 +449,7 @@ function RunSimulationDrawer(props) {
 
 
                                                                             {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
-                                                                                <Col md="6">
+                                                                                <div className='additonal-discount-container'>
                                                                                     <SearchableSelectHookForm
                                                                                         label={'Discount Applicability'}
                                                                                         name={'DiscountCostApplicability'}
@@ -460,13 +460,14 @@ function RunSimulationDrawer(props) {
                                                                                         register={register}
                                                                                         defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
                                                                                         options={renderListing('Applicability')}
-                                                                                        mandatory={false}
+                                                                                        mandatory={true}
                                                                                         disabled={false}
                                                                                         handleChange={handleDiscountApplicabilityChange}
                                                                                         errors={errors.DiscountCostApplicability}
+                                                                                        customClassName={"auto-width"}
                                                                                     />
                                                                                     <NumberFieldHookForm
-                                                                                        label=""
+                                                                                        label="Percentage"
                                                                                         name={"DiscountPercent"}
                                                                                         Controller={Controller}
                                                                                         rules={{
@@ -486,12 +487,11 @@ function RunSimulationDrawer(props) {
                                                                                         mandatory={true}
                                                                                         handleChange={() => { }}
                                                                                         defaultValue={""}
-                                                                                        className=""
-                                                                                        customClassName={"withBorder"}
+                                                                                        customClassName="auto-width"
                                                                                         errors={errors.DiscountPercent}
                                                                                         disabled={false}
                                                                                     />
-                                                                                </Col>
+                                                                                </div>
                                                                             }
 
 
@@ -500,7 +500,7 @@ function RunSimulationDrawer(props) {
                                                                                 <>
 
                                                                                     <NumberFieldHookForm
-                                                                                        label=""
+                                                                                        label="Fixed"
                                                                                         name={"Discount"}
                                                                                         Controller={Controller}
                                                                                         control={control}
@@ -617,8 +617,8 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
-                                            <div className="text-right px-2">
-                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
+                                            <div className="text-right">
+                                                <button type="button" className="user-btn save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"RUN SIMULATION"}
