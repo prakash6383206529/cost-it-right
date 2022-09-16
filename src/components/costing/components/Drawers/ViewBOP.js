@@ -8,10 +8,9 @@ import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
-  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const BOPHandlingChargeType = useSelector(state => state.costing.singleCostingDetail.CostingPartDetails.BOPHandlingChargeType)
   useEffect(() => {
     setviewBOPCost(BOPData)
   }, [])
@@ -100,9 +99,9 @@ function ViewBOP(props) {
             </thead>
             <tbody>
               {
-                bopHandlingPercentage ?
+                bopPHandlingCharges ?
                   <tr>
-                    <td>{BOPHandlingChargeType}</td>
+                    <td>{bopHandlingChargeType}</td>
                     <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
                     <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
                   </tr> :
