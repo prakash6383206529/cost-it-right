@@ -384,7 +384,7 @@ class AddMoreDetails extends Component {
               IsInsuranceFixed: Data.IsInsuranceFixed,
               IsUsesFuel: Data.IsUsesFuel,
               IsUsesSolarPower: Data.IsUsesSolarPower,
-              fuelType: fuelObj && fuelObj !== undefined ? { value: fuelObj.Value } : [],
+              fuelType: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
               labourGrid: LabourArray,
               processGrid: MachineProcessArray,
               disableAllForm: (MachineProcessArray?.length > 0) ? true : false,
