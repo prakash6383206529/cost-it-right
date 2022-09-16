@@ -11,6 +11,7 @@ function ViewBOP(props) {
   const { BOPData, bopPHandlingCharges, bopHandlingPercentage, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const BOPHandlingChargeType = useSelector(state => state.costing.singleCostingDetail.CostingPartDetails.BOPHandlingChargeType)
   useEffect(() => {
     setviewBOPCost(BOPData)
   }, [])
@@ -92,6 +93,7 @@ function ViewBOP(props) {
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
+                <th>{`BOP Handling Type`}</th>
                 <th>{`Percentage`}</th>
                 <th className="costing-border-right">{`Handling Charges`}</th>
               </tr>
@@ -100,6 +102,7 @@ function ViewBOP(props) {
               {
                 bopHandlingPercentage ?
                   <tr>
+                    <td>{BOPHandlingChargeType}</td>
                     <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
                     <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
                   </tr> :
@@ -130,6 +133,7 @@ function ViewBOP(props) {
               <thead>
                 <tr>
                   {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                  <th>{`BOP Handling Type`}</th>
                   <th>{`Percentage`}</th>
                   <th className="costing-border-right">{`Handling Charges`}</th>
                 </tr>
@@ -140,6 +144,7 @@ function ViewBOP(props) {
                     return (
                       <tr key={index}>
                         {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                        <td>{item.BOPHandlingChargeType}</td>
                         <td>{checkForDecimalAndNull(item.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
                       </tr>
