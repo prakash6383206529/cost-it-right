@@ -10,9 +10,10 @@ import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
-import { ViewCostingContext } from './CostingDetails';
+import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
+import { NCC } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -35,11 +36,15 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const costingType = useContext(CostingTypeContext);
+
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
+
+  let data = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -416,7 +421,8 @@ function CostingDetailStepTwo(props) {
                       {!costingData.IsVendor && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue "
                         title={`${costingData.PlantName}(${costingData.PlantCode})`}>
                         {`${costingData.PlantName}(${costingData.PlantCode})`}</span></p></div></td>}
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
+
+                      {costingType !== NCC && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>

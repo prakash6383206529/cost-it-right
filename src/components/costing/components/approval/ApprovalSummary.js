@@ -56,6 +56,7 @@ function ApprovalSummary(props) {
   const [showPopup, setShowPopup] = useState(false)
   const [costingHead, setCostingHead] = useState("")
   const [nccPartQuantity, setNccPartQuantity] = useState("")
+  const [IsRegularized, setIsRegularized] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [accDisable, setAccDisable] = useState(false)
 
@@ -119,9 +120,10 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
 
       setNccPartQuantity(NCCPartQuantity)
+      setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
@@ -414,14 +416,17 @@ function ApprovalSummary(props) {
                       <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
                       <th>{`Variance:`}</th>
-                      <th>{`Consumption Quantity:`}</th>
-                      <th>{`Remaining Quantity:`}</th>
+                      {costingHead !== NCC && <th>{`Consumption Quantity:`}</th>}
+                      {costingHead !== NCC && <th>{`Remaining Quantity:`}</th>}
                       {costingHead === NCC && (
-                        <th>{`NCC Part Quantity:`}</th>
+                        <th>{`Quantity:`}</th>
+                      )}
+                      {costingHead === NCC && (
+                        <th>{`Is Regularized:`}</th>
                       )}
                       <th>{`Effective Date:`}</th>
-                      <th>{`Annual Impact:`}</th>
-                      <th>{`Impact of The Year:`}</th>
+                      {costingHead !== NCC && <th>{`Annual Impact:`}</th>}
+                      {costingHead !== NCC && <th>{`Impact of The Year:`}</th>}
 
                     </tr>
                   </thead>
@@ -466,28 +471,33 @@ function ApprovalSummary(props) {
                             {Math.abs(checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice))}</div>
                           : '-'}
                       </td>
-                      <td>
+                      {costingHead !== NCC && <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
-                      </td>
-                      <td>
+                      </td>}
+                      {costingHead !== NCC && <td>
                         {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
-                      </td>
+                      </td>}
 
                       {costingHead === NCC &&
                         <td>
                           {nccPartQuantity !== null ? nccPartQuantity : '-'}
                         </td>
                       }
+                      {costingHead === NCC &&
+                        <td>
+                          {IsRegularized !== null ? (IsRegularized ? "Yes" : "No") : '-'}
+                        </td>
+                      }
 
                       <td>
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
-                      <td>
+                      {costingHead !== NCC && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
-                      </td>
-                      <td>
+                      </td>}
+                      {costingHead !== NCC && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
-                      </td>
+                      </td>}
                     </tr>
 
                     {/* {Object.keys(approvalDetails).length === 0 && (
@@ -500,13 +510,13 @@ function ApprovalSummary(props) {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="13">
+                      <td colSpan="14">
                         <span className="grey-text">Reason: </span>
                         {approvalDetails.Reason ? approvalDetails.Reason : '-'}
                       </td>
                     </tr>
                     <tr>
-                      <td colSpan="13">
+                      <td colSpan="14">
                         <span className="grey-text">Remarks: </span>
                         {approvalDetails.Remark ? approvalDetails.Remark : ' -'}{' '}
                       </td>
