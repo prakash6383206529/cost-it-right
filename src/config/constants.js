@@ -1741,7 +1741,7 @@ export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
-  costingHeadCheck: 'ZBC v/s VBC',
+  costingHeadCheck: 'ZBC v/s VBC v/s NCC',
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'PO Price (Effective from)',
