@@ -1,7 +1,9 @@
 
+import { useDispatch } from "react-redux";
 import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
+import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
@@ -38,7 +40,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
           "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
           "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability,
-          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff
+          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff,
+          "BOPHandlingChargeType": item && item.CostingPartDetails?.BOPHandlingChargeType
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -127,7 +130,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
       "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
       "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges,
+      "BOPHandlingChargeType": tabData && tabData.CostingPartDetails?.BOPHandlingChargeType
     },
     "LoggedInUserId": loggedInUserId()
 
@@ -243,4 +247,37 @@ export const formatCostingApprovalObj = (costingObj) => {
   obj.destinationPlantId = costingObj.destinationPlantId
 
   return obj
+}
+
+export const clearCosting = (dispatch) => {
+  console.log('dispatch: ddd');
+  dispatch(getBriefCostingById('', (res) => { }))
+  localStorage.setItem('costingArray', [])
+  localStorage.setItem('surfaceCostingArray', [])
+  dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+  dispatch(setComponentItemData({}, () => { }))
+
+  dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+  dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+
+
+  dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+  dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+
+  dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
+  dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
+
+  dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+
+  dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+
+  dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
+  dispatch(setSurfaceCostData({}, () => { }))
+
+  dispatch(setProcessGroupGrid([]))
+  dispatch(savePartNumber(''))
+  dispatch(saveBOMLevel(''))
+  dispatch(setPartNumberArrayAPICALL([]))
+  dispatch(isDataChange(false))
+
 }
