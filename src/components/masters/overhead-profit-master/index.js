@@ -9,6 +9,7 @@ import ProfitListing from './ProfitListing';
 import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
+import { MESSAGES } from '../../../config/message';
 
 class OverheadProfit extends Component {
   constructor(props) {
@@ -132,7 +133,8 @@ class OverheadProfit extends Component {
           <Row>
             <Col>
               <div>
-                <Nav tabs className="subtabs mt-0">
+                <Nav tabs className="subtabs mt-0 p-relative">
+                  {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                   <NavItem>
                     <NavLink
                       className={classnames({
@@ -204,10 +206,11 @@ class OverheadProfit extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ overheadProfit, auth }) {
+function mapStateToProps({ overheadProfit, auth, comman }) {
   const { loading } = overheadProfit;
   const { leftMenuData, topAndLeftMenuData } = auth;
-  return { loading, leftMenuData, topAndLeftMenuData }
+  const { disabledClass } = comman
+  return { loading, leftMenuData, topAndLeftMenuData, disabledClass }
 }
 
 
