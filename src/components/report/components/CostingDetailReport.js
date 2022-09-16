@@ -407,7 +407,6 @@ function ReportListing(props) {
                     setDisableDownloadEncode(false)
                     let button = document.getElementById(`${sapExcel ? 'Excel-DownloadsSap' : sapEncoded ? 'Excel-DownloadsEncoded' : 'Excel-Downloads'}`)
                     dispatch(disabledClass(false))
-                    let button = document.getElementById('Excel-Downloads')
                     button.click()
                 }, 800);
             }
