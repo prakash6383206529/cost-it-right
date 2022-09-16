@@ -1060,7 +1060,8 @@ function CostingDetails(props) {
         const tempcopyCostingData = nccGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
-          zbcCosting: getValues(`${nccGridFields}[${index}]CostingVersion`),
+          zbcCosting: '',
+          nccCosting: getValues(`${nccGridFields}[${index}]CostingVersion`),
           vbcCosting: '',
         })
       }
