@@ -117,6 +117,7 @@ function SingleDropdownFloationFilter(props) {
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
                     isMulti={true}
                     mandatory={true}
+                    dropDownClass={true}
                     handleChange={(e) => {
                         valueChanged(e)
                     }}
