@@ -11,6 +11,7 @@ import { MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants'
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from '../material-master/CommonApproval';
+import { MESSAGES } from '../../../config/message';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -198,8 +199,8 @@ class MachineMaster extends Component {
                     <Row>
                         <Col>
                             <div>
-                                <Nav tabs className="subtabs mt-0">
-
+                                <Nav tabs className="subtabs mt-0 p-relative">
+                                    {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                             Machine Rate
@@ -274,9 +275,10 @@ class MachineMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, comman }) {
     const { leftMenuData, topAndLeftMenuData, loading } = auth;
-    return { leftMenuData, topAndLeftMenuData, loading }
+    const { disabledClass } = comman
+    return { leftMenuData, topAndLeftMenuData, loading, disabledClass }
 }
 
 

@@ -24,9 +24,11 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
+import { useRef } from 'react';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -184,6 +186,7 @@ function RMDomesticListing(props) {
 
                 if (res && isPagination === false) {
                     setDisableDownload(false)
+                    dispatch(disabledClass(false))
                     setTimeout(() => {
                         let button = document.getElementById('Excel-Downloads-rm-import')
                         button && button.click()
@@ -429,9 +432,9 @@ function RMDomesticListing(props) {
 
         return (
             <>
-                {ViewRMAccessibility && < button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {ViewRMAccessibility && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -586,12 +589,13 @@ function RMDomesticListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
-
+        dispatch(disabledClass(true))
         //let tempArr = gridApi && gridApi?.getSelectedRows()
         let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads-rm-import')
                 button && button.click()
             }, 400);
@@ -717,15 +721,15 @@ function RMDomesticListing(props) {
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
                                 <>
-
                                     {isSimulation &&
 
                                         <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
                                     }
@@ -735,7 +739,7 @@ function RMDomesticListing(props) {
                                             <>
                                                 {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                                     <div className="warning-message d-flex align-items-center">
-                                                        {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                        {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                                     </div>
                                                 }
                                                 {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
@@ -767,7 +771,6 @@ function RMDomesticListing(props) {
                                                 {
                                                     DownloadAccessibility &&
                                                     <>
-
                                                         {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                                                         </button></div> :
 
@@ -785,7 +788,6 @@ function RMDomesticListing(props) {
                                                             </>
 
                                                         }
-
                                                     </>
                                                 }
 
@@ -844,7 +846,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                     </AgGridReact>
