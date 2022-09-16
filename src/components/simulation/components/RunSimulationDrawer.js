@@ -243,13 +243,6 @@ function RunSimulationDrawer(props) {
 
         const temp = [];
 
-        if (label === 'OtherCostType') {
-            return [
-                { label: 'Fixed', value: 'Fixed' },
-                { label: 'Percentage', value: 'Percentage' },
-            ];
-        }
-
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
