@@ -145,7 +145,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -204,7 +204,7 @@ export const SearchableSelectHookForm = (field) => {
 
                 }}
                 menuPlacement="auto"
-                styles={customStyles}
+                styles={dropDownClass && customStyles}
                 options={options}
                 onBlur={onBlur}
                 selected={value}
