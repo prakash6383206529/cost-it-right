@@ -127,6 +127,7 @@ function MultiDropdownFloatingFilter(props) {
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
                     isMulti={true}
+                    dropDownClass={true}
                     mandatory={true}
                     handleChange={(e) => {
                         valueChanged(e)
