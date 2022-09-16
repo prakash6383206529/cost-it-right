@@ -8843,6 +8843,7 @@ table.group-process-table {
   }
 
   .css-2613qy-menu {
+    max-width: 40PX !important;
     margin-top: 0px !important;
     top: 50% !important;
     position: absolute !important;
@@ -8853,4 +8854,15 @@ table.group-process-table {
   overflow: hidden !important;
   background: #fff;
   z-index: 1;
+}
+
+.disabled-overflow {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 12;
+  cursor: not-allowed;
+  &.min-width {
+    width: 97%;
+  }
 }

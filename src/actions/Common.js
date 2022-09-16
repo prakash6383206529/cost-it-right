@@ -54,6 +54,7 @@ import {
   IS_RESET,
   config,
   GET_GRID_HEIGHT,
+  GET_STATE_WHILE_DOWNLOADING,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1573,11 +1574,18 @@ export function isResetClick(data, component) {
 
 //GET HEIGHT FOR DROPDOWN
 export function getGridHeight(value) {
-  console.log('value: ', value);
-
   return (dispatch) => {
     dispatch({
       type: GET_GRID_HEIGHT,
+      payload: value,
+    })
+  }
+}
+//DISABLED NAVBAR, SIDEBAR, TAB AND ACTION BUTTONS WHILE DOWNLOADING DATA
+export const disabledClass = (value) => {
+  return (dispatch) => {
+    dispatch({
+      type: GET_STATE_WHILE_DOWNLOADING,
       payload: value,
     })
   }
