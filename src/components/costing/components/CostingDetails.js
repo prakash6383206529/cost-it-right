@@ -36,6 +36,7 @@ export const EditCostingContext = React.createContext()
 export const CopyCostingContext = React.createContext()
 export const VbcExistingCosting = React.createContext()
 export const CostingStatusContext = React.createContext()
+export const CostingTypeContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -76,6 +77,7 @@ function CostingDetails(props) {
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
   const [isZBCLoader, setIsZBCLoader] = useState(false)
   const [isVBCLoader, setIsVBCLoader] = useState(false)
+  const [costingType, setCostingType] = useState("")
 
   // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
@@ -787,6 +789,7 @@ function CostingDetails(props) {
   const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
     setCostingOptionsSelectedObject({})
+    setCostingType(type)
 
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
@@ -899,6 +902,7 @@ function CostingDetails(props) {
    * @description VIEW COSTING DETAILS IN READ ONLY MODE
    */
   const viewDetails = (index, type) => {
+    setCostingType(type)
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
       return false;
@@ -921,6 +925,7 @@ function CostingDetails(props) {
    * @description EDIT COSTING DETAILS
    */
   const editCosting = (index, type) => {
+    setCostingType(type)
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
       return false;
@@ -1011,6 +1016,7 @@ function CostingDetails(props) {
    * @description COPY EXIS COSTING
    */
   const copyCosting = (index, type) => {
+    setCostingType(type)
     /*Commented because of error*/
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
@@ -1065,6 +1071,7 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
+    setCostingType(type)
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
 
@@ -1141,6 +1148,7 @@ function CostingDetails(props) {
 * @description CONFIRM DELETE COSTINGS
 */
   const deleteRowItem = (index, type) => {
+    setCostingType(type)
 
     if (type === ZBC) {
       let tempArr = zbcPlantGrid && zbcPlantGrid.filter((el, i) => {
@@ -2181,24 +2189,26 @@ function CostingDetails(props) {
                   </>
                 )}
                 {stepTwo && (
-                  <ViewCostingContext.Provider value={IsCostingViewMode} >
-                    <EditCostingContext.Provider value={IsCostingEditMode} >
-                      <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                        <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
-                          <CostingStatusContext.Provider value={approvalStatus}>
-                            <CostingDetailStepTwo
-                              backBtn={backToFirstStep}
-                              partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                              costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                              toggle={props.toggle}
-                              IsCostingViewMode={IsCostingViewMode}
-                              IsCopyCostingMode={IsCopyCostingMode}
-                            />
-                          </CostingStatusContext.Provider>
-                        </VbcExistingCosting.Provider>
-                      </CopyCostingContext.Provider>
-                    </EditCostingContext.Provider>
-                  </ViewCostingContext.Provider>
+                  <CostingTypeContext.Provider value={costingType}>
+                    <ViewCostingContext.Provider value={IsCostingViewMode} >
+                      <EditCostingContext.Provider value={IsCostingEditMode} >
+                        <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                          <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                            <CostingStatusContext.Provider value={approvalStatus}>
+                              <CostingDetailStepTwo
+                                backBtn={backToFirstStep}
+                                partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                                costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                                toggle={props.toggle}
+                                IsCostingViewMode={IsCostingViewMode}
+                                IsCopyCostingMode={IsCopyCostingMode}
+                              />
+                            </CostingStatusContext.Provider>
+                          </VbcExistingCosting.Provider>
+                        </CopyCostingContext.Provider>
+                      </EditCostingContext.Provider>
+                    </ViewCostingContext.Provider>
+                  </CostingTypeContext.Provider>
                 )}
               </form>
             </div>
@@ -2248,6 +2258,7 @@ function CostingDetails(props) {
           copyCostingData={copyCostingData}
           zbcPlantGrid={zbcPlantGrid}
           vbcVendorGrid={vbcVendorGrid}
+          nccGrid={nccGrid}
           partNo={getValues("Part")}
           type={type}
           selectedCostingId={costingIdForCopy}
