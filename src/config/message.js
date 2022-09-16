@@ -332,6 +332,9 @@ export const MESSAGES = {
 
 
   //SIMULATION
-  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?'
+  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
+
+  // COMMON MESSAGES 
+  DOWNLOADING_MESSAGE: 'Please wait while data is downloading'
 
 }

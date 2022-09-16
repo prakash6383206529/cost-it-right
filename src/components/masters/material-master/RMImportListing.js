@@ -28,6 +28,7 @@ import { getListingForSimulationCombined, setSelectedRowForPagination } from '..
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
+import { disabledClass } from '../../../actions/Common';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -216,6 +217,7 @@ function RMImportListing(props) {
         }
 
         if (res && isPagination === false) {
+          dispatch(disabledClass(false))
           setDisableDownload(false)
           setTimeout(() => {
             let button = document.getElementById('Excel-Downloads-rm-import')
@@ -613,12 +615,13 @@ function RMImportListing(props) {
 
 
   const onExcelDownload = () => {
+    dispatch(disabledClass(true))
     setDisableDownload(true)
-
     //let tempArr = gridApi && gridApi?.getSelectedRows()
     let tempArr = selectedRowForPagination
     if (tempArr?.length > 0) {
       setTimeout(() => {
+        dispatch(disabledClass(false))
         setDisableDownload(false)
         let button = document.getElementById('Excel-Downloads-rm-import')
         button && button.click()
@@ -755,11 +758,12 @@ function RMImportListing(props) {
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
+              {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
               {(!props.isMasterSummaryDrawer) && <>
 
                 {isSimulation &&
                   <div className="warning-message d-flex align-items-center">
-                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                    {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                     <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   </div>
                 }
@@ -768,7 +772,7 @@ function RMImportListing(props) {
                     <>
                       {
                         <div className="warning-message d-flex align-items-center">
-                          {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                          {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                         </div>
                       }
 

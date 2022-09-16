@@ -12,6 +12,7 @@ import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from '../material-master/CommonApproval';
+import { MESSAGES } from '../../../config/message';
 
 class BOPMaster extends Component {
   constructor(props) {
@@ -161,7 +162,8 @@ class BOPMaster extends Component {
 
           <Row>
             <Col>
-              <Nav tabs className="subtabs mt-0">
+              <Nav tabs className="subtabs mt-0 p-relative">
+                {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -282,10 +284,11 @@ class BOPMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, auth }) {
+function mapStateToProps({ boughtOutparts, auth, comman }) {
   const { BOPListing, loading } = boughtOutparts;
   const { leftMenuData, topAndLeftMenuData } = auth;
-  return { BOPListing, leftMenuData, topAndLeftMenuData, loading }
+  const { disabledClass } = comman
+  return { BOPListing, leftMenuData, topAndLeftMenuData, loading, disabledClass }
 }
 
 

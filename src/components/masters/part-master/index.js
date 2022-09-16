@@ -11,6 +11,7 @@ import { checkPermission } from '../../../helper/util';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import ScrollToTop from '../../common/ScrollToTop';
+import { MESSAGES } from '../../../config/message';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -180,17 +181,23 @@ class PartMaster extends Component {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h1>Part Master</h1>
-                                <button
-                                    type="button"
-                                    className={'secondary-btn mr5 mt-1'}
-                                    title="Fetch"
-                                    onClick={this.openFetchDrawer}
-                                    onMouseOver={this.handleMouse}
-                                    onMouseOut={this.handleMouseOut}>
-                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div></button>
+                                <div className='p-relative'>
+                                    <button
+                                        type="button"
+                                        className={'secondary-btn mr5 mt-1'}
+                                        title="Fetch"
+                                        onClick={this.openFetchDrawer}
+                                        onMouseOver={this.handleMouse}
+                                        onMouseOut={this.handleMouseOut}>
+                                        <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div>
+                                    </button>
+                                    {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
+                                </div>
+
                             </div>
 
-                            <Nav tabs className="subtabs mt-0">
+                            <Nav tabs className="subtabs mt-0 p-relative">
+                                {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Manage Assembly Part
@@ -270,9 +277,10 @@ class PartMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, comman }) {
     const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
-    return { leftMenuData, topAndLeftMenuData, initialConfiguration }
+    const { disabledClass } = comman
+    return { leftMenuData, topAndLeftMenuData, initialConfiguration, disabledClass }
 }
 
 

@@ -20,8 +20,9 @@ import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilte
 import { getCostingReport } from '.././actions/ReportListing'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
+import { MESSAGES } from '../../../config/message'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -128,6 +129,7 @@ function ReportListing(props) {
     let reportListingData = useSelector((state) => state.report.reportListing)
     let allReportListingData = useSelector((state) => state.report.allReportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const disabledClassSelector = useSelector(state => state.comman.disabledClass);
 
 
     useEffect(() => {
@@ -404,6 +406,8 @@ function ReportListing(props) {
                     setDisableDownloadSap(false)
                     setDisableDownloadEncode(false)
                     let button = document.getElementById(`${sapExcel ? 'Excel-DownloadsSap' : sapEncoded ? 'Excel-DownloadsEncoded' : 'Excel-Downloads'}`)
+                    dispatch(disabledClass(false))
+                    let button = document.getElementById('Excel-Downloads')
                     button.click()
                 }, 800);
             }
@@ -683,10 +687,12 @@ function ReportListing(props) {
         setDisableDownload(true)
         setDisableDownloadSap(false)
         setDisableDownloadEncode(false)
+        dispatch(disabledClass(true))
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads')
                 button.click()
             }, 400);
@@ -844,8 +850,9 @@ function ReportListing(props) {
                     </Col> */}
                     <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
+                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-sidebar"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             <div className="warning-message d-flex align-items-center">
-                                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -962,7 +969,7 @@ function ReportListing(props) {
                         <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
+                        <AgGridColumn field='RejectionApplicability' cellClass={"customDropdown"} headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
                         <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>

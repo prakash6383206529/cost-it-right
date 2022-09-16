@@ -34,6 +34,7 @@ import Draggable from 'react-draggable';
 import { SIMULATION, VERSION } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
+import { MESSAGES } from "../../config/message";
 
 class SideBar extends Component {
   constructor(props) {
@@ -856,7 +857,8 @@ class SideBar extends Component {
                     </div>
                   </li>
                   {isLoggedIn ? (
-                    <li className="nav-item d-xl-inline-block cr-logout-btn">
+                    <li className="nav-item d-xl-inline-block cr-logout-btn p-relative">
+                      {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                       <button className="btn btn-no-border" onClick={this.logout}>
                         <img
                           className=""
@@ -874,7 +876,8 @@ class SideBar extends Component {
           </div>
 
           {isLoggedIn && (
-            <div className="nav-scroller bg-white shadow-sm header-secondry w100">
+            <div className="nav-scroller bg-white shadow-sm header-secondry w100 p-relative">
+              {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
               <nav className="navbar navbar-expand-lg pl-0">
                 <ul className="navbar-nav mr-auto">
                   {topAndLeftMenuData &&
@@ -900,9 +903,10 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData }
+  const { disabledClass } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
 }
 
 /**

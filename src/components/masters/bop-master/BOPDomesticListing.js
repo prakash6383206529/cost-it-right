@@ -25,6 +25,7 @@ import { getListingForSimulationCombined, setSelectedRowForPagination } from '..
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
+import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -68,7 +69,7 @@ class BOPDomesticListing extends Component {
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
-            noData: false
+            noData: false,
         }
     }
 
@@ -483,12 +484,14 @@ class BOPDomesticListing extends Component {
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-bop-domestic')
                 button && button.click()
             }, 400);
@@ -657,6 +660,7 @@ class BOPDomesticListing extends Component {
                         </Col>
                         <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                         <div className="cancel-icon-white"></div></button>
@@ -667,7 +671,7 @@ class BOPDomesticListing extends Component {
 
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="warning-message d-flex align-items-center">
-                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                     </div>
                                 }
 
@@ -813,12 +817,13 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
+function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation, comman }) {
     const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList, allBopDataList } = boughtOutparts;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     const { selectedRowForPagination } = simulation;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination }
+    const { disabledClass } = comman
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination, disabledClass }
 }
 
 /**
@@ -834,7 +839,8 @@ export default connect(mapStateToProps, {
     getPlantSelectListByVendor,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedRowForPagination
+    setSelectedRowForPagination,
+    disabledClass
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,
