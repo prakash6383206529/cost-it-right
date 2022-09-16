@@ -2929,6 +2929,14 @@ body {
   height: 100%;
   width: 100%;
 }
+
+//THIS IS DYNAMIC CLASS WHICH IS USED FOR DYNAMIC STYLE FOR SPECIFIC TOASTER
+.custom-class {
+  min-width: 570px;
+  .toaster-message {
+    margin-bottom: 6px;
+  }
+}
 // <-------------END toaster style--------------->
 
 //<--------------START Input and button focus CSS------->
