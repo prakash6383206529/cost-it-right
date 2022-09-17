@@ -2457,8 +2457,8 @@ export const CostingSimulationDownloadRM = [
     { label: "OldNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "NewNetFreightPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2515,8 +2515,8 @@ export const CostingSimulationDownloadST = [
     { label: "OldNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "NewNetFreightPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2572,8 +2572,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "NewNetFreightPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2629,8 +2629,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "OldNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "NewNetFreightPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -3232,8 +3232,8 @@ export const LastGridForToken = [
     { label: "OldNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "NewNetFreightPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
