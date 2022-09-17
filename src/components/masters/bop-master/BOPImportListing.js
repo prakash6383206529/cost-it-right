@@ -636,7 +636,7 @@ class BOPImportListing extends Component {
                                                     {/* DOWNLOAD */}
                                                 </button>
 
-                                                <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={'Insert Import'} fileExtension={'.xls'} element={
                                                     <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
