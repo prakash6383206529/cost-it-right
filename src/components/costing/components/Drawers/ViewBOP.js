@@ -39,7 +39,7 @@ function ViewBOP(props) {
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
-                {IsAssemblyCosting && <th>{`Insert No.`}</th>}
+                {IsAssemblyCosting && <th>{`Part No.`}</th>}
                 <th>{`Insert Part No.`}</th>
                 <th>{`Insert Part Name`}</th>
                 <th>{`Currency`}</th>
