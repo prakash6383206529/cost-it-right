@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
@@ -650,11 +650,8 @@ class AddMachineRate extends Component {
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup } = this.state;
 
-
-
     const { fieldsObj } = this.props;
     const tempArray = [];
-
 
     let count = 0;
     setTimeout(() => {
@@ -674,6 +671,14 @@ class AddMachineRate extends Component {
 
       if (count > 0) {
         return false;
+      }
+      if (maxLength10(fieldsObj.MachineRate)) {
+        Toaster.warning("Max length must be 10")
+        return false
+      }
+      if (decimalLengthsix(fieldsObj.MachineRate)) {
+        Toaster.warning("Decimal value should not be more than 6")
+        return false
       }
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -1599,9 +1604,9 @@ class AddMachineRate extends Component {
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
-                            type="text"
+                            type="number"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength80]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             required={true}
