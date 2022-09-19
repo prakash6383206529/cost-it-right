@@ -65,6 +65,9 @@ function RawMaterialCost(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
+
+
+
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
         return setGridLength(0)
@@ -1098,7 +1101,6 @@ function RawMaterialCost(props) {
                                 disabled={(CostingViewMode || IsLocked) ? true : false}
                               />
                             </td>
-
                             <td>
                               <NumberFieldHookForm
                                 label=""
@@ -1122,7 +1124,7 @@ function RawMaterialCost(props) {
                                   handleFinishWeightChange(e?.target?.value, index)
                                 }}
                                 errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
+                                disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
                               />
                             </td>
 
@@ -1168,8 +1170,9 @@ function RawMaterialCost(props) {
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
                             <td>
+
                               <div className='action-btn-wrapper'>
-                                {!CostingViewMode && !IsLocked && <button
+                                {!CostingViewMode && !IsLocked && !(initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied) && < button
                                   className="Delete "
                                   type={'button'}
                                   onClick={() => deleteItem(index)}
