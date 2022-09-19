@@ -16,9 +16,9 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
-// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
+const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 //const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -1726,7 +1726,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorCode: 'Vendor Code',
+  vendor: 'Vendor (Code)',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
