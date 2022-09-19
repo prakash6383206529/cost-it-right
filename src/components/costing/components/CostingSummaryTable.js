@@ -865,8 +865,13 @@ const CostingSummaryTable = (props) => {
     let dataArray = []
     var value = ""
 
+    console.log(viewCostingData, "viewCostingData")
+
     viewCostingData && viewCostingData.map((element, indexOutside) => {
       let nextObj = checkAssembly(viewCostingData[indexOutside])
+      if (element?.netRMCostView.length > 1) {
+        nextObj.rm = "Multiple RM"
+      }
 
       if (indexOutside === 0) {
 
