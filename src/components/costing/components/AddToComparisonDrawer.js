@@ -383,6 +383,7 @@ function AddToComparisonDrawer(props) {
           obj.vendorId = dataFromAPI.VendorId ? dataFromAPI.VendorId : '-'
           obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
           obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
+          obj.vendor = dataFromAPI.VendorName && dataFromAPI.VendorCode ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : '-'
           obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : '-'
           obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
           obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
