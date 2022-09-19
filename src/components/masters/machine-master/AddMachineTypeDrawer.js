@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { getLabourTypeByMachineTypeSelectList, getLabourTypeDetailsForMachineType, updateLabourTypeForMachineType } from '../actions/Labour'
-import { required, checkWhiteSpaces } from "../../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
 import { getLabourTypeSelectList } from '../../../actions/Common';
@@ -210,7 +210,7 @@ class AddMachineTypeDrawer extends Component {
                       name={"MachineType"}
                       type="text"
                       placeholder={"Enter"}
-                      validate={[required, checkWhiteSpaces]}
+                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                       component={renderText}
                       required={!isEditFlag}
                       className=" "
