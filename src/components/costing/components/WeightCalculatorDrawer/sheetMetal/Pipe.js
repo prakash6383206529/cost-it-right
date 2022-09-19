@@ -157,6 +157,11 @@ function Pipe(props) {
   }, [isOneSide])
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
+    // console.log('e.target.value: ', e.target.value);
+    // if (e.target.value && e.target.value === 0) {
+    //   Toaster.warning('cant be zero')
+    //   return false
+    // }
     const grossWeight = checkForNull(getValues('GrossWeight'))
     if (e.target.value > grossWeight) {
       setTimeout(() => {
@@ -392,6 +397,12 @@ function Pipe(props) {
    */
   const onSubmit = debounce(handleSubmit((values) => {
     setIsDisable(true)
+    if (getValues('FinishWeightOfSheet') === '0') {
+      Toaster.warning('Finish Weight can not be zero')
+      setIsDisable(false)
+      setValue('FinishWeightOfSheet', '')
+      return false
+    }
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -807,9 +818,9 @@ function Pipe(props) {
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={true}
                     rules={{
-                      required: false,
+                      required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
