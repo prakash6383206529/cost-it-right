@@ -3,12 +3,15 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
+import DatePicker from "react-datepicker";
+
+import DayTime from '../../common/DayTimeWrapper';
 
 function ManageSOBDrawer(props) {
 
@@ -18,7 +21,7 @@ function ManageSOBDrawer(props) {
     //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
   }
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, reset, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -29,7 +32,7 @@ function ManageSOBDrawer(props) {
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
-
+  const [effectiveDate, setEffectiveDate] = useState('')
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
@@ -49,6 +52,8 @@ function ManageSOBDrawer(props) {
       // setIsLoader(true)
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
+
+        setEffectiveDate(Data.Effectivedate)
 
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
@@ -132,6 +137,13 @@ function ManageSOBDrawer(props) {
       //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
   }
+  /**
+   * @method handleChange
+   * @description Handle Effective Date
+   */
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
+  }
 
   /**
   * @method cancel
@@ -177,7 +189,8 @@ function ManageSOBDrawer(props) {
       "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
       "WeightedNetLandedCost": WeightedCost,
       "AveragShareOfBusinessPercentage": GridData.length !== 1 ? sum : 100,
-      "BoughtOutPartVendorList": GridData
+      "BoughtOutPartVendorList": GridData,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     }
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
@@ -188,13 +201,12 @@ function ManageSOBDrawer(props) {
     }))
   }
 
-
-
   /**
   * @method render
   * @description Renders the component
   */
   return (
+
     <>
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
@@ -270,6 +282,7 @@ function ManageSOBDrawer(props) {
                                 />
                               </td>
                               <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+
                             </tr>
                           )
                         })
@@ -292,6 +305,30 @@ function ManageSOBDrawer(props) {
                         </tr>
                       }
                     </tbody>
+                    <div className="inputbox date-section">
+                      <label> Effective Date<span className="asterisk-required">*</span></label>
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                        onChange={handleEffectiveDateChange}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        mandatory={true}
+                        rules={{ required: true }}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+                        disabled={isDisable ? true : false}
+                        errors={errors.EffectiveDate}
+                      />
+                    </div>
                   </Table>
                 </Col>
 
