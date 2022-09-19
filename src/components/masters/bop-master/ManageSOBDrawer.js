@@ -227,7 +227,34 @@ function ManageSOBDrawer(props) {
             </Row>
 
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <Row className='pl-3'>
+                <Col md="3">
+                  <div className="inputbox date-section">
+                    <label> Effective Date<span className="asterisk-required">*</span></label>
+                    <DatePicker
+                      name="EffectiveDate"
+                      selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                      onChange={handleEffectiveDateChange}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      showMonthDropdown
+                      showYearDropdown
+                      dateFormat="dd/MM/yyyy"
+                      mandatory={true}
+                      rules={{ required: true }}
+                      dropdownMode="select"
+                      placeholderText="Select date"
+                      className="withBorder"
+                      autoComplete={"off"}
+                      disabledKeyboardNavigation
+                      onChangeRaw={(e) => e.preventDefault()}
+                      disabled={isDisable ? true : false}
+                      errors={errors.EffectiveDate}
+                    />
+                  </div>
+                </Col>
+              </Row>
               <Row className="pl-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">
@@ -247,7 +274,7 @@ function ManageSOBDrawer(props) {
                             <tr key={index}>
                               <td>{item.BoughtOutPartVendorName}</td>
                               <td>{item.NetLandedCost}</td>
-                              <td className="cr-select-height">
+                              <td className="cr-select-height pr-4">
                                 <TextFieldHookForm
                                   label={''}
                                   name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
@@ -305,38 +332,13 @@ function ManageSOBDrawer(props) {
                         </tr>
                       }
                     </tbody>
-                    <div className="inputbox date-section">
-                      <label> Effective Date<span className="asterisk-required">*</span></label>
-                      <DatePicker
-                        name="EffectiveDate"
-                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                        onChange={handleEffectiveDateChange}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="dd/MM/yyyy"
-                        mandatory={true}
-                        rules={{ required: true }}
-                        dropdownMode="select"
-                        placeholderText="Select date"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-                        disabled={isDisable ? true : false}
-                        errors={errors.EffectiveDate}
-                      />
-                    </div>
                   </Table>
                 </Col>
 
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mt25 mx-0">
+              <Row className="sf-btn-footer no-gutters justify-content-between mt-1 mx-0">
                 <div className="col-sm-12 text-right">
-
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
@@ -345,7 +347,7 @@ function ManageSOBDrawer(props) {
                   </button>
                   <button
                     type={'submit'}
-                    className="submit-button mr5 save-btn">
+                    className="submit-button save-btn">
                     <div className={"save-icon"}></div>
                     {'Update'}
                   </button>
