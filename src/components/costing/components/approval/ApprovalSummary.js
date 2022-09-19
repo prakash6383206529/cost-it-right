@@ -55,6 +55,7 @@ function ApprovalSummary(props) {
   const [showPopup, setShowPopup] = useState(false)
   const [costingHead, setCostingHead] = useState("")
   const [nccPartQuantity, setNccPartQuantity] = useState("")
+  const [IsRegularized, setIsRegularized] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -112,9 +113,10 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
 
       setNccPartQuantity(NCCPartQuantity)
+      setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
@@ -324,76 +326,40 @@ function ApprovalSummary(props) {
             </Row>
             <Row>
               <Col md="12" className="mb-2">
-                <Table responsive className="table cr-brdr-main" size="sm">
+                <Table responsive className="table cr-brdr-main sub-table" size="sm">  {/* sub table class is alternative className which will use in future for added styles */}
                   <thead>
                     <tr>
-                      <th>
-                        <span className="d-block grey-text">{`Technology:`}</span>
-                        <span className="d-block">
-                          {partDetail.Technology ? partDetail.Technology : '-'}
-                        </span>
-                      </th>
-                      <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No:`}</span>
-                        <span className="d-block " title={partDetail.PartNumber}>
-                          {partDetail.PartNumber ? partDetail.PartNumber : '-'}
-                        </span>
-                      </th>
-                      <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part Name:`}</span>
-                        <span className="d-block" title={partDetail.PartName}>
-                          {partDetail.PartName ? partDetail.PartName : '-'}
-                        </span>
-                      </th>
-                      <th className='overflow-description'>
-                        <span className="d-block grey-text">{`Assembly/Part Description:`}</span>
-                        <span className="d-block" title={partDetail.Description}>
-                          {partDetail.Description ? partDetail.Description : '-'}
-                        </span>
-                      </th>
-                      <th>
-                        <span className="d-block grey-text">{`ECN No:`}</span>
-                        <span className="d-block">
-                          {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
-                        </span>
-                      </th>
-                      <th>
-                        <span className="d-block grey-text">{`Drawing No:`}</span>
-                        <span className="d-block">
-                          {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
-                        </span>
-                      </th>
-                      <th>
-                        <span className="d-block grey-text">{`Revision No:`}</span>
-                        <span className="d-block">
-                          {partDetail.RevisionNumber
-                            ? partDetail.RevisionNumber
-                            : '-'}
-                        </span>
-                      </th>
-                      <th>
-                        <span className="d-block grey-text">{`Effective Date:`}</span>
-                        <span className="d-block">
-                          {partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
-                        </span>
-                      </th>
+                      <th>Technology:</th>
+                      <th>Assembly/Part No:</th>
+                      <th>Assembly/Part Name:</th>
+                      <th>Assembly/Part Description:</th>
+                      <th>ECN No:</th>
+                      <th>Drawing No:</th>
+                      <th>Revision No:</th>
+                      <th>Effective Date:</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {Object.keys(partDetail).length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                  </td>
-                </tr>
-              )} */}
-                    {/* {costingProcessCost && costingProcessCost.length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                  </td>
-                </tr>
-              )} */}
+                    <td>{partDetail.Technology ? partDetail.Technology : '-'}</td>
+                    <td className='overflow'>
+                      <span className="d-block " title={partDetail.PartNumber}>
+                        {partDetail.PartNumber ? partDetail.PartNumber : '-'}
+                      </span>
+                    </td>
+                    <td className='overflow'>
+                      <span className="d-block" title={partDetail.PartName}>
+                        {partDetail.PartName ? partDetail.PartName : '-'}
+                      </span>
+                    </td>
+                    <td className='overflow-description'>
+                      <span className="d-block" title={partDetail.Description}>
+                        {partDetail.Description ? partDetail.Description : '-'}
+                      </span>
+                    </td>
+                    <td>{partDetail.ECNNumber ? partDetail.ECNNumber : '-'}   </td>
+                    <td>{partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}</td>
+                    <td> {partDetail.RevisionNumber ? partDetail.RevisionNumber : '-'} </td>
+                    <td> {partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'} </td>
                   </tbody>
                 </Table>
               </Col>
@@ -429,14 +395,17 @@ function ApprovalSummary(props) {
                       <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
                       <th>{`Variance:`}</th>
-                      <th>{`Consumption Quantity:`}</th>
-                      <th>{`Remaining Quantity:`}</th>
+                      {costingHead !== NCC && <th>{`Consumption Quantity:`}</th>}
+                      {costingHead !== NCC && <th>{`Remaining Quantity:`}</th>}
                       {costingHead === NCC && (
-                        <th>{`NCC Part Quantity:`}</th>
+                        <th>{`Quantity:`}</th>
+                      )}
+                      {costingHead === NCC && (
+                        <th>{`Is Regularized:`}</th>
                       )}
                       <th>{`Effective Date:`}</th>
-                      <th>{`Annual Impact:`}</th>
-                      <th>{`Impact of The Year:`}</th>
+                      {costingHead !== NCC && <th>{`Annual Impact:`}</th>}
+                      {costingHead !== NCC && <th>{`Impact of The Year:`}</th>}
 
                     </tr>
                   </thead>
@@ -477,28 +446,33 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
-                      <td>
+                      {costingHead !== NCC && <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
-                      </td>
-                      <td>
+                      </td>}
+                      {costingHead !== NCC && <td>
                         {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
-                      </td>
+                      </td>}
 
                       {costingHead === NCC &&
                         <td>
                           {nccPartQuantity !== null ? nccPartQuantity : '-'}
                         </td>
                       }
+                      {costingHead === NCC &&
+                        <td>
+                          {IsRegularized !== null ? (IsRegularized ? "Yes" : "No") : '-'}
+                        </td>
+                      }
 
                       <td>
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
-                      <td>
+                      {costingHead !== NCC && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
-                      </td>
-                      <td>
+                      </td>}
+                      {costingHead !== NCC && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
-                      </td>
+                      </td>}
                     </tr>
 
                     {/* {Object.keys(approvalDetails).length === 0 && (
@@ -511,13 +485,13 @@ function ApprovalSummary(props) {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="13">
+                      <td colSpan="14">
                         <span className="grey-text">Reason: </span>
                         {approvalDetails.Reason ? approvalDetails.Reason : '-'}
                       </td>
                     </tr>
                     <tr>
-                      <td colSpan="13">
+                      <td colSpan="14">
                         <span className="grey-text">Remarks: </span>
                         {approvalDetails.Remark ? approvalDetails.Remark : ' -'}{' '}
                       </td>

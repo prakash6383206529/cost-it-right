@@ -247,12 +247,13 @@ class AddVolume extends Component {
   }
 
   /**
-   * @method handlePart
+   * @method handlePartName
    * @description called
    */
-  handlePart = (newValue, actionMeta) => {
+  handlePartName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ part: newValue })
+      this.setState({ part: newValue }, () => {
+      })
     } else {
       this.setState({ part: [] })
     }
@@ -616,7 +617,7 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable } = this.state;
-    const filterList = (inputValue) => {
+    const vendorFilterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
@@ -629,12 +630,32 @@ class AddVolume extends Component {
         return tempArr.slice(0, 100)
       }
     };
+    const partFilterList = (inputValue) => {
+      let tempArr = []
 
-    const promiseOptions = inputValue =>
+      tempArr = this.renderListing("PartList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = (inputValue, fieldName) =>
       new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
+        switch (fieldName) {
+          case 'vendor':
+            resolve(vendorFilterList(inputValue));
+            break;
+          case 'part':
+            resolve(partFilterList(inputValue))
+            break;
+          default:
+            break;
+        }
       });
 
     const defaultColDef = {
@@ -737,7 +758,7 @@ class AddVolume extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={e => promiseOptions(e, 'vendor')}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -783,25 +804,23 @@ class AddVolume extends Component {
                             </Col>
                           }
                           <Col md="3">
-                            <Field
-                              name="PartNumber"
-                              type="text"
-                              label="Part No."
-                              component={searchableSelect}
-                              placeholder={isEditFlag ? '-' : "Select"}
-                              options={this.renderListing("PartList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.part == null ||
-                                  this.state.part.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handlePart}
-                              valueDescription={this.state.part}
-                              disabled={isEditFlag ? true : false}
-                            />
+                            <label>{"Part No."}<span className="asterisk-required">*</span></label>
+                            <div className="d-flex justify-space-between align-items-center async-select">
+                              <div className="fullinput-icon p-relative">
+                                <AsyncSelect
+                                  name="PartNumber"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={e => promiseOptions(e, 'part')}
+                                  onChange={(e) => this.handlePartName(e)}
+                                  value={this.state.part}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no." : "No results found"}
+                                  onKeyDown={(onKeyDown) => {
+                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </Col>
                           <Col md="3">
                             <Field

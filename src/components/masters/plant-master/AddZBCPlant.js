@@ -368,7 +368,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength4, checkSpacesInString]}
+                      validate={[required, checkWhiteSpaces, maxLength4, checkSpacesInString, postiveNumber]}
                       component={renderText}
                       required={true}
                       className=""

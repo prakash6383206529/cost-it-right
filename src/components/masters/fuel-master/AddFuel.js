@@ -29,7 +29,7 @@ class AddFuel extends Component {
     this.state = {
       isEditFlag: false,
       FuelDetailId: '',
-
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       fuel: [],
       UOM: [],
       StateName: [],
@@ -657,7 +657,7 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                                 {this.state.errorObj.state && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
@@ -699,7 +699,7 @@ class AddFuel extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>

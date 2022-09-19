@@ -55,11 +55,11 @@ class AddMoreDetails extends Component {
       isViewFlag: false,
       isDateChange: false,
       selectedTechnology: [],
-      selectedPlants: [],
+      selectedPlants: {},
       machineType: [],
       isOpenMachineType: false,
       machineRate: "",
-
+      disableMachineType: false,
       isOpenAvailability: false,
       WorkingHrPrYr: 0,
       isFinalUserEdit: false,
@@ -67,7 +67,6 @@ class AddMoreDetails extends Component {
 
       shiftType: [],
       approvalObj: {},
-      disable: false,
       depreciationType: [],
       DateOfPurchase: '',
 
@@ -140,7 +139,6 @@ class AddMoreDetails extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    // this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getMachineTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
@@ -191,15 +189,15 @@ class AddMoreDetails extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
-      if (Array.isArray(selectedPlants) ? selectedPlants.length !== 0 : Object.keys(selectedPlants)?.length > 0) {
+      if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
+        const data = {
+          machineTypeId: machineType?.value ? machineType?.value : '',
+          plantId: selectedPlants?.value ? selectedPlants?.value : '',
+          effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        }
+        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       }
-      const data = {
-        machineTypeId: machineType?.value ? machineType?.value : '',
-        plantId: selectedPlants?.value ? selectedPlants?.value : '',
-        effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
-      }
-      this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       this.props.change('MachineName', fieldsObj.MachineName)
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
@@ -283,9 +281,10 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
-          this.setState({ DataToChange: Data })
-
+          this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates })
+          if (Data.MachineLabourRates.length !== 0) {
+            this.setState({ disableMachineType: true })
+          }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
             let updateArrayList = []
@@ -331,7 +330,7 @@ class AddMoreDetails extends Component {
           const { machineType, selectedPlants, effectiveDate } = this.state;
           const data = {
             machineTypeId: machineType?.value,
-            plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value,
+            plantId: selectedPlants?.value,
             effectiveDate: effectiveDate
           }
           this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -375,7 +374,7 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: [{ label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId }],
+              selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
@@ -591,10 +590,10 @@ class AddMoreDetails extends Component {
     const { machineType, selectedPlants, effectiveDate } = this.state;
     const data = {
       machineTypeId: machineType?.value,
-      plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value,
+      plantId: selectedPlants?.value,
       effectiveDate: effectiveDate
     }
-    if (machineType && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && (Array.isArray(selectedPlants) ? selectedPlants.length > 0 : selectedPlants) && effectiveDate) {
+    if (machineType && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
       this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
     }
   }
@@ -682,7 +681,7 @@ class AddMoreDetails extends Component {
 
           const data = {
             fuelId: fuelType.value,
-            plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value,
+            plantId: selectedPlants?.value,
             effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('DD/MM/YYYY') : ''
           }
           this.props.getFuelUnitCost(data, res => {
@@ -780,9 +779,9 @@ class AddMoreDetails extends Component {
     const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
     const { initialConfiguration } = this.props
 
-    if (Array.isArray(selectedPlants) ? selectedPlants.length !== 0 : Object.keys(selectedPlants)?.length > 0) {
+    if (Object.keys(selectedPlants)?.length > 0) {
       setTimeout(() => {
-        this.props.getPowerCostUnit(Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value, date, res => {
+        this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -890,7 +889,7 @@ class AddMoreDetails extends Component {
 
       if (selectedPlants) {
         setTimeout(() => {
-          this.props.getPowerCostUnit(Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value, effectiveDate, res => {
+          this.props.getPowerCostUnit(selectedPlants?.value, effectiveDate, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               Toaster.warning(res.data.Message)
@@ -934,7 +933,7 @@ class AddMoreDetails extends Component {
         const data = {
           labourTypeId: labourType.value,
           machineTypeId: machineType.value,
-          plantId: Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value
+          plantId: selectedPlants?.value
         }
         this.props.getLabourCost(data, effectiveDate, res => {
           let Data = res.data.DynamicData;
@@ -1333,9 +1332,9 @@ class AddMoreDetails extends Component {
       LabourDetailId: this.state.labourDetailId
     })
     if (tempArray?.length > 0) {
-      this.setState({ disable: true })
+      this.setState({ disableMachineType: true })
     } else {
-      this.setState({ disable: false })
+      this.setState({ disableMachineType: false })
     }
 
     this.setState({
@@ -1455,7 +1454,7 @@ class AddMoreDetails extends Component {
     });
 
     if (tempData.length === 0) {
-      this.setState({ disable: false })
+      this.setState({ disableMachineType: false })
     }
 
     this.setState({
@@ -1506,7 +1505,7 @@ class AddMoreDetails extends Component {
         Toaster.warning("Decimal value should not be more than 6")
         return false
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
         return false;
       }
@@ -2167,7 +2166,7 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2185,7 +2184,7 @@ class AddMoreDetails extends Component {
     const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2202,7 +2201,7 @@ class AddMoreDetails extends Component {
     const { isDepreciationOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2219,7 +2218,7 @@ class AddMoreDetails extends Component {
     const { isVariableCostOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2235,7 +2234,7 @@ class AddMoreDetails extends Component {
   powerToggle = () => {
     const { isPowerOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2256,7 +2255,7 @@ class AddMoreDetails extends Component {
     const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
       return false;
@@ -2272,7 +2271,7 @@ class AddMoreDetails extends Component {
     const { isProcessOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2283,7 +2282,7 @@ class AddMoreDetails extends Component {
     const { isProcessGroupOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || effectiveDate === '' || selectedPlants.length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2328,7 +2327,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disable, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -2391,12 +2390,12 @@ class AddMoreDetails extends Component {
                             placeholder={(isEditFlag || isViewFlag) || (isMachineAssociated) ? '-' : 'Select'}
                             options={this.renderListing('plant')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                            validate={(this.state.selectedPlants == null || Object.keys(this.state.selectedPlants).length === 0) ? [required] : []}
                             required={true}
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={(isEditFlag || isViewFlag || disable) || (isMachineAssociated)}
+                            disabled={(isEditFlag || isViewFlag || disableAllForm) || (isMachineAssociated)}
 
                           />
                         </Col>
@@ -2465,14 +2464,14 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 label="Machine Type"
                                 component={searchableSelect}
-                                placeholder={this.state.isViewFlag ? '-' : 'Select'}
+                                placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={this.state.isViewFlag || disable}
+                                disabled={(disableMachineType || this.state.isViewFlag)}
                               />
                             </div>
                           </div>

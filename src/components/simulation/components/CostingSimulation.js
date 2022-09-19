@@ -13,6 +13,7 @@ import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
+import { toast } from 'react-toastify';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
@@ -68,7 +69,11 @@ function CostingSimulation(props) {
         hidePayment: false,
         hideOtherCost: false,
         hideDiscount: false,
-        hideOveheadAndProfit: false
+        hideOveheadAndProfit: false,
+        hideToolCost: false,
+        hideFrieghtCost: false,
+        hidePackagingCost: false,
+        hideFreightPackagingCost: false
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
@@ -355,30 +360,34 @@ function CostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let tempArr = []
-        selectedRows && selectedRows.map((item, index) => {
+        selectedRows && selectedRows?.map((item, index) => {
             // IsLockedBySimulation COMES TRUE WHEN THAT COSTING IS UNDER APPROVAL
-            if (item.IsLockedBySimulation) {
-                tempArr.push(item)
+            if (item?.IsLockedBySimulation) {
+                tempArr?.push(item)
                 return false
             }
             return null
         })
-
+        console.log(tempArr, "tempArr");
 
         if (tempArr.length > 1) {
+
             // IF MULTIPLE COSTING ARE SELECTED AND THEY ARE UNDER APPROVAL "IF" WILL GET EXECUTED
             setSelectedRowData([])
-            Toaster.warning(`Costings ${tempArr.map(item => item.CostingNumber)} is already sent for approval through another token number.`)
+            let approvalLockArray = []
+            approvalLockArray = tempArr && tempArr.map(item => {
+                return <p className='toaster-message'>{item.ApprovalLockedMessage}</p>
+            })
             gridApi.deselectAll()
+            Toaster.warning(<div>{approvalLockArray}</div>)
+            setTimeout(() => {
+                document.getElementsByClassName('custom-toaster')[0].classList.add('custom-class')
+            }, 200);
             return false
         }
 
         else if (tempArr.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            if (tempArr[0].LockedBySimulationProcessStep === '' || tempArr[0].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'}`)
-            } else {
-                Toaster.warning(`This costing is under approval with token number ${tempArr[0].LockedBySimulationToken ? tempArr[0].LockedBySimulationToken : '-'} at ${tempArr[0].LockedBySimulationProcessStep ? tempArr[0].LockedBySimulationProcessStep : "-"} with ${tempArr[0].LockedBySimulationStuckInWhichUser ? tempArr[0].LockedBySimulationStuckInWhichUser : '-'} .`)
-            }
+            Toaster.warning(tempArr[0]?.ApprovalLockedMessage)
             gridApi.deselectAll()
             return false
         } else {
@@ -546,6 +555,30 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewDiscountCost > row.OldDiscountCost) ? 'red-value form-control' : (row.NewDiscountCost < row.OldDiscountCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const toolCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetToolCost > row.OldNetToolCost) ? 'red-value form-control' : (row.NewNetToolCost < row.OldNetToolCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const freightCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetFreightCost > row.OldNetFreightCost) ? 'red-value form-control' : (row.NewNetFreightCost < row.OldNetFreightCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const packagingCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetPackagingCost > row.OldNetPackagingCost) ? 'red-value form-control' : (row.NewNetPackagingCost < row.OldNetPackagingCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const freightPackagingCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetFreightPackagingCost > row.OldNetFreightPackagingCost) ? 'red-value form-control' : (row.NewNetFreightPackagingCost < row.OldNetFreightPackagingCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const netOverheadAndProfitFormatter = (props) => {
@@ -781,7 +814,11 @@ function CostingSimulation(props) {
             hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
             hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
             hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
-            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
+            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false,
+            hideToolCost: costingList && costingList.length > 0 && (costingList[0].NewNetToolCost === 0 || costingList[0].OldNetToolCost === costingList[0].NewNetToolCost) ? true : false,
+            hideFrieghtCost: costingList && costingList.length > 0 && (costingList[0].NewNetFreightCost === 0 || costingList[0].OldNetFreightCost === costingList[0].NewNetFreightCost) ? true : false,
+            hidePackagingCost: costingList && costingList.length > 0 && (costingList[0].NewNetPackagingCost === 0 || costingList[0].OldNetPackagingCost === costingList[0].NewNetPackagingCost) ? true : false,
+            hideFreightPackagingCost: costingList && costingList.length > 0 && (costingList[0].NewNetFreightPackagingCost === 0 || costingList[0].OldNetFreightPackagingCost === costingList[0].NewNetFreightPackagingCost) ? true : false,
         })
 
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
@@ -1007,6 +1044,10 @@ function CostingSimulation(props) {
         paymentTermFormatter: paymentTermFormatter,
         otherCostFormatter: otherCostFormatter,
         discountCostFormatter: discountCostFormatter,
+        toolCostFormatter: toolCostFormatter,
+        freightPackagingCostFormatter: freightPackagingCostFormatter,
+        packagingCostFormatter: packagingCostFormatter,
+        freightCostFormatter: freightCostFormatter,
         netOverheadAndProfitFormatter: netOverheadAndProfitFormatter,
         hideColumn: hideColumn,
         oldRMCFormatter: oldRMCFormatter,
@@ -1214,6 +1255,14 @@ function CostingSimulation(props) {
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='New Tool Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='Old Tool Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='New Freight Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='Old Freight Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='New Packaging Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='Old Packaging Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='New Freight & Packaging Cost'></AgGridColumn>}
+                                                    {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Old Freight & Packaging Cost'></AgGridColumn>}
 
                                                     <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                 </AgGridReact>

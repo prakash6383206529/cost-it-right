@@ -31,6 +31,7 @@ import { getListingForSimulationCombined, setSelectedRowForPagination, } from '.
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
+import { disabledClass } from '../../../actions/Common';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -200,6 +201,7 @@ class OperationListing extends Component {
                 // CODE FOR DOWNLOAD BUTTON LOGIC
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
+                    this.props.disabledClass(false)
                     setTimeout(() => {
                         let button = document.getElementById('Excel-Downloads-operation')
                         button && button.click()
@@ -578,12 +580,13 @@ class OperationListing extends Component {
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
-
+        this.props.disabledClass(true)
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-operation')
                 button && button.click()
             }, 400);
@@ -753,12 +756,11 @@ class OperationListing extends Component {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-
-
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="warning-message d-flex align-items-center">
-                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                         </div>
                                     }
 
@@ -937,7 +939,8 @@ export default connect(mapStateToProps, {
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedRowForPagination,
-    setOperationList
+    setOperationList,
+    disabledClass
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

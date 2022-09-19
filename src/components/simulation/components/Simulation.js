@@ -81,8 +81,12 @@ function Simulation(props) {
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const bopDomesticList = useSelector(state => state.material.bopDomesticList)
+    const bopImportList = useSelector(state => state.material.bopImportList)
+    const exchangeRateDataList = useSelector(state => state.material.exchangeRateDataList)
+    const operationList = useSelector(state => state.material.operationList)
+
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
-    const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
     useEffect(() => {
         if (technology && (technology?.value !== undefined && technology?.value !== '')) {
@@ -324,7 +328,33 @@ function Simulation(props) {
             dispatch(setTechnologyForSimulation(technology))
         }, 200);
     }
+    const dataForSimulationFunction = () => {
+        switch (master?.label) {
+            case RMDOMESTIC:
+                return (rmDomesticListing && rmDomesticListing.length === 0) ? true : false
+            case RMIMPORT:
+                return (rmImportListing && rmImportListing.length === 0) ? true : false
+            case MACHINERATE:
+                return (bopDomesticList && bopDomesticList.length === 0) ? true : false
+            case BOPDOMESTIC:
+                return (bopDomesticList && bopDomesticList.length === 0) ? true : false
+            case BOPIMPORT:
+                return (bopImportList && bopImportList.length === 0) ? true : false
+            case EXCHNAGERATE:
+                return (exchangeRateDataList && exchangeRateDataList.length === 0) ? true : false
+            case OPERATIONS:
+                return (operationList && operationList.length === 0) ? true : false
+            case SURFACETREATMENT:
+                return (operationList && operationList.length === 0) ? true : false
+            // case BOPIMPORT:
+            //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            // case BOPIMPORT:
+            //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
 
+            default:
+                return ''
+        }
+    }
     /**
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
@@ -881,7 +911,7 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={((rmDomesticListing && rmDomesticListing.length === 0) || (rmImportListing && rmImportListing.length === 0) || editWarning) ? true : false}>
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(dataForSimulationFunction() || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
                                         !isUploadSimulation(master.value) &&

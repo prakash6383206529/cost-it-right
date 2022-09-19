@@ -616,6 +616,7 @@ export function formViewData(costingSummary, header = '') {
 
   obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
   obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
+  obj.bopHandlingChargeType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingChargeType !== null ? dataFromAPI.CostingPartDetails.BOPHandlingChargeType : ''
 
   obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
@@ -690,6 +691,7 @@ export function formViewData(costingSummary, header = '') {
   obj.vendorId = dataFromAPI.VendorId ? dataFromAPI.VendorId : '-'
   obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
   obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
+  obj.vendor = dataFromAPI.VendorName && dataFromAPI.VendorCode ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : '-'
   obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : '-'
   obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
   obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
@@ -712,6 +714,8 @@ export function formViewData(costingSummary, header = '') {
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
   obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
+  obj.NCCPartQuantity = dataFromAPI.NCCPartQuantity && dataFromAPI.NCCPartQuantity !== null ? dataFromAPI.NCCPartQuantity : '';
+  obj.IsRegularized = dataFromAPI.IsRegularized && dataFromAPI.IsRegularized !== null ? dataFromAPI.IsRegularized : '';
 
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
   obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';

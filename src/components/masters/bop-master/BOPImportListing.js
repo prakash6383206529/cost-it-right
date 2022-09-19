@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
+import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 
 const ExcelFile = ReactExport.ExcelFile
@@ -166,6 +167,7 @@ class BOPImportListing extends Component {
 
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-bop-import')
                     button && button.click()
@@ -420,12 +422,14 @@ class BOPImportListing extends Component {
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         let tempArr = this?.props?.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-bop-import')
                 button && button.click()
             }, 400);
@@ -585,6 +589,7 @@ class BOPImportListing extends Component {
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                         <div className="cancel-icon-white"></div></button>
@@ -594,7 +599,7 @@ class BOPImportListing extends Component {
                                 )}
                                 {
                                     <div className="warning-message d-flex align-items-center">
-                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                     </div>
                                 }
 
@@ -636,7 +641,7 @@ class BOPImportListing extends Component {
                                                     {/* DOWNLOAD */}
                                                 </button>
 
-                                                <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={'Insert Import'} fileExtension={'.xls'} element={
                                                     <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
@@ -762,7 +767,8 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedRowForPagination
+    setSelectedRowForPagination,
+    disabledClass
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

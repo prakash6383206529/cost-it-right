@@ -495,7 +495,7 @@ class ZBCPlantListing extends Component {
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                    {!this.state.isLoader && < div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -528,19 +528,21 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                    </div>
+                    </div>}
                 </div>
 
-                {isOpenVendor && (
-                    <AddZBCPlant
-                        isOpen={isOpenVendor}
-                        closeDrawer={this.closeVendorDrawer}
-                        isEditFlag={isEditFlag}
-                        isViewMode={this.state.isViewMode}
-                        ID={this.state.ID}
-                        anchor={"right"}
-                    />
-                )}
+                {
+                    isOpenVendor && (
+                        <AddZBCPlant
+                            isOpen={isOpenVendor}
+                            closeDrawer={this.closeVendorDrawer}
+                            isEditFlag={isEditFlag}
+                            isViewMode={this.state.isViewMode}
+                            ID={this.state.ID}
+                            anchor={"right"}
+                        />
+                    )
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
 
@@ -549,7 +551,7 @@ class ZBCPlantListing extends Component {
                 {
                     this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
                 }
-            </div>
+            </div >
         );
     }
 }

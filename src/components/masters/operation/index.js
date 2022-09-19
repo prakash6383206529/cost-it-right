@@ -8,6 +8,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
+import { MESSAGES } from '../../../config/message';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -85,7 +86,8 @@ class OperationsMaster extends Component {
                     <Row>
                         <Col>
                             <div>
-                                <Nav tabs className="subtabs mt-0">
+                                <Nav tabs className="subtabs mt-0 p-relative">
+                                    {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -148,9 +150,10 @@ class OperationsMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, comman }) {
     const { leftMenuData, loading, topAndLeftMenuData } = auth;
-    return { leftMenuData, loading, topAndLeftMenuData }
+    const { disabledClass } = comman;
+    return { leftMenuData, loading, topAndLeftMenuData, disabledClass }
 }
 
 

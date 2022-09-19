@@ -9,8 +9,7 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
-//import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { TextFieldHookForm, } from '../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
@@ -45,13 +44,14 @@ function RunSimulationDrawer(props) {
     const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
     const [runSimulationDisable, setRunSimulationDisable] = useState(false)
     const [disableDiscountAndOtherCostSecond, setDisableDiscountAndOtherCostSecond] = useState(false)
-
+    const [otherCostApplicability, setOtherCostApplicability] = useState([])
+    const [discountCostApplicability, setDiscountCostApplicability] = useState([])
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
 
     }, [])
-
+    const costingHead = useSelector(state => state.comman.costingHead)
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
         if (runSimulationDisable) {
@@ -139,6 +139,10 @@ function RunSimulationDrawer(props) {
         const Inventory = selectedData.includes("ICC")
         const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
+        const Tool = selectedData.includes("Tool")
+        const Packaging = selectedData.includes("Packaging")
+        const Freight = selectedData.includes("Freight")
+        const BOPHandlingCharge = selectedData.includes("BOP Handling Charge")
 
         let temp = []
         obj.IsOverhead = Overhead
@@ -153,7 +157,12 @@ function RunSimulationDrawer(props) {
         obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")        // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
         obj.IsAdditionalOtherCostPercentage = toggleSwitchAdditionalOtherCOst
         obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
-
+        obj.IsTool = Tool
+        obj.IsFreight = Freight
+        obj.IsPackaging = Packaging
+        obj.IsBOPHandlingCharge = BOPHandlingCharge
+        obj.AdditionOtherCostApplicability = otherCostApplicability.label
+        obj.AdditionDiscountApplicability = discountCostApplicability.label
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
@@ -246,6 +255,31 @@ function RunSimulationDrawer(props) {
         setToggleSwitchAdditionalDiscount(!toggleSwitchAdditionalDiscount)
 
     }
+
+    /**
+    * @method renderListing
+    * @description Used show listing of unit of measurement
+    */
+    const renderListing = (label) => {
+
+        const temp = [];
+
+        if (label === 'Applicability') {
+            costingHead && costingHead.map(item => {
+                if (item.Value === '0' || item.Value === '8') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
+    }
+    const handleOherCostApplicabilityChange = (value) => {
+        setOtherCostApplicability(value)
+    }
+    const handleDiscountApplicabilityChange = (value) => {
+        setDiscountCostApplicability(value)
+    }
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
@@ -282,9 +316,8 @@ function RunSimulationDrawer(props) {
                                         </Col>
                                     </Row>
 
-                                    <Row className="ml-0 pt-3">
-                                        <Col md="12" className="mb-3">
-
+                                    <Row className="ml-0 pt-2">
+                                        <Col md="12" className="mb-3 pr-0">
                                             {
                                                 masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
@@ -334,37 +367,56 @@ function RunSimulationDrawer(props) {
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
                                                                             {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
-                                                                                <TextFieldHookForm
-                                                                                    label=""
-                                                                                    name={"OtherCostPercent"}
-                                                                                    Controller={Controller}
-                                                                                    rules={{
-                                                                                        required: true,
-                                                                                        pattern: {
-                                                                                            value: /^\d*\.?\d*$/,
-                                                                                            message: 'Invalid Number.'
-                                                                                        },
 
-                                                                                        max: {
-                                                                                            value: 100,
-                                                                                            message: "Should not be greater than 100"
-                                                                                        }
-                                                                                    }}
-                                                                                    control={control}
-                                                                                    register={register}
-                                                                                    mandatory={true}
-                                                                                    handleChange={() => { }}
-                                                                                    defaultValue={""}
-                                                                                    className=""
-                                                                                    customClassName={"withBorder"}
-                                                                                    errors={errors.OtherCostPercent}
-                                                                                    disabled={false}
-                                                                                />
+                                                                                <div className='additonal-discount-container'>
+                                                                                    <SearchableSelectHookForm
+                                                                                        label={'Other Cost Applicability'}
+                                                                                        name={'otherCostApplicability'}
+                                                                                        placeholder={'Select'}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        rules={{ required: false }}
+                                                                                        register={register}
+                                                                                        defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                                                                                        options={renderListing('Applicability')}
+                                                                                        mandatory={true}
+                                                                                        disabled={false}
+                                                                                        customClassName={"auto-width"}
+                                                                                        handleChange={handleOherCostApplicabilityChange}
+                                                                                        errors={errors.otherCostApplicability}
+                                                                                    />
+                                                                                    <NumberFieldHookForm
+                                                                                        label="Percentage"
+                                                                                        name={"OtherCostPercent"}
+                                                                                        Controller={Controller}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
+
+                                                                                            max: {
+                                                                                                value: 100,
+                                                                                                message: "Should not be greater than 100"
+                                                                                            }
+                                                                                        }}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"auto-width"}
+                                                                                        errors={errors.OtherCostPercent}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </div>
                                                                             }
 
                                                                             {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
-                                                                                <TextFieldHookForm
-                                                                                    label=""
+                                                                                <NumberFieldHookForm
+                                                                                    label="Fixed"
                                                                                     name={"OtherCost"}
                                                                                     Controller={Controller}
                                                                                     rules={
@@ -414,15 +466,27 @@ function RunSimulationDrawer(props) {
 
 
                                                                             {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
-                                                                                <>
-
-                                                                                    <TextFieldHookForm
-                                                                                        label=""
-                                                                                        name={"DiscountPercent"}
+                                                                                <div className='additonal-discount-container'>
+                                                                                    <SearchableSelectHookForm
+                                                                                        label={'Discount Applicability'}
+                                                                                        name={'DiscountCostApplicability'}
+                                                                                        placeholder={'Select'}
                                                                                         Controller={Controller}
                                                                                         control={control}
+                                                                                        rules={{ required: false }}
                                                                                         register={register}
+                                                                                        defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                                        options={renderListing('Applicability')}
                                                                                         mandatory={true}
+                                                                                        disabled={false}
+                                                                                        handleChange={handleDiscountApplicabilityChange}
+                                                                                        errors={errors.DiscountCostApplicability}
+                                                                                        customClassName={"auto-width"}
+                                                                                    />
+                                                                                    <NumberFieldHookForm
+                                                                                        label="Percentage"
+                                                                                        name={"DiscountPercent"}
+                                                                                        Controller={Controller}
                                                                                         rules={{
                                                                                             required: true,
                                                                                             pattern: {
@@ -435,14 +499,16 @@ function RunSimulationDrawer(props) {
                                                                                                 message: "Should not be greater than 100"
                                                                                             }
                                                                                         }}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
                                                                                         handleChange={() => { }}
                                                                                         defaultValue={""}
-                                                                                        className=""
-                                                                                        customClassName={"withBorder"}
+                                                                                        customClassName="auto-width"
                                                                                         errors={errors.DiscountPercent}
                                                                                         disabled={false}
                                                                                     />
-                                                                                </>
+                                                                                </div>
                                                                             }
 
 
@@ -450,8 +516,8 @@ function RunSimulationDrawer(props) {
                                                                             {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
                                                                                 <>
 
-                                                                                    <TextFieldHookForm
-                                                                                        label=""
+                                                                                    <NumberFieldHookForm
+                                                                                        label="Fixed"
                                                                                         name={"Discount"}
                                                                                         Controller={Controller}
                                                                                         control={control}
@@ -567,8 +633,8 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
-                                            <div className="text-right px-2">
-                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
+                                            <div className="text-right">
+                                                <button type="button" className="user-btn save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"RUN SIMULATION"}
