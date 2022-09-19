@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
 import { BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticVBC, RMDomesticZBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -141,6 +141,7 @@ class BulkUpload extends Component {
                             checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
+                        case String(INSERTDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'VBC') {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC), fileHeads)
                             }
@@ -149,6 +150,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
+                        case String(INSERTIMPORTBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
                                 checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
                             }
@@ -405,25 +407,25 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InsertDomestic' && costingHead === 'ZBC') {
+        } else if ((fileName === 'BOPDomestic' || fileName === 'InsertDomestic') && costingHead === 'ZBC') {
             this.props.bulkUploadBOPDomesticZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InsertDomestic' && costingHead === 'VBC') {
+        } else if ((fileName === 'BOPDomestic' || fileName === 'InsertDomestic') && costingHead === 'VBC') {
             this.props.bulkUploadBOPDomesticVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InsertImport' && costingHead === 'ZBC') {
+        } else if ((fileName === 'BOPImport' || fileName === 'InsertImport') && costingHead === 'ZBC') {
             this.props.bulkUploadBOPImportZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InsertImport' && costingHead === 'VBC') {
+        } else if ((fileName === 'BOPImport' || fileName === 'InsertImport') && costingHead === 'VBC') {
             this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)

@@ -1939,7 +1939,9 @@ export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
 export const RMIMPORTBULKUPLOAD = 'RMImport';
 export const RMSPECIFICATION = 'RMSpecification'
 export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const INSERTDOMESTICBULKUPLOAD = 'InsertDomestic';
 export const BOPIMPORTBULKUPLOAD = 'BOPImport';
+export const INSERTIMPORTBULKUPLOAD = 'InsertImport';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
@@ -1982,4 +1984,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.525";
+export const VERSION = "V1.2.526";
