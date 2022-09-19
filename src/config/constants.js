@@ -1726,7 +1726,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorCode: 'Vendor Code',
+  vendor: 'Vendor (Code)',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
@@ -1985,4 +1985,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.535";
+export const VERSION = "V1.2.536";

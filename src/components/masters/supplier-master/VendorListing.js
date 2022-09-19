@@ -130,6 +130,7 @@ class VendorListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
+
                 this.setState({
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -644,7 +645,7 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -693,7 +694,7 @@ class VendorListing extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>}
 
 
                 {
