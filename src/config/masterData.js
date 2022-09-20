@@ -1389,8 +1389,7 @@ export const ZBCInterestRateTempData = [
 export const VBCInterestRate = [
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'PlantName', value: 'PlantName' },
-    { label: 'PlantCode', value: 'PlantCode' },
+    { label: "Plant(Code)", value: "PlantName", },
     { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
     { label: 'ICCPercent', value: 'ICCPercent', }, //*
     { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
@@ -1403,8 +1402,7 @@ export const VBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
-        'PlantName': '1511',
-        "PlantCode": '1511',
+        "PlantName": "1511(1511)",
         'ICCApplicability': 'RM+CC',
         'ICCPercent': '10   ',
         'PaymentTermApplicability': 'RM',
