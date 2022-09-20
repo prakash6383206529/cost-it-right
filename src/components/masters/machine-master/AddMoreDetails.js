@@ -549,7 +549,7 @@ class AddMoreDetails extends Component {
                 this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
               }
             })
-          }, 2000);
+          }, 1000);
         }
       } else {
         this.setState({ selectedPlants: [] })
