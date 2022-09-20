@@ -3484,7 +3484,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[maxLength10]}
+                                validate={[maxLength10, number, postiveNumber]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
@@ -3501,7 +3501,6 @@ class AddMoreDetails extends Component {
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 placeholder={'-'}
-                                validate={[number, postiveNumber]}
                                 component={renderText}
                                 //required={true}
                                 disabled={true}
@@ -3701,7 +3700,7 @@ class AddMoreDetails extends Component {
                                   component={renderText}
                                   // onChange={this.handleMachineRate}
                                   required={true}
-                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
+                                  disabled={false}
                                   className=" "
                                   customClassName=" withBorder"
                                   placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}

@@ -488,9 +488,6 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-    if (tableData < 0 || isNaN(tableData)) {
-      return false
-    }
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
       return false
@@ -502,8 +499,10 @@ class AddVolume extends Component {
       Toaster.warning("Please fill atleast one entry")
       return false
     }
-
-
+    const filteredArray1 = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
+    if (filteredArray1.length !== 0) {
+      return false
+    }
     let budgetArray = []
     tableData && tableData.map((item) => {
       budgetArray.push({
@@ -612,6 +611,28 @@ class AddVolume extends Component {
       e.preventDefault();
     }
   };
+
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  // onPageSizeChanged = (newPageSize) => {
+  //   var value = document.getElementById('page-size').value;
+  //   this.state.gridApi.paginationSetPageSize(Number(value));
+  // };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   /**
   * @method render
