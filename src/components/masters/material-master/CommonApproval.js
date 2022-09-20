@@ -84,7 +84,7 @@ function CommonApproval(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
