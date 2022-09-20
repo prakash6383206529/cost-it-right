@@ -370,7 +370,6 @@ class AddLabour extends Component {
     }
     let count = 0;
     setTimeout(() => {
-
       if (machineType.length === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, machineType: true } })
         count++;
@@ -390,21 +389,9 @@ class AddLabour extends Component {
       if (count > 0) {
         return false
       }
-
-      if (fieldsObj !== undefined && isNaN(Number(fieldsObj))) {
-        Toaster.warning('Please enter valid value.')
+      if (this.props.invalid === true) {
         return false;
       }
-      if (maxLength10(fieldsObj)) {
-        return false;
-      }
-
-      if (decimalLengthsix(Number(fieldsObj))) {
-        Toaster.warning('Decimal value should not be more than 6')
-        return false;
-      }
-
-
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = gridTable.findIndex((el) =>
@@ -415,10 +402,9 @@ class AddLabour extends Component {
         Toaster.warning('Already added, Please check the values.')
         return false
       }
-
       const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
-      const tempArray = []
 
+      const tempArray = []
 
       tempArray.push(...gridTable, {
         LabourDetailId: '',
@@ -478,7 +464,9 @@ class AddLabour extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false
     }
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     let tempArray = []
 
     let tempData = gridTable[gridEditIndex]
@@ -680,8 +668,6 @@ class AddLabour extends Component {
    * @description Renders the component
    */
   render() {
-
-
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
 
