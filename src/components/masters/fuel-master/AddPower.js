@@ -1262,6 +1262,7 @@ class AddPower extends Component {
         this.setState({ setDisable: true })
         const formData = {
           IsVendor: IsVendor,
+          PlantId: plantArray && plantArray[0]?.PlantId,
           Plants: plantArray,
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
@@ -1473,7 +1474,10 @@ class AddPower extends Component {
                                     optionValue={option => option.Value}
                                     optionLabel={option => option.Text}
                                     component={renderMultiSelectField}
+                                    validate={
+                                      this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                                     mendatory={true}
+                                    required={true}
                                     className="multiselect-with-border"
                                     disabled={isEditFlag ? true : false}
                                   />

@@ -529,7 +529,7 @@ class AddMoreDetails extends Component {
         })
         if (effectiveDate) {
           setTimeout(() => {
-            this.props.getPowerCostUnit(Array.isArray(newValue) ? newValue[0]?.value : newValue?.value, effectiveDate, res => {
+            this.props.getPowerCostUnit(newValue?.value, effectiveDate, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
                 Toaster.warning(res.data.Message)
@@ -549,7 +549,7 @@ class AddMoreDetails extends Component {
                 this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
               }
             })
-          }, 1000);
+          }, 2000);
         }
       } else {
         this.setState({ selectedPlants: [] })
@@ -880,9 +880,9 @@ class AddMoreDetails extends Component {
   }
 
   /**
-   * @method onPressUsesSolarPower
-   * @description Used for Uses Solar Power
-   */
+  * @method onPressUsesSolarPower
+  * @description Used for Uses Solar Power
+  */
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
       const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
@@ -922,7 +922,6 @@ class AddMoreDetails extends Component {
       // }
     });
   }
-
   /**
   * @method labourHandler
   * @description called
@@ -1223,7 +1222,6 @@ class AddMoreDetails extends Component {
       const UtilizationFactorPercentage = checkForNull(fieldsObj?.UtilizationFactorPercentage)
       const PowerRatingPerKW = checkForNull(fieldsObj?.PowerRatingPerKW)
       const PowerCostPerUnit = checkForNull(machineFullValue?.PowerCostPerUnit); // may be state
-
       const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
@@ -1534,9 +1532,9 @@ class AddMoreDetails extends Component {
       const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
 
       if (UOM.type === TIME) {
-
         MachineRate = this.state.machineRate
-      } else {
+      }
+      else {
         MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
       }
 
@@ -1570,7 +1568,10 @@ class AddMoreDetails extends Component {
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
         this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
       });
-      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false }, machineRate: "" }) // RESETING THE STATE MACHINERATE
+      if (!getConfigurationKey().IsMachineProcessGroup) {
+        this.setState({ machineRate: "" })
+      }
+      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } }) // RESETING THE STATE MACHINERATE
     }, 200);
   }
 
