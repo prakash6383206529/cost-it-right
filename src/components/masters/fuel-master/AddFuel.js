@@ -216,6 +216,7 @@ class AddFuel extends Component {
         return false
       }
       if (this.props.invalid === true) {
+        Toaster.warning('Please fill all mandatory fields first')
         return false;
       }
       if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {

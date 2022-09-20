@@ -672,8 +672,8 @@ class AddMachineRate extends Component {
       if (count > 0) {
         return false;
       }
-      if (this.props.invalid === true) {
-        return false;
+      if (maxLength10(fieldsObj.MachineRate) || decimalLengthsix(fieldsObj.MachineRate)) {
+        return false
       }
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
