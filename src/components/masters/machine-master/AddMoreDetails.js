@@ -3700,7 +3700,7 @@ class AddMoreDetails extends Component {
                                   component={renderText}
                                   // onChange={this.handleMachineRate}
                                   required={true}
-                                  disabled={false}
+                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
                                   placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
