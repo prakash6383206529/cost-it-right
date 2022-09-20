@@ -157,11 +157,6 @@ function Pipe(props) {
   }, [isOneSide])
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
-    // console.log('e.target.value: ', e.target.value);
-    // if (e.target.value && e.target.value === 0) {
-    //   Toaster.warning('cant be zero')
-    //   return false
-    // }
     const grossWeight = checkForNull(getValues('GrossWeight'))
     if (e.target.value > grossWeight) {
       setTimeout(() => {
