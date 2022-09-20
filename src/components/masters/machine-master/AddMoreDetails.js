@@ -1303,7 +1303,9 @@ class AddMoreDetails extends Component {
       this.setState({ errorObj: { peopleCount: true } })
       return false;
     }
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = labourGrid.findIndex(el => (el.labourTypeId === labourType.value))
     if (isExist !== -1) {
@@ -1370,7 +1372,9 @@ class AddMoreDetails extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false;
     }
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     const LabourPerCost = checkForNull(fieldsObj?.LabourCostPerAnnum)
     const NumberOfLabour = checkForNull(fieldsObj?.NumberOfLabour)
     const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
@@ -1495,13 +1499,9 @@ class AddMoreDetails extends Component {
       if (count > 0) {
         return false
       }
-      if (maxLength10(fieldsObj.MachineRate)) {
-        Toaster.warning("Max length must be 10")
-        return false
-      }
-      if (decimalLengthsix(fieldsObj.MachineRate)) {
-        Toaster.warning("Decimal value should not be more than 6")
-        return false
+      if (this.props.invalid === true) {
+        console.log('this.props.invalid: ', this.props.invalid);
+        return false;
       }
       if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
@@ -1518,8 +1518,6 @@ class AddMoreDetails extends Component {
 
       const NumberOfWorkingHoursPerYear = checkForDecimalAndNull(fieldsObj?.NumberOfWorkingHoursPerYear)
       const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
-
-
 
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
@@ -1594,7 +1592,9 @@ class AddMoreDetails extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false;
     }
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
     const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
@@ -1607,10 +1607,7 @@ class AddMoreDetails extends Component {
     // const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
     if (UOM.type === TIME) {
-
       MachineRate = this.state.machineRate
-
-
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
@@ -3487,7 +3484,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[maxLength10, decimalLengthThree]}
+                                validate={[maxLength10]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
@@ -4102,5 +4099,6 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
+  touchOnChange: true,
   enableReinitialize: true,
 })(AddMoreDetails));

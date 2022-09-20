@@ -565,24 +565,7 @@ class AddPower extends Component {
       if (count > 0) {
         return false
       }
-      if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
-        Number(fieldsObj.MaxDemandChargesKW) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
-        Number(fieldsObj.SEBPowerContributaion) < 0) {
-        Toaster.warning('Fields should not be negative');
-        return false;
-      }
-      if (maxLength10(fieldsObj.MinDemandKWPerMonth) || maxLength10(fieldsObj.DemandChargesPerKW) || maxLength10(fieldsObj.AvgUnitConsumptionPerMonth) ||
-        maxLength10(fieldsObj.MaxDemandChargesKW) || maxLength10(fieldsObj.MeterRentAndOtherChargesPerAnnum) || maxLength10(fieldsObj.DutyChargesAndFCA)) {
-        Toaster.warning('Fields value should not be more than 10');
-        return false;
-      }
-      if (decimalLengthFour(fieldsObj.MinDemandKWPerMonth) || decimalLengthFour(fieldsObj.DemandChargesPerKW) || decimalLengthFour(fieldsObj.AvgUnitConsumptionPerMonth) ||
-        decimalLengthFour(fieldsObj.MaxDemandChargesKW) || decimalLengthFour(fieldsObj.MeterRentAndOtherChargesPerAnnum) || decimalLengthFour(fieldsObj.DutyChargesAndFCA)) {
-        Toaster.warning('Decimal value should not be more than 4');
-        return false;
-      }
-      if (decimalLengthThree(SEBPowerContributaion)) {
-        Toaster.warning('Decimal value should not be more than 3');
+      if (this.props.invalid === true) {
         return false;
       }
       const tempArray = [];
@@ -645,6 +628,9 @@ class AddPower extends Component {
     if (checkForNull(fieldsObj?.MinDemandKWPerMont) === 0 && checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.AvgUnitConsumptionPerMonth) === 0 &&
       checkForNull(fieldsObj?.MaxDemandChargesKW) === 0 && checkForNull(fieldsObj?.MeterRentAndOtherChargesPerAnnum) === 0 && checkForNull(fieldsObj?.DutyChargesAndFCA) === 0 &&
       checkForNull(fieldsObj?.SEBPowerContributaion) === 0) {
+      return false;
+    }
+    if (this.props.invalid === true) {
       return false;
     }
     let powerTotalT = 0
@@ -739,30 +725,9 @@ class AddPower extends Component {
         return false;
       }
 
-
-
-
-      if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
-        || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
-        Toaster.warning('Fields value should not be more than 10');
+      if (this.props.invalid === true) {
         return false;
       }
-
-      if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
-        Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0 || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0) {
-        Toaster.warning('Fields should not be negative');
-        return false;
-      }
-      if (decimalLengthFour(fieldsObj.AssetCost) || decimalLengthFour(fieldsObj.AnnualCost)) {
-        Toaster.warning('Decimal value should not be more than 4');
-        return false;
-      }
-      if (decimalLengthThree(fieldsObj.SelfPowerContribution) || decimalLengthThree(fieldsObj.UnitGeneratedPerUnitOfFuel) ||
-        decimalLengthThree(fieldsObj.CostPerUnitOfMeasurement) || decimalLengthThree(fieldsObj.UnitGeneratedPerAnnum)) {
-        Toaster.warning('Decimal value should not be more than 3');
-        return false;
-      }
-
       const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
@@ -845,7 +810,9 @@ class AddPower extends Component {
       if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
       }
-
+      if (this.props.invalid === true) {
+        return false;
+      }
       if (powerTotalT > 100) {
         Toaster.warning('Total Contribution should not be more than 100%');
         return false;
