@@ -1501,7 +1501,6 @@ class AddMoreDetails extends Component {
         return false
       }
       if (this.props.invalid === true) {
-        console.log('this.props.invalid: ', this.props.invalid);
         return false;
       }
       if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
