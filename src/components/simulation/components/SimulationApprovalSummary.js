@@ -134,7 +134,10 @@ function SimulationApprovalSummary(props) {
             let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
                 return o.CostingId;
             });
-
+            setCostingSummary(false)
+            setTimeout(() => {
+                setCostingSummary(true)
+            }, 100);
 
             setCostingList(uniqueArr)
             setDataForDownload(SimulatedCostingList)
@@ -347,9 +350,8 @@ function SimulationApprovalSummary(props) {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
         let obj = {
-            simulationApprovalProcessSummaryId: el,
-            simulationId: EMPTY_GUID,
-            costingId: EMPTY_GUID
+            simulationId: simulationDetail?.SimulationId,
+            costingId: data?.CostingId
         }
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -630,6 +632,7 @@ function SimulationApprovalSummary(props) {
         //     setCount(0)
         // }
         setShowViewAssemblyDrawer(false)
+        setCompareCosting(false)
         // setTimeout(() => {
         // setAssemblyWiseAcc(true)
         // }, 350);
@@ -1156,6 +1159,7 @@ function SimulationApprovalSummary(props) {
                             </Row>
                             <div>
                                 {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                    DisplayCompareCosting={DisplayCompareCosting}
                                     dataForAssemblyImpact={DataForAssemblyImpactForFg}
                                     vendorIdState={costingList[0]?.VendorId}
                                     impactType={'AssemblySummary'}
