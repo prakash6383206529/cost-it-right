@@ -9,13 +9,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
-import { checkForDecimalAndNull } from '../../../helper';
+import { getComparisionSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { checkForDecimalAndNull, formViewData } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
+import { setCostingViewData } from '../../costing/actions/Costing';
+import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -29,6 +31,7 @@ function AssemblyWiseImpact(props) {
     const [loader, setloader] = useState(false);
     const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
+    const [showCostingSummaryTable, setShowCostingSummaryTable] = useState(false)
     const dispatch = useDispatch();
 
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
@@ -95,12 +98,37 @@ function AssemblyWiseImpact(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+    const viewCosting = (id, data, rowIndex) => {
+        let obj = {
+            simulationId: simulationId,
+            costingId: data.CostingId
+        }
+        dispatch(getComparisionSimulationData(obj, res => {
+            const Data = res.data.Data
+            const obj1 = formViewData(Data.OldCosting)
+            dispatch(setCostingViewData(obj1))
+            setShowCostingSummaryTable(true)
+        }))
+    }
+
+    const closeDrawer = () => {
+        setShowCostingSummaryTable(false)
+    }
+
     /**
     * @method costFormatter
     */
     const costFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+    }
+
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <button className="View" title='View' type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
+        )
     }
 
     const onGridReady = (params) => {
@@ -135,7 +163,8 @@ function AssemblyWiseImpact(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
-        costFormatter: costFormatter
+        costFormatter: costFormatter,
+        buttonFormatter: buttonFormatter
     };
 
     return (
@@ -190,12 +219,22 @@ function AssemblyWiseImpact(props) {
                                 <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </Col>
             </Row>
+            {showCostingSummaryTable && <CostingDetailSimulationDrawer
+                isOpen={showCostingSummaryTable}
+                closeDrawer={closeDrawer}
+                anchor={"right"}
+                isReport={true}
+                isSimulation={true}
+                simulationDrawer={true}
+                isOldCosting={true}
+            />}
         </div >
     );
 }
