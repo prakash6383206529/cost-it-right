@@ -92,7 +92,8 @@ function ProfitListing(props) {
 
     var floatingFilterProfit = {
         maxValue: 2,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: 'profit'
     }
 
     useEffect(() => {
@@ -114,7 +115,7 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(overheadProfitList?.length))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
     }, [overheadProfitList])
 
     useEffect(() => {

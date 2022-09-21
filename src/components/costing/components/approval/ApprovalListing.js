@@ -76,7 +76,8 @@ function ApprovalListing(props) {
 
   var floatingFilterStatus = {
     maxValue: 1,
-    suppressFilterButton: true
+    suppressFilterButton: true,
+    component: 'costingApproval'
   }
 
   useEffect(() => {
@@ -93,7 +94,7 @@ function ApprovalListing(props) {
     else {
       setNoData(false)
     }
-    dispatch(getGridHeight(approvalGridData?.length))
+    dispatch(getGridHeight({ value: approvalGridData?.length, component: 'costingApproval' }))
   }, [approvalGridData])
 
 
