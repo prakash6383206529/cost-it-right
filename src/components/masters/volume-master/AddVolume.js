@@ -499,8 +499,9 @@ class AddVolume extends Component {
       Toaster.warning("Please fill atleast one entry")
       return false
     }
-    const filteredArray1 = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
-    if (filteredArray1.length !== 0) {
+    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
+    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
+    if (filteredArrayForNegativeVlaue.length !== 0) {
       return false
     }
     let budgetArray = []
