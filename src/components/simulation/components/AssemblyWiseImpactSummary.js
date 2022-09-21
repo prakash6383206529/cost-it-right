@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, } from 'react';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -9,12 +9,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { checkForDecimalAndNull } from '../../../helper';
+import { checkForDecimalAndNull, formViewData } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
+import { getComparisionSimulationData } from '../actions/Simulation';
+import { setCostingViewData } from '../../costing/actions/Costing';
+import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -22,13 +25,15 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
-    const { impactType } = props;
+    const { impactType, isImpactDrawer, DisplayCompareCosting } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [textFilterSearch, setTextFilterSearch] = useState('')
+    const [showViewAssembly, setShowViewAssembly] = useState(false)
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { initialConfiguration } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
 
     // useEffect(() => {
     //     setloader(true)
@@ -73,22 +78,33 @@ function AssemblyWiseImpactSummary(props) {
     const onBtExport = () => {
         let tempArr = []
         tempArr = simulationAssemblyListSummary
-
         return returnExcelColumn(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
     };
 
 
     const returnExcelColumn = (data = [], TempData) => {
-
-
         return (
-
             <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
+    const closeAssemblyDrawer = () => {
+        setShowViewAssembly(false)
+    }
 
+    const viewCosting = (data, row) => {
+        let obj = {
+            simulationId: row?.SimulationId,
+            costingId: row?.CostingId
+        }
+        dispatch(getComparisionSimulationData(obj, res => {
+            const Data = res.data.Data
+            const obj1 = formViewData(Data.OldCosting)
+            dispatch(setCostingViewData(obj1))
+            setShowViewAssembly(true)
+        }))
+    }
 
     /**
 * @method hyphenFormatter
@@ -106,11 +122,24 @@ function AssemblyWiseImpactSummary(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
     }
 
+
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('isImpactDrawer: ', isImpactDrawer);
+        return (
+            <>
+                <button className={`${isImpactDrawer ? 'View' : 'Balance'}`} title='View' type={'button'} onClick={() => { isImpactDrawer ? viewCosting(cell, row) : DisplayCompareCosting(cell, row) }} />
+            </>
+        )
+    }
+
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
-        costFormatter: costFormatter
+        costFormatter: costFormatter,
+        buttonFormatter: buttonFormatter
     };
 
     return (
@@ -165,12 +194,24 @@ function AssemblyWiseImpactSummary(props) {
                                 <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </Col>
             </Row>
+            {showViewAssembly &&
+                <CostingDetailSimulationDrawer
+                    isOpen={showViewAssembly}
+                    closeDrawer={closeAssemblyDrawer}
+                    anchor={"right"}
+                    isReport={true}
+                    isSimulation={true}
+                    simulationDrawer={true}
+                    isOldCosting={true}
+                />
+            }
         </div >
     );
 }
