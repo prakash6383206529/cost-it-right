@@ -126,7 +126,6 @@ function AssemblyWiseImpactSummary(props) {
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('isImpactDrawer: ', isImpactDrawer);
         return (
             <>
                 <button className={`${isImpactDrawer ? 'View' : 'Balance'}`} title='View' type={'button'} onClick={() => { isImpactDrawer ? viewCosting(cell, row) : DisplayCompareCosting(cell, row) }} />
