@@ -64,7 +64,8 @@ function OverheadListing(props) {
 
     var floatingFilterOverhead = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: 'overhead'
     }
 
     var filterParams = {
@@ -112,7 +113,7 @@ function OverheadListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(overheadProfitList?.length))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'overhead' }))
     }, [overheadProfitList])
 
 
