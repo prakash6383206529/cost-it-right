@@ -324,7 +324,6 @@ function CostingSimulation(props) {
 
     const viewCosting = (id, data, rowIndex) => {
         let obj = {
-            simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
             costingId: data.CostingId
         }
@@ -368,7 +367,6 @@ function CostingSimulation(props) {
             }
             return null
         })
-        console.log(tempArr, "tempArr");
 
         if (tempArr.length > 1) {
 
