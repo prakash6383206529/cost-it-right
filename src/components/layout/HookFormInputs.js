@@ -205,7 +205,7 @@ export const SearchableSelectHookForm = (field) => {
                 }}
                 menuPlacement="auto"
                 styles={dropDownClass && customStyles}
-                onFocus={() => onFocus()}
+                // onFocus={() => onFocus()}
                 options={options}
                 onBlur={onBlur}
                 selected={value}
