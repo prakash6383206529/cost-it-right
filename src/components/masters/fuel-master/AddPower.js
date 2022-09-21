@@ -568,6 +568,8 @@ class AddPower extends Component {
         return false
       }
       if (this.props.invalid === true) {
+        Toaster.warning('Please fill all mandatory fields first')
+
         return false;
       }
       const tempArray = [];

@@ -3480,7 +3480,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[maxLength10]}
+                                validate={[maxLength10, number, postiveNumber]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
@@ -3497,7 +3497,6 @@ class AddMoreDetails extends Component {
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 placeholder={'-'}
-                                validate={[number, postiveNumber]}
                                 component={renderText}
                                 //required={true}
                                 disabled={true}
