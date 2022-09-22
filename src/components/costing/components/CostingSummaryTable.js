@@ -865,8 +865,6 @@ const CostingSummaryTable = (props) => {
     let dataArray = []
     var value = ""
 
-    console.log(viewCostingData, "viewCostingData")
-
     viewCostingData && viewCostingData.map((element, indexOutside) => {
       let nextObj = checkAssembly(viewCostingData[indexOutside])
       if (element?.netRMCostView.length > 1) {
@@ -1115,12 +1113,12 @@ const CostingSummaryTable = (props) => {
                       {!drawerDetailPDF ? <tr>
                         <td>
                           <span className="d-block small-grey-text">RM Name-Grade</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].RMRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].RMRate)}`}>RM Rate</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].ScrapRate)}`}>Scrap Rate</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0].netRMCostView), reducer(viewCostingData[1].netRMCostView))}`}>Gross Weight</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducerFinish(viewCostingData[0].netRMCostView), reducerFinish(viewCostingData[1].netRMCostView))}`}>Finish Weight</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>Burning Loss Weight</span>
-                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0].netRMCostView[0]?.ScrapWeight, viewCostingData[1].netRMCostView[0]?.ScrapWeight)}`}>Scrap Weight</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0]?.rmRate, viewCostingData && viewCostingData[1]?.rmRate)}`}>RM Rate</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0]?.scrapRate, viewCostingData && viewCostingData[1]?.scrapRate)}`}>Scrap Rate</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Gross Weight</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>Finish Weight</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.BurningLossWeight, viewCostingData[1]?.netRMCostView[0]?.BurningLossWeight)}`}>Burning Loss Weight</span>
+                          <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.ScrapWeight, viewCostingData[1]?.netRMCostView[0]?.ScrapWeight)}`}>Scrap Weight</span>
                         </td>
                         {viewCostingData &&
                           viewCostingData?.map((data) => {
@@ -1129,8 +1127,8 @@ const CostingSummaryTable = (props) => {
 
                               < td >
                                 <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : ''}</span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].RMRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].RMRate)}`}>
-                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
+                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                                 <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].ScrapRate)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
