@@ -72,7 +72,9 @@ class AddAssemblyPart extends Component {
       inputLoader: false,
       convertPartToAssemblyPartId: "",
       uploadAttachements: true,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      IsTechnologyUpdateRequired: false
+
     }
   }
 
@@ -81,7 +83,7 @@ class AddAssemblyPart extends Component {
   * @description 
   */
   componentDidMount() {
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+    if (!(this.state.isViewMode)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
     this.setState({ inputLoader: true })
@@ -134,7 +136,13 @@ class AddAssemblyPart extends Component {
               isBomEditable: Data.IsBOMEditable,
               warningMessage: true,
               warningMessageTechnology: Data.IsBOMEditable ? true : false,
-            }, () => this.setState({ isLoader: false }))
+              IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired
+            }, () => {
+              this.setState({ isLoader: false })
+              if (this.state.IsTechnologyUpdateRequired) {
+                this.setState({ warningMessageTechnology: false })
+              }
+            })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -482,6 +490,9 @@ class AddAssemblyPart extends Component {
 
     if (drawerData.length !== 1) {
       this.setState({ minEffectiveDate: this.state.effectiveDate, warningMessage: true, warningMessageTechnology: this.state.isEditFlag ? (this.state.isBomEditable ? true : false) : true })
+      if (this.state.IsTechnologyUpdateRequired) {
+        this.setState({ warningMessageTechnology: false })
+      }
     } else if (drawerData.length === 1) {
       this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false })
     }
@@ -722,7 +733,8 @@ class AddAssemblyPart extends Component {
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges,
-        IsConvertedToAssembly: convertPartToAssembly ? true : false
+        IsConvertedToAssembly: convertPartToAssembly ? true : false,
+        IsTechnologyUpdateRequired: false
       }
 
       if (convertPartToAssembly) {
