@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,7 +52,8 @@ class SpecificationListing extends Component {
             deletedId: '',
             isLoader: false,
             selectedRowData: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -311,7 +313,7 @@ class SpecificationListing extends Component {
     }
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows })
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
 
 
@@ -320,7 +322,7 @@ class SpecificationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID, isBulkUpload, noData } = this.state;
+        const { isOpen, isEditFlag, ID, isBulkUpload, noData, dataCount } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
@@ -405,6 +407,7 @@ class SpecificationListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <SelectRowWrapper dataCount={dataCount} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

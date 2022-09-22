@@ -20,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -39,7 +40,8 @@ class FreightListing extends Component {
       showPopup: false,
       deletedId: '',
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -236,7 +238,7 @@ class FreightListing extends Component {
 
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
 
   onBtExport = () => {
@@ -263,7 +265,7 @@ class FreightListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const ExcelFile = ReactExport.ExcelFile;
-    const { noData } = this.state;
+    const { noData, dataCount } = this.state;
 
     const isFirstColumn = (params) => {
       var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -337,6 +339,7 @@ class FreightListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.freightDetail && this.props.freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
