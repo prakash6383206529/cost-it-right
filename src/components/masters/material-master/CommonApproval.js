@@ -19,7 +19,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, isResetClick } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 
@@ -84,7 +84,7 @@ function CommonApproval(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
@@ -118,7 +118,8 @@ function CommonApproval(props) {
 
     var floatingFilterStatus = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "common"
     }
     useEffect(() => {
         if (approvalList?.length > 0) {
@@ -127,6 +128,7 @@ function CommonApproval(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight({ value: approvalList?.length, component: "common" }))
     }, [approvalList])
 
 

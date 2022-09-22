@@ -3442,6 +3442,9 @@ body {
         }
       }
     }
+    .date-section {
+      min-height: 80px;
+    }
   }
 
   .drawer-wrapper.WIDTH-400 {
@@ -7019,27 +7022,6 @@ body {
   }
 }
 
-.drawer-side-input-other {
-  width: 100%;
-  margin-bottom: -1rem;
-
-  .toggle-button-per-and-fix {
-    margin-top: 0.5rem;
-    display: flex !important;
-    justify-content: space-between;
-
-    .form-group.inputbox.withBorder {
-      min-width: 12rem;
-      margin-right: 1rem;
-      min-height: 0;
-      margin-bottom: 0 !important;
-
-      label {
-        display: none;
-      }
-    }
-  }
-}
 
 .combine-tooltip {
   right: -20px;
@@ -8843,6 +8825,7 @@ table.group-process-table {
   }
 
   .css-2613qy-menu {
+    max-width: 40PX !important;
     margin-top: 0px !important;
     top: 50% !important;
     position: absolute !important;
@@ -8853,4 +8836,15 @@ table.group-process-table {
   overflow: hidden !important;
   background: #fff;
   z-index: 1;
+}
+
+.disabled-overflow {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 12;
+  cursor: not-allowed;
+  &.min-width {
+    width: 97%;
+  }
 }

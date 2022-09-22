@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
+import { MESSAGES } from '../../../config/message';
 
 function RowMaterialMaster(props) {
 
@@ -37,6 +38,7 @@ function RowMaterialMaster(props) {
     const [isRMAssociated, setIsRMAssociated] = useState(false);
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
+    const disabledClass = useSelector((state) => state.comman.disabledClass)
 
 
     /**
@@ -205,9 +207,8 @@ function RowMaterialMaster(props) {
             <Row>
                 <Col>
                     <div>
-                        <Nav tabs className="subtabs mt-0">
-
-
+                        <Nav tabs className="subtabs mt-0 p-relative">
+                            {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
                             {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>

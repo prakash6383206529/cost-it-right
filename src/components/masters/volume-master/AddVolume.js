@@ -247,12 +247,13 @@ class AddVolume extends Component {
   }
 
   /**
-   * @method handlePart
+   * @method handlePartName
    * @description called
    */
-  handlePart = (newValue, actionMeta) => {
+  handlePartName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ part: newValue })
+      this.setState({ part: newValue }, () => {
+      })
     } else {
       this.setState({ part: [] })
     }
@@ -487,7 +488,6 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
       return false
@@ -499,8 +499,11 @@ class AddVolume extends Component {
       Toaster.warning("Please fill atleast one entry")
       return false
     }
-
-
+    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
+    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
+    if (filteredArrayForNegativeVlaue.length !== 0) {
+      return false
+    }
     let budgetArray = []
     tableData && tableData.map((item) => {
       budgetArray.push({
@@ -610,6 +613,28 @@ class AddVolume extends Component {
     }
   };
 
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  // onPageSizeChanged = (newPageSize) => {
+  //   var value = document.getElementById('page-size').value;
+  //   this.state.gridApi.paginationSetPageSize(Number(value));
+  // };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -617,7 +642,7 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable } = this.state;
-    const filterList = (inputValue) => {
+    const vendorFilterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
@@ -630,12 +655,32 @@ class AddVolume extends Component {
         return tempArr.slice(0, 100)
       }
     };
+    const partFilterList = (inputValue) => {
+      let tempArr = []
 
-    const promiseOptions = inputValue =>
+      tempArr = this.renderListing("PartList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = (inputValue, fieldName) =>
       new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
+        switch (fieldName) {
+          case 'vendor':
+            resolve(vendorFilterList(inputValue));
+            break;
+          case 'part':
+            resolve(partFilterList(inputValue))
+            break;
+          default:
+            break;
+        }
       });
 
     const defaultColDef = {
@@ -738,7 +783,7 @@ class AddVolume extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={e => promiseOptions(e, 'vendor')}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -784,25 +829,23 @@ class AddVolume extends Component {
                             </Col>
                           }
                           <Col md="3">
-                            <Field
-                              name="PartNumber"
-                              type="text"
-                              label="Part No."
-                              component={searchableSelect}
-                              placeholder={isEditFlag ? '-' : "Select"}
-                              options={this.renderListing("PartList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.part == null ||
-                                  this.state.part.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handlePart}
-                              valueDescription={this.state.part}
-                              disabled={isEditFlag ? true : false}
-                            />
+                            <label>{"Part No."}<span className="asterisk-required">*</span></label>
+                            <div className="d-flex justify-space-between align-items-center async-select">
+                              <div className="fullinput-icon p-relative">
+                                <AsyncSelect
+                                  name="PartNumber"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={e => promiseOptions(e, 'part')}
+                                  onChange={(e) => this.handlePartName(e)}
+                                  value={this.state.part}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no." : "No results found"}
+                                  onKeyDown={(onKeyDown) => {
+                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </Col>
                           <Col md="3">
                             <Field

@@ -334,6 +334,9 @@ export const MESSAGES = {
 
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
-  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully'
+  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully',
+
+  // COMMON MESSAGES 
+  DOWNLOADING_MESSAGE: 'Please wait while data is downloading'
 
 }

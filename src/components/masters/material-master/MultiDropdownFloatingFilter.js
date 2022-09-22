@@ -16,6 +16,7 @@ function MultiDropdownFloatingFilter(props) {
     const [dropdownData, setDropdownData] = useState([])
     const [selectedPlants, setSelectedPlants] = useState([])
     const [activate, setActivate] = useState(true)
+    const [gridHeight, setGridHeight] = useState(0)
     const dispatch = useDispatch()
     const isReset = useSelector((state) => state.comman.isReset);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -88,7 +89,11 @@ function MultiDropdownFloatingFilter(props) {
 
     }
 
-
+    const onFocus = () => {
+        if (getGridHeight.component === props.component) {
+            setGridHeight(getGridHeight.value)
+        }
+    }
     const onParentModelChanged = (parentModel) => {
         // note that the filter could be anything here, but our purposes we're assuming a greater than filter only,
         // so just read off the value and use that
@@ -122,11 +127,13 @@ function MultiDropdownFloatingFilter(props) {
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
-                    dropdownHeight={getGridHeight}
+                    dropdownHeight={gridHeight}
+                    onFocus={onFocus}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
                     isMulti={true}
+                    dropDownClass={true}
                     mandatory={true}
                     handleChange={(e) => {
                         valueChanged(e)

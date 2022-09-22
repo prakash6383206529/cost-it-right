@@ -140,7 +140,10 @@ function SimulationApprovalSummary(props) {
             let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
                 return o.CostingId;
             });
-
+            setCostingSummary(false)
+            setTimeout(() => {
+                setCostingSummary(true)
+            }, 100);
 
             setCostingList(uniqueArr)
             setDataForDownload(SimulatedCostingList)
@@ -337,9 +340,8 @@ function SimulationApprovalSummary(props) {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
         let obj = {
-            simulationApprovalProcessSummaryId: el,
-            simulationId: EMPTY_GUID,
-            costingId: EMPTY_GUID
+            simulationId: simulationDetail?.SimulationId,
+            costingId: data?.CostingId
         }
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -662,6 +664,7 @@ function SimulationApprovalSummary(props) {
         //     setCount(0)
         // }
         setShowViewAssemblyDrawer(false)
+        setCompareCosting(false)
         // setTimeout(() => {
         // setAssemblyWiseAcc(true)
         // }, 350);
@@ -956,63 +959,37 @@ function SimulationApprovalSummary(props) {
                         {/* {amendment && */}
                         <Row>
                             <Col md="12" className="mb-2">
-                                <Table responsive className="table cr-brdr-main" size="sm">
+                                <Table responsive className="table cr-brdr-main sub-table" size="sm">  {/* sub table class is alternative className which will use in future for added styles */}
                                     <thead>
                                         <tr>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Token No:`}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Technology: `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Parts Supplied: `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Purchase Group:`}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
-                                            </th>
-                                            {
-                                                String(SimulationTechnologyId) !== EXCHNAGERATE &&
-                                                (<th className="align-top">
-                                                    <span className="d-block grey-text">{`Costing Head: `}</span>
-                                                    <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
-                                                </th>)
-                                            }
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Vendor Name: `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`No.of Costing: `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Reason: `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</span>
-                                            </th>
-
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Master:`}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Effective Date: `}</span>
-                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Impact for Quarter(INR):`}</span>
-                                                <span className="d-block">{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey.NoOfDecimalForPrice) : '-')}</span>
-                                            </th>
-                                            {/* <th className="align-top">
-                                                <span className="d-block grey-text">{`Impact for Annum(INR): `}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForAnnum}</span>
-                                            </th>*/}
+                                            <th>Token No:</th>
+                                            <th>Technology:</th>
+                                            <th>Parts Supplied:</th>
+                                            <th>Purchase Group:</th>
+                                            {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
+                                            <th>Vendor Name:</th>
+                                            <th>No. of Costing:</th>
+                                            <th>Reason:</th>
+                                            <th>Master:</th>
+                                            <th>Effective Date:</th>
+                                            <th>Impact for Quarter(INR):</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</td>
+                                            <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
+                                            {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
+                                            <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
+                                            <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey.NoOfDecimalForPrice) : '-')}</td>
+                                        </tr>
+                                    </tbody>
                                 </Table>
                             </Col>
                         </Row>
@@ -1241,6 +1218,7 @@ function SimulationApprovalSummary(props) {
                                 </Row>
                                 <div>
                                     {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                        DisplayCompareCosting={DisplayCompareCosting}
                                         dataForAssemblyImpact={DataForAssemblyImpactForFg}
                                         vendorIdState={costingList[0]?.VendorId}
                                         impactType={'AssemblySummary'}

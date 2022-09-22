@@ -76,7 +76,8 @@ function ApprovalListing(props) {
 
   var floatingFilterStatus = {
     maxValue: 1,
-    suppressFilterButton: true
+    suppressFilterButton: true,
+    component: 'costingApproval'
   }
 
   useEffect(() => {
@@ -93,12 +94,12 @@ function ApprovalListing(props) {
     else {
       setNoData(false)
     }
-    dispatch(getGridHeight(approvalGridData?.length))
+    dispatch(getGridHeight({ value: approvalGridData?.length, component: 'costingApproval' }))
   }, [approvalGridData])
 
 
   useEffect(() => {
-    if (statusColumnData) {
+    if (statusColumnData && statusColumnData.data) {
       setDisableFilter(false)
       setWarningMessage(true)
       setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
@@ -637,7 +638,7 @@ function ApprovalListing(props) {
       return false
     }
 
-    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
       setShowPopup(true)
     } else {
       sendForApprovalDrawer()
@@ -952,7 +953,8 @@ function ApprovalListing(props) {
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                          <AgGridColumn field="NCCPartQuantity" headerName="NCC Part Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
+                          <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
+                          <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
                           <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                           <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>

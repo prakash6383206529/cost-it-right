@@ -24,7 +24,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -92,7 +92,8 @@ function ProfitListing(props) {
 
     var floatingFilterProfit = {
         maxValue: 2,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: 'profit'
     }
 
     useEffect(() => {
@@ -114,7 +115,7 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(overheadProfitList?.length))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
     }, [overheadProfitList])
 
     useEffect(() => {
@@ -154,6 +155,7 @@ function ProfitListing(props) {
 
             if (res && isPagination === false) {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-profit')
                     button && button.click()
@@ -598,10 +600,12 @@ function ProfitListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
+        dispatch(disabledClass(true))
         let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads-profit')
                 button && button.click()
             }, 400);
@@ -648,11 +652,11 @@ function ProfitListing(props) {
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         <form noValidate>
                             <Row className="pt-4">
-                                <Col md="6" className="search-user-block mb-3">
+                                <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                         <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
 
