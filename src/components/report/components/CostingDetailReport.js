@@ -939,6 +939,7 @@ function ReportListing(props) {
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
+                        <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -997,7 +998,6 @@ function ReportListing(props) {
                         <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
