@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import DayTime from '../../common/DayTimeWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -326,6 +327,16 @@ class SOBListing extends Component {
     this.state.gridApi.setQuickFilter(e.target.value);
   }
 
+  /**
+   * @method effectiveDateFormatter
+   * @description Renders buttons
+   */
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+  }
+
   resetState() {
     this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
@@ -451,6 +462,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
