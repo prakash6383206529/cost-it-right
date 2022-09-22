@@ -23,6 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { displayUOM } from '../../../helper/util';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -52,7 +53,8 @@ class UOMMaster extends Component {
       deletedId: '',
       isLoader: false,
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -263,7 +265,7 @@ class UOMMaster extends Component {
   };
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
   onBtExport = () => {
     let tempArr = []
@@ -296,7 +298,7 @@ class UOMMaster extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility, noData } = this.state;
+    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility, noData, dataCount } = this.state;
 
 
     const isFirstColumn = (params) => {
@@ -369,6 +371,7 @@ class UOMMaster extends Component {
               <div className={`ag-grid-wrapper height-width-wrapper  ${(this.state.dataList && this.state.dataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <SelectRowWrapper dataCount={dataCount} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

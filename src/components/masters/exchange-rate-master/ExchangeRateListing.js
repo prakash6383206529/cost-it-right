@@ -25,6 +25,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +56,8 @@ class ExchangeRateListing extends Component {
             showPopup: false,
             deletedId: '',
             selectedRowData: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -278,7 +280,7 @@ class ExchangeRateListing extends Component {
 
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows })
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
 
     onBtExport = () => {
@@ -332,7 +334,7 @@ class ExchangeRateListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData } = this.state;
+        const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData, dataCount } = this.state;
 
         if (toggleForm) {
             return (
@@ -372,6 +374,7 @@ class ExchangeRateListing extends Component {
                             <Row className="pt-4 blue-before zindex-0">
                                 <Col md="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                    <SelectRowWrapper dataCount={dataCount} className="mb-n2" />
                                 </Col>
                                 <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -409,7 +412,7 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper mt-2 ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 
                             <div className="ag-theme-material">
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
