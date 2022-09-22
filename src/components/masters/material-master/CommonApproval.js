@@ -726,6 +726,7 @@ function CommonApproval(props) {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={onFloatingFilterChanged}
                                     isRowSelectable={isRowSelectable}
+                                    enableBrowserTooltips={true}
                                 >
 
 
@@ -789,7 +790,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
