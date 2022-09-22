@@ -26,6 +26,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -57,7 +58,8 @@ class ReasonListing extends Component {
       deletedId: '',
       selectedRowData: false,
       showPopupToggle: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -302,7 +304,7 @@ class ReasonListing extends Component {
   };
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
   onBtExport = () => {
     let tempArr = []
@@ -354,7 +356,7 @@ class ReasonListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility, noData } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility, noData, dataCount } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
@@ -430,6 +432,7 @@ class ReasonListing extends Component {
           <div className={`ag-grid-wrapper height-width-wrapper  ${(this.props.reasonDataList && this.props.reasonDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              <SelectRowWrapper dataCount={dataCount} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

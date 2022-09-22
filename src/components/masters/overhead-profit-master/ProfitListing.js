@@ -25,6 +25,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,6 +58,7 @@ function ProfitListing(props) {
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [dataCount, setDataCount] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
@@ -279,6 +281,7 @@ function ProfitListing(props) {
         dispatch(setSelectedRowForPagination([]))
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        setDataCount(0)
     }
 
 
@@ -533,6 +536,7 @@ function ProfitListing(props) {
 
         let uniqeArray = _.uniqBy(selectedRows, "ProfitId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        setDataCount(uniqeArray.length)
         setSelectedRowData(uniqeArray)
     }
 
@@ -703,6 +707,7 @@ function ProfitListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <SelectRowWrapper dataCount={dataCount} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -725,6 +730,7 @@ function ProfitListing(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelect}
                                             onFilterModified={onFloatingFilterChanged}
+                                            suppressRowClickSelection={true}
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>

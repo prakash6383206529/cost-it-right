@@ -17,6 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,7 +45,8 @@ class SOBListing extends Component {
       showData: false,
       isLoader: false,
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -249,7 +251,7 @@ class SOBListing extends Component {
 
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
 
   onBtExport = () => {
@@ -371,6 +373,7 @@ class SOBListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopSobList && this.props.bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={this.state.dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -393,6 +396,7 @@ class SOBListing extends Component {
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
                   onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  suppressRowClickSelection={true}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                   <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
