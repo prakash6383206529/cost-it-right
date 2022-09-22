@@ -194,14 +194,11 @@ class SpecificationListing extends Component {
     }
 
     /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
+    * @method onFloatingFilterChanged
+    * @description Filter data when user type in searching input
     */
-    filterList = () => {
-        const { RMGrade, RawMaterial } = this.state;
-        const filterRM = RawMaterial ? RawMaterial.value : '';
-        const filterGrade = RMGrade ? RMGrade.value : '';
-        this.getSpecificationListData(filterRM, filterGrade)
+    onFloatingFilterChanged = (value) => {
+        this.props.rmSpecificationList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
     }
 
     /**
@@ -429,7 +426,7 @@ class SpecificationListing extends Component {
                                     }}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>

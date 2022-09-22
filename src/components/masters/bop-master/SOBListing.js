@@ -95,16 +95,13 @@ class SOBListing extends Component {
   }
 
   /**
-  * @method handleHeadChange
-  * @description called
-  */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ costingHead: newValue, });
-    } else {
-      this.setState({ costingHead: [], })
-    }
-  };
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.bopSobList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+
 
   /**
   * @method renderPaginationShowsTotal
@@ -450,7 +447,7 @@ class SOBListing extends Component {
                   frameworkComponents={frameworkComponents}
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
-                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  onFilterModified={this.onFloatingFilterChanged}
                   suppressRowClickSelection={true}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}

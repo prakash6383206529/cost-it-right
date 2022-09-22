@@ -233,6 +233,13 @@ class InterestRateListing extends Component {
   }
 
   /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+  /**
   * @method hyphenFormatter
   */
   hyphenFormatter = (props) => {
@@ -493,7 +500,7 @@ class InterestRateListing extends Component {
                   imagClass: 'imagClass'
                 }}
                 rowSelection={'multiple'}
-                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                onFilterModified={this.onFloatingFilterChanged}
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >

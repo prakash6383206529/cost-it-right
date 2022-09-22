@@ -125,8 +125,13 @@ class FreightListing extends Component {
     this.setState({ showPopup: false })
   }
 
-
-
+  /**
+     * @method onFloatingFilterChanged
+     * @description Filter data when user type in searching input
+     */
+  onFloatingFilterChanged = (value) => {
+    this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
@@ -355,7 +360,7 @@ class FreightListing extends Component {
                   gridOptions={gridOptions}
                   // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
-                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  onFilterModified={this.onFloatingFilterChanged}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
                     imagClass: 'imagClass'

@@ -194,6 +194,13 @@ class ReasonListing extends Component {
   };
 
   /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.reasonDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+  /**
    * @method statusButtonFormatter
    * @description Renders buttons
    */
@@ -446,7 +453,7 @@ class ReasonListing extends Component {
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                onFilterModified={this.onFloatingFilterChanged}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: 'imagClass pt-3'
