@@ -92,7 +92,8 @@ class AddBOPImport extends Component {
       source: '',
       remarks: '',
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -131,9 +132,11 @@ class AddBOPImport extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
       })
     }
@@ -900,7 +903,7 @@ class AddBOPImport extends Component {
       });
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

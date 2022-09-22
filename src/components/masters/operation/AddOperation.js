@@ -79,7 +79,8 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
       operationName: '',
-      operationCode: ''
+      operationCode: '',
+      finalApprovalLoader: false
     }
   }
 
@@ -109,9 +110,11 @@ class AddOperation extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
       })
     }
@@ -752,7 +755,7 @@ class AddOperation extends Component {
 
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">

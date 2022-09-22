@@ -128,7 +128,8 @@ class AddMoreDetails extends Component {
       showErrorOnFocusDate: false,
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
-      powerIdFromAPI: EMPTY_GUID
+      powerIdFromAPI: EMPTY_GUID,
+      finalApprovalLoader: false
     }
     this.dropzone = React.createRef();
   }
@@ -159,9 +160,11 @@ class AddMoreDetails extends Component {
       LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
       LoggedInUserId: loggedInUserId()
     }
+    this.setState({ finalApprovalLoader: true })
     this.props.masterFinalLevelUser(obj, (res) => {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        this.setState({ finalApprovalLoader: false })
       }
 
     })
@@ -2324,7 +2327,7 @@ class AddMoreDetails extends Component {
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
     return (
       <>
-        {(isLoader) && <LoaderCustom />}
+        {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
