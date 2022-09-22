@@ -488,7 +488,6 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
       return false
@@ -500,8 +499,11 @@ class AddVolume extends Component {
       Toaster.warning("Please fill atleast one entry")
       return false
     }
-
-
+    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
+    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
+    if (filteredArrayForNegativeVlaue.length !== 0) {
+      return false
+    }
     let budgetArray = []
     tableData && tableData.map((item) => {
       budgetArray.push({
@@ -632,8 +634,6 @@ class AddVolume extends Component {
   resetState() {
     gridOptions.columnApi.resetColumnState();
   }
-
-
 
   /**
   * @method render

@@ -17,6 +17,7 @@ function SingleDropdownFloationFilter(props) {
     const [activate, setActivate] = useState(true)
     const dispatch = useDispatch()
     const [showInputData, setShowInputData] = useState([])
+    const [gridHeight, setGridHeight] = useState(0)
     const isReset = useSelector((state) => state.comman.isReset);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const getGridHeight = useSelector(state => state.comman.getGridHeight)
@@ -84,7 +85,11 @@ function SingleDropdownFloationFilter(props) {
         setCurrentValue(!parentModel ? 0 : parentModel.filter)
 
     }
-
+    const onFocus = () => {
+        if (getGridHeight.component === props.component) {
+            setGridHeight(getGridHeight.value)
+        }
+    }
     const buildModel = () => {
         if (currentValue === 0) {
             return null;
@@ -111,7 +116,8 @@ function SingleDropdownFloationFilter(props) {
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
-                    dropdownHeight={getGridHeight}
+                    dropdownHeight={gridHeight}
+                    onFocus={onFocus}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}

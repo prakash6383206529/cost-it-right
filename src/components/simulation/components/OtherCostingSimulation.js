@@ -204,7 +204,6 @@ function OtherCostingSimulation(props) {
 
     const viewCosting = (id, data, rowIndex) => {
         let obj = {
-            simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
             costingId: data.CostingId
         }

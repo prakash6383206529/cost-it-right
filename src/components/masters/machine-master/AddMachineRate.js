@@ -668,15 +668,9 @@ class AddMachineRate extends Component {
       if (count > 0) {
         return false;
       }
-      if (maxLength10(fieldsObj.MachineRate)) {
-        Toaster.warning("Max length must be 10")
+      if (maxLength10(fieldsObj.MachineRate) || decimalLengthsix(fieldsObj.MachineRate)) {
         return false
       }
-      if (decimalLengthsix(fieldsObj.MachineRate)) {
-        Toaster.warning("Decimal value should not be more than 6")
-        return false
-      }
-
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
       if (isExist !== -1) {
@@ -687,11 +681,6 @@ class AddMachineRate extends Component {
       // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
       const MachineRate = fieldsObj.MachineRate
-
-      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-      if (MachineRate < 0 || isNaN(MachineRate)) {
-        return false;
-      }
 
       tempArray.push(...processGrid, {
         processName: processName.label,
@@ -735,7 +724,9 @@ class AddMachineRate extends Component {
       return false;
     }
 
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     const MachineRate = fieldsObj.MachineRate
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
     if (MachineRate < 0 || isNaN(MachineRate)) {
