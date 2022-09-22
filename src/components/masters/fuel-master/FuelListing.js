@@ -189,7 +189,13 @@ class FuelListing extends Component {
 
 
 
-
+    /**
+       * @method onFloatingFilterChanged
+       * @description Filter data when user type in searching input
+       */
+    onFloatingFilterChanged = (value) => {
+        this.props.fuelDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
 
 
     formToggle = () => {
@@ -396,7 +402,7 @@ class FuelListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>

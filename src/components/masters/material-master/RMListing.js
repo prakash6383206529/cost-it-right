@@ -75,7 +75,13 @@ class RMListing extends Component {
             }
         })
     }
-
+    /**
+       * @method onFloatingFilterChanged
+       * @description Filter data when user type in searching input
+       */
+    onFloatingFilterChanged = (value) => {
+        this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
 
     /**
   * @method closeDrawer
@@ -359,9 +365,9 @@ class RMListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     rowSelection={'multiple'}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                     frameworkComponents={frameworkComponents}
                                     onSelectionChanged={this.onRowSelect}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

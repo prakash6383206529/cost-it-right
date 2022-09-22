@@ -96,7 +96,13 @@ class IndivisualProductListing extends Component {
 
     }
 
-
+    /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+    onFloatingFilterChanged = (value) => {
+        this.props.productDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
     /**
     * @method deleteItem
     * @description confirm delete part
@@ -433,7 +439,7 @@ class IndivisualProductListing extends Component {
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
-                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                            onFilterModified={this.onFloatingFilterChanged}
                         >
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>

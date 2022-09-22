@@ -158,7 +158,13 @@ class AssemblyPartListing extends Component {
     visualAdDetails = (cell) => {
         this.setState({ visualAdId: cell, isOpenVisualDrawer: true })
     }
-
+    /**
+       * @method onFloatingFilterChanged
+       * @description Filter data when user type in searching input
+       */
+    onFloatingFilterChanged = (value) => {
+        this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
     /**
     * @method closeVisualDrawer
     * @description CLOSE VISUAL AD DRAWER
@@ -394,7 +400,7 @@ class AssemblyPartListing extends Component {
                             rowSelection={'multiple'}
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
-                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                            onFilterModified={this.onFloatingFilterChanged}
                             suppressRowClickSelection={true}
                         >
                             <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={'checkBoxRenderer'}></AgGridColumn>

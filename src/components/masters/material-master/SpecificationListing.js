@@ -195,10 +195,12 @@ class SpecificationListing extends Component {
     }
 
     /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
+    * @method onFloatingFilterChanged
+    * @description Filter data when user type in searching input
     */
-
+    onFloatingFilterChanged = (value) => {
+        this.props.rmSpecificationList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
 
     /**
     * @method resetFilter
@@ -414,7 +416,7 @@ class SpecificationListing extends Component {
                                     }}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
