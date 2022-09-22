@@ -634,7 +634,7 @@ function ApprovalListing(props) {
       return false
     }
 
-    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
       setShowPopup(true)
     } else {
       sendForApprovalDrawer()
