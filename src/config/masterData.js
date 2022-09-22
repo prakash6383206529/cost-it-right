@@ -2861,6 +2861,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plant", },
     { label: "Total SOB(%)", value: "ShareOfBusinessPercentage", },
     { label: "Weighted Net Cost(INR)", value: "WeightedNetLandedCost", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
