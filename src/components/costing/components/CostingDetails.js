@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, NCC } from '../../../config/constants';
+import { EMPTY_DATA, NCC, REJECTED_BY_SYSTEM } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -1859,10 +1859,7 @@ function CostingDetails(props) {
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
 
-                                    let displayCopyBtn = (item.Status === DRAFT ||
-                                      item.Status === PENDING ||
-                                      item.Status === WAITING_FOR_APPROVAL ||
-                                      item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
+                                    let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -2000,7 +1997,7 @@ function CostingDetails(props) {
                               <tbody>
                                 {nccGrid && nccGrid.map((item, index) => {
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (
@@ -2035,7 +2032,7 @@ function CostingDetails(props) {
                                           {AddAccessibility && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCC)} />)}
-                                          {false && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
                                           {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCC)} />)}
                                           {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCC)} />}
                                         </div>
@@ -2104,7 +2101,7 @@ function CostingDetails(props) {
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
                                   let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (
@@ -2168,7 +2165,7 @@ function CostingDetails(props) {
                                           {AddAccessibility && displayAddButton && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                          {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                           {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                           {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                         </div>
