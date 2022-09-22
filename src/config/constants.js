@@ -1590,6 +1590,7 @@ export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
+export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3'
@@ -1985,4 +1986,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.549";
+export const VERSION = "V1.2.550";
