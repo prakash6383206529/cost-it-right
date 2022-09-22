@@ -26,6 +26,7 @@ import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -68,7 +69,8 @@ class BOPImportListing extends Component {
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -227,6 +229,7 @@ class BOPImportListing extends Component {
     resetState = () => {
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
         this.props.setSelectedRowForPagination([])
+        this.setState({ dataCount: 0 })
     }
 
     onBtPrevious = () => {
@@ -564,7 +567,8 @@ class BOPImportListing extends Component {
             }
 
             let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")              //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            this.props.setSelectedRowForPagination(uniqeArray)                        //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.props.setSelectedRowForPagination(uniqeArray)
+            this.setState({ dataCount: uniqeArray.length })                       //SETTING CHECKBOX STATE DATA IN REDUCER
             let finalArr = selectedRows
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
@@ -585,6 +589,7 @@ class BOPImportListing extends Component {
 
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
