@@ -275,6 +275,14 @@ class ZBCPlantListing extends Component {
     }
 
     /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+    onFloatingFilterChanged = (value) => {
+        this.props.plantDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
+
+    /**
     * @name onSubmit
     * @param values
     * @desc Submit the signup form values.
@@ -430,7 +438,7 @@ class ZBCPlantListing extends Component {
                             rowSelection={'multiple'}
                             suppressRowClickSelection={true}
                             onSelectionChanged={this.onRowSelect}
-                            onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                            onFilterModified={this.onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>

@@ -254,7 +254,13 @@ class PowerListing extends Component {
     return <>Effective <br />Date</>
   }
 
-
+  /**
+     * @method onFloatingFilterChanged
+     * @description Filter data when user type in searching input
+     */
+  onFloatingFilterChanged = (value) => {
+    this.props.powerDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -490,7 +496,7 @@ class PowerListing extends Component {
                       imagClass: 'imagClass power-listing'
                     }}
                     rowSelection={'multiple'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={this.onFloatingFilterChanged}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >

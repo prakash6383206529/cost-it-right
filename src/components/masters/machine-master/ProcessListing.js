@@ -330,7 +330,13 @@ class ProcessListing extends Component {
     })
 
   }
-
+  /**
+    * @method onFloatingFilterChanged
+    * @description Filter data when user type in searching input
+    */
+  onFloatingFilterChanged = (value) => {
+    this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -474,7 +480,7 @@ class ProcessListing extends Component {
                     title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
-                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  onFilterModified={this.onFloatingFilterChanged}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

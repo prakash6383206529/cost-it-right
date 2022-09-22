@@ -245,6 +245,13 @@ class ClientListing extends Component {
     }
 
     /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+    onFloatingFilterChanged = (value) => {
+        this.props.clientDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
+    /**
     * @name onSubmit
     * @param values
     * @desc Submit the signup form values.
@@ -399,7 +406,7 @@ class ClientListing extends Component {
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                                onFilterModified={this.onFloatingFilterChanged}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'

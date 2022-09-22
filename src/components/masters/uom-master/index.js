@@ -141,6 +141,13 @@ class UOMMaster extends Component {
   }
 
   /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.state.dataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+  /**
   * @method deleteItem
   * @description confirm delete UOM
   */
@@ -386,7 +393,7 @@ class UOMMaster extends Component {
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={this.onFloatingFilterChanged}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                     }}
