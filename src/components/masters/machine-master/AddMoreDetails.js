@@ -104,6 +104,7 @@ class AddMoreDetails extends Component {
       isProcessGroupOpen: false,
       UOM: [],
       effectiveDate: '',
+      minDate: '',
       updatedObj: {},
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
@@ -204,6 +205,7 @@ class AddMoreDetails extends Component {
       this.props.change('Description', fieldsObj.Description)
       this.props.change('Specification', fieldsObj.Specification)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
+
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
         setTimeout(() => {
@@ -221,7 +223,8 @@ class AddMoreDetails extends Component {
         fieldsObj: fieldsObj,
         selectedTechnology: selectedTechnology,
         machineType: machineType,
-        effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
+        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
       }, () => {
         // if (machineType && machineType.value) {
         //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -327,6 +330,7 @@ class AddMoreDetails extends Component {
 
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           const { machineType, selectedPlants, effectiveDate } = this.state;
           const data = {
             machineTypeId: machineType?.value,
@@ -2633,6 +2637,7 @@ class AddMoreDetails extends Component {
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
+                                minDate={this.state.minDate}
                                 selected={this.state.effectiveDate}
                                 placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
