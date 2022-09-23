@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1260,6 +1260,7 @@ function CostingDetails(props) {
     dispatch(saveBOMLevel(''))
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(isDataChange(false))
+    dispatch(saveAssemblyNumber([]))
 
   }
 

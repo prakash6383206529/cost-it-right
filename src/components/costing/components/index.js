@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { isDataChange, saveBOMLevel, savePartNumber, setPartNumberArrayAPICALL, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
+import { isDataChange, saveAssemblyNumber, saveBOMLevel, savePartNumber, setPartNumberArrayAPICALL, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
@@ -31,6 +31,7 @@ function Costing(props) {
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(savePartNumber(''))
     dispatch(saveBOMLevel(''))
+    dispatch(saveAssemblyNumber([]))
   }
 
   const dispatch = useDispatch();
@@ -71,6 +72,7 @@ function Costing(props) {
     dispatch(savePartNumber(''))
     dispatch(saveBOMLevel(''))
     dispatch(setPartNumberArrayAPICALL([]))
+    dispatch(saveAssemblyNumber([]))
   }
 
   /**

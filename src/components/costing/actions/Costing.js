@@ -37,6 +37,7 @@ import {
   SET_MESSAGE_FOR_ASSEMBLY,
   SET_PROCESS_GROUP_GRID,
   SAVE_BOM_LEVEL_STOP_API_CALL,
+  SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2590,3 +2591,17 @@ export function checkFinalUser(data, callback) {
     })
   }
 }
+
+/**
+ * @method saveAssemblyNumber
+ * @description saveAssemblyNumber
+*/
+export function saveAssemblyNumber(assemblyNumber) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
+      payload: assemblyNumber
+    })
+  }
+}
+
