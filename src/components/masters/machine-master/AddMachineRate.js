@@ -60,7 +60,7 @@ class AddMachineRate extends Component {
       minEffectiveDate: '',
       isDateChange: false,
       oldDate: '',
-
+      disableMachineType: false,
       selectedTechnology: [],
       isVendorNameNotSelected: false,
       vendorName: [],
@@ -102,7 +102,8 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -151,9 +152,11 @@ class AddMachineRate extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
 
       })
@@ -269,6 +272,9 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          if (Data.MachineLabourRates.length !== 0) {
+            this.setState({ disableMachineType: true })
+          }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -1275,7 +1281,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1296,7 +1302,7 @@ class AddMachineRate extends Component {
       });
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -1466,7 +1472,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isViewMode ? true : false}
+                                disabled={(disableMachineType || isViewMode)}
                               />
                             </div>
                           </div>

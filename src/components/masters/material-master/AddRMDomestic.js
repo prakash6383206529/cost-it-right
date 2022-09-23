@@ -111,7 +111,8 @@ class AddRMDomestic extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
   /**
@@ -155,9 +156,11 @@ class AddRMDomestic extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
       })
     }
@@ -1203,7 +1206,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

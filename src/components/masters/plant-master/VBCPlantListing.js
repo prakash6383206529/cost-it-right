@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { showTitleForActiveToggle } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,7 +49,8 @@ class VBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
-            noData: false
+            noData: false,
+            countData: 0
 
         }
     }
@@ -397,6 +399,10 @@ class VBCPlantListing extends Component {
         return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ dataCount: selectedRows?.length })
+    }
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -487,6 +493,7 @@ class VBCPlantListing extends Component {
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -508,6 +515,7 @@ class VBCPlantListing extends Component {
                                 imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}
+                            onRowSelected={this.onRowSelect}
                         >
                             <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>

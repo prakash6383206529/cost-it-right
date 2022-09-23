@@ -18,6 +18,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { getComparisionSimulationData } from '../actions/Simulation';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
+import { Link } from 'react-scroll';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -128,7 +129,7 @@ function AssemblyWiseImpactSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className={`${isImpactDrawer ? 'View' : 'Balance'}`} title='View' type={'button'} onClick={() => { isImpactDrawer ? viewCosting(cell, row) : DisplayCompareCosting(cell, row) }} />
+                <Link to="compare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className={`${isImpactDrawer ? 'View' : 'Balance'}`} title='View' type={'button'} onClick={() => { isImpactDrawer ? viewCosting(cell, row) : DisplayCompareCosting(cell, row) }} /></Link>
             </>
         )
     }
