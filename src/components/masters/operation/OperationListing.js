@@ -32,6 +32,7 @@ import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -78,7 +79,8 @@ class OperationListing extends Component {
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
     componentDidMount() {
@@ -267,6 +269,7 @@ class OperationListing extends Component {
     resetState = () => {
         resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
         this.props.setSelectedRowForPagination([])
+        this.setState({ dataCount: 0 })
     }
 
     onBtPrevious = () => {
@@ -703,6 +706,7 @@ class OperationListing extends Component {
 
             let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
             this.props.setSelectedRowForPagination(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ dataCount: uniqeArray.length })
             let finalArr = selectedRows
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "OperationId")
@@ -832,6 +836,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
                     <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
+                        <SelectRowWrapper dataCount={this.state.dataCount} className="mb-0 mt-n1" />
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
