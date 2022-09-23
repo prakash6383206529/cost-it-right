@@ -13,6 +13,7 @@ import {
   setPartNumberArrayAPICALL,
   setProcessGroupGrid,
   saveBOMLevel,
+  saveAssemblyNumber,
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -21,6 +22,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../../CostingUtil';
+import _ from 'lodash';
 
 
 function PartCompoment(props) {
@@ -30,7 +32,7 @@ function PartCompoment(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
-  const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
@@ -41,7 +43,8 @@ function PartCompoment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
-  const toggle = (BOMLevel, PartNumber, IsOpen) => {
+  const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
+    let isOpen = IsOpen
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
@@ -52,7 +55,15 @@ function PartCompoment(props) {
         return false
       }
 
-      if (Object.keys(costData).length > 0 && !partNumberArrayAPICall.includes(PartNumber)) {
+      let apiCall = true
+      let obj = { part: PartNumber, assembly: AssemblyPartNumber }
+      assemblyNumber && assemblyNumber?.map((item) => {
+        if (_.isEqual(obj, item)) {
+          apiCall = false
+        }
+        return null
+      })
+      if (Object.keys(costData).length > 0 && apiCall && !isOpen) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
@@ -62,6 +73,7 @@ function PartCompoment(props) {
         }
         dispatch(savePartNumber(PartNumber))
         dispatch(setPartNumberArrayAPICALL([...partNumberArrayAPICall, PartNumber]))
+        dispatch(saveAssemblyNumber([...assemblyNumber, { part: PartNumber, assembly: AssemblyPartNumber }]))
         dispatch(saveBOMLevel(BOMLevel))
         // dispatch(savePartNumber(_.uniq([...partNumberAssembly, PartNumber])))
         dispatch(getRMCCTabData(data, false, (res) => {
@@ -102,7 +114,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
     if (IsOpen === true) {
-      toggle(item.BOMLevel, item.PartNumber, item.IsOpen)
+      toggle(item.BOMLevel, item.PartNumber, item.IsOpen, item?.AssemblyPartNumber)
     }
   }, [CloseOpenAccordion])
 
@@ -196,7 +208,7 @@ function PartCompoment(props) {
 
       <tr className="accordian-row" id={`${item && item.PartNumber}`}>
 
-        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber, item.IsOpen)}>
+        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber, item.IsOpen, item?.AssemblyPartNumber)}>
           <span className={`part-name ${item && item.BOMLevel}`} title={item && item.PartNumber}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
