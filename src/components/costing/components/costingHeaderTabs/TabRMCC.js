@@ -425,6 +425,9 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
 
       newItem.CostingPartDetails.BOPHandlingChargeType = obj?.CostingPartDetails?.BOPHandlingChargeType;
+      newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
+      newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
+      newItem.CostingPartDetails.CostingConversionCost = obj?.CostingPartDetails?.CostingConversionCost;
       // newItem.CostingPartDetails.BOPHandlingFixed = checkForNull(obj?.CostingPartDetails?.BOPHandlingFixed);
 
       if (item.CostingChildPartDetails.length > 0) {
@@ -461,6 +464,15 @@ function TabRMCC(props) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let partObj = calculationForPart(rmGrid, item, 'RM', masterBatchObj)
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+            let otherPart = tempArrForCosting && tempArrForCosting.filter((x) => x.PartNumber === item.PartNumber)
+            let tempArrForCosting1 = tempArrForCosting
+            otherPart && otherPart.map((item1) => {
+              let partIndexOther = tempArrForCosting1 && tempArrForCosting1.findIndex((x) => x.PartNumber === item1.PartNumber && x.AssemblyPartNumber === item1.AssemblyPartNumber)
+              let partObjOtherPart = calculationForPart(rmGrid, item1, 'RM', masterBatchObj)
+              tempArrForCosting1 = Object.assign([...tempArrForCosting1], { [partIndexOther]: partObjOtherPart })
+              return null
+            })
+            tempArrForCosting = [...tempArrForCosting1]
             initialPartNo = item.AssemblyPartNumber
             quant = item.CostingPartDetails.Quantity
           }
@@ -571,6 +583,15 @@ function TabRMCC(props) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let partObj = calculationForPart(bopGrid, item, 'BOP', BOPHandlingFields)
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+            let otherPart = tempArrForCosting && tempArrForCosting.filter((x) => x.PartNumber === item.PartNumber)
+            let tempArrForCosting1 = tempArrForCosting
+            otherPart && otherPart.map((item1) => {
+              let partIndexOther = tempArrForCosting1 && tempArrForCosting1.findIndex((x) => x.PartNumber === item1.PartNumber && x.AssemblyPartNumber === item1.AssemblyPartNumber)
+              let partObjOtherPart = calculationForPart(bopGrid, item1, 'BOP', BOPHandlingFields)
+              tempArrForCosting1 = Object.assign([...tempArrForCosting1], { [partIndexOther]: partObjOtherPart })
+              return null
+            })
+            tempArrForCosting = [...tempArrForCosting1]
             initialPartNo = item.AssemblyPartNumber
             quant = item.CostingPartDetails.Quantity
 
@@ -580,7 +601,7 @@ function TabRMCC(props) {
             let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
             let objectToUpdate = tempArrForCosting[indexForUpdate]
             if (objectToUpdate.PartType === 'Sub Assembly') {
-              let tempArr = _.findIndex(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
+              let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
               initialPartNo = objectToUpdate.AssemblyPartNumber
               let subAssemObj = calculationForSubAssembly(objectToUpdate, quant, 'BOP', tempArr)
               quant = objectToUpdate.CostingPartDetails.Quantity
@@ -674,6 +695,15 @@ function TabRMCC(props) {
             let partObj = calculationForPart(conversionGrid, item, 'CC')
 
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+            let otherPart = tempArrForCosting && tempArrForCosting.filter((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
+            let tempArrForCosting1 = tempArrForCosting
+            otherPart && otherPart.map((item1) => {
+              let partIndexOther = tempArrForCosting1 && tempArrForCosting1.findIndex((x) => x.PartNumber === item1.PartNumber && x.AssemblyPartNumber === item1.AssemblyPartNumber)
+              let partObjOtherPart = calculationForPart(conversionGrid, item1, 'CC')
+              tempArrForCosting1 = Object.assign([...tempArrForCosting1], { [partIndexOther]: partObjOtherPart })
+              return null
+            })
+            tempArrForCosting = [...tempArrForCosting1]
             initialPartNo = item.AssemblyPartNumber
             quant = item.CostingPartDetails.Quantity
           }
@@ -1350,7 +1380,6 @@ function TabRMCC(props) {
    * @description FOR APPLYING BOP HANDLING CHARGE TO ASSEMBLY (ONLY FOR ASSEMBLY)
   */
   const setBOPCostWithAsssembly = (obj, item) => {
-    console.log('obj: ', obj);
     let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
     const calculateBOPHandlingForSubAssemblies = (useLevel, item, tempArrForCosting) => {
       let initialPartNo = ''
