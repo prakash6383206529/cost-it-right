@@ -695,8 +695,6 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const checkSOBTotal = () => {
-    // const { zbcPlantGridFields, vbcGridFields } = fieldValues
-
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
@@ -709,8 +707,6 @@ function CostingDetails(props) {
     }, 0)
 
     return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
-    // return true;
-
   }
 
   /**
@@ -763,7 +759,7 @@ function CostingDetails(props) {
   const warningMessageHandle = (warningType) => {
     switch (warningType) {
       case 'SOB_WARNING':
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
         break
       case 'SOB_SAVED_WARNING':
         Toaster.warning('Please save SOB percentage.')
@@ -893,7 +889,7 @@ function CostingDetails(props) {
       )
     }
     else {
-      Toaster.warning('SOB Should not be greater than 100.')
+      Toaster.warning('SOB should not be greater than 100.')
     }
   }, 500)
 
@@ -1305,7 +1301,7 @@ function CostingDetails(props) {
     if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -1419,7 +1415,7 @@ function CostingDetails(props) {
     if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
 
         let tempArr = []
@@ -1508,13 +1504,20 @@ function CostingDetails(props) {
    * @description UPDATE isZBCSOBEnabled STATE
    */
   const updateZBCState = () => {
-    let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-    if (findIndex !== -1) {
-      Toaster.warning('SOB could not be empty.')
-      return false;
-    } else if (checkSOBNegativeExist(ZBC, zbcPlantGrid)) {
-      Toaster.warning('SOB could not be negative.')
-      return false;
+    if (!isZBCSOBEnabled) {
+      let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+      if (!checkSOBTotal()) {
+        Toaster.warning('SOB should not be greater than 100.')
+        return false
+      } else if (checkSOBNegativeExist(ZBC, zbcPlantGrid)) {
+        Toaster.warning('SOB could not be negative.')
+        return false;
+      } else if (findIndex !== -1) {
+        Toaster.warning('SOB could not be empty.')
+        return false;
+      } else {
+        setZBCEnableSOBField(!isZBCSOBEnabled)
+      }
     } else {
       setZBCEnableSOBField(!isZBCSOBEnabled)
     }
@@ -1525,16 +1528,20 @@ function CostingDetails(props) {
    * @description UPDATE isVBCSOBEnabled STATE
    */
   const updateVBCState = () => {
-    let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-    if (!checkSOBTotal()) {
-      Toaster.warning('SOB Should not be greater than 100.')
-      return false
-    } else if (checkSOBNegativeExist(VBC, vbcVendorGrid)) {
-      Toaster.warning('SOB could not be negative.')
-      return false;
-    } else if (findIndex !== -1) {
-      Toaster.warning('SOB could not be empty.')
-      return false;
+    if (!isVBCSOBEnabled) {
+      let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+      if (!checkSOBTotal()) {
+        Toaster.warning('SOB should not be greater than 100.')
+        return false
+      } else if (checkSOBNegativeExist(VBC, vbcVendorGrid)) {
+        Toaster.warning('SOB could not be negative.')
+        return false;
+      } else if (findIndex !== -1) {
+        Toaster.warning('SOB could not be empty.')
+        return false;
+      } else {
+        setVBCEnableSOBField(!isVBCSOBEnabled)
+      }
     } else {
       setVBCEnableSOBField(!isVBCSOBEnabled)
     }
