@@ -7,10 +7,11 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
+import WarningMessage from '../../../../common/WarningMessage';
 
 let counter = 0;
 function BOPCost(props) {
@@ -37,6 +38,7 @@ function BOPCost(props) {
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
+  const [percentageLimit, setPercentageLimit] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -330,6 +332,7 @@ function BOPCost(props) {
         }
         BOPHandling = calculatePercentageValue(netBOPCost(gridData), value)
       } else {
+        setPercentageLimit(decimalAndNumberValidationBoolean(value))
         BOPHandling = value
       }
       setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration.NoOfDecimalForPrice))
@@ -602,36 +605,40 @@ function BOPCost(props) {
                     mandatory={false}
                     handleChange={handleBOPHandlingType}
                     errors={errors.BOPHandlingType}
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                   />
                 </Col>}
               {IsApplyBOPHandlingCharges &&
                 <Col md="2" >
                   {BOPHandlingType === 'Fixed' ?
-                    <NumberFieldHookForm
-                      label={'Fixed'}
-                      name={"BOPHandlingFixed"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        }
-                      }}
-                      handleChange={(e) => {
-                        e.preventDefault();
-                        handleBOPPercentageChange(e.target.value);
-                      }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      // errors={errors.BOPHandlingPercentage}
-                      disabled={(CostingViewMode || IsLocked) ? true : false}
-                    /> :
+                    <div className='p-relative error-wrapper'>
+                      <NumberFieldHookForm
+                        label={'Fixed'}
+                        name={"BOPHandlingFixed"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.'
+                          }
+                        }}
+                        handleChange={(e) => {
+                          e.preventDefault();
+                          handleBOPPercentageChange(e.target.value);
+                        }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        // errors={errors.BOPHandlingPercentage}
+                        disabled={(CostingViewMode || IsLocked) ? true : false}
+                      />
+                      {percentageLimit && <WarningMessage dClass={"error-message mt-3"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Maximum length for integer is 6 and for decimal is 6."} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                    </div>
+                    :
                     <NumberFieldHookForm
                       label={'Percentage'}
                       name={"BOPHandlingPercentage"}
@@ -642,8 +649,8 @@ function BOPCost(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,3}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for decimal is 6.'
                         },
                         max: {
                           value: 100,
