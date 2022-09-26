@@ -1949,7 +1949,7 @@ function CostingDetails(props) {
                                 className={"user-btn"}
                                 onClick={nccDrawerToggle}
                               >
-                                <div className={"plus"}></div>Vendor/Plant
+                                <div className={"plus"}></div>Vendor
                               </button>
                             ) : (
                               ""
