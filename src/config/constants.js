@@ -1320,6 +1320,7 @@ export const SET_PART_NUMBER_ARRAY_API_CALL = 'SET_PART_NUMBER_ARRAY_API_CALL'
 export const SET_MESSAGE_FOR_ASSEMBLY = 'SET_MESSAGE_FOR_ASSEMBLY'
 export const SET_PROCESS_GROUP_GRID = 'SET_PROCESS_GROUP_GRID'
 export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
+export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1590,6 +1591,7 @@ export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
+export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3'
@@ -1685,7 +1687,7 @@ export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
-
+export const COMPANY = 'Company'
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
 export const WDM = 'WDM'
@@ -1693,6 +1695,7 @@ export const WDM = 'WDM'
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
 export const NCC = 'NCC'
+export const WAC = 'WAC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
@@ -1986,4 +1989,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.537";
+export const VERSION = "V1.2.555";

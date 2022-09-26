@@ -5,7 +5,7 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
 import { getConfigurationKey } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
+import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
@@ -47,7 +47,7 @@ class User extends Component {
 
       const userPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === USER)
       const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
-      const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DEPARTMENT)
+      const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)

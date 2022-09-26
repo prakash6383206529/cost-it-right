@@ -25,6 +25,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { searchableSelect } from '../../layout/FormInputs'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { searchNocontentFilter } from '../../../helper'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -47,7 +48,8 @@ class ProcessListing extends Component {
       showPopup: false,
       deletedId: '',
       isLoader: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -386,7 +388,13 @@ class ProcessListing extends Component {
     })
 
   }
-
+  /**
+    * @method onFloatingFilterChanged
+    * @description Filter data when user type in searching input
+    */
+  onFloatingFilterChanged = (value) => {
+    this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -414,7 +422,7 @@ class ProcessListing extends Component {
   };
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
   onBtExport = () => {
     let tempArr = []
@@ -569,6 +577,7 @@ class ProcessListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.processList && this.props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={this.state.dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -589,7 +598,7 @@ class ProcessListing extends Component {
                     title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
-                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  onFilterModified={this.onFloatingFilterChanged}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

@@ -215,20 +215,9 @@ class AddFuel extends Component {
       if (count > 0) {
         return false
       }
-
-      if (decimalLengthsix(Rate)) {
-        Toaster.warning("Decimal value should not be more than 6")
-        return false
-      }
-      if (positiveAndDecimalNumber(Rate)) {
-        Toaster.warning("Enter valid value")
-        return false
-
-      } else {
-        if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
-          Toaster.warning('Fields should not be empty');
-          return false;
-        }
+      if (this.props.invalid === true) {
+        Toaster.warning('Please fill all mandatory fields first')
+        return false;
       }
       if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
         return false
@@ -273,6 +262,9 @@ class AddFuel extends Component {
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate, rateGridEditIndex) !== 0) {
       return false
+    }
+    if (this.props.invalid === true) {
+      return false;
     }
     let tempArray = [];
 

@@ -76,7 +76,8 @@ function ApprovalListing(props) {
 
   var floatingFilterStatus = {
     maxValue: 1,
-    suppressFilterButton: true
+    suppressFilterButton: true,
+    component: 'costingApproval'
   }
 
   useEffect(() => {
@@ -93,12 +94,12 @@ function ApprovalListing(props) {
     else {
       setNoData(false)
     }
-    dispatch(getGridHeight(approvalGridData?.length))
+    dispatch(getGridHeight({ value: approvalGridData?.length, component: 'costingApproval' }))
   }, [approvalGridData])
 
 
   useEffect(() => {
-    if (statusColumnData) {
+    if (statusColumnData && statusColumnData.data) {
       setDisableFilter(false)
       setWarningMessage(true)
       setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
@@ -633,7 +634,7 @@ function ApprovalListing(props) {
       return false
     }
 
-    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed) {
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
       setShowPopup(true)
     } else {
       sendForApprovalDrawer()

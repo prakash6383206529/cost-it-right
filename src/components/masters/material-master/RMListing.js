@@ -19,6 +19,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -41,7 +42,8 @@ class RMListing extends Component {
             deletedId: '',
             isLoader: false,
             selectedRowData: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -73,7 +75,13 @@ class RMListing extends Component {
             }
         })
     }
-
+    /**
+       * @method onFloatingFilterChanged
+       * @description Filter data when user type in searching input
+       */
+    onFloatingFilterChanged = (value) => {
+        this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
 
     /**
   * @method closeDrawer
@@ -216,7 +224,7 @@ class RMListing extends Component {
     };
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows })
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
 
     onBtExport = () => {
@@ -258,7 +266,7 @@ class RMListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID, noData } = this.state;
+        const { isOpen, isEditFlag, ID, noData, dataCount } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
@@ -335,6 +343,7 @@ class RMListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <SelectRowWrapper dataCount={dataCount} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -355,9 +364,9 @@ class RMListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     rowSelection={'multiple'}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                                     frameworkComponents={frameworkComponents}
                                     onSelectionChanged={this.onRowSelect}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

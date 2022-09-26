@@ -37,7 +37,7 @@ class AddLabour extends Component {
 
       IsEmployeContractual: true,
       IsVendor: false,
-
+      labourData: [],
       vendorName: [],
       StateName: [],
       selectedPlants: [],
@@ -151,8 +151,8 @@ class AddLabour extends Component {
       VendorLabourTypeSelectList,
       stateList,
       machineTypeSelectList,
-      labourTypeByMachineTypeSelectList,
     } = this.props
+    const { labourData } = this.state
     const temp = []
 
     if (label === 'state') {
@@ -194,8 +194,8 @@ class AddLabour extends Component {
     }
 
     if (label === 'labourList') {
-      labourTypeByMachineTypeSelectList &&
-        labourTypeByMachineTypeSelectList.map((item) => {
+      labourData &&
+        labourData.map((item) => {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
           temp.push({ label: item.Text, value: item.Value })
@@ -280,7 +280,6 @@ class AddLabour extends Component {
       this.setState({ selectedPlants: [] })
     }
   }
-
   /**
    * @method handleMachineType
    * @description called
@@ -289,10 +288,13 @@ class AddLabour extends Component {
     if (newValue && newValue !== '') {
       this.setState({ machineType: newValue, labourType: [] }, () => {
         const { machineType } = this.state
-        this.props.getLabourTypeByMachineTypeSelectList(
-          { machineTypeId: machineType.value },
-          () => { },
-        )
+        const data = {
+          machineTypeId: machineType.value
+        }
+        this.props.getLabourTypeByMachineTypeSelectList(data, (res) => {
+          const Data = res.data.SelectList
+          this.setState({ labourData: Data })
+        })
       })
     } else {
       this.setState({ machineType: [], labourType: [] })
@@ -340,9 +342,11 @@ class AddLabour extends Component {
       this.setState({ labourType: [] })
     }
   }
+
   findLabourtype = (clickedData, arr) => {
+    const { machineType } = this.state
     let isLabourType = _.find(arr, function (obj) {
-      if (obj.LabourTypeId === clickedData) {
+      if (String(machineType.value) === String(obj.MachineTypeId) && String(obj.LabourTypeId) === String(clickedData)) {
         return true;
       } else {
         return false
@@ -370,7 +374,6 @@ class AddLabour extends Component {
     }
     let count = 0;
     setTimeout(() => {
-
       if (machineType.length === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, machineType: true } })
         count++;
@@ -390,21 +393,9 @@ class AddLabour extends Component {
       if (count > 0) {
         return false
       }
-
-      if (fieldsObj !== undefined && isNaN(Number(fieldsObj))) {
-        Toaster.warning('Please enter valid value.')
+      if (this.props.invalid === true) {
         return false;
       }
-      if (maxLength10(fieldsObj)) {
-        return false;
-      }
-
-      if (decimalLengthsix(Number(fieldsObj))) {
-        Toaster.warning('Decimal value should not be more than 6')
-        return false;
-      }
-
-
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = gridTable.findIndex((el) =>
@@ -415,10 +406,9 @@ class AddLabour extends Component {
         Toaster.warning('Already added, Please check the values.')
         return false
       }
-
       const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
-      const tempArray = []
 
+      const tempArray = []
 
       tempArray.push(...gridTable, {
         LabourDetailId: '',
@@ -478,7 +468,9 @@ class AddLabour extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false
     }
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     let tempArray = []
 
     let tempData = gridTable[gridEditIndex]
@@ -680,8 +672,6 @@ class AddLabour extends Component {
    * @description Renders the component
    */
   render() {
-
-
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
 
@@ -1061,7 +1051,6 @@ function mapStateToProps(state) {
   const { supplier, machine, fuel, labour, auth, comman } = state
   const {
     VendorLabourTypeSelectList,
-    labourTypeByMachineTypeSelectList,
   } = labour
   const { stateList } = comman;
 
@@ -1076,7 +1065,6 @@ function mapStateToProps(state) {
     plantSelectList,
     vendorWithVendorCodeSelectList,
     machineTypeSelectList,
-    labourTypeByMachineTypeSelectList,
     VendorLabourTypeSelectList,
     fieldsObj,
     initialValues,

@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import Toaster from '../../common/Toaster';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -47,7 +48,8 @@ class FuelListing extends Component {
             showPopup: false,
             deletedId: '',
             selectedRowData: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -200,7 +202,13 @@ class FuelListing extends Component {
 
 
 
-
+    /**
+       * @method onFloatingFilterChanged
+       * @description Filter data when user type in searching input
+       */
+    onFloatingFilterChanged = (value) => {
+        this.props.fuelDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
 
 
     formToggle = () => {
@@ -253,7 +261,7 @@ class FuelListing extends Component {
     };
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows })
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
     onBtExport = () => {
         let tempArr = []
@@ -292,7 +300,7 @@ class FuelListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload, noData } = this.state;
+        const { isBulkUpload, noData, dataCount } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         const isFirstColumn = (params) => {
@@ -387,6 +395,7 @@ class FuelListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.fuelDataList && this.props.fuelDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <SelectRowWrapper dataCount={dataCount} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -408,7 +417,7 @@ class FuelListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
-                                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>

@@ -699,9 +699,9 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
@@ -735,9 +735,9 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
@@ -776,9 +776,9 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
@@ -1389,8 +1389,8 @@ export const ZBCInterestRateTempData = [
 export const VBCInterestRate = [
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'PlantName', value: 'PlantName' },
-    { label: 'PlantCode', value: 'PlantCode' },
+    { label: "PlantName", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode", },
     { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
     { label: 'ICCPercent', value: 'ICCPercent', }, //*
     { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
@@ -1403,8 +1403,8 @@ export const VBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
-        'PlantName': '1511',
-        "PlantCode": '1511',
+        "PlantName": "1511",
+        "PlantCode": "1511",
         'ICCApplicability': 'RM+CC',
         'ICCPercent': '10   ',
         'PaymentTermApplicability': 'RM',
@@ -2801,6 +2801,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plant", },
     { label: "Total SOB(%)", value: "ShareOfBusinessPercentage", },
     { label: "Weighted Net Cost(INR)", value: "WeightedNetLandedCost", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [

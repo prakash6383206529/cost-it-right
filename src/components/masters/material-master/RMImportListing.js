@@ -29,6 +29,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -68,6 +69,7 @@ function RMImportListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
   const [noData, setNoData] = useState(false)
+  const [dataCount, setDataCount] = useState(false)
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -673,6 +675,7 @@ function RMImportListing(props) {
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    setDataCount(0)
   }
 
 
@@ -710,6 +713,7 @@ function RMImportListing(props) {
 
     let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    setDataCount(uniqeArray.length)
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
@@ -836,6 +840,7 @@ function RMImportListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact

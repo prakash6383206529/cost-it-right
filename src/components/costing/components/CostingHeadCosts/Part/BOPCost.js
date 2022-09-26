@@ -75,7 +75,7 @@ function BOPCost(props) {
         }
 
         if (gridData?.length === 0) {
-          setIsApplyBOPHandlingCharges(!IsApplyBOPHandlingCharges)
+          setIsApplyBOPHandlingCharges(false)
         }
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
