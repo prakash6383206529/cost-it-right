@@ -6,7 +6,7 @@ import {
 import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { COMPANY, defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
 import { checkPermission, searchNocontentFilter } from '../../helper/util';
@@ -50,7 +50,7 @@ class DepartmentsListing extends Component {
     const { topAndLeftMenuData } = this.props;
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-      const accessData = userMenu && userMenu.Pages.find(el => el.PageName === DEPARTMENT)
+      const accessData = userMenu && userMenu.Pages.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
