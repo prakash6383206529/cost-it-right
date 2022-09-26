@@ -1067,7 +1067,7 @@ class AddAssemblyPart extends Component {
                               label={`Group Code`}
                               name={"GroupCode"}
                               type="text"
-                              placeholder={isViewMode ? '-' : "Select Date"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                               component={renderText}
                               className=""
