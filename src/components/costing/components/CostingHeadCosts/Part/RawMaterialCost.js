@@ -1088,8 +1088,8 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    value: /^\d*\.?\d*$/,
-                                    message: 'Invalid Number.',
+                                    value: /^\s*-?[0-9]{1,18}\s*$/,
+                                    message: 'Maximum length for decimal is 18.',
                                   },
                                 }}
                                 defaultValue={item.GrossWeight}
@@ -1099,7 +1099,7 @@ function RawMaterialCost(props) {
                                   e.preventDefault()
                                   handleGrossWeightChange(e?.target?.value, index)
                                 }}
-                                errors={!gridData[index].GrossWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                 disabled={(CostingViewMode || IsLocked) ? true : false}
                               />
                             </td>
@@ -1114,8 +1114,8 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    value: /^\d*\.?\d*$/,
-                                    message: 'Invalid Number.',
+                                    value: /^\s*-?[0-9]{1,18}\s*$/,
+                                    message: 'Maximum length for decimal is 18.',
                                   },
                                 }}
                                 defaultValue={item.FinishWeight}
@@ -1125,7 +1125,7 @@ function RawMaterialCost(props) {
                                   e.preventDefault()
                                   handleFinishWeightChange(e?.target?.value, index)
                                 }}
-                                errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
                                 disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
                               />
                             </td>
