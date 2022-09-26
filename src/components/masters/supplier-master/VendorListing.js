@@ -586,7 +586,7 @@ class VendorListing extends Component {
                         <h1 className="mb-0">Vendor Master</h1>
                     </Col>
                 </Row>
-                {this.state.isLoader && <LoaderCustom />}
+                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Row className="pt-4 no-filter-row zindex-2">
                     <Col md="3"></Col>
                     <Col md="9">
@@ -649,7 +649,7 @@ class VendorListing extends Component {
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                    <div className={`ag-theme-material no-content-wrapper ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}

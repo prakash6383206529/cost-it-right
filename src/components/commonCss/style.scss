@@ -7005,6 +7005,11 @@ body {
   .nodate-section {
     bottom: 61px !important;
   }
+  .no-content-wrapper {
+    .nodate-section {
+      bottom: 100px !important;
+    }
+  }
 }
 
 .button-wrapper {
