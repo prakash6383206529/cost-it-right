@@ -286,6 +286,37 @@ function RawMaterialCost(props) {
     setWeightDrawerOpen(false)
   }
 
+  const checkCutOffNegative = (value, index) => {
+    if (value < 0) {
+      setTimeout(() => {
+        setValue(`${rmGridFields}.${index}.GrossWeight`, '')
+        setValue(`${rmGridFields}.${index}.FinishWeight`, '')
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+
+      }, 300);
+      let tempArr = []
+      let tempData = gridData[index]
+      tempData = {
+        ...tempData,
+        GrossWeight: 0,
+        FinishWeight: 0,
+        NetLandedCost: 0,
+        WeightCalculatorRequest: {},
+        WeightCalculationId: "00000000-0000-0000-0000-000000000000",
+        IsCalculatedEntry: false,
+        CutOffRMC: 0,
+        ScrapWeight: 0,
+        ScrapRecoveryPercentage: 0
+      }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setTimeout(() => {
+        setGridData(tempArr)
+      }, 100);
+    }
+    Toaster.warning('Scrap weight is larger than Cut Off price')
+    return false
+  }
+
   /**
    * @method handleGrossWeightChange
    * @description HANDLE GROSS WEIGHT CHANGE
@@ -315,6 +346,10 @@ function RawMaterialCost(props) {
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+        if (checkCutOffNegative(CutOffRMC, index)) {
+          return false
+        }
+
         tempData = {
           ...tempData,
           GrossWeight: GrossWeight ? GrossWeight : 0,
@@ -358,6 +393,9 @@ function RawMaterialCost(props) {
 
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+        if (checkCutOffNegative(CutOffRMC, index)) {
+          return false
+        }
         const ApplicableFinishWeight = 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = {
@@ -424,6 +462,9 @@ function RawMaterialCost(props) {
       // ternary condition
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+      if (checkCutOffNegative(CutOffRMC, index)) {
+        return false
+      }
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       tempData = {
         ...tempData,
@@ -482,6 +523,9 @@ function RawMaterialCost(props) {
         // ternary condition
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost) : 0;
+        if (checkCutOffNegative(CutOffRMC, index)) {
+          return false
+        }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
 
         tempData = {
@@ -529,6 +573,9 @@ function RawMaterialCost(props) {
 
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+        if (checkCutOffNegative(CutOffRMC, index)) {
+          return false
+        }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - 0;
 
         tempData = {
@@ -593,6 +640,9 @@ function RawMaterialCost(props) {
       const recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
       const ScrapCost = FinishWeight !== 0 ? recoveredScrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+      if (checkCutOffNegative(CutOffRMC, index)) {
+        return false
+      }
 
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
 
