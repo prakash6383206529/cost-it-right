@@ -10,6 +10,7 @@ import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constan
 import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 
 class OverheadProfit extends Component {
   constructor(props) {
@@ -66,12 +67,14 @@ class OverheadProfit extends Component {
   * @description toggling the tabs
   */
   toggle = (tab) => {
+
     if (this.state.activeTab !== tab) {
       this.setState({
         activeTab: tab,
         stopApiCallOnCancel: false
       });
     }
+    this.props.setSelectedRowForPagination([])
   }
 
   displayOverheadForm = () => {
@@ -216,5 +219,6 @@ function mapStateToProps({ overheadProfit, auth, comman }) {
 
 export default connect(mapStateToProps,
   {
+    setSelectedRowForPagination
   })(OverheadProfit);
 

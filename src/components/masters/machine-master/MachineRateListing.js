@@ -28,6 +28,7 @@ import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -72,7 +73,8 @@ class MachineRateListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             disableFilter: true,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -212,6 +214,7 @@ class MachineRateListing extends Component {
     resetState = () => {
         this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
+        this.setState({ dataCount: 0 })
     }
 
     onBtPrevious = () => {
@@ -618,6 +621,7 @@ class MachineRateListing extends Component {
 
             let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
             this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ dataCount: uniqeArray.length })
             this.setState({ selectedRowData: selectedRows })
 
 
@@ -709,7 +713,7 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-
+                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1 mt-n1" />
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
@@ -731,6 +735,7 @@ class MachineRateListing extends Component {
                                     rowSelection={'multiple'}
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}

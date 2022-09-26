@@ -111,7 +111,8 @@ class AddRMImport extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -157,9 +158,11 @@ class AddRMImport extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
       })
     }
@@ -1167,13 +1170,13 @@ class AddRMImport extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
               <div className="row">
                 <div className="col-md-12">
                   <div className="shadow-lgg login-formg">
+                    {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
                     <div className="row">
                       <div className="col-md-6">
                         <h2>

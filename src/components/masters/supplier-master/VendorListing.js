@@ -30,6 +30,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -76,7 +77,8 @@ class VendorListing extends Component {
             globalTake: defaultPageSize,
             disableFilter: true,
             disableDownload: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -490,6 +492,7 @@ class VendorListing extends Component {
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        this.setState({ dataCount: 0 })
     }
     onExcelDownload = () => {
 
@@ -509,6 +512,10 @@ class VendorListing extends Component {
 
             this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
+    }
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ dataCount: selectedRows.length })
     }
 
     onBtExport = () => {
@@ -586,7 +593,6 @@ class VendorListing extends Component {
                         <h1 className="mb-0">Vendor Master</h1>
                     </Col>
                 </Row>
-                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Row className="pt-4 no-filter-row zindex-2">
                     <Col md="3"></Col>
                     <Col md="9">
@@ -645,11 +651,14 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+
+                {<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material no-content-wrapper ${this.state.isLoader && "max-loader-height"}`}>
+                        {this.state.isLoader && <LoaderCustom />}
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -668,6 +677,7 @@ class VendorListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            onRowSelected={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                             enablePivot={true}
                             enableBrowserTooltips={true}

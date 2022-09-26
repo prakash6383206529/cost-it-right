@@ -59,7 +59,7 @@ class AddMachineRate extends Component {
       minEffectiveDate: '',
       isDateChange: false,
       oldDate: '',
-
+      disableMachineType: false,
       selectedTechnology: [],
       isVendorNameNotSelected: false,
       vendorName: [],
@@ -101,7 +101,8 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -133,12 +134,12 @@ class AddMachineRate extends Component {
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
 
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
+      this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
     if (!editDetails.isViewMode) {
@@ -150,9 +151,11 @@ class AddMachineRate extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
 
       })
@@ -263,6 +266,9 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          if (Data.MachineLabourRates.length !== 0) {
+            this.setState({ disableMachineType: true })
+          }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -420,17 +426,6 @@ class AddMachineRate extends Component {
       }
     });
     return isContainGroup
-  }
-
-
-
-  closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
-    this.setState({ setDisable: false })
-    if (type === 'submit') {
-
-      this.cancel()
-    }
   }
 
 
@@ -672,15 +667,9 @@ class AddMachineRate extends Component {
       if (count > 0) {
         return false;
       }
-      if (maxLength10(fieldsObj.MachineRate)) {
-        Toaster.warning("Max length must be 10")
+      if (maxLength10(fieldsObj.MachineRate) || decimalLengthsix(fieldsObj.MachineRate)) {
         return false
       }
-      if (decimalLengthsix(fieldsObj.MachineRate)) {
-        Toaster.warning("Decimal value should not be more than 6")
-        return false
-      }
-
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
       if (isExist !== -1) {
@@ -691,11 +680,6 @@ class AddMachineRate extends Component {
       // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
       const MachineRate = fieldsObj.MachineRate
-
-      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-      if (MachineRate < 0 || isNaN(MachineRate)) {
-        return false;
-      }
 
       tempArray.push(...processGrid, {
         processName: processName.label,
@@ -739,7 +723,9 @@ class AddMachineRate extends Component {
       return false;
     }
 
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     const MachineRate = fieldsObj.MachineRate
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
     if (MachineRate < 0 || isNaN(MachineRate)) {
@@ -1288,7 +1274,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1309,7 +1295,7 @@ class AddMachineRate extends Component {
       });
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -1479,7 +1465,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isViewMode ? true : false}
+                                disabled={(disableMachineType || isViewMode)}
                               />
                             </div>
                           </div>
@@ -1803,7 +1789,6 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
-
 
                               {
                                 (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?

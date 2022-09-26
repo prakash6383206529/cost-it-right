@@ -17,6 +17,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
+import DayTime from '../../common/DayTimeWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,7 +46,8 @@ class SOBListing extends Component {
       showData: false,
       isLoader: false,
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -92,16 +95,13 @@ class SOBListing extends Component {
   }
 
   /**
-  * @method handleHeadChange
-  * @description called
-  */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ costingHead: newValue, });
-    } else {
-      this.setState({ costingHead: [], })
-    }
-  };
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.bopSobList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+
 
   /**
   * @method renderPaginationShowsTotal
@@ -293,7 +293,7 @@ class SOBListing extends Component {
 
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
 
   onBtExport = () => {
@@ -322,6 +322,16 @@ class SOBListing extends Component {
 
   onFilterTextBoxChanged(e) {
     this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  /**
+   * @method effectiveDateFormatter
+   * @description Renders buttons
+   */
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
 
   resetState() {
@@ -415,6 +425,7 @@ class SOBListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopSobList && this.props.bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={this.state.dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -436,7 +447,8 @@ class SOBListing extends Component {
                   frameworkComponents={frameworkComponents}
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
-                  onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                  onFilterModified={this.onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                   <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
@@ -447,6 +459,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

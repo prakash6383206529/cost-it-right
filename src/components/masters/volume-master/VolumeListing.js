@@ -24,6 +24,7 @@ import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -119,6 +120,7 @@ function VolumeListing(props) {
   const [deletedId, setDeletedId] = useState('');
   const [isLoader, setIsLoader] = useState(false);
   const [limit, setLimit] = useState(false);
+  const [dataCount, setDataCount] = useState(0);
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
@@ -370,6 +372,7 @@ function VolumeListing(props) {
     let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
 
 
@@ -560,7 +563,7 @@ function VolumeListing(props) {
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-
+    setDataCount(0)
   }
 
   /**
@@ -725,6 +728,7 @@ function VolumeListing(props) {
             <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

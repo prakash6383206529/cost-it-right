@@ -201,6 +201,12 @@ function Coil(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
+        if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
+            Toaster.warning('Finish Weight can not be zero')
+            setIsDisable(false)
+            setValue('FinishWeight', '')
+            return false
+        }
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)

@@ -69,7 +69,8 @@ function SimulationApprovalListing(props) {
 
     var floatingFilterStatus = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "simulationApproval"
     }
 
     var filterParams = {
@@ -133,7 +134,7 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
@@ -150,7 +151,7 @@ function SimulationApprovalListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(isDashboard ? simualtionApprovalList?.length : simualtionApprovalListDraft?.length))
+        dispatch(getGridHeight({ value: isDashboard ? simualtionApprovalList?.length : simualtionApprovalListDraft?.length, component: "simulationApproval" }))
     }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
 
 

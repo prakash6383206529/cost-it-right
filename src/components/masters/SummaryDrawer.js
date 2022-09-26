@@ -12,6 +12,8 @@ import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
 import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
+import { loggedInUserId } from '../../helper';
+import { checkFinalUser } from '../costing/actions/Costing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -44,7 +46,7 @@ function SummaryDrawer(props) {
     const [isOperationApproval, setIsOperationApproval] = useState(false)
     const [isMachineApproval, setIsMachineApproval] = useState(false)
     const [isDataInMaster, setIsDataInMaster] = useState(false)
-
+    const [finalLevelUser, setFinalLevelUser] = useState(false)
 
     useEffect(() => {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
@@ -67,6 +69,17 @@ function SummaryDrawer(props) {
                 Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+            let obj = {
+                DepartmentId: Data.DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: props.masterId,
+                Mode: 'master'
+            }
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+                }
+            }))
         }))
 
         if (Number(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
@@ -188,7 +201,7 @@ function SummaryDrawer(props) {
                     anchor={'right'}
                     masterId={approvalDetails.MasterId}
                     closeDrawer={closeApproveRejectDrawer}
-                    IsFinalLevelButtonShow={approvalDetails.IsFinalLevelButtonShow}
+                    IsFinalLevelButtonShow={finalLevelUser}
                 />
             }
         </div >
