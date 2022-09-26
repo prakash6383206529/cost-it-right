@@ -201,7 +201,7 @@ function Coil(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-        if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
+        if (Number(getValues('FinishWeight')) === Number(0)) {
             Toaster.warning('Finish Weight can not be zero')
             setIsDisable(false)
             setValue('FinishWeight', '')
