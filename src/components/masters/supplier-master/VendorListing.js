@@ -31,6 +31,8 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import _ from 'lodash';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -82,6 +84,11 @@ class VendorListing extends Component {
         }
     }
 
+
+    componentWillUnmount() {
+        this.props.setSelectedRowForPagination([])
+    }
+
     componentDidMount() {
         this.getTableListData(0, '', "", "", defaultPageSize, this.state.floatingFilterData, true)
 
@@ -118,7 +125,6 @@ class VendorListing extends Component {
         onBtNext(this, "Vendor")   // COMMON PAGINATION FUNCTION
 
     };
-
 
 
     /**
@@ -295,6 +301,27 @@ class VendorListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
+
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
+                if (item.VendorId === props.node.data.VendorId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
 
     handleChange = (cell, row) => {
         let data = {
@@ -489,6 +516,7 @@ class VendorListing extends Component {
     };
 
     resetState = () => {
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -513,9 +541,34 @@ class VendorListing extends Component {
             this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
     }
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ dataCount: selectedRows.length })
+    onRowSelect = (event) => {
+        let selectedRows = this.state.gridApi?.getSelectedRows()
+
+        if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = this.props.selectedRowForPagination
+        } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                    if (this.props.selectedRowForPagination[i].VendorId === event.data.VendorId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(this.props.selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = this.props.selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "VendorId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+        this.setState({ dataCount: uniqeArray.length })
+        this.setState({ selectedRowData: selectedRows })
+
     }
 
     onBtExport = () => {
@@ -582,7 +635,8 @@ class VendorListing extends Component {
             customNoRowsOverlay: NoContentFound,
             indexFormatter: this.indexFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
 
         return (
@@ -651,14 +705,14 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
-                {<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                {this.state.isLoader && <LoaderCustom />}
+                {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                        {this.state.isLoader && <LoaderCustom />}
+
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -682,7 +736,7 @@ class VendorListing extends Component {
                             enablePivot={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
+                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                             <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -752,12 +806,13 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier, auth, }) {
+function mapStateToProps({ comman, supplier, auth, simulation }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
+    const { selectedRowForPagination } = simulation;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
 
 /**
@@ -773,6 +828,7 @@ export default connect(mapStateToProps, {
     deleteSupplierAPI,
     getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList,
+    setSelectedRowForPagination,
     disabledClass
 })(reduxForm({
     form: 'VendorListing',
