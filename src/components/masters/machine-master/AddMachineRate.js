@@ -134,12 +134,12 @@ class AddMachineRate extends Component {
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
 
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
+      this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
     if (!editDetails.isViewMode) {
@@ -426,17 +426,6 @@ class AddMachineRate extends Component {
       }
     });
     return isContainGroup
-  }
-
-
-
-  closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
-    this.setState({ setDisable: false })
-    if (type === 'submit') {
-
-      this.cancel()
-    }
   }
 
 
@@ -1800,7 +1789,6 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
-
 
                               {
                                 (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?

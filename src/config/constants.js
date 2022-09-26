@@ -1687,7 +1687,7 @@ export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
-
+export const COMPANY = 'Company'
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
 export const WDM = 'WDM'
@@ -1988,4 +1988,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.551";
+export const VERSION = "V1.2.552";

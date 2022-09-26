@@ -699,9 +699,9 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
@@ -735,9 +735,9 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
@@ -776,9 +776,9 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
