@@ -553,6 +553,7 @@ function ApprovalSummary(props) {
                   costingIdArray={costingIdArray}
                   isVerifyImpactDrawer={false}
                   fgWiseAccDisable={fgWiseAccDisable}
+                  tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                 />
               </Col>
             </Row>}
