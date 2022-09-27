@@ -64,18 +64,18 @@ function CostingSimulation(props) {
     const [tableData, setTableData] = useState([])
     const [status, setStatus] = useState('')
     const [hideDataColumn, setHideDataColumn] = useState({
-        hideOverhead: false,
-        hideProfit: false,
-        hideRejection: false,
-        hideICC: false,
-        hidePayment: false,
-        hideOtherCost: false,
-        hideDiscount: false,
-        hideOveheadAndProfit: false,
-        hideToolCost: false,
-        hideFrieghtCost: false,
-        hidePackagingCost: false,
-        hideFreightPackagingCost: false
+        hideOverhead: true,
+        hideProfit: true,
+        hideRejection: true,
+        hideICC: true,
+        hidePayment: true,
+        hideOtherCost: true,
+        hideDiscount: true,
+        hideOveheadAndProfit: true,
+        hideToolCost: true,
+        hideFrieghtCost: true,
+        hidePackagingCost: true,
+        hideFreightPackagingCost: true
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
@@ -802,19 +802,56 @@ function CostingSimulation(props) {
     }
 
     const hideColumn = (props) => {
-        setHideDataColumn({
-            hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
-            hideProfit: costingList && costingList.length > 0 && (costingList[0].NewProfitCost === 0 || costingList[0].OldProfitCost === costingList[0].NewProfitCost) ? true : false,
-            hideRejection: costingList && costingList.length > 0 && (costingList[0].NewRejectionCost === 0 || costingList[0].OldRejectionCost === costingList[0].NewRejectionCost) ? true : false,
-            hideICC: costingList && costingList.length > 0 && (costingList[0].NewICCCost === 0 || costingList[0].OldICCCost === costingList[0].NewICCCost) ? true : false,
-            hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
-            hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
-            hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
-            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false,
-            hideToolCost: costingList && costingList.length > 0 && (costingList[0].NewNetToolCost === 0 || costingList[0].OldNetToolCost === costingList[0].NewNetToolCost) ? true : false,
-            hideFrieghtCost: costingList && costingList.length > 0 && (costingList[0].NewNetFreightCost === 0 || costingList[0].OldNetFreightCost === costingList[0].NewNetFreightCost) ? true : false,
-            hidePackagingCost: costingList && costingList.length > 0 && (costingList[0].NewNetPackagingCost === 0 || costingList[0].OldNetPackagingCost === costingList[0].NewNetPackagingCost) ? true : false,
-            hideFreightPackagingCost: costingList && costingList.length > 0 && (costingList[0].NewNetFreightPackagingCost === 0 || costingList[0].OldNetFreightPackagingCost === costingList[0].NewNetFreightPackagingCost) ? true : false,
+
+        costingList && costingList.map((item, i) => {
+            if (costingList[i].NewOverheadCost !== 0 || costingList[i].OldOverheadCost !== costingList[i].NewOverheadCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideOverhead: false }))
+            }
+
+            if (costingList[i].NewProfitCost !== 0 || costingList[i].OldProfitCost !== costingList[i].NewProfitCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideProfit: false }))
+            }
+
+            if (costingList[i].NewRejectionCost !== 0 || costingList[i].OldRejectionCost !== costingList[i].NewRejectionCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideRejection: false }))
+            }
+
+            if (costingList[i].NewICCCost !== 0 || costingList[i].OldICCCost !== costingList[i].NewICCCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideICC: false }))
+            }
+            if (costingList[i].NewPaymentTermsCost !== 0 || costingList[i].OldPaymentTermsCost !== costingList[i].NewPaymentTermsCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hidePayment: false }))
+            }
+
+            if (costingList[i].NewOtherCost !== 0 || costingList[i].OldOtherCost !== costingList[i].NewOtherCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideOtherCost: false }))
+            }
+
+            if (costingList[i].NewDiscountCost !== 0 || costingList[i].OldDiscountCost !== costingList[i].NewDiscountCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideDiscount: false }))
+            }
+
+            if (costingList[i].NewNetOverheadAndProfitCost !== 0 || costingList[i].OldNetOverheadAndProfitCost !== costingList[i].NewNetOverheadAndProfitCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideOveheadAndProfit: false }))
+            }
+
+            if (costingList[i].NewNetToolCost !== 0 || costingList[i].OldNetToolCost !== costingList[i].NewNetToolCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideToolCost: false }))
+            }
+
+            if (costingList[i].NewNetFreightCost !== 0 || costingList[i].OldNetFreightCost !== costingList[i].NewNetFreightCost) {
+
+                setHideDataColumn(prevState => ({ ...prevState, hideFrieghtCost: false }))
+            }
+
+            if (costingList[i].NewNetPackagingCost !== 0 || costingList[i].OldNetPackagingCost !== costingList[i].NewNetPackagingCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hidePackagingCost: false }))
+            }
+
+            if (costingList[i].NewNetFreightPackagingCost !== 0 || costingList[i].OldNetFreightPackagingCost !== costingList[i].NewNetFreightPackagingCost) {
+                setHideDataColumn(prevState => ({ ...prevState, hideFreightPackagingCost: false }))
+            }
+
         })
 
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
