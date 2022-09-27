@@ -287,6 +287,8 @@ function RawMaterialCost(props) {
   }
 
   const checkCutOffNegative = (value, index) => {
+    console.log('index: ', index);
+    console.log('value: ', value);
     if (value < 0) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, '')
@@ -309,12 +311,14 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: 0
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      console.log('tempArr: ', tempArr);
       setTimeout(() => {
         setGridData(tempArr)
       }, 100);
+      Toaster.warning('Scrap weight is larger than Cut Off price')
+      return false
     }
-    Toaster.warning('Scrap weight is larger than Cut Off price')
-    return false
+
   }
 
   /**
@@ -344,9 +348,13 @@ function RawMaterialCost(props) {
 
         // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+        console.log('ScrapCost: ', ScrapCost);
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
+        console.log('NetLandedCost: ', NetLandedCost);
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        console.log('CutOffRMC: ', CutOffRMC);
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
+          console.log(CutOffRMC, "Inside IF");
           return false
         }
 
@@ -393,7 +401,7 @@ function RawMaterialCost(props) {
 
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const ApplicableFinishWeight = 0;
@@ -462,7 +470,7 @@ function RawMaterialCost(props) {
       // ternary condition
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-      if (checkCutOffNegative(CutOffRMC, index)) {
+      if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
@@ -523,7 +531,7 @@ function RawMaterialCost(props) {
         // ternary condition
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost) : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
@@ -573,7 +581,7 @@ function RawMaterialCost(props) {
 
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - 0;
@@ -640,7 +648,7 @@ function RawMaterialCost(props) {
       const recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
       const ScrapCost = FinishWeight !== 0 ? recoveredScrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-      if (checkCutOffNegative(CutOffRMC, index)) {
+      if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
 
