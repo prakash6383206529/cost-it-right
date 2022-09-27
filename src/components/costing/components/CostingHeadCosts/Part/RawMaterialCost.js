@@ -1134,56 +1134,60 @@ function RawMaterialCost(props) {
                               </td>
                             }
                             <td>
-                              <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.GrossWeight`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\s*-?[0-9]{1,18}\s*$/,
-                                    message: 'Maximum length for decimal is 18.',
-                                  },
-                                }}
-                                defaultValue={item.GrossWeight}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleGrossWeightChange(e?.target?.value, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
-                              />
+                              <div className='costing-error-container'>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.GrossWeight`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
+                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
+                                    },
+                                  }}
+                                  defaultValue={item.GrossWeight}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleGrossWeightChange(e?.target?.value, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
+                                />
+                              </div>
                             </td>
                             <td>
-                              <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.FinishWeight`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\s*-?[0-9]{1,18}\s*$/,
-                                    message: 'Maximum length for decimal is 18.',
-                                  },
-                                }}
-                                defaultValue={item.FinishWeight}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleFinishWeightChange(e?.target?.value, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
-                              />
+                              <div className='costing-error-container'>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.FinishWeight`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
+                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
+                                    },
+                                  }}
+                                  defaultValue={item.FinishWeight}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleFinishWeightChange(e?.target?.value, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                  disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
+                                />
+                              </div>
                             </td>
 
                             {
