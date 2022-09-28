@@ -30,6 +30,7 @@ function CostingDetailStepTwo(props) {
     dispatch(showLoader())
 
     setTimeout(() => {
+
       dispatch(hideLoader())
     }, 4000)
 
@@ -84,6 +85,8 @@ function CostingDetailStepTwo(props) {
         NetTotalRMBOPCC: data.NetTotalRMBOPCC,
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
+        RawMaterialCostWithCutOff: data?.RawMaterialCostWithCutOff,
+        IsRMCutOffApplicable: data?.IsRMCutOffApplicable
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
