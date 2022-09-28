@@ -1196,34 +1196,36 @@ function RawMaterialCost(props) {
                             {
                               isScrapRecoveryPercentageApplied &&
                               <td>
-                                <NumberFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    required: true,
-                                    pattern: {
-                                      value: /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.',
-                                    },
-                                    max: {
-                                      value: 100,
-                                      message: 'Percentage should be less than 100'
-                                    },
-                                  }}
-                                  defaultValue={item.ScrapRecoveryPercentage}
-                                  className=""
-                                  customClassName={'withBorder scrap-recovery'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleScrapRecoveryChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                  disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
-                                />
+                                <div className='costing-error-container'>
+                                  <NumberFieldHookForm
+                                    label=""
+                                    name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      required: true,
+                                      pattern: {
+                                        value: /^\d*\.?\d*$/,
+                                        message: 'Invalid Number.',
+                                      },
+                                      max: {
+                                        value: 100,
+                                        message: 'Percentage should be less than 100'
+                                      },
+                                    }}
+                                    defaultValue={item.ScrapRecoveryPercentage}
+                                    className=""
+                                    customClassName={'withBorder scrap-recovery'}
+                                    handleChange={(e) => {
+                                      e.preventDefault()
+                                      handleScrapRecoveryChange(e, index)
+                                    }}
+                                    errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
+                                  />
+                                </div>
                               </td>
                             }
                             <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
