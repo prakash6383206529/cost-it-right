@@ -657,7 +657,7 @@ class VendorListing extends Component {
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                    <div className={`ag-theme-material no-content-wrapper ${this.state.isLoader && "max-loader-height"}`}>
                         {this.state.isLoader && <LoaderCustom />}
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
