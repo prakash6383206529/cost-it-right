@@ -818,9 +818,9 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'InsertPartNumber': 'BOP Part123',
-        'InsertPartName': 'Screw',
-        'InsertCategory': 'Machine',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
