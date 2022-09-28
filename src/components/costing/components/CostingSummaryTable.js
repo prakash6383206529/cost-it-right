@@ -1130,8 +1130,8 @@ const CostingSummaryTable = (props) => {
                                 <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].ScrapRate, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].ScrapRate)}`}>
-                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>
+                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                                 <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>
                                   {/* try with component */}
@@ -1141,11 +1141,11 @@ const CostingSummaryTable = (props) => {
                                   {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : (data?.netRMCostView && reducerFinish(data?.netRMCostView)) : ''}
                                   {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                 </span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData && viewCostingData[0].netRMCostView[0] && viewCostingData[0].netRMCostView[0].BurningLossWeight, viewCostingData && viewCostingData[1].netRMCostView[0] && viewCostingData[1].netRMCostView[0].BurningLossWeight)}`}>
-                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0].BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.BurningLossWeight, viewCostingData[1]?.BurningLossWeight)}`}>
+                                  {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                                   {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                 </span>
-                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.ScrapWeight, viewCostingData[1]?.netRMCostView[0]?.ScrapWeight)}`}>
+                                <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.ScrapWeight, viewCostingData[1]?.ScrapWeight)}`}>
                                   {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                                 </span>
                               </td>
