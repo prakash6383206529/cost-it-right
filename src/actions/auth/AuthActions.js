@@ -938,10 +938,10 @@ export function getSimulationLevelDataList(callback) {
  * @method fetchPlantDataAPI
  * @description Used to fetch plant list
  */
-export function getAllTechnologyAPI(callback) {
+export function getAllTechnologyAPI(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnology}`, config());
+        const request = axios.get(`${API.getTechnology}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -964,10 +964,10 @@ export function getAllTechnologyAPI(callback) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getSimulationTechnologySelectList(callback) {
+export function getSimulationTechnologySelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1612,10 +1612,10 @@ export function getTopAndLeftMenuData(callback) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getMastersSelectList(callback) {
+export function getMastersSelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMastersSelectList}`, config());
+        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

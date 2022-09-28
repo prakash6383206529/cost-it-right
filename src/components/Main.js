@@ -37,7 +37,7 @@ import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
-  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
+  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
   DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH
 } from '../config/constants'
@@ -340,7 +340,7 @@ class Main extends Component {
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 
 
-                    <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
+                    <Route path="/costing-breakup-report" component={AuthMiddleware(CostingDetailReport, COSTING_BREAKUP_DETAILS_REPORT)} />
                     <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
                     {/*  NEED TO ADD PATH FROM BACKEND */}

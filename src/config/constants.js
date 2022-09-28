@@ -1340,6 +1340,7 @@ export const SET_PART_NUMBER_ARRAY_API_CALL = 'SET_PART_NUMBER_ARRAY_API_CALL'
 export const SET_MESSAGE_FOR_ASSEMBLY = 'SET_MESSAGE_FOR_ASSEMBLY'
 export const SET_PROCESS_GROUP_GRID = 'SET_PROCESS_GROUP_GRID'
 export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
+export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1681,7 +1682,7 @@ export const Simulation_Upload = 'Simulation Upload'
 export const COSTING_SUMMARY_ = 'Costing Summary'
 export const APPROVAL_APP = 'Approval Status'
 export const TAX = 'Tax'
-export const COSTING_DETAILS_REPORT = 'Costing Details'
+export const COSTING_BREAKUP_DETAILS_REPORT = 'Costing Breakup Details'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
@@ -1718,6 +1719,7 @@ export const WDM = 'WDM'
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
 export const NCC = 'NCC'
+export const WAC = 'WAC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
@@ -2017,4 +2019,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.551";
+export const VERSION = "V1.2.562";
