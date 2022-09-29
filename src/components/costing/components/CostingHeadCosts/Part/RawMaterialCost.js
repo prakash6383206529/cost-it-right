@@ -287,8 +287,6 @@ function RawMaterialCost(props) {
   }
 
   const checkCutOffNegative = (value, index) => {
-    console.log('index: ', index);
-    console.log('value: ', value);
     if (value < 0) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, '')
@@ -311,7 +309,6 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: 0
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
-      console.log('tempArr: ', tempArr);
       setTimeout(() => {
         setGridData(tempArr)
       }, 100);
@@ -348,13 +345,9 @@ function RawMaterialCost(props) {
 
         // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-        console.log('ScrapCost: ', ScrapCost);
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
-        console.log('NetLandedCost: ', NetLandedCost);
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        console.log('CutOffRMC: ', CutOffRMC);
         if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
-          console.log(CutOffRMC, "Inside IF");
           return false
         }
 
