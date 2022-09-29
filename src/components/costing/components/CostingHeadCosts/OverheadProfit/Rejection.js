@@ -8,6 +8,7 @@ import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStep
 import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
 import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
 
 
 
@@ -307,7 +308,7 @@ function Rejection(props) {
                                 customClassName={'withBorder'}
                                 disabled={CostingViewMode ? true : false}
                             />
-                            {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message mt-3"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Maximum length for integer is 6 and for decimal is 6."} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                            {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                         </div>}
                 </Col>
                 {applicability.label !== 'Fixed' &&
