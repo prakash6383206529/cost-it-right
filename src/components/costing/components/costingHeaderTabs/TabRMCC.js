@@ -109,7 +109,7 @@ function TabRMCC(props) {
         RawMaterialCostWithCutOff: costingData?.RawMaterialCostWithCutOff ? checkForNull(costingData?.RawMaterialCostWithCutOff) : 0,
         IsRMCutOffApplicable: costingData?.IsRMCutOffApplicable ? costingData?.IsRMCutOffApplicable : false
       }
-      console.log(topHeader, "topHeader");
+
       props.setHeaderCost(topHeader)
     }
   }, [RMCCTabData]);
@@ -296,7 +296,7 @@ function TabRMCC(props) {
         // console.log(partObj?.CostingPartDetails?.IsRMCutOffApplicable, "IsRMCutOffApplicable");
         isAllFalse = _.map(gridData, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
         // }
-        console.log('isAllFalse: ', isAllFalse);
+
 
 
         GrandTotalCost = checkForNull(netRMCost(gridData)) + checkForNull(partObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partObj.CostingPartDetails.TotalConversionCost)
@@ -472,7 +472,6 @@ function TabRMCC(props) {
   }
 
   const setRMCostInDataList = (rmGrid, params, arr1, item,) => {
-    console.log('params: ', params);
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
@@ -554,17 +553,13 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
           let arrayToCheck = tempArrForCosting && tempArrForCosting.filter(costingItem => costingItem.PartNumber !== params.PartNumber)
-          console.log('arrayToCheck: ', arrayToCheck);
+
           let isContain = false
           arrayToCheck && arrayToCheck.filter(costingItem => {
-            console.log('costingItem: ', costingItem);
             if (costingItem.CostingPartDetails.IsRMCutOffApplicable && (costingItem.PartType === "Part" || costingItem.PartType === "Component")) {
-
-              console.log("COMING IN CONDITION");
               isContain = true
             }
           })
-          console.log('isCutOffExist: ', isContain);
           assemblyObj.CostingPartDetails.IsRMCutOffApplicable = (isContain === true) ? true : !isAllFalse
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
