@@ -312,9 +312,10 @@ function RawMaterialCost(props) {
       setTimeout(() => {
         setGridData(tempArr)
       }, 100);
+      Toaster.warning('Scrap weight is larger than Cut Off price')
+      return false
     }
-    Toaster.warning('Scrap weight is larger than Cut Off price')
-    return false
+
   }
 
   /**
@@ -346,7 +347,7 @@ function RawMaterialCost(props) {
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
 
@@ -393,7 +394,7 @@ function RawMaterialCost(props) {
 
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const ApplicableFinishWeight = 0;
@@ -462,7 +463,7 @@ function RawMaterialCost(props) {
       // ternary condition
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-      if (checkCutOffNegative(CutOffRMC, index)) {
+      if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
@@ -523,7 +524,7 @@ function RawMaterialCost(props) {
         // ternary condition
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost) : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
@@ -573,7 +574,7 @@ function RawMaterialCost(props) {
 
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (checkCutOffNegative(CutOffRMC, index)) {
+        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
           return false
         }
         const NetLandedCost = (GrossWeight * tempData.RMRate) - 0;
@@ -640,7 +641,7 @@ function RawMaterialCost(props) {
       const recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
       const ScrapCost = FinishWeight !== 0 ? recoveredScrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-      if (checkCutOffNegative(CutOffRMC, index)) {
+      if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
 
@@ -1126,56 +1127,60 @@ function RawMaterialCost(props) {
                               </td>
                             }
                             <td>
-                              <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.GrossWeight`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\s*-?[0-9]{1,18}\s*$/,
-                                    message: 'Maximum length for decimal is 18.',
-                                  },
-                                }}
-                                defaultValue={item.GrossWeight}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleGrossWeightChange(e?.target?.value, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
-                              />
+                              <div className='costing-error-container'>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.GrossWeight`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
+                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
+                                    },
+                                  }}
+                                  defaultValue={item.GrossWeight}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleGrossWeightChange(e?.target?.value, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
+                                />
+                              </div>
                             </td>
                             <td>
-                              <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.FinishWeight`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\s*-?[0-9]{1,18}\s*$/,
-                                    message: 'Maximum length for decimal is 18.',
-                                  },
-                                }}
-                                defaultValue={item.FinishWeight}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleFinishWeightChange(e?.target?.value, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
-                              />
+                              <div className='costing-error-container'>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.FinishWeight`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
+                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
+                                    },
+                                  }}
+                                  defaultValue={item.FinishWeight}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleFinishWeightChange(e?.target?.value, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                  disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
+                                />
+                              </div>
                             </td>
 
                             {
@@ -1184,34 +1189,36 @@ function RawMaterialCost(props) {
                             {
                               isScrapRecoveryPercentageApplied &&
                               <td>
-                                <NumberFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    required: true,
-                                    pattern: {
-                                      value: /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.',
-                                    },
-                                    max: {
-                                      value: 100,
-                                      message: 'Percentage should be less than 100'
-                                    },
-                                  }}
-                                  defaultValue={item.ScrapRecoveryPercentage}
-                                  className=""
-                                  customClassName={'withBorder scrap-recovery'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleScrapRecoveryChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                  disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
-                                />
+                                <div className='costing-error-container'>
+                                  <NumberFieldHookForm
+                                    label=""
+                                    name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      required: true,
+                                      pattern: {
+                                        value: /^\d*\.?\d*$/,
+                                        message: 'Invalid Number.',
+                                      },
+                                      max: {
+                                        value: 100,
+                                        message: 'Percentage should be less than 100'
+                                      },
+                                    }}
+                                    defaultValue={item.ScrapRecoveryPercentage}
+                                    className=""
+                                    customClassName={'withBorder scrap-recovery'}
+                                    handleChange={(e) => {
+                                      e.preventDefault()
+                                      handleScrapRecoveryChange(e, index)
+                                    }}
+                                    errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
+                                  />
+                                </div>
                               </td>
                             }
                             <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
