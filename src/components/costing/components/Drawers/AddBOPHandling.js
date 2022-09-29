@@ -16,7 +16,7 @@ function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const dispatch = useDispatch()
-  const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
+  const [BOPHandlingType, setBOPHandlingType] = useState({})
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -38,13 +38,13 @@ function AddBOPHandling(props) {
     setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
     setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
     setValue('BOPHandlingFixed', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
-    setValue('BOPHandlingType', item?.CostingPartDetails?.BOPHandlingChargeType ? { label: item?.CostingPartDetails?.BOPHandlingChargeType, value: item?.CostingPartDetails?.BOPHandlingChargeType } : {})   // COMMENT
-
+    setValue('BOPHandlingType', obj[0]?.CostingPartDetails?.BOPHandlingChargeType ? { label: obj[0]?.CostingPartDetails?.BOPHandlingChargeType, value: obj[0]?.CostingPartDetails?.BOPHandlingChargeType } : {})   // COMMENT
+    setBOPHandlingType(obj[0]?.CostingPartDetails?.BOPHandlingChargeType)
   }, [])
 
   const handleBOPPercentageChange = (value) => {
     if (!isNaN(value)) {
-      if (BOPHandlingType && value > 100) {
+      if (BOPHandlingType === 'Percentage' && value > 100) {
         setValue('BOPHandlingPercentage', 0)
         setValue('BOPHandlingCharges', 0)
         return false;
