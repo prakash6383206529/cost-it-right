@@ -25,9 +25,6 @@ function RunSimulationDrawer(props) {
     })
 
 
-
-
-
     const dispatch = useDispatch()
 
     const [multipleHeads, setMultipleHeads] = useState([])
@@ -45,6 +42,24 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCostSecond, setDisableDiscountAndOtherCostSecond] = useState(false)
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
     const [discountCostApplicability, setDiscountCostApplicability] = useState([])
+
+    const [toolCostApplicability, setToolCostApplicablity] = useState([])
+    const [packagingCostApplicability, setPackagingCostApplicablity] = useState([])
+    const [freightCostApplicability, setFreightCostApplicablity] = useState([])
+    const [additionalTool, setAdditionalTool] = useState(false)
+    const [additionalPackaging, setAdditionalPackaging] = useState(false)
+    const [additionalFreight, setAdditionalFreight] = useState(false)
+    const [toggleSwitchAdditionalTool, setToggleSwitchAdditionalTool] = useState(false)
+    const [toggleSwitchAdditionalPackaging, setToggleSwitchAdditionalPackaging] = useState(false)
+    const [toggleSwitchAdditionalFreight, setToggleSwitchAdditionalFreight] = useState(false)
+    const [disableTool, setDisableTool] = useState(false)
+    const [disableAdditionalTool, setDisableAdditionalTool] = useState(false)
+    const [disableFreight, setDisableFreight] = useState(false)
+    const [disableAdditionalFreight, setDisableAdditionalFreight] = useState(false)
+    const [disablePackaging, setDisablePackaging] = useState(false)
+    const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
+
+
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
@@ -104,11 +119,37 @@ function RunSimulationDrawer(props) {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
         }
+
+        if (elementObj.Text === "Tool") {
+            setDisableAdditionalTool(!disableAdditionalTool)
+        }
+        if (elementObj.Text === "Freight") {
+            setDisableAdditionalFreight(!disableAdditionalFreight)
+        }
+        if (elementObj.Text === "Packaging") {
+            setDisableAdditionalPackaging(!disableAdditionalPackaging)
+        }
+
     }
 
     const Provision = (string) => {
         if (string) {
             setProvisionalCheck(!provisionalCheck)
+        }
+    }
+
+
+    const handleAdditional = (value) => {
+        if (value === 'Tool') {
+            setAdditionalTool(!additionalTool)
+            setDisableTool(!disableTool)
+
+        } else if (value === 'Packaging') {
+            setAdditionalPackaging(!additionalPackaging)
+            setDisablePackaging(!disablePackaging)
+        } else {
+            setAdditionalFreight(!additionalFreight)
+            setDisableFreight(!disableFreight)
         }
     }
 
@@ -161,8 +202,21 @@ function RunSimulationDrawer(props) {
         obj.IsFreight = Freight
         obj.IsPackaging = Packaging
         obj.IsBOPHandlingCharge = BOPHandlingCharge
-        obj.AdditionOtherCostApplicability = otherCostApplicability.label
-        obj.AdditionDiscountApplicability = discountCostApplicability.label
+        obj.AdditionalOtherCostApplicability = otherCostApplicability.label
+        obj.AdditionalDiscountApplicability = discountCostApplicability.label
+        obj.IsAdditionalToolPercentage = toggleSwitchAdditionalTool
+        obj.AdditionalToolApplicability = toolCostApplicability.label
+        obj.IsAdditionalTool = additionalTool
+        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("ToolPercent")
+        obj.IsAdditionalPackagingPercentage = toggleSwitchAdditionalPackaging
+        obj.AdditionalPackagingApplicability = packagingCostApplicability.label
+        obj.IsAdditionalPackaging = additionalPackaging
+        obj.AdditionalPackagingValue = toggleSwitchAdditionalPackaging ? getValues("PackagingPercent") : getValues("Packaging")
+        obj.IsAdditionalFreightPercentage = toggleSwitchAdditionalFreight
+        obj.AdditionalFreightApplicability = freightCostApplicability.label
+        obj.IsAdditionalFreight = additionalFreight
+        obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
+
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
@@ -224,9 +278,6 @@ function RunSimulationDrawer(props) {
                 break;
         }
 
-
-
-
         // if (masterId === Number(EXCHNAGERATE)) {
         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {
@@ -255,6 +306,19 @@ function RunSimulationDrawer(props) {
 
     }
 
+    const onChangeAdditionalTool = () => {
+        setToggleSwitchAdditionalTool(!toggleSwitchAdditionalTool)
+    }
+
+    const onChangeAdditionalPackaging = () => {
+        setToggleSwitchAdditionalPackaging(!toggleSwitchAdditionalPackaging)
+    }
+
+    const onChangeAdditionalFreight = () => {
+        setToggleSwitchAdditionalFreight(!toggleSwitchAdditionalFreight)
+
+    }
+
     /**
     * @method renderListing
     * @description Used show listing of unit of measurement
@@ -279,17 +343,25 @@ function RunSimulationDrawer(props) {
     const handleDiscountApplicabilityChange = (value) => {
         setDiscountCostApplicability(value)
     }
+
+    const handleToolCostApplicabilityChange = (value) => {
+        setToolCostApplicablity(value)
+    }
+
+    const handlePackagingCostApplicabilityChange = (value) => {
+        setPackagingCostApplicablity(value)
+    }
+
+    const handleFreightCostApplicabilityChange = (value) => {
+        setFreightCostApplicablity(value)
+    }
+
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
                 < ApproveRejectDrawer />
                 
             </runSimulationDrawerDataContext.Provider> */}
-
-
-
-
-
             <div>
                 <>
                     <Drawer
@@ -335,7 +407,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
@@ -547,18 +619,415 @@ function RunSimulationDrawer(props) {
                                                                     </Fragment>
 
                                                                     : " "
-
                                                                 }
-
-
                                                             </div>
-
                                                         </Col>
                                                     )
                                                 })
                                             }
 
 
+                                            {(
+                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => handleAdditional('Packaging')}
+                                                    >
+                                                        Additional Packaging
+                                                        <input
+                                                            type="checkbox"
+                                                            //value={"All"}
+                                                            disabled={disableAdditionalPackaging}
+                                                        //checked={IsAvailable(el.Value)}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            // checked={IsAvailable(el.Value)}
+                                                            onChange={() => handleAdditional('Packaging')}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            )
+                                            }
+
+                                            {additionalPackaging ?
+                                                <Fragment>
+                                                    <div className="toggle-button-per-and-fix">
+                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                            <Switch
+                                                                onChange={onChangeAdditionalPackaging}
+                                                                checked={toggleSwitchAdditionalPackaging}
+                                                                id="normal-switch"
+                                                                disabled={false}
+                                                                background="#4DC771"
+                                                                onColor="#4DC771"
+                                                                onHandleColor="#ffffff"
+                                                                offColor="#4DC771"
+                                                                uncheckedIcon={true}
+                                                                checkedIcon={true}
+                                                                height={20}
+                                                                width={46}
+                                                            />
+                                                            <span className="ml-2">Percentage</span>
+                                                        </label>
+                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+                                                        {toggleSwitchAdditionalPackaging === true &&  // input field to fetch percent value
+                                                            <div className='additonal-discount-container'>
+                                                                <SearchableSelectHookForm
+                                                                    label={'Packaging Applicability'}
+                                                                    name={'PackagingCostApplicability'}
+                                                                    placeholder={'Select'}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    rules={{ required: false }}
+                                                                    register={register}
+                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                    options={renderListing('Applicability')}
+                                                                    mandatory={true}
+                                                                    disabled={false}
+                                                                    handleChange={handlePackagingCostApplicabilityChange}
+                                                                    errors={errors.PackagingCostApplicability}
+                                                                    customClassName={"auto-width"}
+                                                                />
+                                                                <NumberFieldHookForm
+                                                                    label="Percentage"
+                                                                    name={"PackagingPercent"}
+                                                                    Controller={Controller}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                        max: {
+                                                                            value: 100,
+                                                                            message: "Should not be greater than 100"
+                                                                        }
+                                                                    }}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    customClassName="auto-width"
+                                                                    errors={errors.PackagingPercent}
+                                                                    disabled={false}
+                                                                />
+                                                            </div>
+                                                        }
+
+                                                        {toggleSwitchAdditionalPackaging === false &&    // input field to fetch fixed value
+                                                            <>
+                                                                <NumberFieldHookForm
+                                                                    label="Fixed"
+                                                                    name={"Packaging"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                    }}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    className=""
+                                                                    customClassName={"withBorder"}
+                                                                    errors={errors.Packaging}
+                                                                    disabled={false}
+                                                                />
+                                                            </>
+                                                        }
+                                                    </div>
+                                                </Fragment>
+
+                                                : " "
+                                            }
+
+                                            {(
+                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => handleAdditional('Freight')}
+                                                    >
+                                                        Additional Freight
+                                                        <input
+                                                            type="checkbox"
+                                                            //value={"All"}
+                                                            disabled={disableAdditionalFreight}
+                                                        //checked={IsAvailable(el.Value)}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            // checked={IsAvailable(el.Value)}
+                                                            onChange={() => handleAdditional('Freight')}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            )
+                                            }
+
+                                            {additionalFreight ?
+
+                                                <Fragment>
+                                                    <div className="toggle-button-per-and-fix">
+                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                            <Switch
+                                                                onChange={onChangeAdditionalFreight}
+                                                                checked={toggleSwitchAdditionalFreight}
+                                                                id="normal-switch"
+                                                                disabled={false}
+                                                                background="#4DC771"
+                                                                onColor="#4DC771"
+                                                                onHandleColor="#ffffff"
+                                                                offColor="#4DC771"
+                                                                uncheckedIcon={true}
+                                                                checkedIcon={true}
+                                                                height={20}
+                                                                width={46}
+                                                            />
+                                                            <span className="ml-2">Percentage</span>
+                                                        </label>
+                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+                                                        {toggleSwitchAdditionalFreight === true &&  // input field to fetch percent value
+                                                            <div className='additonal-discount-container'>
+                                                                <SearchableSelectHookForm
+                                                                    label={'Freight Applicability'}
+                                                                    name={'FreightCostApplicability'}
+                                                                    placeholder={'Select'}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    rules={{ required: false }}
+                                                                    register={register}
+                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                    options={renderListing('Applicability')}
+                                                                    mandatory={true}
+                                                                    disabled={false}
+                                                                    handleChange={handleFreightCostApplicabilityChange}
+                                                                    errors={errors.FreightCostApplicability}
+                                                                    customClassName={"auto-width"}
+                                                                />
+                                                                <NumberFieldHookForm
+                                                                    label="Percentage"
+                                                                    name={"FreightPercent"}
+                                                                    Controller={Controller}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                        max: {
+                                                                            value: 100,
+                                                                            message: "Should not be greater than 100"
+                                                                        }
+                                                                    }}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    customClassName="auto-width"
+                                                                    errors={errors.FreightPercent}
+                                                                    disabled={false}
+                                                                />
+                                                            </div>
+                                                        }
+
+                                                        {toggleSwitchAdditionalFreight === false &&    // input field to fetch fixed value
+                                                            <>
+                                                                <NumberFieldHookForm
+                                                                    label="Fixed"
+                                                                    name={"Freight"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                    }}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    className=""
+                                                                    customClassName={"withBorder"}
+                                                                    errors={errors.Freight}
+                                                                    disabled={false}
+                                                                />
+                                                            </>
+                                                        }
+                                                    </div>
+                                                </Fragment>
+
+                                                : " "
+                                            }
+
+                                            {/* {provisionalCheck &&
+
+
+                                                <SearchableSelectHookForm
+                                                    label={'Link Token Number'}
+                                                    name={'Link'}
+                                                    placeholder={'select'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    // defaultValue={technology.length !== 0 ? technology : ''}
+                                                    options={renderListing()}
+                                                    mandatory={true}
+                                                    handleChange={handleGradeChange}
+                                                    errors={errors.Masters}
+                                                    customClassName="mb-0"
+                                                />
+
+                                            } */}
+
+
+                                            {(
+                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => handleAdditional('Tool')}
+                                                    >
+                                                        Additional Tool
+                                                        <input
+                                                            type="checkbox"
+                                                            //value={"All"}
+                                                            disabled={disableAdditionalTool}
+                                                        //checked={IsAvailable(el.Value)}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            // checked={IsAvailable(el.Value)}
+                                                            onChange={() => handleAdditional('Tool')}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            )
+                                            }
+
+                                            {additionalTool ?
+
+                                                <Fragment>
+                                                    <div className="toggle-button-per-and-fix">
+                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                            <Switch
+                                                                onChange={onChangeAdditionalTool}
+                                                                checked={toggleSwitchAdditionalTool}
+                                                                id="normal-switch"
+                                                                disabled={false}
+                                                                background="#4DC771"
+                                                                onColor="#4DC771"
+                                                                onHandleColor="#ffffff"
+                                                                offColor="#4DC771"
+                                                                uncheckedIcon={true}
+                                                                checkedIcon={true}
+                                                                height={20}
+                                                                width={46}
+                                                            />
+                                                            <span className="ml-2">Percentage</span>
+                                                        </label>
+                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+                                                        {toggleSwitchAdditionalTool === true &&  // input field to fetch percent value
+                                                            <div className='additonal-discount-container'>
+                                                                <SearchableSelectHookForm
+                                                                    label={'Tool Applicability'}
+                                                                    name={'ToolCostApplicability'}
+                                                                    placeholder={'Select'}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    rules={{ required: false }}
+                                                                    register={register}
+                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                    options={renderListing('Applicability')}
+                                                                    mandatory={true}
+                                                                    disabled={false}
+                                                                    handleChange={handleToolCostApplicabilityChange}
+                                                                    errors={errors.ToolCostApplicability}
+                                                                    customClassName={"auto-width"}
+                                                                />
+                                                                <NumberFieldHookForm
+                                                                    label="Percentage"
+                                                                    name={"ToolPercent"}
+                                                                    Controller={Controller}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                        max: {
+                                                                            value: 100,
+                                                                            message: "Should not be greater than 100"
+                                                                        }
+                                                                    }}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    customClassName="auto-width"
+                                                                    errors={errors.ToolPercent}
+                                                                    disabled={false}
+                                                                />
+                                                            </div>
+                                                        }
+
+
+                                                        {toggleSwitchAdditionalTool === false &&    // input field to fetch fixed value
+                                                            <>
+
+                                                                <NumberFieldHookForm
+                                                                    label="Fixed"
+                                                                    name={"Tool"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    rules={{
+                                                                        required: true,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+
+                                                                    }}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={""}
+                                                                    className=""
+                                                                    customClassName={"withBorder"}
+                                                                    errors={errors.Tool}
+                                                                    disabled={false}
+                                                                />
+                                                            </>
+                                                        }
+                                                    </div>
+                                                </Fragment>
+
+                                                : " "
+
+                                            }
 
                                             {getConfigurationKey().IsProvisionalSimulation && (
                                                 <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -582,31 +1051,7 @@ function RunSimulationDrawer(props) {
                                                     </label>
                                                 </div>
                                             )
-
                                             }
-
-
-
-                                            {/* {provisionalCheck &&
-
-
-                                                <SearchableSelectHookForm
-                                                    label={'Link Token Number'}
-                                                    name={'Link'}
-                                                    placeholder={'select'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={technology.length !== 0 ? technology : ''}
-                                                    options={renderListing()}
-                                                    mandatory={true}
-                                                    handleChange={handleGradeChange}
-                                                    errors={errors.Masters}
-                                                    customClassName="mb-0"
-                                                />
-
-                                            } */}
 
                                             <Row>
                                                 <Col md="12" className="inputbox date-section">
@@ -630,9 +1075,6 @@ function RunSimulationDrawer(props) {
                                             </Row>
                                         </Col>
                                     </Row>
-
-
-
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
