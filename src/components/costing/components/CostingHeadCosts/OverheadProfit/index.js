@@ -718,6 +718,8 @@ function OverheadProfit(props) {
   const IncludeSurfaceTreatmentCall = () => {
 
     if (!CostingViewMode) {
+      setOverheadValues(overheadObj, false)
+      setProfitValues(profitObj, false)
       const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
       const ConversionCostForCalculation = costData.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
       const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
@@ -1085,8 +1087,6 @@ function OverheadProfit(props) {
         }
         // END HERE ADD CC IN PROFIT COMBINED
       }
-      setOverheadValues(overheadObj, false)
-      setProfitValues(profitObj, false)
 
     }
   }
