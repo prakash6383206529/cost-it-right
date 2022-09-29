@@ -399,7 +399,6 @@ function TabSurfaceTreatment(props) {
             for (let i = useLevel + 1; i > 0; i--) {
               // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY 
               let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
-              console.log('indexForUpdate: ', indexForUpdate);
               let objectToUpdate = tempArrForCosting[indexForUpdate]
               if (objectToUpdate.PartType === 'Sub Assembly') {
                 let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
