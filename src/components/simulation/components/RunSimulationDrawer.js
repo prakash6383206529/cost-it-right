@@ -392,669 +392,644 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-2">
                                         <Col md="12" className="mb-3 pr-0">
-                                            {
-                                                masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
-                                                    if (el.Value === '0') return false;
-                                                    return (
-                                                        <Col md="12" className="mb-3 p-0">
-                                                            <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
-                                                                <label
-                                                                    className="custom-checkbox mb-0"
-                                                                    onChange={() => handleApplicabilityChange(el)}
-                                                                >
-                                                                    {el.Text}
-
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) ? true : false}
-                                                                        checked={IsAvailable(el.Value)}
-                                                                    />
-
-
-                                                                    <span
-                                                                        className=" before-box"
-                                                                        checked={IsAvailable(el.Value)}
+                                            <Row>
+                                                {
+                                                    masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                                        if (el.Value === '0') return false;
+                                                        return (
+                                                            <Col md="6" className="mb-3 p-0 check-box-container">
+                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
+                                                                    <label
+                                                                        className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
-                                                                    />
-                                                                </label>
-                                                                {(el.Text === "Additional Other Cost") && inputOtherCost ?
-                                                                    <Fragment>
-                                                                        <div className="toggle-button-per-and-fix">
-                                                                            <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                    >
+                                                                        {el.Text}
 
-                                                                                <Switch
-                                                                                    onChange={onChange}
-                                                                                    checked={toggleSwitchAdditionalOtherCOst}
-                                                                                    id="normal-switch"
-                                                                                    disabled={false}
-                                                                                    background="#4DC771"
-                                                                                    onColor="#4DC771"
-                                                                                    onHandleColor="#ffffff"
-                                                                                    offColor="#4DC771"
-                                                                                    uncheckedIcon={true}
-                                                                                    checkedIcon={true}
-                                                                                    height={20}
-                                                                                    width={46}
-                                                                                />
-                                                                                <span className="ml-2">Percentage</span>
-                                                                            </label>
-                                                                            {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            value={"All"}
+                                                                            disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) ? true : false}
+                                                                            checked={IsAvailable(el.Value)}
+                                                                        />
 
-                                                                            {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
 
-                                                                                <div className='additonal-discount-container'>
-                                                                                    <SearchableSelectHookForm
-                                                                                        label={'Other Cost Applicability'}
-                                                                                        name={'otherCostApplicability'}
-                                                                                        placeholder={'Select'}
-                                                                                        Controller={Controller}
-                                                                                        control={control}
-                                                                                        rules={{ required: false }}
-                                                                                        register={register}
-                                                                                        defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
-                                                                                        options={renderListing('Applicability')}
-                                                                                        mandatory={true}
+                                                                        <span
+                                                                            className=" before-box"
+                                                                            checked={IsAvailable(el.Value)}
+                                                                            onChange={() => handleApplicabilityChange(el)}
+                                                                        />
+                                                                    </label>
+                                                                    {(el.Text === "Additional Other Cost") && inputOtherCost ?
+                                                                        <Fragment>
+                                                                            <div className="toggle-button-per-and-fix">
+                                                                                <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+
+                                                                                    <Switch
+                                                                                        onChange={onChange}
+                                                                                        checked={toggleSwitchAdditionalOtherCOst}
+                                                                                        id="normal-switch"
                                                                                         disabled={false}
-                                                                                        customClassName={"auto-width"}
-                                                                                        handleChange={handleOherCostApplicabilityChange}
-                                                                                        errors={errors.otherCostApplicability}
+                                                                                        background="#4DC771"
+                                                                                        onColor="#4DC771"
+                                                                                        onHandleColor="#ffffff"
+                                                                                        offColor="#4DC771"
+                                                                                        uncheckedIcon={true}
+                                                                                        checkedIcon={true}
+                                                                                        height={20}
+                                                                                        width={46}
                                                                                     />
-                                                                                    <NumberFieldHookForm
-                                                                                        label="Percentage"
-                                                                                        name={"OtherCostPercent"}
-                                                                                        Controller={Controller}
-                                                                                        rules={{
-                                                                                            required: true,
-                                                                                            pattern: {
-                                                                                                value: /^\d*\.?\d*$/,
-                                                                                                message: 'Invalid Number.'
-                                                                                            },
+                                                                                    <span className="ml-2">Percentage</span>
+                                                                                </label>
+                                                                                {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
-                                                                                            max: {
-                                                                                                value: 100,
-                                                                                                message: "Should not be greater than 100"
-                                                                                            }
-                                                                                        }}
-                                                                                        control={control}
-                                                                                        register={register}
-                                                                                        mandatory={true}
-                                                                                        handleChange={() => { }}
-                                                                                        defaultValue={""}
-                                                                                        className=""
-                                                                                        customClassName={"auto-width"}
-                                                                                        errors={errors.OtherCostPercent}
-                                                                                        disabled={false}
-                                                                                    />
-                                                                                </div>
-                                                                            }
+                                                                                {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
 
-                                                                            {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
-                                                                                <NumberFieldHookForm
-                                                                                    label="Fixed"
-                                                                                    name={"OtherCost"}
-                                                                                    Controller={Controller}
-                                                                                    rules={
-                                                                                        { required: true }
+                                                                                    <div className='additonal-discount-container'>
+                                                                                        <SearchableSelectHookForm
+                                                                                            label={'Other Cost Applicability'}
+                                                                                            name={'otherCostApplicability'}
+                                                                                            placeholder={'Select'}
+                                                                                            Controller={Controller}
+                                                                                            control={control}
+                                                                                            rules={{ required: false }}
+                                                                                            register={register}
+                                                                                            defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                                                                                            options={renderListing('Applicability')}
+                                                                                            mandatory={true}
+                                                                                            disabled={false}
+                                                                                            customClassName={"auto-width"}
+                                                                                            handleChange={handleOherCostApplicabilityChange}
+                                                                                            errors={errors.otherCostApplicability}
+                                                                                        />
+                                                                                        <NumberFieldHookForm
+                                                                                            label="Percentage"
+                                                                                            name={"OtherCostPercent"}
+                                                                                            Controller={Controller}
+                                                                                            rules={{
+                                                                                                required: true,
+                                                                                                pattern: {
+                                                                                                    value: /^\d*\.?\d*$/,
+                                                                                                    message: 'Invalid Number.'
+                                                                                                },
 
-                                                                                    }
-                                                                                    control={control}
-                                                                                    register={register}
-                                                                                    mandatory={true}
-                                                                                    handleChange={() => { }}
-                                                                                    defaultValue={""}
-                                                                                    className=""
-                                                                                    customClassName={"withBorder"}
-                                                                                    errors={errors.OtherCost}
-                                                                                    disabled={false}
-                                                                                />
-                                                                            }
-                                                                        </div>
-                                                                    </Fragment>
+                                                                                                max: {
+                                                                                                    value: 100,
+                                                                                                    message: "Should not be greater than 100"
+                                                                                                }
+                                                                                            }}
+                                                                                            control={control}
+                                                                                            register={register}
+                                                                                            mandatory={true}
+                                                                                            handleChange={() => { }}
+                                                                                            defaultValue={""}
+                                                                                            className=""
+                                                                                            customClassName={"auto-width"}
+                                                                                            errors={errors.OtherCostPercent}
+                                                                                            disabled={false}
+                                                                                        />
+                                                                                    </div>
+                                                                                }
 
-                                                                    : " "
-                                                                }
-
-
-                                                                {(el.Text === "Additional Discount") && inputAdditionalDiscount ?
-
-                                                                    <Fragment>
-                                                                        <div className="toggle-button-per-and-fix">
-                                                                            <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
-                                                                                <Switch
-                                                                                    onChange={onChangeAdditionalDiscount}
-                                                                                    checked={toggleSwitchAdditionalDiscount}
-                                                                                    id="normal-switch"
-                                                                                    disabled={false}
-                                                                                    background="#4DC771"
-                                                                                    onColor="#4DC771"
-                                                                                    onHandleColor="#ffffff"
-                                                                                    offColor="#4DC771"
-                                                                                    uncheckedIcon={true}
-                                                                                    checkedIcon={true}
-                                                                                    height={20}
-                                                                                    width={46}
-                                                                                />
-                                                                                <span className="ml-2">Percentage</span>
-                                                                            </label>
-                                                                            {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-
-
-                                                                            {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
-                                                                                <div className='additonal-discount-container'>
-                                                                                    <SearchableSelectHookForm
-                                                                                        label={'Discount Applicability'}
-                                                                                        name={'DiscountCostApplicability'}
-                                                                                        placeholder={'Select'}
-                                                                                        Controller={Controller}
-                                                                                        control={control}
-                                                                                        rules={{ required: false }}
-                                                                                        register={register}
-                                                                                        defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                                                                                        options={renderListing('Applicability')}
-                                                                                        mandatory={true}
-                                                                                        disabled={false}
-                                                                                        handleChange={handleDiscountApplicabilityChange}
-                                                                                        errors={errors.DiscountCostApplicability}
-                                                                                        customClassName={"auto-width"}
-                                                                                    />
-                                                                                    <NumberFieldHookForm
-                                                                                        label="Percentage"
-                                                                                        name={"DiscountPercent"}
-                                                                                        Controller={Controller}
-                                                                                        rules={{
-                                                                                            required: true,
-                                                                                            pattern: {
-                                                                                                value: /^\d*\.?\d*$/,
-                                                                                                message: 'Invalid Number.'
-                                                                                            },
-
-                                                                                            max: {
-                                                                                                value: 100,
-                                                                                                message: "Should not be greater than 100"
-                                                                                            }
-                                                                                        }}
-                                                                                        control={control}
-                                                                                        register={register}
-                                                                                        mandatory={true}
-                                                                                        handleChange={() => { }}
-                                                                                        defaultValue={""}
-                                                                                        customClassName="auto-width"
-                                                                                        errors={errors.DiscountPercent}
-                                                                                        disabled={false}
-                                                                                    />
-                                                                                </div>
-                                                                            }
-
-
-
-                                                                            {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
-                                                                                <>
-
+                                                                                {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
                                                                                     <NumberFieldHookForm
                                                                                         label="Fixed"
-                                                                                        name={"Discount"}
+                                                                                        name={"OtherCost"}
                                                                                         Controller={Controller}
+                                                                                        rules={
+                                                                                            { required: true }
+
+                                                                                        }
                                                                                         control={control}
                                                                                         register={register}
                                                                                         mandatory={true}
-                                                                                        rules={{
-                                                                                            required: true,
-                                                                                            pattern: {
-                                                                                                value: /^\d*\.?\d*$/,
-                                                                                                message: 'Invalid Number.'
-                                                                                            },
-
-                                                                                        }}
                                                                                         handleChange={() => { }}
                                                                                         defaultValue={""}
                                                                                         className=""
                                                                                         customClassName={"withBorder"}
-                                                                                        errors={errors.Discount}
+                                                                                        errors={errors.OtherCost}
                                                                                         disabled={false}
                                                                                     />
-                                                                                </>
-                                                                            }
+                                                                                }
+                                                                            </div>
+                                                                        </Fragment>
+
+                                                                        : " "
+                                                                    }
+
+
+                                                                    {(el.Text === "Additional Discount") && inputAdditionalDiscount ?
+
+                                                                        <Fragment>
+                                                                            <div className="toggle-button-per-and-fix">
+                                                                                <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                                    <Switch
+                                                                                        onChange={onChangeAdditionalDiscount}
+                                                                                        checked={toggleSwitchAdditionalDiscount}
+                                                                                        id="normal-switch"
+                                                                                        disabled={false}
+                                                                                        background="#4DC771"
+                                                                                        onColor="#4DC771"
+                                                                                        onHandleColor="#ffffff"
+                                                                                        offColor="#4DC771"
+                                                                                        uncheckedIcon={true}
+                                                                                        checkedIcon={true}
+                                                                                        height={20}
+                                                                                        width={46}
+                                                                                    />
+                                                                                    <span className="ml-2">Percentage</span>
+                                                                                </label>
+                                                                                {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+                                                                                {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
+                                                                                    <div className='additonal-discount-container'>
+                                                                                        <SearchableSelectHookForm
+                                                                                            label={'Discount Applicability'}
+                                                                                            name={'DiscountCostApplicability'}
+                                                                                            placeholder={'Select'}
+                                                                                            Controller={Controller}
+                                                                                            control={control}
+                                                                                            rules={{ required: false }}
+                                                                                            register={register}
+                                                                                            defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                                            options={renderListing('Applicability')}
+                                                                                            mandatory={true}
+                                                                                            disabled={false}
+                                                                                            handleChange={handleDiscountApplicabilityChange}
+                                                                                            errors={errors.DiscountCostApplicability}
+                                                                                            customClassName={"auto-width"}
+                                                                                        />
+                                                                                        <NumberFieldHookForm
+                                                                                            label="Percentage"
+                                                                                            name={"DiscountPercent"}
+                                                                                            Controller={Controller}
+                                                                                            rules={{
+                                                                                                required: true,
+                                                                                                pattern: {
+                                                                                                    value: /^\d*\.?\d*$/,
+                                                                                                    message: 'Invalid Number.'
+                                                                                                },
+
+                                                                                                max: {
+                                                                                                    value: 100,
+                                                                                                    message: "Should not be greater than 100"
+                                                                                                }
+                                                                                            }}
+                                                                                            control={control}
+                                                                                            register={register}
+                                                                                            mandatory={true}
+                                                                                            handleChange={() => { }}
+                                                                                            defaultValue={""}
+                                                                                            customClassName="auto-width"
+                                                                                            errors={errors.DiscountPercent}
+                                                                                            disabled={false}
+                                                                                        />
+                                                                                    </div>
+                                                                                }
+                                                                                {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
+                                                                                    <>
+                                                                                        <NumberFieldHookForm
+                                                                                            label="Fixed"
+                                                                                            name={"Discount"}
+                                                                                            Controller={Controller}
+                                                                                            control={control}
+                                                                                            register={register}
+                                                                                            mandatory={true}
+                                                                                            rules={{
+                                                                                                required: true,
+                                                                                                pattern: {
+                                                                                                    value: /^\d*\.?\d*$/,
+                                                                                                    message: 'Invalid Number.'
+                                                                                                },
+                                                                                            }}
+                                                                                            handleChange={() => { }}
+                                                                                            defaultValue={""}
+                                                                                            className=""
+                                                                                            customClassName={"withBorder"}
+                                                                                            errors={errors.Discount}
+                                                                                            disabled={false}
+                                                                                        />
+                                                                                    </>
+                                                                                }
+                                                                            </div>
+                                                                        </Fragment>
+                                                                        : " "
+                                                                    }
+                                                                </div>
+                                                            </Col>
+                                                        )
+                                                    })
+                                                }
+                                            </Row>
+                                            <Row>
+                                                <Col md="12" className="mb-3 p-0">
+                                                    <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
+                                                        {(
+
+                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+
+                                                                <label
+                                                                    className="custom-checkbox mb-0"
+                                                                    onChange={() => handleAdditional('Packaging')}
+                                                                >
+                                                                    Additional Packaging
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        //value={"All"}
+                                                                        disabled={disableAdditionalPackaging}
+                                                                    //checked={IsAvailable(el.Value)}
+                                                                    />
+                                                                    <span
+                                                                        className=" before-box"
+                                                                        // checked={IsAvailable(el.Value)}
+                                                                        onChange={() => handleAdditional('Packaging')}
+                                                                    />
+                                                                </label>
+                                                            </div>
+                                                        )
+                                                        }
+
+                                                        {additionalPackaging ?
+                                                            <Fragment>
+                                                                <div className="toggle-button-per-and-fix">
+                                                                    <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                        <Switch
+                                                                            onChange={onChangeAdditionalPackaging}
+                                                                            checked={toggleSwitchAdditionalPackaging}
+                                                                            id="normal-switch"
+                                                                            disabled={false}
+                                                                            background="#4DC771"
+                                                                            onColor="#4DC771"
+                                                                            onHandleColor="#ffffff"
+                                                                            offColor="#4DC771"
+                                                                            uncheckedIcon={true}
+                                                                            checkedIcon={true}
+                                                                            height={20}
+                                                                            width={46}
+                                                                        />
+                                                                        <span className="ml-2">Percentage</span>
+                                                                    </label>
+                                                                    {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+                                                                    {toggleSwitchAdditionalPackaging === true &&  // input field to fetch percent value
+                                                                        <div className='additonal-discount-container'>
+                                                                            <SearchableSelectHookForm
+                                                                                label={'Packaging Applicability'}
+                                                                                name={'PackagingCostApplicability'}
+                                                                                placeholder={'Select'}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                rules={{ required: false }}
+                                                                                register={register}
+                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                                options={renderListing('Applicability')}
+                                                                                mandatory={true}
+                                                                                disabled={false}
+                                                                                handleChange={handlePackagingCostApplicabilityChange}
+                                                                                errors={errors.PackagingCostApplicability}
+                                                                                customClassName={"auto-width"}
+                                                                            />
+                                                                            <NumberFieldHookForm
+                                                                                label="Percentage"
+                                                                                name={"PackagingPercent"}
+                                                                                Controller={Controller}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+
+                                                                                    max: {
+                                                                                        value: 100,
+                                                                                        message: "Should not be greater than 100"
+                                                                                    }
+                                                                                }}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                customClassName="auto-width"
+                                                                                errors={errors.PackagingPercent}
+                                                                                disabled={false}
+                                                                            />
                                                                         </div>
-                                                                    </Fragment>
+                                                                    }
 
-                                                                    : " "
-                                                                }
-                                                            </div>
-                                                        </Col>
-                                                    )
-                                                })
-                                            }
+                                                                    {toggleSwitchAdditionalPackaging === false &&    // input field to fetch fixed value
+                                                                        <>
+                                                                            <NumberFieldHookForm
+                                                                                label="Fixed"
+                                                                                name={"Packaging"}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
 
-
-                                            {(
-                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
-
-                                                    <label
-                                                        className="custom-checkbox mb-0"
-                                                        onChange={() => handleAdditional('Packaging')}
-                                                    >
-                                                        Additional Packaging
-                                                        <input
-                                                            type="checkbox"
-                                                            //value={"All"}
-                                                            disabled={disableAdditionalPackaging}
-                                                        //checked={IsAvailable(el.Value)}
-                                                        />
-                                                        <span
-                                                            className=" before-box"
-                                                            // checked={IsAvailable(el.Value)}
-                                                            onChange={() => handleAdditional('Packaging')}
-                                                        />
-                                                    </label>
-                                                </div>
-                                            )
-                                            }
-
-                                            {additionalPackaging ?
-                                                <Fragment>
-                                                    <div className="toggle-button-per-and-fix">
-                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
-                                                            <Switch
-                                                                onChange={onChangeAdditionalPackaging}
-                                                                checked={toggleSwitchAdditionalPackaging}
-                                                                id="normal-switch"
-                                                                disabled={false}
-                                                                background="#4DC771"
-                                                                onColor="#4DC771"
-                                                                onHandleColor="#ffffff"
-                                                                offColor="#4DC771"
-                                                                uncheckedIcon={true}
-                                                                checkedIcon={true}
-                                                                height={20}
-                                                                width={46}
-                                                            />
-                                                            <span className="ml-2">Percentage</span>
-                                                        </label>
-                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-
-
-                                                        {toggleSwitchAdditionalPackaging === true &&  // input field to fetch percent value
-                                                            <div className='additonal-discount-container'>
-                                                                <SearchableSelectHookForm
-                                                                    label={'Packaging Applicability'}
-                                                                    name={'PackagingCostApplicability'}
-                                                                    placeholder={'Select'}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    rules={{ required: false }}
-                                                                    register={register}
-                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                                                                    options={renderListing('Applicability')}
-                                                                    mandatory={true}
-                                                                    disabled={false}
-                                                                    handleChange={handlePackagingCostApplicabilityChange}
-                                                                    errors={errors.PackagingCostApplicability}
-                                                                    customClassName={"auto-width"}
-                                                                />
-                                                                <NumberFieldHookForm
-                                                                    label="Percentage"
-                                                                    name={"PackagingPercent"}
-                                                                    Controller={Controller}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
-
-                                                                        max: {
-                                                                            value: 100,
-                                                                            message: "Should not be greater than 100"
-                                                                        }
-                                                                    }}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    customClassName="auto-width"
-                                                                    errors={errors.PackagingPercent}
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        }
-
-                                                        {toggleSwitchAdditionalPackaging === false &&    // input field to fetch fixed value
-                                                            <>
-                                                                <NumberFieldHookForm
-                                                                    label="Fixed"
-                                                                    name={"Packaging"}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
-
-                                                                    }}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    className=""
-                                                                    customClassName={"withBorder"}
-                                                                    errors={errors.Packaging}
-                                                                    disabled={false}
-                                                                />
-                                                            </>
+                                                                                }}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                className=""
+                                                                                customClassName={"withBorder"}
+                                                                                errors={errors.Packaging}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </>
+                                                                    }
+                                                                </div>
+                                                            </Fragment>
+                                                            : " "
                                                         }
                                                     </div>
-                                                </Fragment>
-
-                                                : " "
-                                            }
-
-                                            {(
-                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
-
-                                                    <label
-                                                        className="custom-checkbox mb-0"
-                                                        onChange={() => handleAdditional('Freight')}
-                                                    >
-                                                        Additional Freight
-                                                        <input
-                                                            type="checkbox"
-                                                            //value={"All"}
-                                                            disabled={disableAdditionalFreight}
-                                                        //checked={IsAvailable(el.Value)}
-                                                        />
-                                                        <span
-                                                            className=" before-box"
-                                                            // checked={IsAvailable(el.Value)}
-                                                            onChange={() => handleAdditional('Freight')}
-                                                        />
-                                                    </label>
-                                                </div>
-                                            )
-                                            }
-
-                                            {additionalFreight ?
-
-                                                <Fragment>
-                                                    <div className="toggle-button-per-and-fix">
-                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
-                                                            <Switch
-                                                                onChange={onChangeAdditionalFreight}
-                                                                checked={toggleSwitchAdditionalFreight}
-                                                                id="normal-switch"
-                                                                disabled={false}
-                                                                background="#4DC771"
-                                                                onColor="#4DC771"
-                                                                onHandleColor="#ffffff"
-                                                                offColor="#4DC771"
-                                                                uncheckedIcon={true}
-                                                                checkedIcon={true}
-                                                                height={20}
-                                                                width={46}
-                                                            />
-                                                            <span className="ml-2">Percentage</span>
-                                                        </label>
-                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-
-
-                                                        {toggleSwitchAdditionalFreight === true &&  // input field to fetch percent value
-                                                            <div className='additonal-discount-container'>
-                                                                <SearchableSelectHookForm
-                                                                    label={'Freight Applicability'}
-                                                                    name={'FreightCostApplicability'}
-                                                                    placeholder={'Select'}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    rules={{ required: false }}
-                                                                    register={register}
-                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                                                                    options={renderListing('Applicability')}
-                                                                    mandatory={true}
-                                                                    disabled={false}
-                                                                    handleChange={handleFreightCostApplicabilityChange}
-                                                                    errors={errors.FreightCostApplicability}
-                                                                    customClassName={"auto-width"}
-                                                                />
-                                                                <NumberFieldHookForm
-                                                                    label="Percentage"
-                                                                    name={"FreightPercent"}
-                                                                    Controller={Controller}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
-
-                                                                        max: {
-                                                                            value: 100,
-                                                                            message: "Should not be greater than 100"
-                                                                        }
-                                                                    }}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    customClassName="auto-width"
-                                                                    errors={errors.FreightPercent}
-                                                                    disabled={false}
-                                                                />
+                                                </Col>
+                                                <Col md="12" className="mb-3 p-0">
+                                                    <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
+                                                        {(
+                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+                                                                <label
+                                                                    className="custom-checkbox mb-0"
+                                                                    onChange={() => handleAdditional('Freight')}
+                                                                >
+                                                                    Additional Freight
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        //value={"All"}
+                                                                        disabled={disableAdditionalFreight}
+                                                                    //checked={IsAvailable(el.Value)}
+                                                                    />
+                                                                    <span
+                                                                        className=" before-box"
+                                                                        // checked={IsAvailable(el.Value)}
+                                                                        onChange={() => handleAdditional('Freight')}
+                                                                    />
+                                                                </label>
                                                             </div>
+                                                        )
                                                         }
+                                                        {additionalFreight ?
+                                                            <Fragment>
+                                                                <div className="toggle-button-per-and-fix">
+                                                                    <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                        <Switch
+                                                                            onChange={onChangeAdditionalFreight}
+                                                                            checked={toggleSwitchAdditionalFreight}
+                                                                            id="normal-switch"
+                                                                            disabled={false}
+                                                                            background="#4DC771"
+                                                                            onColor="#4DC771"
+                                                                            onHandleColor="#ffffff"
+                                                                            offColor="#4DC771"
+                                                                            uncheckedIcon={true}
+                                                                            checkedIcon={true}
+                                                                            height={20}
+                                                                            width={46}
+                                                                        />
+                                                                        <span className="ml-2">Percentage</span>
+                                                                    </label>
+                                                                    {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
-                                                        {toggleSwitchAdditionalFreight === false &&    // input field to fetch fixed value
-                                                            <>
-                                                                <NumberFieldHookForm
-                                                                    label="Fixed"
-                                                                    name={"Freight"}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
 
-                                                                    }}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    className=""
-                                                                    customClassName={"withBorder"}
-                                                                    errors={errors.Freight}
-                                                                    disabled={false}
-                                                                />
-                                                            </>
+                                                                    {toggleSwitchAdditionalFreight === true &&  // input field to fetch percent value
+                                                                        <div className='additonal-discount-container'>
+                                                                            <SearchableSelectHookForm
+                                                                                label={'Freight Applicability'}
+                                                                                name={'FreightCostApplicability'}
+                                                                                placeholder={'Select'}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                rules={{ required: false }}
+                                                                                register={register}
+                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                                options={renderListing('Applicability')}
+                                                                                mandatory={true}
+                                                                                disabled={false}
+                                                                                handleChange={handleFreightCostApplicabilityChange}
+                                                                                errors={errors.FreightCostApplicability}
+                                                                                customClassName={"auto-width"}
+                                                                            />
+                                                                            <NumberFieldHookForm
+                                                                                label="Percentage"
+                                                                                name={"FreightPercent"}
+                                                                                Controller={Controller}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+                                                                                    max: {
+                                                                                        value: 100,
+                                                                                        message: "Should not be greater than 100"
+                                                                                    }
+                                                                                }}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                customClassName="auto-width"
+                                                                                errors={errors.FreightPercent}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </div>
+                                                                    }
+
+                                                                    {toggleSwitchAdditionalFreight === false &&    // input field to fetch fixed value
+                                                                        <>
+                                                                            <NumberFieldHookForm
+                                                                                label="Fixed"
+                                                                                name={"Freight"}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+                                                                                }}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                className=""
+                                                                                customClassName={"withBorder"}
+                                                                                errors={errors.Freight}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </>
+                                                                    }
+                                                                </div>
+                                                            </Fragment>
+
+                                                            : " "
                                                         }
                                                     </div>
-                                                </Fragment>
+                                                </Col>
 
-                                                : " "
-                                            }
+                                                <Col md="12" className="mb-3 p-0">
+                                                    <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
+                                                        {(
+                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
 
-                                            {/* {provisionalCheck &&
-
-
-                                                <SearchableSelectHookForm
-                                                    label={'Link Token Number'}
-                                                    name={'Link'}
-                                                    placeholder={'select'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={technology.length !== 0 ? technology : ''}
-                                                    options={renderListing()}
-                                                    mandatory={true}
-                                                    handleChange={handleGradeChange}
-                                                    errors={errors.Masters}
-                                                    customClassName="mb-0"
-                                                />
-
-                                            } */}
-
-
-                                            {(
-                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
-
-                                                    <label
-                                                        className="custom-checkbox mb-0"
-                                                        onChange={() => handleAdditional('Tool')}
-                                                    >
-                                                        Additional Tool
-                                                        <input
-                                                            type="checkbox"
-                                                            //value={"All"}
-                                                            disabled={disableAdditionalTool}
-                                                        //checked={IsAvailable(el.Value)}
-                                                        />
-                                                        <span
-                                                            className=" before-box"
-                                                            // checked={IsAvailable(el.Value)}
-                                                            onChange={() => handleAdditional('Tool')}
-                                                        />
-                                                    </label>
-                                                </div>
-                                            )
-                                            }
-
-                                            {additionalTool ?
-
-                                                <Fragment>
-                                                    <div className="toggle-button-per-and-fix">
-                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
-                                                            <Switch
-                                                                onChange={onChangeAdditionalTool}
-                                                                checked={toggleSwitchAdditionalTool}
-                                                                id="normal-switch"
-                                                                disabled={false}
-                                                                background="#4DC771"
-                                                                onColor="#4DC771"
-                                                                onHandleColor="#ffffff"
-                                                                offColor="#4DC771"
-                                                                uncheckedIcon={true}
-                                                                checkedIcon={true}
-                                                                height={20}
-                                                                width={46}
-                                                            />
-                                                            <span className="ml-2">Percentage</span>
-                                                        </label>
-                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-
-
-                                                        {toggleSwitchAdditionalTool === true &&  // input field to fetch percent value
-                                                            <div className='additonal-discount-container'>
-                                                                <SearchableSelectHookForm
-                                                                    label={'Tool Applicability'}
-                                                                    name={'ToolCostApplicability'}
-                                                                    placeholder={'Select'}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    rules={{ required: false }}
-                                                                    register={register}
-                                                                    defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                                                                    options={renderListing('Applicability')}
-                                                                    mandatory={true}
-                                                                    disabled={false}
-                                                                    handleChange={handleToolCostApplicabilityChange}
-                                                                    errors={errors.ToolCostApplicability}
-                                                                    customClassName={"auto-width"}
-                                                                />
-                                                                <NumberFieldHookForm
-                                                                    label="Percentage"
-                                                                    name={"ToolPercent"}
-                                                                    Controller={Controller}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
-
-                                                                        max: {
-                                                                            value: 100,
-                                                                            message: "Should not be greater than 100"
-                                                                        }
-                                                                    }}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    customClassName="auto-width"
-                                                                    errors={errors.ToolPercent}
-                                                                    disabled={false}
-                                                                />
+                                                                <label
+                                                                    className="custom-checkbox mb-0"
+                                                                    onChange={() => handleAdditional('Tool')}
+                                                                >
+                                                                    Additional Tool
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        //value={"All"}
+                                                                        disabled={disableAdditionalTool}
+                                                                    //checked={IsAvailable(el.Value)}
+                                                                    />
+                                                                    <span
+                                                                        className=" before-box"
+                                                                        // checked={IsAvailable(el.Value)}
+                                                                        onChange={() => handleAdditional('Tool')}
+                                                                    />
+                                                                </label>
                                                             </div>
+                                                        )
                                                         }
 
+                                                        {additionalTool ?
 
-                                                        {toggleSwitchAdditionalTool === false &&    // input field to fetch fixed value
-                                                            <>
+                                                            <Fragment>
+                                                                <div className="toggle-button-per-and-fix">
+                                                                    <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                        <Switch
+                                                                            onChange={onChangeAdditionalTool}
+                                                                            checked={toggleSwitchAdditionalTool}
+                                                                            id="normal-switch"
+                                                                            disabled={false}
+                                                                            background="#4DC771"
+                                                                            onColor="#4DC771"
+                                                                            onHandleColor="#ffffff"
+                                                                            offColor="#4DC771"
+                                                                            uncheckedIcon={true}
+                                                                            checkedIcon={true}
+                                                                            height={20}
+                                                                            width={46}
+                                                                        />
+                                                                        <span className="ml-2">Percentage</span>
+                                                                    </label>
+                                                                    {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
-                                                                <NumberFieldHookForm
-                                                                    label="Fixed"
-                                                                    name={"Tool"}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={true}
-                                                                    rules={{
-                                                                        required: true,
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
 
-                                                                    }}
-                                                                    handleChange={() => { }}
-                                                                    defaultValue={""}
-                                                                    className=""
-                                                                    customClassName={"withBorder"}
-                                                                    errors={errors.Tool}
-                                                                    disabled={false}
-                                                                />
-                                                            </>
+                                                                    {toggleSwitchAdditionalTool === true &&  // input field to fetch percent value
+                                                                        <div className='additonal-discount-container'>
+                                                                            <SearchableSelectHookForm
+                                                                                label={'Tool Applicability'}
+                                                                                name={'ToolCostApplicability'}
+                                                                                placeholder={'Select'}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                rules={{ required: false }}
+                                                                                register={register}
+                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                                                                                options={renderListing('Applicability')}
+                                                                                mandatory={true}
+                                                                                disabled={false}
+                                                                                handleChange={handleToolCostApplicabilityChange}
+                                                                                errors={errors.ToolCostApplicability}
+                                                                                customClassName={"auto-width"}
+                                                                            />
+                                                                            <NumberFieldHookForm
+                                                                                label="Percentage"
+                                                                                name={"ToolPercent"}
+                                                                                Controller={Controller}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+
+                                                                                    max: {
+                                                                                        value: 100,
+                                                                                        message: "Should not be greater than 100"
+                                                                                    }
+                                                                                }}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                customClassName="auto-width"
+                                                                                errors={errors.ToolPercent}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </div>
+                                                                    }
+
+                                                                    {toggleSwitchAdditionalTool === false &&    // input field to fetch fixed value
+                                                                        <>
+                                                                            <NumberFieldHookForm
+                                                                                label="Fixed"
+                                                                                name={"Tool"}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+                                                                                }}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                className=""
+                                                                                customClassName={"withBorder"}
+                                                                                errors={errors.Tool}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </>
+                                                                    }
+                                                                </div>
+                                                            </Fragment> : " "
                                                         }
                                                     </div>
-                                                </Fragment>
+                                                </Col>
+                                            </Row>
 
-                                                : " "
-
-                                            }
 
                                             {getConfigurationKey().IsProvisionalSimulation && (
-                                                <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
-
-                                                    <label
-                                                        className="custom-checkbox mb-0"
-                                                        onChange={() => Provision(`Provisional`)}
-                                                    >
-                                                        Provisional
-                                                        <input
-                                                            type="checkbox"
-                                                        //value={"All"}
-                                                        // disabled={true}
-                                                        //checked={IsAvailable(el.Value)}
-                                                        />
-                                                        <span
-                                                            className=" before-box"
-                                                            // checked={IsAvailable(el.Value)}
+                                                <Row>
+                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+                                                        <label
+                                                            className="custom-checkbox mb-0"
                                                             onChange={() => Provision(`Provisional`)}
-                                                        />
-                                                    </label>
-                                                </div>
+                                                        >
+                                                            Provisional
+                                                            <input
+                                                                type="checkbox"
+                                                            //value={"All"}
+                                                            // disabled={true}
+                                                            //checked={IsAvailable(el.Value)}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                // checked={IsAvailable(el.Value)}
+                                                                onChange={() => Provision(`Provisional`)}
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                </Row>
                                             )
                                             }
 
                                             <Row>
-                                                <Col md="12" className="inputbox date-section">
+                                                <Col md="12" className="inputbox date-section pl-0">
                                                     <DatePicker
                                                         selected={DayTime(date).isValid() ? new Date(date) : ''}
                                                         dateFormat="dd/MM/yyyy"
@@ -1067,8 +1042,8 @@ function RunSimulationDrawer(props) {
                                                         disabled={true}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-n1 warning-text-container">
-                                                    <div className="warning-text">
+                                                <Col md="12" className="mt-n2 warning-text-container">
+                                                    <div className="warning-text ml-n3">
                                                         <WarningMessage dClass="mr-3 " message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
