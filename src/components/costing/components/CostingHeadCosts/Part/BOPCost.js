@@ -12,6 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
 
 let counter = 0;
 function BOPCost(props) {
@@ -636,7 +637,7 @@ function BOPCost(props) {
                         // errors={errors.BOPHandlingPercentage}
                         disabled={(CostingViewMode || IsLocked) ? true : false}
                       />
-                      {percentageLimit && <WarningMessage dClass={"error-message mt-3"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Maximum length for integer is 6 and for decimal is 6."} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                      {percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                     </div>
                     :
                     <NumberFieldHookForm
@@ -657,6 +658,7 @@ function BOPCost(props) {
                           message: 'Percentage cannot be greater than 100'
                         },
                       }}
+                      disableErrorOverflow={true}
                       handleChange={(e) => {
                         e.preventDefault();
                         handleBOPPercentageChange(e.target.value);
