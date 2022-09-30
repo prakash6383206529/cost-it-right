@@ -1,5 +1,6 @@
 
 import { useDispatch } from "react-redux";
+import { reactLocalStorage } from "reactjs-localstorage";
 import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
@@ -8,8 +9,8 @@ import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandli
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
-  let Arr = JSON.parse(localStorage.getItem('costingArray'))
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let Arr = reactLocalStorage.getObject('costingArray')
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let assemblyWorkingRow = []
 
   if (tabId === 1) {
@@ -141,14 +142,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 //TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
 
 // TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
-  let costingArr = JSON.parse(localStorage.getItem('costingArray'))
+  let costingArr = reactLocalStorage.getObject('costingArray')
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
 }
@@ -250,8 +251,8 @@ export const formatCostingApprovalObj = (costingObj) => {
 
 export const clearCosting = (dispatch) => {
   dispatch(getBriefCostingById('', (res) => { }))
-  localStorage.setItem('costingArray', [])
-  localStorage.setItem('surfaceCostingArray', [])
+  reactLocalStorage.setObject('costingArray', [])
+  reactLocalStorage.setObject('surfaceCostingArray', [])
   dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
   dispatch(setComponentItemData({}, () => { }))
 

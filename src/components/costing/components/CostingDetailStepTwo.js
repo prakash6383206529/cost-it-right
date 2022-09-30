@@ -14,6 +14,7 @@ import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { NCC } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -368,7 +369,7 @@ function CostingDetailStepTwo(props) {
 
   const handleBackButton = () => {
     if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
-      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
@@ -380,7 +381,7 @@ function CostingDetailStepTwo(props) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {

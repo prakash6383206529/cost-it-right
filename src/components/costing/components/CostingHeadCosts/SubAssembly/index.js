@@ -11,6 +11,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import Toaster from '../../../../common/Toaster';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -62,13 +63,13 @@ function AssemblyPart(props) {
           }
           // let tempArr = setArrayForCosting
           let array = [];
-          array = JSON.parse(localStorage.getItem('costingArray'))
+          array = reactLocalStorage.getObject('costingArray')
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
             return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          localStorage.setItem('costingArray', JSON.stringify(uniqueArary));
+          reactLocalStorage.setObject('costingArray', uniqueArary);
           props.toggleAssembly(BOMLevel, PartNumber, Data)
 
         }
