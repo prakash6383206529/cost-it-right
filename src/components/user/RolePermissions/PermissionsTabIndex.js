@@ -35,7 +35,8 @@ class PermissionsTabIndex extends Component {
             reportAnalytics: [],
             user: [],
             audit: [],
-            scrollReset: false
+            scrollReset: false,
+            counter: 0
         };
     }
 
@@ -44,7 +45,8 @@ class PermissionsTabIndex extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        this.setState({ isLoader: true });
+
+        this.setState({ isLoader: true, counter: this.state.counter + 1 });
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
@@ -53,8 +55,22 @@ class PermissionsTabIndex extends Component {
                 }
             }, 500)
         })
-        this.props.onRef(this);
+        //this.props.onRef(this);
     }
+
+
+    UNSAFE_componentWillReceiveProps(nextProps) {
+
+        if (nextProps.updatedData !== this.props.updatedData) {
+            if (JSON.stringify(nextProps.updatedData) != JSON.stringify(this.props.updatedData)) {
+                if (this.state.counter == 1) {
+                    this.getUpdatedData(nextProps.updatedData)
+                    this.setState({ counter: this.state.counter + 1 })
+                }
+            }
+        }
+    }
+
 
     getRolePermission = () => {
         const { isEditFlag, isNewRole } = this.props;

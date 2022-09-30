@@ -150,6 +150,26 @@ export function registerUserAPI(requestData, callback) {
     };
 }
 
+
+export function registerUserAPIRFQ(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.registerRFQ, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+                dispatch(getRegisterSuccess(response));
+            })
+            .catch((error) => {
+                dispatch(getRegisterFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+
+
 /**
  * @method getRegisterSuccess
  * @description return object containing action type
@@ -202,7 +222,7 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}&userType=${data.userType}`, config())
             .then((response) => {
                 dispatch({
                     type: GET_USER_DATA_SUCCESS,
@@ -301,6 +321,24 @@ export function updateUserAPI(requestData, callback) {
             });
     };
 }
+
+export function updateUserAPIRFQ(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateUserAPIRFQ, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                callback(error);
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+
 
 /**
  * @method setEmptyUserDataAPI
