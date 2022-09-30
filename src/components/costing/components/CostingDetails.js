@@ -461,7 +461,7 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ShareOfBusinessPercent: parseInt(event.target.value),
+        ShareOfBusinessPercent: event.target.value,
         isSOBChanged: checkIsZBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
@@ -667,7 +667,7 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ShareOfBusinessPercent: parseInt(event.target.value),
+        ShareOfBusinessPercent: event.target.value,
         isSOBChanged: checkIsVBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
@@ -1976,7 +1976,7 @@ function CostingDetails(props) {
                                 className={"user-btn"}
                                 onClick={nccDrawerToggle}
                               >
-                                <div className={"plus"}></div>Vendor/Plant
+                                <div className={"plus"}></div>Vendor
                               </button>
                             ) : (
                               ""

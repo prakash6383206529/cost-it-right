@@ -95,7 +95,7 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -136,7 +136,7 @@ export const NumberFieldHookForm = (field) => {
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
+          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
       </div>
     </>
   )

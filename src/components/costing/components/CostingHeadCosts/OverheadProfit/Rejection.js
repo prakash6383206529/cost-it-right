@@ -2,11 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
+import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
 
 
 
@@ -24,6 +26,7 @@ function Rejection(props) {
     const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
+    const [percentageLimit, setPercentageLimit] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -42,6 +45,7 @@ function Rejection(props) {
 
     useEffect(() => {
         dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+        setValue('RejectionPercentage', rejectionObj?.RejectionCost)
     }, [])
 
     useEffect(() => {
@@ -202,7 +206,7 @@ function Rejection(props) {
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: '-',
+                        RejectionCost: checkForNull(RejectionPercentage),
                         RejectionTotalCost: checkForNull(RejectionPercentage)
                     })
                     break;
@@ -214,6 +218,10 @@ function Rejection(props) {
 
     }
 
+    const handleChangeRejectionPercentage = (event) => {
+        setPercentageLimit(decimalAndNumberValidationBoolean(event.target.value))
+        dispatch(isOverheadProfitDataChange(true))
+    }
 
     /**
       * @method handleApplicabilityChange
@@ -283,24 +291,26 @@ function Rejection(props) {
                         />
                         :
                         //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
-                        <NumberFieldHookForm
-                            label={`Rejection`}
-                            name={'RejectionPercentage'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                            }}
-                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            // errors={errors.RejectionPercentage}   //MANUAL CSS TO BE APPLIED FOR ERROR VALIDATION MESSAGE
-                            disabled={CostingViewMode ? true : false}
-                        />}
+                        <div className='p-relative error-wrapper'>
+                            <NumberFieldHookForm
+                                label={`Rejection`}
+                                name={'RejectionPercentage'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                    required: false,
+                                    pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                                }}
+                                handleChange={(e) => handleChangeRejectionPercentage(e)}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                disabled={CostingViewMode ? true : false}
+                            />
+                            {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                        </div>}
                 </Col>
                 {applicability.label !== 'Fixed' &&
                     <Col md="3">

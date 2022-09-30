@@ -224,3 +224,16 @@
     }
   }
 }
+.costing-error-container {
+  .text-error-title {
+    .text-help {
+      top: -2px;
+    }
+    .error-overflow {
+      width: calc(100% + 19px);
+    }
+  }
+}
+.fixed-error {
+  bottom: -10px;
+}

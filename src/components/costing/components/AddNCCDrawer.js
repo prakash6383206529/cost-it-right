@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { getZBCDetailByPlantId, } from '../actions/Costing';
+import { getVBCDetailByVendorId, getZBCDetailByPlantId, } from '../actions/Costing';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
@@ -44,11 +44,12 @@ function AddNCCDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
+
     props.closeDrawer('', {
       ...data,
-      VendorCode: Object.keys(vendor).length > 0 ? getVendorCode(vendor.label) : '',
-      VendorId: Object.keys(vendor).length > 0 ? vendor.value : EMPTY_GUID_0,
-      VendorName: Object.keys(vendor).length > 0 ? vendor.label : '',
+      VendorCode: Object.keys(vendor).length > 0 ? vendor.VendorCode : '',
+      VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
+      VendorName: Object.keys(vendor).length > 0 ? vendor.VendorName : '',
       Vendor: vendor,
     })
 
@@ -70,6 +71,7 @@ function AddNCCDrawer(props) {
       return temp;
     }
     if (label === 'Vendor') {
+      // console.log(vendorSelectList, "vendorSelectList");
       vendorSelectList && vendorSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
@@ -110,8 +112,16 @@ function AddNCCDrawer(props) {
  */
   const handleVendorChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setVendor(newValue)
 
+      let data = {
+        VendorId: newValue.value,
+        VendorPlantId: "00000000-0000-0000-0000-000000000000",
+      }
+      dispatch(getVBCDetailByVendorId(data, res => {
+        if (res && res.data && res.data.Data) {
+          setVendor(res.data.Data)
+        }
+      }))
     } else {
       setVendor([])
     }
@@ -145,7 +155,7 @@ function AddNCCDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Add Vendor/Plant"}</h3>
+                  <h3>{"Add Vendor"}</h3>
                 </div>
                 <div
                   onClick={cancel}

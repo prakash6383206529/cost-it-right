@@ -3421,6 +3421,16 @@ body {
         }
       }
     }
+    .cr-brdr-main {
+      input {
+        height: 30px;
+        width: 40%;
+        margin: 2px 0;
+      }
+      .text-error-title .text-help {
+        margin-top: -3px;
+      }
+    }
     .date-section {
       min-height: 80px;
     }
@@ -7002,6 +7012,11 @@ body {
   }
   .nodate-section {
     bottom: 61px !important;
+  }
+  .no-content-wrapper {
+    .nodate-section {
+      bottom: 100px !important;
+    }
   }
 }
 
