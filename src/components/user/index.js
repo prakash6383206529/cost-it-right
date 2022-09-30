@@ -28,7 +28,8 @@ class User extends Component {
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
-      count: 0
+      count: 0,
+      RFQUser: false
     }
   }
 
@@ -116,8 +117,8 @@ class User extends Component {
     }
   }
 
-  displayForm = () => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, })
+  displayForm = (RFQUser) => {
+    this.setState({ isUserForm: true, isRolePermissionForm: false, RFQUser: RFQUser })
   }
 
   displayRoleForm = () => {
@@ -129,7 +130,7 @@ class User extends Component {
   }
 
   getUserDetail = (data) => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data, RFQUser: data.RFQUser })
   }
 
   getRoleDetail = (data) => {
@@ -148,6 +149,7 @@ class User extends Component {
       return <UserRegistration
         data={data}
         hideForm={this.hideForm}
+        RFQUser={this.state.RFQUser}
       />
     }
 
@@ -184,11 +186,19 @@ class User extends Component {
                 Manage Levels
               </NavLink>
             </NavItem>}
+
+            {ViewUserAccessibility && <NavItem>
+              <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                RFQ User
+              </NavLink>
+            </NavItem>}
+
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
             {this.state.activeTab === '1' && ViewUserAccessibility &&
               <TabPane tabId="1">
                 <UsersListing
+                  RFQUser={false}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
                 />
@@ -209,6 +219,14 @@ class User extends Component {
               <TabPane tabId="4">
                 <LevelsListing
                   toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '5' && ViewUserAccessibility &&
+              <TabPane tabId="5">
+                <UsersListing
+                  RFQUser={true}
+                  formToggle={this.displayForm}
+                  getUserDetail={this.getUserDetail}
+                />
               </TabPane>}
           </TabContent>
         </div>
