@@ -16,6 +16,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
+//const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
@@ -279,6 +281,7 @@ export const API = {
   getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
   getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
   getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
+  getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
 
   //BOP DOMESTIC
   createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
@@ -290,7 +293,7 @@ export const API = {
   fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
   bulkUploadBOPDomesticZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-domestic-json`,
   bulkUploadBOPDomesticVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
-  getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
+  getPlantSelectListByVendor: `${BASE_URL}/rfq-user/get-user-select-list`,
 
   //BOP IMPORT
   createBOPImport: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-import`,
@@ -644,6 +647,7 @@ export const API = {
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
+  registerRFQ: `${BASE_URL}/rfq-user/register-rfq-user`,
 
   //USERS API
   getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
@@ -652,6 +656,7 @@ export const API = {
   deleteUserAPI: `${BASE_URL}/user/delete`,
   activeInactiveUser: `${BASE_URL}/user/active-inactive-user`,
   updateUserAPI: `${BASE_URL}/user/update`,
+  updateUserAPIRFQ: `${BASE_URL}/rfq-user/update-rfq-user`,
   setUserTechnologyLevelForCosting: `${BASE_URL}/user-level/assign-user-technology-levels-for-costing`,
   getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,
   updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
@@ -955,6 +960,8 @@ export const API = {
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
+  getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
+
 
 }
 
@@ -1115,6 +1122,7 @@ export const GET_ALL_VENDOR_SELECTLIST_SUCCESS = 'GET_ALL_VENDOR_SELECTLIST_SUCC
 export const GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR = 'GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR'
 export const GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST'
 export const GET_VENDOR_TYPE_BOP_SELECTLIST = 'GET_VENDOR_TYPE_BOP_SELECTLIST'
+export const GET_REPORTER_LIST = 'GET_REPORTER_LIST'
 
 //BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS'
@@ -1574,6 +1582,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
+export const GET_BENCHMARK_RM_LIST = 'GET_BENCHMARK_RM_LIST'
 
 
 //COSTING STATUS
@@ -1987,5 +1996,7 @@ export const statusOptions = [
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
+export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
+export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
 export const VERSION = "V1.2.568";

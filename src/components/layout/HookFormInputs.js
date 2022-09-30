@@ -94,6 +94,117 @@ export const TextFieldHookForm = (field) => {
   )
 }
 
+
+export const PasswordFieldHookForm = (field) => {
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input } = field
+  // //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  // const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  // const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  // const isDisabled = field.disabled === true ? true : false;
+  // let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
+  // let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
+
+
+
+  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""
+    } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
+  const placeholder = field.placeholder ? field.placeholder : "";
+  const isPwdVisible = field.isShowHide === true ? "text" : "password";
+  const eyeIcon = field.isShowHide === true ? "fa-eye" : "fa-eye-slash";
+
+
+
+
+  return (
+    <>
+      <div className={className}>
+        {
+          !hidden &&
+          <label>
+            {label}
+            {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+          </label>
+        }
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          // ref={reg}
+          {...register}
+          defaultValue={defaultValue}
+          hidden={hidden}
+          render={({ field: { onChange, onBlur, value } }) => {
+
+            return (
+              <div className={className}>
+                <div className={inputbox}>
+                  <input
+                    maxLength={field.maxLength}
+                    onChange={(e) => {
+                      handleChange(e);
+                      onChange(e)
+                    }}
+                    value={value}
+                    {...field}
+                    {...register}
+                    name={name}
+                    className={InputClassName}
+
+                    type={isPwdVisible}
+                    {...input}
+                    id={"password"}
+                    placeholder={placeholder}
+                    autoComplete={field.autoComplete}
+                  />
+                  {field.isEyeIcon === true && (
+                    <div
+                      className={`input-group-prepend ${field.isShowHide === true ? "hide" : "show"
+                        }`}
+                    >
+                      <span
+                        onClick={field.showHide}
+                        className="input-group-text bg-white"
+                      >
+                        <i className={`fas ${eyeIcon}`} />
+                      </span>
+                    </div>
+                  )}
+
+                  {field.isEyeIcon === false && (
+                    <div className="input-group-prepend">
+                      <span className="input-group-text bg-white">
+                        <i className="fas fa-lock" />
+                      </span>
+                    </div>
+                  )}
+
+                  {field.isVarificationForm === true && (
+                    <div className="input-group-prepend">
+                      <span className="input-group-text bg-white"></span>
+                    </div>
+                  )}
+                </div>
+                <div className="text-help mb-2">{touched ? error : ""}</div>
+              </div>
+            );
+
+          }
+          }
+        />
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
+      </div>
+    </>
+  )
+}
+
+
+
+
+
 export const NumberFieldHookForm = (field) => {
   const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
