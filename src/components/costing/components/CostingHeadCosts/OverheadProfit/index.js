@@ -55,10 +55,11 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
+
   const CostingViewMode = useContext(ViewCostingContext);
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
 
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, RMCCutOffObj } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -110,7 +111,7 @@ function OverheadProfit(props) {
     UpdateForm()
     setIsSurfaceTreatmentAdded(false)
     IncludeSurfaceTreatmentCall()
-  }, [RMCCutOffObj])
+  }, [CostingDataList[0]?.IsRMCutOffApplicable])
 
   /**
   * @method UpdateForm
@@ -368,8 +369,8 @@ function OverheadProfit(props) {
 
     if (!CostingViewMode) {
 
-      const { IsCutOffApplicable } = RMCCutOffObj;
-      const CutOffCost = checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff)
+      const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
+      const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
 
       if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
 
@@ -541,9 +542,9 @@ function OverheadProfit(props) {
   const setProfitValues = (dataObj, IsAPIResponse) => {
     if (!CostingViewMode) {
       let profitTotalCost = 0
-      const { IsCutOffApplicable } = RMCCutOffObj;
+      const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
       const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const CutOffCost = checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff)
+      const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
       const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC; //NEED TO ASK HERE ALSO
 
       if (dataObj.IsProfitFixedApplicable && IsAPIResponse === false) {
@@ -717,10 +718,12 @@ function OverheadProfit(props) {
   const IncludeSurfaceTreatmentCall = () => {
 
     if (!CostingViewMode) {
-      const { IsCutOffApplicable } = RMCCutOffObj;
+      setOverheadValues(overheadObj, false)
+      setProfitValues(profitObj, false)
+      const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
       const ConversionCostForCalculation = costData.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
       const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-      const CutOffCost = checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff)
+      const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
       const CutOffRMBOPCCTotal = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation) : RMBOPCC;
       const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
       const NetConversionCost = ConversionCostForCalculation
@@ -1084,6 +1087,7 @@ function OverheadProfit(props) {
         }
         // END HERE ADD CC IN PROFIT COMBINED
       }
+
     }
   }
 
@@ -1305,9 +1309,9 @@ function OverheadProfit(props) {
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
                             disabled={true}
-                          /> {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff) > 0 &&
+                          /> {overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
+                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
                           }
                         </div>
@@ -1372,9 +1376,9 @@ function OverheadProfit(props) {
                             errors={errors.OverheadRMCost}
                             disabled={true}
                           />
-                          {RMCCutOffObj?.IsCutOffApplicable && checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff) > 0 &&
+                          {CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3 costing-tooltip'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
+                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>}
                         </div>
                       </Col>
@@ -1659,9 +1663,9 @@ function OverheadProfit(props) {
                             errors={errors.ProfitCombinedCost}
                             disabled={true}
                           />
-                          {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff) > 0 &&
+                          {profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
+                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
                           }</div>
                       </Col>
@@ -1725,9 +1729,9 @@ function OverheadProfit(props) {
                             errors={errors.ProfitRMCost}
                             disabled={true}
                           />
-                          {RMCCutOffObj?.IsCutOffApplicable && checkForNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff) > 0 &&
+                          {CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(headerCosts && headerCosts?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
+                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
                           }</div>
                       </Col>

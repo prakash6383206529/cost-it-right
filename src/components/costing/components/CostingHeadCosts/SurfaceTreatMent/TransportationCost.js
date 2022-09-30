@@ -27,7 +27,6 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
-  const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -97,7 +96,7 @@ function TransportationCost(props) {
     if (newValue && newValue !== '') {
       setValue('Rate', '')
       setValue('Quantity', '')
-      setValue('TransportationCost', '')
+      setValue('TransportationCost', 0)
       setTransportCost('')
       setTransportationType(newValue.value)
       setUOM(newValue)
@@ -105,6 +104,9 @@ function TransportationCost(props) {
       setUOM([])
       setTransportationType('')
     }
+    errors.TransportationCost = {}
+    errors.Rate = {}
+    errors.Quantity = {}
   }
 
   const handleRateChange = (event) => {
@@ -112,15 +114,14 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
+        if (event.target.value > 100) {
+          Toaster.warning('Value should not be greater than 100.')
+          event.target.value = '';
+          return false
+        }
         setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
-        if (event.target.value > 100) {
-          setPercentageLimit(true)
-        }
-        else if (event.target.value < 100) {
-          setPercentageLimit(false)
-        }
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
@@ -156,6 +157,7 @@ function TransportationCost(props) {
       }
     } else {
       Toaster.warning('Please enter valid number.')
+      event.target.value = '';
     }
   }
 
@@ -166,6 +168,7 @@ function TransportationCost(props) {
     }
     else {
       Toaster.warning('Please enter valid number.')
+      event.target.value = '';
     }
   }
 
@@ -278,8 +281,8 @@ function TransportationCost(props) {
                       required: false,
                       pattern: {
                         //value: /^[0-9]*$/i,
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.'
+                        value: (TransportationType === 'Percentage') ? /^((?:|0|[1-9]\d?|100)(?:\.\d{1,6})?)$/i : /^\d{0,6}(\.\d{0,6})?$/i,
+                        message: (TransportationType === 'Percentage') ? 'Percentage should not be greater than 100.' : 'Maximum length for integer is 6 and for decimal is 6'
                       },
                     }}
                     defaultValue={''}
@@ -292,7 +295,6 @@ function TransportationCost(props) {
                     errors={errors && errors.Rate}
                     disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
-                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Percentage cannot be greater than 100"} />}
                 </div>
               </Col>
               <Col md="3">
@@ -307,8 +309,8 @@ function TransportationCost(props) {
                     //required: true,
                     pattern: {
                       //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.'
+                      value: /^\d{0,6}?$/i,
+                      message: 'Maximum length for integer is 6.'
                     },
                   }}
                   defaultValue={''}
@@ -334,8 +336,8 @@ function TransportationCost(props) {
                   rules={{
                     //required: true,
                     pattern: {
-                      value: /^\d*\.?\d*$/,
-                      message: 'Invalid Number.'
+                      value: /^\d{0,6}(\.\d{0,6})?$/,
+                      message: 'Maximum length for integer is 6 and for decimal is 6.'
                     },
                   }}
                   defaultValue={''}

@@ -3423,6 +3423,16 @@ body {
         }
       }
     }
+    .cr-brdr-main {
+      input {
+        height: 30px;
+        width: 40%;
+        margin: 2px 0;
+      }
+      .text-error-title .text-help {
+        margin-top: -3px;
+      }
+    }
     .date-section {
       min-height: 80px;
     }

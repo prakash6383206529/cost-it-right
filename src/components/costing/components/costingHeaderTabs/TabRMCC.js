@@ -26,7 +26,7 @@ function TabRMCC(props) {
   const dispatch = useDispatch()
 
   const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
-    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj } = useSelector(state => state.costing)
+    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -75,7 +75,9 @@ function TabRMCC(props) {
           TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
           TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
           TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0,
-          RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0
+          RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
+
         }
       } else {
         topHeaderData = {
@@ -87,10 +89,28 @@ function TabRMCC(props) {
           OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,
           NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
           NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
-          RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0
+          RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
         }
       }
       props.setHeaderCost(topHeaderData)
+    }
+    else {
+      let topHeader = {}
+      topHeader = {
+        // NetRawMaterialsCost: costingData?.NetRMCost ? costingData.NetRMCost : 0,
+        // NetBoughtOutPartCost: costingData?.NetBOPCost ? costingData.NetBOPCost : 0,
+        // NetConversionCost: costingData?.NetConversionCost ? costingData.NetConversionCost : 0,
+        // ProcessCostTotal: costingData?.CostingConversionCost?.ProcessCostTotal ? costingData.CostingConversionCost.ProcessCostTotal : 0,
+        // OperationCostTotal: costingData?.CostingConversionCost?.OperationCostTotal ? costingData.CostingConversionCost.OperationCostTotal : 0,
+        // OtherOperationCost: costingData?.CostingConversionCost?.OtherOperationCostTotal ? costingData.CostingConversionCost.OtherOperationCostTotal : 0,
+        // NetToolsCost: costingData?.TotalToolCost ? costingData.TotalToolCost : 0,
+        // NetTotalRMBOPCC: costingData?.TotalCalculatedRMBOPCCCost ? costingData.TotalCalculatedRMBOPCCCost : 0,
+        RawMaterialCostWithCutOff: costingData?.RawMaterialCostWithCutOff ? checkForNull(costingData?.RawMaterialCostWithCutOff) : 0,
+        IsRMCutOffApplicable: costingData?.IsRMCutOffApplicable ? costingData?.IsRMCutOffApplicable : false
+      }
+
+      props.setHeaderCost(topHeader)
     }
   }, [RMCCTabData]);
 
@@ -272,9 +292,11 @@ function TabRMCC(props) {
       case 'RM':
 
         let isAllFalse = false
-        if (partObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
-          isAllFalse = _.map(gridData, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
-        }
+        // if (partObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
+        // console.log(partObj?.CostingPartDetails?.IsRMCutOffApplicable, "IsRMCutOffApplicable");
+        isAllFalse = _.map(gridData, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
+        // }
+
 
 
         GrandTotalCost = checkForNull(netRMCost(gridData)) + checkForNull(partObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partObj.CostingPartDetails.TotalConversionCost)
@@ -523,15 +545,22 @@ function TabRMCC(props) {
         if (assemblyObj.CostingPartDetails.PartType === 'Assembly') {
 
           let isAllFalse = false
-          if (assemblyObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
-            isAllFalse = _.map(rmGrid, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
-          }
+          // if (assemblyObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
+          isAllFalse = _.map(rmGrid, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
+          // }
 
           assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          let arrayToCheck = tempArrForCosting && tempArrForCosting.filter(costingItem => costingItem.PartNumber !== params.PartNumber)
 
-          assemblyObj.CostingPartDetails.IsRMCutOffApplicable = (assemblyObj.CostingPartDetails.IsRMCutOffApplicable === true) ? true : !isAllFalse
+          let isContain = false
+          arrayToCheck && arrayToCheck.filter(costingItem => {
+            if (costingItem.CostingPartDetails.IsRMCutOffApplicable && (costingItem.PartType === "Part" || costingItem.PartType === "Component")) {
+              isContain = true
+            }
+          })
+          assemblyObj.CostingPartDetails.IsRMCutOffApplicable = (isContain === true) ? true : !isAllFalse
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }

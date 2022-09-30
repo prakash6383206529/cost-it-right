@@ -146,7 +146,12 @@ class AddVolume extends Component {
   }
 
   componentWillUnmount() {
-    this.setState({ tableData: [] })
+    let data = this.state.tableData && this.state.tableData.map((item) => {
+      item.BudgetedQuantity = 0;
+      item.ApprovedQuantity = 0
+      return item
+    })
+    this.setState({ tableData: data })
   }
 
   /**

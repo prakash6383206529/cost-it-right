@@ -249,7 +249,6 @@ export const formatCostingApprovalObj = (costingObj) => {
 }
 
 export const clearCosting = (dispatch) => {
-  console.log('dispatch: ddd');
   dispatch(getBriefCostingById('', (res) => { }))
   localStorage.setItem('costingArray', [])
   localStorage.setItem('surfaceCostingArray', [])

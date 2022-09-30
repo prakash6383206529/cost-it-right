@@ -156,3 +156,13 @@
 }
 
  
+.check-box-container:nth-child(11), .check-box-container:nth-child(12) {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+.check-box-container:nth-child(11) {
+    border-top: 1px solid rgba(180, 197, 226, 0.51) !important;
+   .drawer-side-input-other  {
+    padding-top: 12px;
+   }
+}

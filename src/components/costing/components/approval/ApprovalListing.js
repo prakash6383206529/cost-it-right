@@ -19,7 +19,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
-import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
@@ -867,8 +866,6 @@ function ApprovalListing(props) {
 
   return (
     <Fragment>
-      <CalculatorWrapper />
-
       {
         !showApprovalSumary &&
         <> {
