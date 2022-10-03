@@ -858,7 +858,6 @@ class AddVolume extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
-                                  isDisabled={isEditFlag ? true : false}
                                   onBlur={() => this.setState({ showErrorOnFocusPart: true })}
                                 />
                                 {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
