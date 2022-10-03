@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, Label } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 // import { getVendorListByVendorType } from '../actions/Material'
@@ -13,7 +13,7 @@ import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { SPACEBAR, ZBC } from '../../../config/constants'
+import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -22,7 +22,7 @@ import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
-
+import { getClientSelectList, } from '../actions/Client';
 const gridOptions = {};
 
 // const initialTableData = [
@@ -100,11 +100,9 @@ class AddVolume extends Component {
     super(props)
     this.child = React.createRef()
     this.state = {
-      IsVendor: false,
       selectedPlants: [],
       vendorName: [],
       part: [],
-
       year: [],
       tableData: this.props.initialTableData,
       duplicateTableData: [],
@@ -122,7 +120,9 @@ class AddVolume extends Component {
       inputLoader: false,
       showErrorOnFocus: false,
       isPartNumberNotSelected: false,
-      showErrorOnFocusPart: false
+      showErrorOnFocusPart: false,
+      costingTypeId: ZBCTypeId,
+      client: []
     }
   }
 
@@ -142,6 +142,7 @@ class AddVolume extends Component {
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
         this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getPartSelectList(() => { })
+        this.props.getClientSelectList(() => { })
       }
     }, 300);
     this.getDetail()
@@ -167,6 +168,7 @@ class AddVolume extends Component {
       filterPlantList,
       financialYearSelectList,
       partSelectList,
+      clientSelectList
     } = this.props
     const temp = []
 
@@ -214,16 +216,31 @@ class AddVolume extends Component {
         })
       return temp
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
-
   /**
-   * @method onPressVendor
-   * @description Used for Vendor checked
-   */
-  onPressVendor = () => {
-    this.setState({ IsVendor: !this.state.IsVendor })
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+  * @method onPressVendor
+  * @description Used for Vendor checked
+  */
+  onPressVendor = (costingHeadFlag) => {
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === VBCTypeId) {
+      this.setState({ inputLoader: true })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    }
+    else {
+      this.props.getClientSelectList(() => { })
+    }
   }
 
   /**
@@ -288,7 +305,17 @@ class AddVolume extends Component {
       this.setState({ year: [] })
     }
   }
-
+  /**
+* @method handleClient
+* @description called
+*/
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
   setStartDate = (date) => {
     this.setState({ year: date })
   }
@@ -421,13 +448,14 @@ class AddVolume extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsVendor,
+              costingTypeId: String(Data.CostingTypeId),
               selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
               part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -486,8 +514,7 @@ class AddVolume extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const {
-      IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId, destinationPlant } = this.state
+    const { selectedPlants, vendorName, part, year, client, tableData, costingTypeId, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
 
     // let plantArray = [];
@@ -495,16 +522,8 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-    let returnFalse = 0
-    if (IsVendor && vendorName.length <= 0) {
-      returnFalse = returnFalse + 1
+    if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
-    }
-    if (part.length <= 0) {
-      returnFalse = returnFalse + 1
-      this.setState({ isPartNumberNotSelected: true, setDisable: false })      // IF Part Number IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
-    }
-    if (returnFalse > 0) {
       return false
     }
     this.setState({ isVendorNameNotSelected: false, isPartNumberNotSelected: false })
@@ -588,15 +607,15 @@ class AddVolume extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
-        IsVendor: IsVendor,
-        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+        CostingTypeId: costingTypeId,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         PartId: part.value,
         PartNumber: part.label,
         OldPartNumber: '',
         Year: year.label,
         VolumeApprovedDetails: approvedArray,
         VolumeBudgetedDetails: budgetArray,
-        Plant: !IsVendor
+        Plant: costingTypeId === ZBCTypeId
           ? [
             {
               PlantName: selectedPlants.label,
@@ -608,8 +627,9 @@ class AddVolume extends Component {
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
-        DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
-        DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
+        DestinationPlantId: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
+        DestinationPlant: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : '',
+        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
       this.props.createVolume(formData, (res) => {
@@ -656,7 +676,7 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isOpenVendor, setDisable } = this.state;
+    const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
     const vendorFilterList = (inputValue) => {
       let tempArr = []
 
@@ -742,30 +762,54 @@ class AddVolume extends Component {
                     >
                       <div className="add-min-height">
                         <Row>
-                          <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                              <div className={"left-title"}>Zero Based</div>
-                              <Switch
-                                onChange={this.onPressVendor}
-                                checked={this.state.IsVendor}
-                                id="normal-switch"
+                          <Col md="12">
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === ZBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(ZBCTypeId)
+                                }
                                 disabled={isEditFlag ? true : false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={"right-title"}>Vendor Based</div>
-                            </label>
+                              />{" "}
+                              <span>Zero Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === VBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(VBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Vendor Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === CBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(CBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Customer Based</span>
+                            </Label>
                           </Col>
                         </Row>
 
                         <Row>
-                          {!this.state.IsVendor && (
+                          {((costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
                             <Col md="3">
                               <Field
                                 name="Plant"
@@ -786,9 +830,9 @@ class AddVolume extends Component {
                                 valueDescription={this.state.selectedPlants}
                                 disabled={isEditFlag ? true : false}
                               />
-                            </Col>
+                            </Col>)
                           )}
-                          {this.state.IsVendor && (
+                          {costingTypeId === VBCTypeId && (
                             <Col md="3">
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center p-relative async-select">
@@ -821,7 +865,7 @@ class AddVolume extends Component {
 
                           )}
                           {
-                            this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                            costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure &&
                             <Col md="3">
                               <Field
                                 label={'Destination Plant'}
@@ -843,6 +887,29 @@ class AddVolume extends Component {
                               />
                             </Col>
                           }
+                          {costingTypeId === CBCTypeId && (
+                            <Col md="3">
+                              <Field
+                                name="clientName"
+                                type="text"
+                                label={"Customer Name"}
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("ClientList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.client == null ||
+                                    this.state.client.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handleClient}
+                                valueDescription={this.state.client}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
                           <Col md="3">
                             <label>{"Part No."}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center async-select">
@@ -978,11 +1045,12 @@ class AddVolume extends Component {
  * @description return state to component as props
  * @param {*} state
  */
-function mapStateToProps({ comman, volume, material, part }) {
+function mapStateToProps({ comman, volume, material, part, client }) {
   const { plantSelectList, filterPlantList, vendorWithVendorCodeSelectList } = comman
   const { volumeData, financialYearSelectList } = volume
   const { vendorListByVendorType } = material
   const { partSelectList } = part
+  const { clientSelectList } = client;
 
   let initialValues = {}
   if (volumeData && volumeData !== undefined) {
@@ -1000,7 +1068,8 @@ function mapStateToProps({ comman, volume, material, part }) {
     financialYearSelectList,
     partSelectList,
     initialValues,
-    vendorWithVendorCodeSelectList
+    vendorWithVendorCodeSelectList,
+    clientSelectList
   }
 }
 
@@ -1019,7 +1088,8 @@ export default connect(mapStateToProps, {
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  getClientSelectList
 })(
   reduxForm({
     form: 'AddVolume',

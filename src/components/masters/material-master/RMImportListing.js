@@ -67,7 +67,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(false)
   var filterParams = {
@@ -360,12 +360,15 @@ function RMImportListing(props) {
   * @description edit or view material type
   */
   const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
+    console.log('rowData: ', rowData);
     let data = {
       isEditFlag: true,
       isViewFlag: isViewMode,
       Id: Id,
+      costingTypeId: rowData.CostingTypeId,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
+    console.log('data: ', data);
     props.getDetails(data, rowData?.IsRMAssociated);
   }
 
@@ -883,7 +886,8 @@ function RMImportListing(props) {
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
                     <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
-
+                    <AgGridColumn field="CustomerName" headerName="CustomerName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
 
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>

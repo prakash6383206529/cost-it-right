@@ -2,6 +2,8 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export const config = () => {
 
   let headers = {
@@ -1714,7 +1716,7 @@ export const ZBC = 'ZBC'
 export const VBC = 'VBC'
 export const NCC = 'NCC'
 export const WAC = 'WAC'
-
+export const CBC = 'CBC'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -1999,7 +2001,15 @@ export const statusOptions = [
   { label: "Linked", value: "17" },
   { label: "RejectedBySystem", value: "18" },
 ]
-
+//CONSTANTS FOR COSTING HEAD
+export const ZBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC]
+export const VBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC]
+export const CBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC]
+export const NCCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC]
+export const ZBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC]
+export const VBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC]
+export const CBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC]
+export const NCCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC]
 // KEY AND IV
 export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
