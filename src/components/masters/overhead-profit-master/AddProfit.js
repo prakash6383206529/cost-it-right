@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -33,7 +33,6 @@ class AddProfit extends Component {
     this.dropzone = React.createRef();
     this.state = {
       ProfitID: '',
-      costingHead: 'zero',
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
@@ -43,7 +42,7 @@ class AddProfit extends Component {
       ModelType: [],
       vendorName: [],
       client: [],
-
+      costingTypeId: ZBCTypeId,
       profitAppli: [],
 
       remarks: '',
@@ -92,16 +91,15 @@ class AddProfit extends Component {
   }
 
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = (vendorFlag, costingHeadFlag) => {
+     * @method onPressVendor
+     * @description Used for Vendor checked
+     */
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: vendorFlag,
-      costingHead: costingHeadFlag,
       vendorName: [],
+      costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === "vendor") {
+    if (costingHeadFlag === VBCTypeId) {
       this.setState({ inputLoader: true })
       this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
     }
@@ -155,7 +153,7 @@ class AddProfit extends Component {
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
 
             let Head = '';
-            if (Data.IsVendor === true && Data.VendorId != null) {
+            if (Data.costingTypeId === VBCTypeId && Data.VendorId != null) {
               Head = 'vendor';
             } else if (Data.IsClient === true) {
               Head = 'client';
@@ -674,23 +672,21 @@ class AddProfit extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, ModelType, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
+    const { IsVendor, ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
       isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     let plantArray = []
-    if (IsVendor) {
+    if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
       })
     }
     if (vendorName.length <= 0) {
-
-      if (IsVendor && costingHead === 'vendor') {
+      if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
@@ -728,9 +724,9 @@ class AddProfit extends Component {
       })
       let requestData = {
         ProfitId: ProfitID,
-        VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-        IsClient: costingHead === 'client' ? true : false,
-        ClientName: costingHead === 'client' ? client.label : '',
+        VendorName: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+        IsClient: costingTypeId === CBCTypeId ? true : false,
+        ClientName: costingTypeId === CBCTypeId ? client.label : '',
         ProfitApplicabilityType: profitAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
@@ -740,9 +736,9 @@ class AddProfit extends Component {
         ProfitBOPPercentage: values.ProfitBOPPercentage,
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
         VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
-        ClientId: costingHead === 'client' ? client.value : '',
+        ClientId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -779,9 +775,9 @@ class AddProfit extends Component {
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-        ClientId: costingHead === 'client' ? client.value : '',
+        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        ClientId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -814,7 +810,7 @@ class AddProfit extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isRM, isCC, isBOP, isProfitPercent, isEditFlag, costingHead,
+    const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -863,10 +859,10 @@ class AddProfit extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "zero" ? true : false
+                                costingTypeId === ZBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(false, "zero")
+                                this.onPressVendor(ZBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
@@ -877,10 +873,10 @@ class AddProfit extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "vendor" ? true : false
+                                costingTypeId === VBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "vendor")
+                                this.onPressVendor(VBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
@@ -892,14 +888,14 @@ class AddProfit extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "client" ? true : false
+                                costingTypeId === CBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "client")
+                                this.onPressVendor(CBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Client Based</span>
+                            <span>Customer Based</span>
                           </Label> */}
                         </Col>
                       </Row>
@@ -927,7 +923,7 @@ class AddProfit extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                        {this.state.IsVendor && costingHead === "vendor" && (
+                        {costingTypeId === VBCTypeId && (
                           <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
@@ -950,7 +946,7 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         )}
-                        {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
                               label="Plant"
@@ -975,7 +971,7 @@ class AddProfit extends Component {
                           </Col>)
                         )}
                         {
-                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
                           <Col md="3">
                             <Field
                               label={'Plant'}
@@ -993,7 +989,7 @@ class AddProfit extends Component {
                             />
                           </Col>
                         }
-                        {this.state.IsVendor && costingHead === "client" && (
+                        {costingTypeId === CBCTypeId && (
                           <Col md="3">
                             <Field
                               name="clientName"

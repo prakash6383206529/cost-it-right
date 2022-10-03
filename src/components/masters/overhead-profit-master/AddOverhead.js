@@ -16,7 +16,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -34,7 +34,6 @@ class AddOverhead extends Component {
     this.dropzone = React.createRef();
     this.state = {
       OverheadID: '',
-      costingHead: 'zero',
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -46,7 +45,7 @@ class AddOverhead extends Component {
       client: [],
       singlePlantSelected: [],
       overheadAppli: [],
-
+      costingTypeId: ZBCTypeId,
       remarks: '',
       files: [],
 
@@ -91,21 +90,19 @@ class AddOverhead extends Component {
   }
 
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = (vendorFlag, costingHeadFlag) => {
+    * @method onPressVendor
+    * @description Used for Vendor checked
+    */
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: vendorFlag,
-      costingHead: costingHeadFlag,
       vendorName: [],
+      costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === "vendor") {
+    if (costingHeadFlag === VBCTypeId) {
       this.setState({ inputLoader: true })
       this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
     }
   }
-
   /**
   * @method handleModelTypeChange
   * @description called
@@ -162,21 +159,22 @@ class AddOverhead extends Component {
           setTimeout(() => {
             const { costingHead } = this.props;
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            let Head = '';
-            if (Data.IsVendor === true && Data.VendorId != null) {
-              Head = 'vendor';
-            } else if (Data.IsClient === true) {
-              Head = 'client';
-            } else {
-              Head = 'zero';
-            }
+            // let Head = '';
+            // if (Data.costingTypeId === VBCTypeId && Data.VendorId != null) {
+            //   Head = 'vendor';
+            // } else if (Data.IsClient === true) {
+            //   Head = 'client';
+            // } else {
+            //   Head = 'zero';
+            // }
 
 
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
-              costingHead: Head,
+              // IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
+              // costingHead: Head,
+              costingTypeId: String(Data.CostingTypeId),
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
@@ -695,7 +693,7 @@ class AddOverhead extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
+    const { costingHead, IsVendor, client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
       isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
@@ -713,7 +711,7 @@ class AddOverhead extends Component {
 
     if (vendorName.length <= 0) {
 
-      if (IsVendor && costingHead === 'vendor') {
+      if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
@@ -750,9 +748,9 @@ class AddOverhead extends Component {
       })
       let requestData = {
         OverheadId: OverheadID,
-        VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-        IsClient: costingHead === 'client' ? true : false,
-        ClientName: costingHead === 'client' ? client.label : '',
+        VendorName: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+        IsClient: costingTypeId === CBCTypeId ? true : false,
+        ClientName: costingTypeId === CBCTypeId ? client.label : '',
         OverheadApplicabilityType: overheadAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
@@ -762,9 +760,9 @@ class AddOverhead extends Component {
         OverheadBOPPercentage: values.OverheadBOPPercentage,
         OverheadRMPercentage: values.OverheadRMPercentage,
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-        ClientId: costingHead === 'client' ? client.value : '',
+        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        ClientId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -797,15 +795,16 @@ class AddOverhead extends Component {
       const formData = {
         EAttachementEntityName: 0,
         IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
         OverheadMachiningCCPercentage: !isCC ? values.OverheadMachiningCCPercentage : '',
         OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
         OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-        ClientId: costingHead === 'client' ? client.value : '',
+        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -838,8 +837,8 @@ class AddOverhead extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
+    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag,
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, costingTypeId, isViewMode, setDisable, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -888,10 +887,10 @@ class AddOverhead extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "zero" ? true : false
+                                costingTypeId === ZBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(false, "zero")
+                                this.onPressVendor(ZBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
@@ -902,10 +901,10 @@ class AddOverhead extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "vendor" ? true : false
+                                costingTypeId === VBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "vendor")
+                                this.onPressVendor(VBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
@@ -917,14 +916,14 @@ class AddOverhead extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "client" ? true : false
+                                costingTypeId === CBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "client")
+                                this.onPressVendor(CBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Client Based</span>
+                            <span>Customer Based</span>
                           </Label> */}
                         </Col>
                       </Row>
@@ -951,7 +950,7 @@ class AddOverhead extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                        {this.state.IsVendor && costingHead === "vendor" && (
+                        {costingTypeId === VBCTypeId && (
                           <Col md="3" >
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
@@ -974,7 +973,7 @@ class AddOverhead extends Component {
                             </div>
                           </Col>
                         )}
-                        {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
                               label="Plant"
@@ -998,7 +997,7 @@ class AddOverhead extends Component {
                           </Col>)
                         )}
                         {
-                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
                           <Col md="3">
                             <Field
                               label={'Plant'}
@@ -1016,12 +1015,12 @@ class AddOverhead extends Component {
                             />
                           </Col>
                         }
-                        {this.state.IsVendor && costingHead === "client" && (
+                        {costingTypeId === CBCTypeId && (
                           <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Client Name"}
+                              label={"Customer Name"}
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
