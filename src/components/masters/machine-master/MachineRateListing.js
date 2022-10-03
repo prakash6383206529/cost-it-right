@@ -62,7 +62,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -241,6 +241,7 @@ class MachineRateListing extends Component {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         this.props.getDetails(data, rowData?.IsMachineAssociated);
     }
@@ -376,9 +377,9 @@ class MachineRateListing extends Component {
                 }
                 return null
             })
-            return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
+            return cellValue
         } else {
-            return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
+            return cellValue
         }
     }
 
@@ -740,6 +741,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomerName" headerName="CustomerName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
