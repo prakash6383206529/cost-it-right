@@ -47,9 +47,6 @@ function Insights(props) {
 
     useEffect(() => {
 
-
-
-
         let arr = []
 
         props.data && props.data.map((item) => {
@@ -65,25 +62,6 @@ function Insights(props) {
         dispatch(getCostingBenchMarkRmReport(arr, () => { }))
 
     }, [])
-
-
-
-
-    useEffect(() => {
-
-
-
-
-
-
-
-
-
-
-    }, [rmBenchmarkList])
-
-
-
 
 
 
@@ -488,10 +466,6 @@ function Insights(props) {
             setShowListing(false)
         }
     }
-
-
-
-
 
 
     let rowData2 = []
