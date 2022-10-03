@@ -209,6 +209,7 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+
         if (this.props.bopDomesticList?.length !== 0) {
             this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
         }
@@ -491,9 +492,19 @@ class BOPDomesticListing extends Component {
 
         var filterParams = {
             date: "",
+            inRangeInclusive: true,
+            filterOptions: ['equals', 'inRange'],
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+                let date = document.getElementsByClassName('ag-input-field-input')
+                for (let i = 0; i < date.length; i++) {
+                    if (date[i].type == 'radio') {
+                        date[i].click()
+                    }
+                }
+
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');

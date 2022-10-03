@@ -55,6 +55,7 @@ import {
   config,
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
+  GET_REPORTER_LIST
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1376,6 +1377,23 @@ export function getVendorWithVendorCodeSelectList(callback) {
     request.then((response) => {
       dispatch({
         type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+        payload: response.data.SelectList,
+      });
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+
+export function getReporterList(callback) {
+  return (dispatch) => {
+    const request = axios.get(API.getReporterList, config());
+    request.then((response) => {
+      dispatch({
+        type: GET_REPORTER_LIST,
         payload: response.data.SelectList,
       });
       callback(response)

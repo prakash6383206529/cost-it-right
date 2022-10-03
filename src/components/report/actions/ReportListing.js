@@ -3,7 +3,8 @@ import {
     API,
     API_FAILURE,
     GET_REPORT_LIST, config, EMPTY_GUID,
-    GET_ALL_REPORT_LIST
+    GET_ALL_REPORT_LIST,
+    GET_BENCHMARK_RM_LIST
 } from '../../../config/constants';
 
 // const config() = config
@@ -114,5 +115,27 @@ export function getCostingReport(skip, take, isPagination, obj, isLastWeek, isCa
             })
             callback([]);
         }
+    };
+}
+
+
+
+
+export function getCostingBenchMarkRmReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostingBenchMarkRmReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_BENCHMARK_RM_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
     };
 }
