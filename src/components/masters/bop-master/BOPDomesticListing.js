@@ -211,9 +211,6 @@ class BOPDomesticListing extends Component {
 
     onFloatingFilterChanged = (value) => {
 
-
-
-
         if (this.props.bopDomesticList?.length !== 0) {
             this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
         }
@@ -222,10 +219,6 @@ class BOPDomesticListing extends Component {
     }
 
     onSearch = () => {
-
-
-
-
         onSearch(gridOptions, this, "BOP", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 

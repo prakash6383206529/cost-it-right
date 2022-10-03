@@ -81,13 +81,7 @@ function CostingBenchmarkReport(props) {
     const handleRM = (data) => {
 
 
-
-        console.log(data, "data")
-
-
-
     }
-
 
 
     const renderModule = (value) => {

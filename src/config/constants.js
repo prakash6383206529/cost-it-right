@@ -290,7 +290,7 @@ export const API = {
   fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
   bulkUploadBOPDomesticZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-domestic-json`,
   bulkUploadBOPDomesticVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
-  getPlantSelectListByVendor: `${BASE_URL}/rfq-user/get-user-select-list`,
+  getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
   //BOP IMPORT
   createBOPImport: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-import`,
@@ -644,7 +644,7 @@ export const API = {
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
-  registerRFQ: `${BASE_URL}/rfq-user/register-rfq-user`,
+  registerRfqUser: `${BASE_URL}/rfq-user/register-rfq-user`,
 
   //USERS API
   getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
@@ -653,7 +653,7 @@ export const API = {
   deleteUserAPI: `${BASE_URL}/user/delete`,
   activeInactiveUser: `${BASE_URL}/user/active-inactive-user`,
   updateUserAPI: `${BASE_URL}/user/update`,
-  updateUserAPIRFQ: `${BASE_URL}/rfq-user/update-rfq-user`,
+  updateRfqUser: `${BASE_URL}/rfq-user/update-rfq-user`,
   setUserTechnologyLevelForCosting: `${BASE_URL}/user-level/assign-user-technology-levels-for-costing`,
   getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,
   updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
