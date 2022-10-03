@@ -45,7 +45,7 @@ function Rejection(props) {
 
     useEffect(() => {
         dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
-        setValue('RejectionPercentage', rejectionObj?.RejectionCost)
+        setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === 'Fixed' ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
     }, [])
 
     useEffect(() => {
