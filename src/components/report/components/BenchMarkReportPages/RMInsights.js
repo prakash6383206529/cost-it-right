@@ -68,14 +68,6 @@ function Insights(props) {
 
 
 
-    useEffect(() => {
-
-
-
-    }, [rmBenchmarkList])
-
-
-
     let objNew = {
         Identity: null,
         Result: true,
@@ -291,10 +283,10 @@ function Insights(props) {
 
         ////////////////////////////////////////////////////////////////
 
-        rmBenchmarkList && rmBenchmarkList[0].Specification.map((item, i) => {
+        rmBenchmarkList && rmBenchmarkList[0].Specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.RawMaterialSpecificationName,
+                Specification: item.RawMaterialSpecificationName,                       //SETTING 4 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -308,10 +300,10 @@ function Insights(props) {
             })
 
 
-            temp.push(obj)
+            temp.push(obj)           // PUSHING OBJ IN TEMP ARRAY FOR EACH SPECIFICATION
 
             let obj2 = {}
-            obj2.vendor = item.RMVendorPrice[0].Vendor
+            obj2.vendor = item.RMVendorPrice[0].Vendor                    // OBJ2 
             item.RMVendorPrice[0].Plant.map((el) => {
                 plantTemp.push(el.PlantName)
 
@@ -529,8 +521,9 @@ function Insights(props) {
 
 
         var rowCount = event.api.getSelectedRows();
+        console.log(rowCount[0], "rowcount")
         var graphDataNew = rowCount[0].graphData;
-        var avgGraphData = rowCount[0].averageData;
+        var avgGraphData = rowCount[0].Average;
         var minGraphData = rowCount[0].minimumData;
         var maxGraphData = rowCount[0].maximumData;
 
@@ -547,10 +540,10 @@ function Insights(props) {
 
         graphDataNew = array
 
-
-
         setDynamicGrpahData(graphDataNew);
+
         setAverageGrpahData(avgGraphData);
+
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
         // 
@@ -626,7 +619,8 @@ function Insights(props) {
                 fill: false,
                 tension: 0.1,
                 borderDash: [5, 5],
-                data: averageGrpahData
+                // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
+                data: [25, 25, 30, 35, 45, 55, 65, 75]
             },
             {
                 type: 'line',

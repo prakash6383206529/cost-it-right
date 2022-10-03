@@ -151,10 +151,10 @@ export function registerUserAPI(requestData, callback) {
 }
 
 
-export function registerUserAPIRFQ(requestData, callback) {
+export function registerRfqUser(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.registerRFQ, requestData, config())
+        axios.post(API.registerRfqUser, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -322,10 +322,10 @@ export function updateUserAPI(requestData, callback) {
     };
 }
 
-export function updateUserAPIRFQ(requestData, callback) {
+export function updateRfqUser(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateUserAPIRFQ, requestData, config())
+        axios.put(API.updateRfqUser, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

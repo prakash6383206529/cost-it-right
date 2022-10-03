@@ -14,7 +14,7 @@ import { renderPasswordInputField, focusOnError, renderEmailInputField, renderTe
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
-  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerUserAPIRFQ, updateUserAPIRFQ
+  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity, getVendorWithVendorCodeSelectList, getReporterList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -1333,7 +1333,7 @@ function UserRegistration(props) {
 
         if (props?.RFQUser || isRfqUser) {
           reset();
-          dispatch(updateUserAPIRFQ(updatedData, (res) => {
+          dispatch(updateRfqUser(updatedData, (res) => {
             if (res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
@@ -1391,7 +1391,7 @@ function UserRegistration(props) {
       setIsLoader(true)
 
       if (props?.RFQUser) {
-        dispatch(registerUserAPIRFQ(userData, res => {
+        dispatch(registerRfqUser(userData, res => {
           setIsSubmitted(false)
           if (res && res.data && res.data.Result) {
             setIsLoader(false)
