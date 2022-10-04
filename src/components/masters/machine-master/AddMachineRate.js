@@ -225,7 +225,6 @@ class AddMachineRate extends Component {
   * @description USED TO SET OLD VALUES
   */
   setOldValue = (data) => {
-
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
@@ -235,12 +234,12 @@ class AddMachineRate extends Component {
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+      this.props.change('Remark', data.Remark ? data.Remark : "")
     }, 200);
-
   }
 
 
@@ -266,7 +265,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          if (Data.MachineLabourRates.length !== 0) {
+          if (Data?.MachineLabourRates?.length !== 0) {
             this.setState({ disableMachineType: true })
           }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {

@@ -1964,14 +1964,14 @@ class AddMoreDetails extends Component {
       MachineProcessGroup: this.props.processGroupApiData,
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
-      PowerEntryId: powerIdFromAPI
+      PowerEntryId: powerIdFromAPI,
+      selectedPlants: selectedPlants,
       // LabourDetailId: labourType.value
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-
 
       if (IsFinancialDataChanged && isEditFlag) {
 
@@ -3423,7 +3423,7 @@ class AddMoreDetails extends Component {
                               <Col md="3">
                                 <Field
                                   label={`Power Cost/Annum(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
+                                  name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}

@@ -287,8 +287,6 @@ function RawMaterialCost(props) {
   }
 
   const checkCutOffNegative = (value, index) => {
-    console.log('index: ', index);
-    console.log('value: ', value);
     if (value < 0) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, '')
@@ -311,7 +309,6 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: 0
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
-      console.log('tempArr: ', tempArr);
       setTimeout(() => {
         setGridData(tempArr)
       }, 100);
@@ -348,13 +345,9 @@ function RawMaterialCost(props) {
 
         // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-        console.log('ScrapCost: ', ScrapCost);
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
-        console.log('NetLandedCost: ', NetLandedCost);
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        console.log('CutOffRMC: ', CutOffRMC);
         if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
-          console.log(CutOffRMC, "Inside IF");
           return false
         }
 
@@ -1198,34 +1191,36 @@ function RawMaterialCost(props) {
                             {
                               isScrapRecoveryPercentageApplied &&
                               <td>
-                                <NumberFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    required: true,
-                                    pattern: {
-                                      value: /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.',
-                                    },
-                                    max: {
-                                      value: 100,
-                                      message: 'Percentage should be less than 100'
-                                    },
-                                  }}
-                                  defaultValue={item.ScrapRecoveryPercentage}
-                                  className=""
-                                  customClassName={'withBorder scrap-recovery'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleScrapRecoveryChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                  disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
-                                />
+                                <div className='costing-error-container'>
+                                  <NumberFieldHookForm
+                                    label=""
+                                    name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      required: true,
+                                      pattern: {
+                                        value: /^\d*\.?\d*$/,
+                                        message: 'Invalid Number.',
+                                      },
+                                      max: {
+                                        value: 100,
+                                        message: 'Percentage should be less than 100'
+                                      },
+                                    }}
+                                    defaultValue={item.ScrapRecoveryPercentage}
+                                    className=""
+                                    customClassName={'withBorder scrap-recovery'}
+                                    handleChange={(e) => {
+                                      e.preventDefault()
+                                      handleScrapRecoveryChange(e, index)
+                                    }}
+                                    errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
+                                  />
+                                </div>
                               </td>
                             }
                             <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
