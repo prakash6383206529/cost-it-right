@@ -10,10 +10,11 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
-  const tempArray = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  const tempArray = reactLocalStorage.getObject('surfaceCostingArray')
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);

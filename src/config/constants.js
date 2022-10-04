@@ -2,6 +2,8 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export const config = () => {
 
   let headers = {
@@ -16,9 +18,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-//const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
@@ -1707,7 +1708,7 @@ export const ZBC = 'ZBC'
 export const VBC = 'VBC'
 export const NCC = 'NCC'
 export const WAC = 'WAC'
-
+export const CBC = 'CBC'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -1991,7 +1992,15 @@ export const statusOptions = [
   { label: "RejectedBySystem", value: "18" },
 
 ]
-
+//CONSTANTS FOR COSTING HEAD
+export const ZBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC]
+export const VBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC]
+export const CBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC]
+export const NCCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC]
+export const ZBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC]
+export const VBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC]
+export const CBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC]
+export const NCCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC]
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
@@ -1999,4 +2008,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.569";
+export const VERSION = "V1.2.570";
