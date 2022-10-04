@@ -151,7 +151,7 @@ function UserRegistration(props) {
         label: registerUserData.RoleName, value: registerUserData.RoleId
       } : '')
       setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? {
-        label: registerUserData.Departments[0]?.DepartmentName, value: registerUserData.Departments[0]?.DepartmentId
+        label: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentName, value: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentId
       } : '')
     }
 
@@ -475,7 +475,7 @@ function UserRegistration(props) {
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
             // setDepartment((getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [])
 
-            setDepartment([{ label: Data.Departments[0]?.DepartmentName, value: Data.Departments[0]?.DepartmentId }])
+            setDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
 
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
             setCity({ label: registerUserData?.CityName, value: registerUserData?.CityId })
