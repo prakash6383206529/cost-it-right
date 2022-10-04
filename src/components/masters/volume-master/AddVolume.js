@@ -120,7 +120,9 @@ class AddVolume extends Component {
       rowData: null,
       setDisable: false,
       inputLoader: false,
-      showErrorOnFocus: false
+      showErrorOnFocus: false,
+      isPartNumberNotSelected: false,
+      showErrorOnFocusPart: false
     }
   }
 
@@ -493,11 +495,19 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
+    let returnFalse = 0
     if (IsVendor && vendorName.length <= 0) {
+      returnFalse = returnFalse + 1
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
+    }
+    if (part.length <= 0) {
+      returnFalse = returnFalse + 1
+      this.setState({ isPartNumberNotSelected: true, setDisable: false })      // IF Part Number IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
+    }
+    if (returnFalse > 0) {
       return false
     }
-    this.setState({ isVendorNameNotSelected: false })
+    this.setState({ isVendorNameNotSelected: false, isPartNumberNotSelected: false })
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
     const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {
@@ -796,7 +806,7 @@ class AddVolume extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
-                                    onFocus={() => onFocus(this)}
+                                    onBlur={() => onFocus(this)}
                                   />
                                 </div>
                                 {!isEditFlag && (
@@ -848,7 +858,10 @@ class AddVolume extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
+                                  isDisabled={isEditFlag ? true : false}
+                                  onBlur={() => this.setState({ showErrorOnFocusPart: true })}
                                 />
+                                {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
