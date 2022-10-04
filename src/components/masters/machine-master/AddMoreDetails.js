@@ -3423,7 +3423,7 @@ class AddMoreDetails extends Component {
                               <Col md="3">
                                 <Field
                                   label={`Power Cost/Annum(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
+                                  name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
