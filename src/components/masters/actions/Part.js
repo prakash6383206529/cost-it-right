@@ -106,7 +106,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
 
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
-        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}`
+        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}&technology=${obj.Technology ? obj.Technology : ""}`
         const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
         request.then((response) => {
             if (response?.data?.Result === true || response.status === 204) {
