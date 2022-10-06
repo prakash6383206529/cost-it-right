@@ -720,7 +720,7 @@ function TabSurfaceTreatment(props) {
   const surfaceCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -730,7 +730,7 @@ function TabSurfaceTreatment(props) {
   const transportCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -889,7 +889,7 @@ function TabSurfaceTreatment(props) {
 
             if (objectToUpdate.PartType === 'Sub Assembly') {
               let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
-
+              let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
               initialPartNo = objectToUpdate.AssemblyPartNumber
               let surfaceCostGrid = params.PartNumber === objectToUpdate.PartNumber ? surfaceGrid : []
               let subAssemObj = calculationForSubAssembly(surfaceCostGrid, objectToUpdate, quant, 'Operation', tempArr, {}, params)
