@@ -1433,10 +1433,10 @@ function UserRegistration(props) {
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
-      <div className="login-container signup-form">
+      <div className="login-container signup-form user-ragistration">
         <div className="row">
 
-          <div className="col-md-12">
+          <div className={`col-md-12`}>
             <div className="shadow-lgg login-formg ">
               <div className="row">
                 <div className="col-md-6">
@@ -1454,7 +1454,7 @@ function UserRegistration(props) {
                     title={'Personal Details:'}
                     customClass={'Personal-Details'} />
 
-                  <div className=" row form-group">
+                  <div className={`row form-group ${props?.RFQUser ? 'rfq-portal-container': ''}`}>
                     <div className="input-group col-md-3 input-withouticon" >
                       <TextFieldHookForm
                         label="First Name"
@@ -1463,6 +1463,7 @@ function UserRegistration(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
+                        disableErrorOverflow={true}
                         mandatory={true}
                         rules={{
                           required: true,
@@ -1486,6 +1487,7 @@ function UserRegistration(props) {
                         register={register}
                         mandatory={false}
                         placeholder={'Enter'}
+                        disableErrorOverflow={true}
                         rules={{
                           required: false,
                           pattern: {
@@ -1506,6 +1508,7 @@ function UserRegistration(props) {
                         control={control}
                         register={register}
                         mandatory={false}
+                        disableErrorOverflow={true}
                         rules={{
                           required: false,
                           pattern: {
@@ -1524,12 +1527,13 @@ function UserRegistration(props) {
                         <div className="Phone phoneNumber col-md-8">
                           <NumberFieldHookForm
                             label="Phone Number"
-                            name={"PhoneNumber"}
+                            name={"PhoneNumber"} 
                             errors={errors.PhoneNumber}
                             Controller={Controller}
                             control={control}
                             register={register}
                             mandatory={false}
+                            disableErrorOverflow={true}
                             rules={{
                               required: false,
                               pattern: {
@@ -1551,6 +1555,7 @@ function UserRegistration(props) {
                             control={control}
                             register={register}
                             mandatory={false}
+                            disableErrorOverflow={true}
                             rules={{
                               required: false,
                               pattern: {
@@ -1564,10 +1569,17 @@ function UserRegistration(props) {
                           />
                         </div>
                       </div>
-                    </div> :
+                    </div> 
+                      :
+                    <>
+                     <Row className="mx-0 w-100 mt-5">
+                      <Col md="12">
+                        <HeaderTitle
+                        title={'Additional Details:'}
+                        customClass={'Personal-Details'} />
+                      </Col>
                       <Col md="3">
-                        <div className="row form-group">
-                          <div className="Phone phoneNumber col-md-8">
+                          <div className="Phone phoneNumber">
                             <SearchableSelectHookForm
                               name="Vendor"
                               type="text"
@@ -1590,8 +1602,9 @@ function UserRegistration(props) {
                             //valueDescription={role}
                             />
                           </div>
-
-                          <div className="phoneNumber col-md-4 pl-0">
+                        </Col>
+                        <Col md="3">
+                          <div className="phoneNumber pl-0">
                             <SearchableSelectHookForm
                               name="Reporter"
                               type="text"
@@ -1616,15 +1629,15 @@ function UserRegistration(props) {
                             //valueDescription={department}
                             />
                           </div>
-
-                        </div>
-                      </Col>
+                       </Col>
+                      </Row>
+                      </>
                     }
                   </div>
 
                   <HeaderTitle
                     title={'ID & Password:'}
-                    customClass={''} />
+                    customClass={'mt-4'} />
 
                   <div className="row form-group">
                     <div className="input-group col-md-3">
@@ -1661,6 +1674,7 @@ function UserRegistration(props) {
                           Controller={Controller}
                           control={control}
                           register={register}
+                          disableErrorOverflow={true}
                           mandatory={true}
                           rules={{
                             required: true,
@@ -1682,7 +1696,7 @@ function UserRegistration(props) {
                             name="Password"
                             label="Password"
                             placeholder="Enter"
-
+                            disableErrorOverflow={true}
                             errors={errors.Password}
                             Controller={Controller}
                             control={control}
@@ -1718,7 +1732,7 @@ function UserRegistration(props) {
                             control={control}
                             register={register}
                             mandatory={true}
-
+                            disableErrorOverflow={true}
 
                             rules={{
                               required: true,
@@ -1749,7 +1763,7 @@ function UserRegistration(props) {
                       <TextFieldHookForm
                         label="Address 1"
                         name={"AddressLine1"}
-
+                        disableErrorOverflow={true}
                         errors={errors.AddressLine1}
                         Controller={Controller}
                         control={control}
@@ -1828,6 +1842,7 @@ function UserRegistration(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
+                        disableErrorOverflow={true}
                         mandatory={true}
                         rules={{
                           required: true,
