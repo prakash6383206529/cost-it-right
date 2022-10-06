@@ -8874,3 +8874,21 @@ table.group-process-table {
     font-weight: 600;
   }
 }
+.user-ragistration {
+
+  .input-withouticon,
+  .withBorderPWD {
+    .text-help {
+      bottom: 8px;
+      position: absolute;
+    }
+  }
+}
+
+.rfq-portal-container {
+
+  .inputbox .text-help {
+    bottom: -14px;
+    position: absolute;
+  }
+}
