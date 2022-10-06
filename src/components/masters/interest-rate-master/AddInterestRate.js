@@ -165,7 +165,7 @@ class AddInterestRate extends Component {
       this.setState({ ICCApplicability: [], })
     }
     if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: true })
+      this.setState({ isDataChanged: false })
     }
   };
 
@@ -180,7 +180,7 @@ class AddInterestRate extends Component {
       this.setState({ PaymentTermsApplicability: [], })
     }
     if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: true })
+      this.setState({ isDataChanged: false })
     }
   };
 
@@ -706,6 +706,7 @@ class AddInterestRate extends Component {
                               onFocus={() => onFocus(this, true)}
                             />
                           </div>
+                          {console.log(isDataChanged, "isDataChanged")}
                           {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
