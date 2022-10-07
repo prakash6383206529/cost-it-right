@@ -138,7 +138,7 @@ function VerifySimulation(props) {
                 dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                        if (data.SimulationMachineRateImpactedCostings.length === 0) {           //   for condition
                             Toaster.warning('No approved costing exist for this machine rate.')
                             setHideRunButton(true)
                             return false
@@ -392,6 +392,19 @@ function VerifySimulation(props) {
 
                 break;
 
+            case Number(MACHINERATE):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempObj.MachineId = item.MachineId
+                    tempObj.ProcessId = item.ProcessId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                obj.RunSimualtionCostingInfo = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+                break;
             default:
                 break;
         }
