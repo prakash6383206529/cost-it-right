@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { COMBINED_PROCESS_NAME, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -83,70 +83,41 @@ function AddProcess(props) {
   }, [processDrawerList])
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      let data = {}
-
-      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      } else {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(costData?.TechnologyId),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
+    let data = {}
+    if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
       }
-      dispatch(getProcessDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
-          setTableDataList(filteredData)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-      let data = {}
-      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      else {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(costData?.TechnologyId),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      dispatch(getProcessDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
-          setTableDataList(filteredData)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
     }
+    else {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(costData?.TechnologyId),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
+      }
+    }
+    dispatch(getProcessDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
   }, []);
 
   const onRowSelect = (event) => {

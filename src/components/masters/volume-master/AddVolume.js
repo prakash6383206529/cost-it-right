@@ -516,13 +516,20 @@ class AddVolume extends Component {
   onSubmit = debounce((values) => {
     const { selectedPlants, vendorName, part, year, client, tableData, costingTypeId, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
-
+    const userDetailsVolume = JSON.parse(localStorage.getItem('userDetail'))
     // let plantArray = [];
     // selectedPlants && selectedPlants.map((item) => {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
     let returnFalse = 0
+    let cbcPlantArray = []
+    if (costingTypeId === CBCTypeId) {
+      userDetailsVolume?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
+      })
+    }
     if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
     }
@@ -630,7 +637,7 @@ class AddVolume extends Component {
               PlantCode: '',
             },
           ]
-          : [],
+          : cbcPlantArray,
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,

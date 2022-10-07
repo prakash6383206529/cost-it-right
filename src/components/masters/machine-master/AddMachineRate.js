@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
-import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
+import { masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
@@ -18,7 +18,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { FILE_URL, ZBC, MACHINE_MASTER_ID } from '../../../config/constants';
@@ -450,7 +449,7 @@ class AddMachineRate extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorListByVendorType, plantSelectList,
+    const { vendorWithVendorCodeSelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, clientSelectList, processSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'technology') {
@@ -462,7 +461,7 @@ class AddMachineRate extends Component {
       return temp;
     }
     if (label === 'VendorNameList') {
-      vendorListByVendorType && vendorListByVendorType.map(item => {
+      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -1231,7 +1230,7 @@ class AddMachineRate extends Component {
     }
     let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
-      const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
+      const { vendorWithVendorCodeSelectList, machineTypeSelectList, plantSelectList, } = this.props;
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
 
@@ -1248,7 +1247,7 @@ class AddMachineRate extends Component {
       this.props.change('MachineNumber', data.MachineNumber)
       this.props.change('TonnageCapacity', data.TonnageCapacity)
       this.props.change('Specification', data.Specification)
-      const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === data.VendorId)
+      const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === data.VendorId)
       const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0].PlantId)
 
       const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === data.MachineTypeId)
@@ -1871,27 +1870,25 @@ class AddMachineRate extends Component {
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
+                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                                <button type="submit"
+                                  class="user-btn approval-btn save-btn mr5"
 
-                              {
-                                (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                                  <button type="submit"
-                                    class="user-btn approval-btn save-btn mr5"
+                                  disabled={isViewMode || setDisable}
+                                >
+                                  <div className="send-for-approval"></div>
+                                  {'Send For Approval'}
+                                </button>
+                                :
 
-                                    disabled={isViewMode || setDisable}
-                                  >
-                                    <div className="send-for-approval"></div>
-                                    {'Send For Approval'}
-                                  </button>
-                                  :
-
-                                  <button
-                                    type="submit"
-                                    className="user-btn mr5 save-btn"
-                                    disabled={isViewMode || setDisable}
-                                  >
-                                    <div className={"save-icon"}></div>
-                                    {isEditFlag ? "Update" : "Save"}
-                                  </button>
+                                <button
+                                  type="submit"
+                                  className="user-btn mr5 save-btn"
+                                  disabled={isViewMode || setDisable}
+                                >
+                                  <div className={"save-icon"}></div>
+                                  {isEditFlag ? "Update" : "Save"}
+                                </button>
                               }
 
 
@@ -1962,16 +1959,15 @@ class AddMachineRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, machine, auth, costing, client } = state;
+  const { comman, machine, auth, costing, client, supplier } = state;
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification');
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
-  const { vendorListByVendorType } = material;
   const { initialConfiguration, } = auth;
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
-
+  const { vendorWithVendorCodeSelectList } = supplier;
 
   let initialValues = {};
 
@@ -1986,8 +1982,8 @@ function mapStateToProps(state) {
   }
 
   return {
-    vendorListByVendorType, plantList, plantSelectList, filterPlantList, UOMSelectList,
-    machineTypeSelectList, processSelectList, clientSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
+    plantList, plantSelectList, filterPlantList, UOMSelectList,
+    machineTypeSelectList, processSelectList, vendorWithVendorCodeSelectList, clientSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
   }
 
 }
@@ -2000,7 +1996,6 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   dirty: isDirty('AddMachineRate'),
-  getVendorListByVendorType,
   getPlantSelectListByType,
   getPlantBySupplier,
   getUOMSelectList,

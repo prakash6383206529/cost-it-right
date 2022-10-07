@@ -608,7 +608,8 @@ class AddBOPDomestic extends Component {
   }
 
   /**
-  * @method onSubmit
+  * @method 
+  * 
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
@@ -1338,25 +1339,24 @@ class AddBOPDomestic extends Component {
                             {"Cancel"}
                           </button>
 
-                          {
-                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                            <button type="submit"
+                              class="user-btn approval-btn save-btn mr5"
+                              disabled={isViewMode || setDisable}
+                            >
+                              <div className="send-for-approval"></div>
+                              {'Send For Approval'}
+                            </button>
+                            :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
-                              <button
-                                type="submit"
-                                className="user-btn mr5 save-btn"
-                                disabled={isViewMode || setDisable}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={isViewMode || setDisable}
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
                           }
 
 

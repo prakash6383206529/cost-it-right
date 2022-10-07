@@ -7,8 +7,8 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { EMPTY_GUID } from '../../../../../config/constants';
-import { ViewCostingContext } from '../../CostingDetails';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
+import { VbcExistingCosting, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
@@ -320,14 +320,15 @@ function OverheadProfit(props) {
       setOverheadValues({}, true)
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
-      if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
+      if (newValue && newValue !== '' && newValue.value !== undefined && costData.costingTypeId !== undefined) {
         setModelType(newValue)
         const reqParams = {
           ModelTypeId: newValue.value,
-          VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-          IsVendor: costData.IsVendor,
+          VendorId: costData.costingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+          costingTypeId: costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
-          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID
+          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.costingTypeId !== VBCTypeId) || (costData?.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.costingTypeId === VBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+          customerId: costData.CustomerId
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
