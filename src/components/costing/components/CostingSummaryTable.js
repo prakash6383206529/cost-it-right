@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails
+  storePartNumber, getSingleCostingDetails, createCosting
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -14,9 +14,9 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -351,87 +351,54 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
-    if (type === ZBC) {
-      const data = {
-        PartId: partNumber.partId,
-        PartTypeId: partInfo.PartTypeId,
-        PartType: partInfo.PartType,
-        TechnologyId: tempData?.technologyId,
-        ZBCId: userDetail.ZBCSupplierInfo.VendorId,
-        UserId: loggedInUserId(),
-        LoggedInUserId: loggedInUserId(),
-        PlantId: tempData?.plantId,
-        PlantName: tempData?.plantName,
-        PlantCode: tempData?.plantCode,
-        ShareOfBusinessPercent: tempData?.shareOfBusinessPercent,
-        IsAssemblyPart: partInfo.IsAssemblyPart,
-        PartNumber: partInfo.PartNumber,
-        PartName: partInfo.PartName,
-        Description: partInfo.Description,
-        ECNNumber: partInfo.ECNNumber,
-        RevisionNumber: partInfo.RevisionNumber,
-        DrawingNumber: partInfo.DrawingNumber,
-        Price: partInfo.Price,
-        EffectiveDate: partInfo.EffectiveDate,
-      }
+    console.log('tempData: ', tempData);
+    const type = viewCostingData[index]?.costingHead
 
-      dispatch(createZBCCosting(data, (res) => {
-        if (res.data?.Result) {
-          dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-            setPartInfo(res.data?.Data)
+    const Data = {
+      PartId: partNumber.partId,
+      PartTypeId: partInfo.PartTypeId,
+      PartType: partInfo.PartType,
+      TechnologyId: tempData?.technologyId,
+      ZBCId: userDetail.ZBCSupplierInfo.VendorId,
+      VendorId: tempData.vendorId,
+      VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
+      VendorPlantName: tempData.vendorPlantName,
+      VendorPlantCode: tempData.vendorPlantCode,
+      VendorName: tempData.vendorName,
+      VendorCode: tempData.vendorCode,
+      PlantId: (type === ZBC || type === CBC) ? tempData.plantId : EMPTY_GUID,
+      PlantName: (type === ZBC || type === CBC) ? tempData.plantName : '',
+      PlantCode: (type === ZBC || type === CBC) ? tempData.plantCode : '',
+      DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantId : EMPTY_GUID,
+      DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantName : '',
+      DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantCode : '',
+      UserId: loggedInUserId(),
+      LoggedInUserId: loggedInUserId(),
+      ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
+      IsAssemblyPart: partInfo.IsAssemblyPart,
+      PartNumber: partInfo.PartNumber,
+      PartName: partInfo.PartName,
+      Description: partInfo.Description,
+      ECNNumber: partInfo.ECNNumber,
+      RevisionNumber: partInfo.RevisionNumber,
+      DrawingNumber: partInfo.DrawingNumber,
+      Price: partInfo.Price,
+      EffectiveDate: partInfo.EffectiveDate,
+      CostingHead: type
 
-            showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
-            history.push('/costing')
-          }))
-        }
-      }),
-      )
-
-    } else if (type === VBC) {
-      const data = {
-        PartId: partNumber.partId,
-        PartTypeId: partInfo.PartTypeId,
-        PartType: partInfo.PartType,
-        TechnologyId: tempData?.technologyId,
-        VendorId: tempData?.vendorId,
-        VendorPlantId: tempData?.vendorPlantId,
-        VendorPlantName: tempData?.vendorPlantName,
-        VendorPlantCode: tempData?.vendorPlantCode,
-        VendorName: tempData?.vendorName,
-        VendorCode: tempData?.vendorCode,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData?.destinationPlantId : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData?.destinationPlantName : '',
-        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData?.destinationPlantCode : '',
-        UserId: loggedInUserId(),
-        LoggedInUserId: loggedInUserId(),
-        ShareOfBusinessPercent: tempData?.shareOfBusinessPercent,
-        IsAssemblyPart: partInfo.IsAssemblyPart,
-        PartNumber: partInfo.PartNumber,
-        PartName: partInfo.PartName,
-        Description: partInfo.Description,
-        ECNNumber: partInfo.ECNNumber,
-        RevisionNumber: partInfo.RevisionNumber,
-        DrawingNumber: partInfo.DrawingNumber,
-        Price: partInfo.Price,
-        EffectiveDate: partInfo.EffectiveDate,
-      }
-      dispatch(getBriefCostingById('', (res) => {
-
-        dispatch(createVBCCosting(data, (res) => {
-
-          if (res.data?.Result) {
-            dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-              showDetail(res.data?.Data, { costingId: res.data.Data.CostingId, type })
-              setPartInfo(res.data?.Data)
-              history.push('/costing')
-            }))
-          }
-        }),
-        )
-
-      }))
     }
+    dispatch(createCosting(Data, (res) => {
+      if (res.data?.Result) {
+        dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+          setPartInfo(res.data?.Data)
+
+          showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
+          history.push('/costing')
+        }))
+      }
+    }),
+    )
+
   }
   /**
  * @method editCostingDetail
@@ -1000,13 +967,14 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>VBC/ZBC/NCC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>VBC/ZBC/NCC/CBC</th>
                         }
 
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
+                            // const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
+                            const title = data.CostingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.CostingTypeId === VBCTypeId ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.CustomerName
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}

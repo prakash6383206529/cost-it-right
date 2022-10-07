@@ -3935,26 +3935,25 @@ class AddMoreDetails extends Component {
 
 
 
-                        {
-                          (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
+                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
 
-                              disabled={this.state.isViewMode || this.state.setDisable}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
+                            disabled={this.state.isViewMode || this.state.setDisable}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
 
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={this.state.isViewMode || this.state.setDisable}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={this.state.isViewMode || this.state.setDisable}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
                         }
                       </div>
                     </Row>
