@@ -35,7 +35,6 @@ class AddProfit extends Component {
       ProfitID: '',
       isShowForm: false,
       isEditFlag: false,
-      IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
       singlePlantSelected: [],
@@ -151,21 +150,19 @@ class AddProfit extends Component {
             const { costingHead } = this.props;
 
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-
-            let Head = '';
-            if (Data.costingTypeId === VBCTypeId && Data.VendorId != null) {
-              Head = 'vendor';
-            } else if (Data.IsClient === true) {
-              Head = 'client';
-            } else {
-              Head = 'zero';
-            }
+            // let Head = '';
+            // if (Data.costingTypeId === VBCTypeId && Data.VendorId != null) {
+            //   Head = 'vendor';
+            // } else if (Data.IsClient === true) {
+            //   Head = 'client';
+            // } else {
+            //   Head = 'zero';
+            // }
 
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
-              costingHead: Head,
+              costingTypeId: String(Data.CostingTypeId),
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
@@ -675,7 +672,7 @@ class AddProfit extends Component {
     const { IsVendor, ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
       isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
-
+    const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
@@ -683,6 +680,13 @@ class AddProfit extends Component {
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
+      })
+    }
+    let cbcPlantArray = []
+    if (costingTypeId === CBCTypeId) {
+      userDetailsProfit?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
       })
     }
     if (vendorName.length <= 0) {
@@ -724,19 +728,19 @@ class AddProfit extends Component {
       })
       let requestData = {
         ProfitId: ProfitID,
-        VendorName: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+        VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
         IsClient: costingTypeId === CBCTypeId ? true : false,
         ClientName: costingTypeId === CBCTypeId ? client.label : '',
         ProfitApplicabilityType: profitAppli.label,
         ModelType: ModelType.label,
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
         ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
-        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
         VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
         ClientId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
@@ -747,7 +751,7 @@ class AddProfit extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -768,15 +772,15 @@ class AddProfit extends Component {
     } else {
       this.setState({ setDisable: true })
       const formData = {
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
         ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
-        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
         ClientId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
@@ -785,7 +789,7 @@ class AddProfit extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
       }
 
       this.props.createProfit(formData, (res) => {

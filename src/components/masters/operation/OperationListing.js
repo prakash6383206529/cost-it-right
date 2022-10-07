@@ -69,7 +69,7 @@ class OperationListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,

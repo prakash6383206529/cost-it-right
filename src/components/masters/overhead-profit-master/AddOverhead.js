@@ -176,7 +176,7 @@ class AddOverhead extends Component {
               costingTypeId: String(Data.CostingTypeId),
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
-              client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerName } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -686,19 +686,16 @@ class AddOverhead extends Component {
   }
 
 
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
+    const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
       isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
-    const userDetail = userDetails()
-
-
+    const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
-    if (IsVendor) {
+    if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
 
@@ -707,7 +704,13 @@ class AddOverhead extends Component {
         return plantArray
       })
     }
-
+    let cbcPlantArray = []
+    if (costingTypeId === CBCTypeId) {
+      userDetailsOverhead?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
+      })
+    }
     if (vendorName.length <= 0) {
 
       if (costingTypeId === VBCTypeId) {
@@ -747,20 +750,20 @@ class AddOverhead extends Component {
       })
       let requestData = {
         OverheadId: OverheadID,
-        VendorName: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+        CostingTypeId: costingTypeId,
+        VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
         IsClient: costingTypeId === CBCTypeId ? true : false,
         ClientName: costingTypeId === CBCTypeId ? client.label : '',
         OverheadApplicabilityType: overheadAppli.label,
         ModelType: ModelType.label,
-        IsVendor: IsVendor,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: values.OverheadPercentage,
         OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
         OverheadBOPPercentage: values.OverheadBOPPercentage,
         OverheadRMPercentage: values.OverheadRMPercentage,
         Remark: remarks,
-        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
         ClientId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,
@@ -770,7 +773,7 @@ class AddOverhead extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -793,7 +796,6 @@ class AddOverhead extends Component {
       this.setState({ setDisable: true })
       const formData = {
         EAttachementEntityName: 0,
-        IsVendor: IsVendor,
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
@@ -801,8 +803,8 @@ class AddOverhead extends Component {
         OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
         OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
         Remark: remarks,
-        VendorId: IsVendor ? (costingTypeId === VBCTypeId ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,
@@ -810,7 +812,7 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        Plants: plantArray,
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       }
 
