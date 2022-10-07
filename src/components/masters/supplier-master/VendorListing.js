@@ -168,7 +168,9 @@ class VendorListing extends Component {
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-            this.setState({ isLoader: false })
+            setTimeout(() => {
+                this.setState({ isLoader: false })
+            }, 300);
             this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ totalRecordCount: 0 })

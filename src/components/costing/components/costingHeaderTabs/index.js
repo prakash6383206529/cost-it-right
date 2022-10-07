@@ -25,6 +25,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 import WarningMessage from '../../../common/WarningMessage';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -213,7 +214,7 @@ function CostingHeaderTabs(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
-      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -223,7 +224,7 @@ function CostingHeaderTabs(props) {
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {

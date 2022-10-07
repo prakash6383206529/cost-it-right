@@ -10,7 +10,7 @@ import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability,
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, setValueAccToUOM } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
@@ -20,11 +20,10 @@ import DatePicker from "react-datepicker";
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
 
-    const { register, control, formState: { errors }, handleSubmit, getValues } = useForm({
+    const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
 
     const dispatch = useDispatch()
 
@@ -141,13 +140,23 @@ function RunSimulationDrawer(props) {
 
     const handleAdditional = (value) => {
         if (value === 'Tool') {
+            if (additionalTool) {
+                setValue('ToolCostApplicability', "")
+            }
             setAdditionalTool(!additionalTool)
             setDisableTool(!disableTool)
 
         } else if (value === 'Packaging') {
+            if (additionalPackaging) {
+                setValue('PackagingCostApplicability', "")
+            }
             setAdditionalPackaging(!additionalPackaging)
             setDisablePackaging(!disablePackaging)
         } else {
+
+            if (additionalFreight) {
+                setValue('FreightCostApplicability', "")
+            }
             setAdditionalFreight(!additionalFreight)
             setDisableFreight(!disableFreight)
         }
@@ -680,7 +689,6 @@ function RunSimulationDrawer(props) {
                                                                                 control={control}
                                                                                 rules={{ required: false }}
                                                                                 register={register}
-                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
                                                                                 options={renderListing('Applicability')}
                                                                                 mandatory={true}
                                                                                 disabled={false}
@@ -805,7 +813,6 @@ function RunSimulationDrawer(props) {
                                                                                 control={control}
                                                                                 rules={{ required: false }}
                                                                                 register={register}
-                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
                                                                                 options={renderListing('Applicability')}
                                                                                 mandatory={true}
                                                                                 disabled={false}
@@ -873,7 +880,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className="mb-3 p-0">
+                                                <Col md="12" className={`mb-3 p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -933,7 +940,6 @@ function RunSimulationDrawer(props) {
                                                                                 control={control}
                                                                                 rules={{ required: false }}
                                                                                 register={register}
-                                                                                defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
                                                                                 options={renderListing('Applicability')}
                                                                                 mandatory={true}
                                                                                 disabled={false}
