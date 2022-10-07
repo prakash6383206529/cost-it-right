@@ -56,7 +56,8 @@ import {
   GET_IMPACTED_MASTER_DATA,
   STATUS_COLUMN_DATA,
   IS_RESET,
-  GET_GRID_HEIGHT
+  GET_GRID_HEIGHT,
+  GET_STATE_WHILE_DOWNLOADING
 } from '../config/constants';
 
 const initialState = {
@@ -462,6 +463,11 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         getGridHeight: action.payload
       };
+    case GET_STATE_WHILE_DOWNLOADING:
+      return {
+        ...state,
+        disabledClass: action.payload
+      }
     default:
       return state;
   }

@@ -8,6 +8,8 @@ import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import { reactLocalStorage } from "reactjs-localstorage";
+import { disabledClass } from '../../actions/Common'
+import { MESSAGES } from "../../config/message";
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -39,7 +41,8 @@ class Leftmenu extends Component {
 		return (
 			<>
 				{/* {leftMenuData && leftMenuData.length === 0 && <LoaderCustom />} */}
-				<div className="left-side-menu">
+				<div className="left-side-menu p-relative">
+					{this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 					<div className="h-100 menuitem-active">
 						<ul>
 							{
@@ -82,9 +85,10 @@ class Leftmenu extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ auth }) {
-	const { menusData,  leftMenuData, topAndLeftMenuData } = auth
-	return { menusData,  leftMenuData, topAndLeftMenuData }
+function mapStateToProps({ auth, comman }) {
+	const { menusData, leftMenuData, topAndLeftMenuData } = auth
+	const { disabledClass } = comman
+	return { menusData, leftMenuData, topAndLeftMenuData, disabledClass }
 }
 
 /**
@@ -97,4 +101,5 @@ export default connect(mapStateToProps,
 	{
 		getLeftMenu,
 		getModuleIdByPathName,
+		getTopAndLeftMenuData,
 	})(Leftmenu);

@@ -24,7 +24,8 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,6 +58,7 @@ function ProfitListing(props) {
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [dataCount, setDataCount] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
@@ -92,7 +94,8 @@ function ProfitListing(props) {
 
     var floatingFilterProfit = {
         maxValue: 2,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: 'profit'
     }
 
     useEffect(() => {
@@ -114,7 +117,7 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(overheadProfitList?.length))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
     }, [overheadProfitList])
 
     useEffect(() => {
@@ -154,6 +157,7 @@ function ProfitListing(props) {
 
             if (res && isPagination === false) {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-profit')
                     button && button.click()
@@ -277,6 +281,7 @@ function ProfitListing(props) {
         dispatch(setSelectedRowForPagination([]))
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        setDataCount(0)
     }
 
 
@@ -531,6 +536,7 @@ function ProfitListing(props) {
 
         let uniqeArray = _.uniqBy(selectedRows, "ProfitId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        setDataCount(uniqeArray.length)
         setSelectedRowData(uniqeArray)
     }
 
@@ -598,10 +604,12 @@ function ProfitListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
+        dispatch(disabledClass(true))
         let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads-profit')
                 button && button.click()
             }, 400);
@@ -648,11 +656,11 @@ function ProfitListing(props) {
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         <form noValidate>
                             <Row className="pt-4">
-                                <Col md="6" className="search-user-block mb-3">
+                                <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                         <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
 
@@ -699,6 +707,7 @@ function ProfitListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <SelectRowWrapper dataCount={dataCount} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -721,6 +730,7 @@ function ProfitListing(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelect}
                                             onFilterModified={onFloatingFilterChanged}
+                                            suppressRowClickSelection={true}
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>

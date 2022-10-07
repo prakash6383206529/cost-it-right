@@ -1379,6 +1379,8 @@ export const ZBCInterestRateTempData = [
 export const VBCInterestRate = [
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: "PlantName", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode", },
     { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
     { label: 'ICCPercent', value: 'ICCPercent', }, //*
     { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
@@ -1391,6 +1393,8 @@ export const VBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
+        "PlantName": "1511",
+        "PlantCode": "1511",
         'ICCApplicability': 'RM+CC',
         'ICCPercent': '10   ',
         'PaymentTermApplicability': 'RM',
@@ -1923,7 +1927,7 @@ export const BOPImportSimulation = [
 
 export const OverheadProfitSimulation = [
     { label: "CostingHead", value: "IsVendor" },
-    { label: "ClientName", value: "ClientName" },
+    { label: "CustomerName", value: "ClientName" },
     { label: "VendorName", value: "VendorName" },
     { label: "ModelType", value: "ModelType" },
     { label: "OverheadApplicabilityType", value: "OverheadApplicabilityType", },
@@ -2460,6 +2464,14 @@ export const CostingSimulationDownloadRM = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2569,6 +2581,14 @@ export const CostingSimulationDownloadST = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2618,6 +2638,14 @@ export const CostingSimulationDownloadOperation = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2667,6 +2695,14 @@ export const CostingSimulationDownloadBOP = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2827,6 +2863,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plant", },
     { label: "Total SOB(%)", value: "ShareOfBusinessPercentage", },
     { label: "Weighted Net Cost(INR)", value: "WeightedNetLandedCost", },
+    { label: "Effective Date", value: "EffectiveDate", }
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
@@ -2869,7 +2906,8 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Vendor Name", value: "VendorName", },
+    { label: "Plant(Code)", value: "PlantName", },
+    { label: "Vendor(Code)", value: "VendorName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
     { label: "Payment Term Applicability", value: "PaymentTermApplicability", },
@@ -2983,7 +3021,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
-    { label: "Client Name", value: "ClientName", },
+    { label: "Customer Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
     { label: "Overhead Applicability(%)", value: "OverheadPercentage", },
@@ -3074,7 +3112,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(code)", value: "VendorName", },
-    { label: "Client Name", value: "ClientName", },
+    { label: "Customer Name", value: "ClientName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Profit Applicability", value: "ProfitApplicabilityType", },
     { label: "Profit Applicability(%)", value: "ProfitPercentage", },
@@ -3161,6 +3199,9 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Any Other Cost", value: "AnyOtherCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
     { label: "Currency", value: "Currency", },
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Quantity", value: "NCCPartQuantity", },
+    { label: "Is Regularized", value: "IsRegularized", },
     { label: "Net POPrice Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: "Net POPrice(INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
@@ -3315,7 +3356,14 @@ export const LastGridForToken = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 

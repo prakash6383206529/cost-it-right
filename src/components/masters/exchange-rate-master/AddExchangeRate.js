@@ -400,7 +400,6 @@ class AddExchangeRate extends Component {
                               placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
-                              minDate={new Date(this.state.minEffectiveDate)}
                               disabledKeyboardNavigation
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
@@ -60,7 +60,7 @@ class AddMachineRate extends Component {
       minEffectiveDate: '',
       isDateChange: false,
       oldDate: '',
-
+      disableMachineType: false,
       selectedTechnology: [],
       isVendorNameNotSelected: false,
       vendorName: [],
@@ -102,7 +102,8 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -151,9 +152,11 @@ class AddMachineRate extends Component {
         LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
+      this.setState({ finalApprovalLoader: true })
       this.props.masterFinalLevelUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
         }
 
       })
@@ -222,7 +225,6 @@ class AddMachineRate extends Component {
   * @description USED TO SET OLD VALUES
   */
   setOldValue = (data) => {
-
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
@@ -232,12 +234,12 @@ class AddMachineRate extends Component {
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+      this.props.change('Remark', data.Remark ? data.Remark : "")
     }, 200);
-
   }
 
 
@@ -263,6 +265,9 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          if (Data?.MachineLabourRates?.length !== 0) {
+            this.setState({ disableMachineType: true })
+          }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -639,11 +644,8 @@ class AddMachineRate extends Component {
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup } = this.state;
 
-
-
     const { fieldsObj } = this.props;
     const tempArray = [];
-
 
     let count = 0;
     setTimeout(() => {
@@ -664,7 +666,9 @@ class AddMachineRate extends Component {
       if (count > 0) {
         return false;
       }
-
+      if (maxLength10(fieldsObj.MachineRate) || decimalLengthsix(fieldsObj.MachineRate)) {
+        return false
+      }
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
       if (isExist !== -1) {
@@ -675,11 +679,6 @@ class AddMachineRate extends Component {
       // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
       const MachineRate = fieldsObj.MachineRate
-
-      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-      if (MachineRate < 0 || isNaN(MachineRate)) {
-        return false;
-      }
 
       tempArray.push(...processGrid, {
         processName: processName.label,
@@ -723,7 +722,9 @@ class AddMachineRate extends Component {
       return false;
     }
 
-
+    if (this.props.invalid === true) {
+      return false;
+    }
     const MachineRate = fieldsObj.MachineRate
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
     if (MachineRate < 0 || isNaN(MachineRate)) {
@@ -1272,7 +1273,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1293,7 +1294,7 @@ class AddMachineRate extends Component {
       });
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -1464,7 +1465,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isViewMode ? true : false}
+                                disabled={(disableMachineType || isViewMode)}
                               />
                             </div>
                           </div>
@@ -1589,9 +1590,9 @@ class AddMachineRate extends Component {
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
-                            type="text"
+                            type="number"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength80]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             required={true}

@@ -25,6 +25,8 @@ import _ from 'lodash';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { searchNocontentFilter } from '../../../helper';
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,7 +66,8 @@ class IndivisualPartListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             disableFilter: true,
             disableDownload: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
 
@@ -101,6 +104,7 @@ class IndivisualPartListing extends Component {
 
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-component-part')
                     button && button.click()
@@ -162,6 +166,7 @@ class IndivisualPartListing extends Component {
     resetState = () => {
         this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
+        this.setState({ dataCount: 0 })
 
     }
 
@@ -452,12 +457,14 @@ class IndivisualPartListing extends Component {
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
 
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         let tempArr = this.props.selectedCostingListSimulation
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-component-part')
                 button && button.click()
             }, 400);
@@ -579,6 +586,7 @@ class IndivisualPartListing extends Component {
 
             let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
             this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ dataCount: uniqeArray.length })
             this.setState({ selectedRowData: selectedRows })
         }
 
@@ -603,10 +611,11 @@ class IndivisualPartListing extends Component {
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-4 no-filter-row">
-                        <Col md="8" className="search-user-block pr-0">
+                        <Col md="9" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="warning-message d-flex align-items-center">
-                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
@@ -660,6 +669,7 @@ class IndivisualPartListing extends Component {
                     <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <SelectRowWrapper dataCount={this.state.dataCount} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -749,5 +759,6 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
-    setSelectedRowForPagination
+    setSelectedRowForPagination,
+    disabledClass
 })(IndivisualPartListing);

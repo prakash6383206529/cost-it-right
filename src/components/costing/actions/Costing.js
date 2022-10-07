@@ -37,6 +37,7 @@ import {
   SET_MESSAGE_FOR_ASSEMBLY,
   SET_PROCESS_GROUP_GRID,
   SAVE_BOM_LEVEL_STOP_API_CALL,
+  SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1073,7 +1074,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.plantId}`, config())
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.vendorId}&isVendor=${data?.isVendor}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`, config());
     request
       .then((response) => {
         callback(response)
@@ -1094,7 +1095,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.plantId}`, config(),)
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.vendorId}&isVendor=${data?.isVendor}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`, config());
 
     request.then((response) => {
       callback(response)
@@ -2590,3 +2591,17 @@ export function checkFinalUser(data, callback) {
     })
   }
 }
+
+/**
+ * @method saveAssemblyNumber
+ * @description saveAssemblyNumber
+*/
+export function saveAssemblyNumber(assemblyNumber) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
+      payload: assemblyNumber
+    })
+  }
+}
+

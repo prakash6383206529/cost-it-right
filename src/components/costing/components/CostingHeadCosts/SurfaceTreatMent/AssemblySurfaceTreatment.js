@@ -8,6 +8,7 @@ import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
 import _ from 'lodash'
 import { EMPTY_GUID } from '../../../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
@@ -43,13 +44,13 @@ function AssemblySurfaceTreatment(props) {
           let Data = res.data.DataList[0];
           // props.toggleAssembly(Params, Data)
           let array = [];
-          array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          array = reactLocalStorage.getObject('surfaceCostingArray')
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
             return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
+          reactLocalStorage.setObject('surfaceCostingArray', uniqueArary);
           props.toggleAssembly(Params, Data)
 
           if (IsCollapse === false) {

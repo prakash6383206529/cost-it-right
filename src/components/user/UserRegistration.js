@@ -95,14 +95,14 @@ class UserRegistration extends Component {
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
     // this.props.getAllCities(() => { })
-    this.props.getAllTechnologyAPI(() => { })
+    this.props.getAllTechnologyAPI(() => { }, 'Users')
     this.props.getLevelByTechnology('', () => { })
     this.getUserDetail(data);
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
-    this.props.getSimulationTechnologySelectList(() => { })
-    this.props.getMastersSelectList(() => { })
+    this.props.getSimulationTechnologySelectList(() => { }, 'Users')
+    this.props.getMastersSelectList(() => { }, 'Users')
   }
 
   /**

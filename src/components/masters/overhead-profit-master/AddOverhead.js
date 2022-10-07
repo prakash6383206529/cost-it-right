@@ -178,14 +178,14 @@ class AddOverhead extends Component {
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
-              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
-              singlePlantSelected: { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId },
+              selectedPlants: Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
+              singlePlantSelected: Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })

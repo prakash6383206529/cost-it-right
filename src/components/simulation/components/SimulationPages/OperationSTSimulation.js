@@ -83,11 +83,10 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         let valueShow
-        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
         if (lastRevision) {
-            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+            if (row.IsSurfaceTreatmenOperation === true) {
                 valueShow = row.NewSurfaceTreatmentRatePerUOM
-            } else if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+            } else if (row.IsSurfaceTreatmenOperation === false) {
                 valueShow = row.NewOperationBasicRate
             }
         } else {
@@ -109,11 +108,10 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
-        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
         if (lastRevision) {
-            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+            if (row.IsSurfaceTreatmenOperation === true) {
                 valueShow = row.OldSurfaceTreatmentRatePerUOM
-            } else if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+            } else if (row.IsSurfaceTreatmenOperation === false) {
                 valueShow = row.OldOperationBasicRate
             }
         } else {

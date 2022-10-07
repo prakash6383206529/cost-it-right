@@ -28,6 +28,8 @@ import { getListingForSimulationCombined, setSelectedRowForPagination } from '..
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -67,6 +69,7 @@ function RMImportListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
   const [noData, setNoData] = useState(false)
+  const [dataCount, setDataCount] = useState(false)
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -215,6 +218,7 @@ function RMImportListing(props) {
         }
 
         if (res && isPagination === false) {
+          dispatch(disabledClass(false))
           setDisableDownload(false)
           setTimeout(() => {
             let button = document.getElementById('Excel-Downloads-rm-import')
@@ -603,12 +607,13 @@ function RMImportListing(props) {
 
 
   const onExcelDownload = () => {
+    dispatch(disabledClass(true))
     setDisableDownload(true)
-
     //let tempArr = gridApi && gridApi?.getSelectedRows()
     let tempArr = selectedRowForPagination
     if (tempArr?.length > 0) {
       setTimeout(() => {
+        dispatch(disabledClass(false))
         setDisableDownload(false)
         let button = document.getElementById('Excel-Downloads-rm-import')
         button && button.click()
@@ -660,6 +665,7 @@ function RMImportListing(props) {
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    setDataCount(0)
   }
 
 
@@ -697,6 +703,7 @@ function RMImportListing(props) {
 
     let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    setDataCount(uniqeArray.length)
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
@@ -742,11 +749,12 @@ function RMImportListing(props) {
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
+              {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
               {(!props.isMasterSummaryDrawer) && <>
 
                 {isSimulation &&
                   <div className="warning-message d-flex align-items-center">
-                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                    {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                     <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   </div>
                 }
@@ -755,7 +763,7 @@ function RMImportListing(props) {
                     <>
                       {
                         <div className="warning-message d-flex align-items-center">
-                          {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                          {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                         </div>
                       }
 
@@ -819,6 +827,7 @@ function RMImportListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact

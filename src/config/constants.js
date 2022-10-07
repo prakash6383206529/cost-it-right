@@ -1232,6 +1232,7 @@ export const GET_PLANTS_BY_SUPPLIER_AND_CITY = 'GET_PLANTS_BY_SUPPLIER_AND_CITY'
 export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY'
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY'
 export const GET_GRID_HEIGHT = 'GET_GRID_HEIGHT'
+export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -1339,6 +1340,7 @@ export const SET_PART_NUMBER_ARRAY_API_CALL = 'SET_PART_NUMBER_ARRAY_API_CALL'
 export const SET_MESSAGE_FOR_ASSEMBLY = 'SET_MESSAGE_FOR_ASSEMBLY'
 export const SET_PROCESS_GROUP_GRID = 'SET_PROCESS_GROUP_GRID'
 export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
+export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1611,6 +1613,7 @@ export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
+export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3'
@@ -1679,7 +1682,7 @@ export const Simulation_Upload = 'Simulation Upload'
 export const COSTING_SUMMARY_ = 'Costing Summary'
 export const APPROVAL_APP = 'Approval Status'
 export const TAX = 'Tax'
-export const COSTING_DETAILS_REPORT = 'Costing Details'
+export const COSTING_BREAKUP_DETAILS_REPORT = 'Costing Breakup Details'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
@@ -1716,6 +1719,7 @@ export const WDM = 'WDM'
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
 export const NCC = 'NCC'
+export const WAC = 'WAC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
@@ -1740,14 +1744,14 @@ export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
-  costingHead: 'ZBC v/s VBC',
+  costingHeadCheck: 'ZBC v/s VBC v/s NCC',
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'PO Price (Effective from)',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorCode: 'Vendor Code',
+  vendor: 'Vendor (Code)',
   plantCode: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
@@ -1783,7 +1787,7 @@ export const VIEW_COSTING_DATA = {
   rejectionApplicablityValue: 'Rejection Value',
   iccApplicablity: 'ICC Applicablity',
   iccApplicablityValue: 'ICC Value',
-  paymentcApplicablity: 'Payment Applicablity',
+  paymentApplicablity: 'Payment Applicablity',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
@@ -1811,6 +1815,8 @@ export const VIEW_COSTING_DATA = {
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net PO Price (In Currency)',
+  NCCPartQuantity: "Quantity",
+  IsRegularized: "Is Regularized",
   remark: 'Remark',
   //nPOPrice: 'Net PO Price',
   // attachment: 'Attachment',
@@ -2013,4 +2019,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.518";
+export const VERSION = "V1.2.576";

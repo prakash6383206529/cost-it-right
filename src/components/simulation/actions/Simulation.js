@@ -428,7 +428,7 @@ export function simulationApprovalRequestBySender(data, callback) {
 export function getComparisionSimulationData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `simulationApprovalProcessSummaryId=${data.simulationApprovalProcessSummaryId}&simulationid=${data.simulationId}&costingId=${data.costingId}`
+        const queryParams = `simulationId=${data.simulationId}&costingId=${data.costingId}`
         const request = axios.get(`${API.simulationComparisionData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {

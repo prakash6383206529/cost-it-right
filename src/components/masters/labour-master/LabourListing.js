@@ -28,6 +28,7 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -62,7 +63,8 @@ class LabourListing extends Component {
       showPopup: false,
       deletedId: '',
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -287,6 +289,13 @@ class LabourListing extends Component {
   }
 
   /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+  /**
    * @method hideForm
    * @description HIDE ADD FORM
    */
@@ -340,7 +349,7 @@ class LabourListing extends Component {
 
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
 
   onBtExport = () => {
@@ -396,7 +405,8 @@ class LabourListing extends Component {
       AddAccessibility,
       BulkUploadAccessibility,
       DownloadAccessibility,
-      noData
+      noData,
+      dataCount
     } = this.state
 
     if (toggleForm) {
@@ -503,6 +513,7 @@ class LabourListing extends Component {
           <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.labourDataList && this.props.labourDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              <SelectRowWrapper dataCount={dataCount} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -516,7 +527,7 @@ class LabourListing extends Component {
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                onFilterModified={this.onFloatingFilterChanged}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'

@@ -23,6 +23,8 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
+import { disabledClass } from '../../../actions/Common'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -117,6 +119,7 @@ function VolumeListing(props) {
   const [deletedId, setDeletedId] = useState('');
   const [isLoader, setIsLoader] = useState(false);
   const [limit, setLimit] = useState(false);
+  const [dataCount, setDataCount] = useState(0);
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
@@ -197,6 +200,7 @@ function VolumeListing(props) {
 
       if (res && isPagination === false) {
         setDisableDownload(false)
+        dispatch(disabledClass(false))
         setTimeout(() => {
           let button = document.getElementById('Excel-Downloads-volume')
           button && button.click()
@@ -367,17 +371,19 @@ function VolumeListing(props) {
     let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
 
 
   const onExcelDownload = () => {
     setDisableDownload(true)
-
+    dispatch(disabledClass(false))
     //let tempArr = gridApi && gridApi?.getSelectedRows()
     let tempArr = volumeDataListForDownload
     if (tempArr?.length > 0) {
       setTimeout(() => {
         setDisableDownload(false)
+        dispatch(disabledClass(false))
         let button = document.getElementById('Excel-Downloads-volume')
         button && button.click()
       }, 400);
@@ -556,7 +562,7 @@ function VolumeListing(props) {
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-
+    setDataCount(0)
   }
 
   /**
@@ -639,10 +645,12 @@ function VolumeListing(props) {
                 <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
               </Row>
               <Row className="pt-4 blue-before">
-                <Col md="8" className="search-user-block mb-3">
+                <Col md="9" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight">
+                    {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
+
                     <div className="warning-message d-flex align-items-center">
-                      {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                      {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                     </div>
                     <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                     {shown ? (
@@ -719,6 +727,7 @@ function VolumeListing(props) {
             <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

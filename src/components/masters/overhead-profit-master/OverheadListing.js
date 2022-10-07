@@ -21,9 +21,11 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { i } from 'react-dom-factories';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
+import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,6 +55,7 @@ function OverheadListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
+    const [dataCount, setDataCount] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
@@ -63,7 +66,8 @@ function OverheadListing(props) {
 
     var floatingFilterOverhead = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: 'overhead'
     }
 
     var filterParams = {
@@ -101,7 +105,7 @@ function OverheadListing(props) {
         }, 300);
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
-
+        setSelectedRowForPagination([])
     }, [])
 
     useEffect(() => {
@@ -111,7 +115,7 @@ function OverheadListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight(overheadProfitList?.length))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'overhead' }))
     }, [overheadProfitList])
 
 
@@ -134,6 +138,7 @@ function OverheadListing(props) {
 
             if (res && isPagination === false) {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-overhead')
                     button && button.click()
@@ -268,6 +273,7 @@ function OverheadListing(props) {
         dispatch(setSelectedRowForPagination([]))
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        setDataCount(0)
     }
 
 
@@ -504,6 +510,7 @@ function OverheadListing(props) {
         }
 
         let uniqeArray = _.uniqBy(selectedRows, "OverheadId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        setDataCount(uniqeArray.length)
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
 
     }
@@ -511,10 +518,12 @@ function OverheadListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
+        dispatch(disabledClass(true))
         let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads-overhead')
                 button && button.click()
             }, 400);
@@ -627,11 +636,11 @@ function OverheadListing(props) {
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">
 
-                                <Col md="6" className="search-user-block mb-3 pl-0">
+                                <Col md="9" className="search-user-block mb-3 pl-0">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                         <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
 
@@ -678,6 +687,7 @@ function OverheadListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <SelectRowWrapper dataCount={dataCount} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -699,6 +709,7 @@ function OverheadListing(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelect}
                                             onFilterModified={onFloatingFilterChanged}
+                                            suppressRowClickSelection={true}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}

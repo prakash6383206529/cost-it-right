@@ -165,7 +165,7 @@ class AddInterestRate extends Component {
       this.setState({ ICCApplicability: [], })
     }
     if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: true })
+      this.setState({ isDataChanged: false })
     }
   };
 
@@ -180,7 +180,7 @@ class AddInterestRate extends Component {
       this.setState({ PaymentTermsApplicability: [], })
     }
     if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: true })
+      this.setState({ isDataChanged: false })
     }
   };
 
@@ -273,8 +273,8 @@ class AddInterestRate extends Component {
               isEditFlag: true,
               IsVendor: Data.IsVendor,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
-              selectedPlants: [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }],
-              singlePlantSelected: { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId },
+              selectedPlants: Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
+              singlePlantSelected: Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''

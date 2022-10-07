@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
-import { ViewCostingContext } from './CostingDetails';
+import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
+import { NCC } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -29,17 +31,22 @@ function CostingDetailStepTwo(props) {
     dispatch(showLoader())
 
     setTimeout(() => {
+
       dispatch(hideLoader())
     }, 4000)
 
   }, []);
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const costingType = useContext(CostingTypeContext);
+
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
+
+  let data = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -79,6 +86,8 @@ function CostingDetailStepTwo(props) {
         NetTotalRMBOPCC: data.NetTotalRMBOPCC,
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
+        RawMaterialCostWithCutOff: data?.RawMaterialCostWithCutOff,
+        IsRMCutOffApplicable: data?.IsRMCutOffApplicable
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
@@ -360,7 +369,7 @@ function CostingDetailStepTwo(props) {
 
   const handleBackButton = () => {
     if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
-      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
@@ -372,7 +381,7 @@ function CostingDetailStepTwo(props) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
@@ -383,6 +392,7 @@ function CostingDetailStepTwo(props) {
     dispatch(savePartNumber(''))
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(saveBOMLevel(''))
+    dispatch(saveAssemblyNumber([]))
 
     props.backBtn()
   }
@@ -416,7 +426,8 @@ function CostingDetailStepTwo(props) {
                       {!costingData.IsVendor && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue "
                         title={`${costingData.PlantName}(${costingData.PlantCode})`}>
                         {`${costingData.PlantName}(${costingData.PlantCode})`}</span></p></div></td>}
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
+
+                      {costingType !== NCC && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>

@@ -31,6 +31,8 @@ import { getListingForSimulationCombined, setSelectedRowForPagination, } from '.
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -77,7 +79,8 @@ class OperationListing extends Component {
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
     }
     componentDidMount() {
@@ -200,6 +203,7 @@ class OperationListing extends Component {
                 // CODE FOR DOWNLOAD BUTTON LOGIC
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
+                    this.props.disabledClass(false)
                     setTimeout(() => {
                         let button = document.getElementById('Excel-Downloads-operation')
                         button && button.click()
@@ -265,6 +269,7 @@ class OperationListing extends Component {
     resetState = () => {
         resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
         this.props.setSelectedRowForPagination([])
+        this.setState({ dataCount: 0 })
     }
 
     onBtPrevious = () => {
@@ -577,12 +582,13 @@ class OperationListing extends Component {
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
-
+        this.props.disabledClass(true)
         //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         let tempArr = this.props.selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-operation')
                 button && button.click()
             }, 400);
@@ -700,6 +706,7 @@ class OperationListing extends Component {
 
             let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
             this.props.setSelectedRowForPagination(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ dataCount: uniqeArray.length })
             let finalArr = selectedRows
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "OperationId")
@@ -751,12 +758,11 @@ class OperationListing extends Component {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-
-
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="warning-message d-flex align-items-center">
-                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                         </div>
                                     }
 
@@ -830,6 +836,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
                     <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
+                        <SelectRowWrapper dataCount={this.state.dataCount} className="mb-0 mt-n1" />
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
@@ -873,7 +880,7 @@ class OperationListing extends Component {
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(Number(this.state.totalRecordCount ? this.state.totalRecordCount : 0 / 10))}</p>}
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(Number(this.state.totalRecordCount ? this.state.totalRecordCount / 10 : 0 / 10))}</p>}
                                         {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
                                         {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                         <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
@@ -935,7 +942,8 @@ export default connect(mapStateToProps, {
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedRowForPagination,
-    setOperationList
+    setOperationList,
+    disabledClass
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

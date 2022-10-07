@@ -313,6 +313,10 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
+                        maxLength: {
+                          value: 80,
+                          message: 'Length should not be more than 80'
+                        },
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

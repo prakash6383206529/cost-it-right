@@ -27,6 +27,7 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -61,7 +62,8 @@ class InterestRateListing extends Component {
       showPopup: false,
       deletedId: '',
       selectedRowData: false,
-      noData: false
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -231,6 +233,13 @@ class InterestRateListing extends Component {
   }
 
   /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  onFloatingFilterChanged = (value) => {
+    this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
+  /**
   * @method hyphenFormatter
   */
   hyphenFormatter = (props) => {
@@ -303,7 +312,7 @@ class InterestRateListing extends Component {
 
   onRowSelect = () => {
     const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows })
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
   }
 
   onBtExport = () => {
@@ -349,7 +358,7 @@ class InterestRateListing extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
+    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
@@ -388,134 +397,137 @@ class InterestRateListing extends Component {
       <>
 
         <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
-          <ScrollToTop pointProp='go-to-top' />
-          <form
-            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-            noValidate
-          >
-            <Row>
-              <Col md="12">
-                <h1 className="mb-0">Interest Rate Master</h1>
-              </Col>
-            </Row>
-            {this.state.isLoader && <LoaderCustom />}
-            <Row className="pt-4 filter-row-large blue-before">
+          <div className="container-fluid">
+            <ScrollToTop pointProp='go-to-top' />
+            <form
+              onSubmit={handleSubmit(this.onSubmit.bind(this))}
+              noValidate
+            >
+              <Row>
+                <Col md="12">
+                  <h1 className="mb-0">Interest Rate Master</h1>
+                </Col>
+              </Row>
+              {this.state.isLoader && <LoaderCustom />}
+              <Row className="pt-4 filter-row-large blue-before">
 
-              <Col md="6" className="search-user-block mb-3">
-                <div className="d-flex justify-content-end bd-highlight w100">
-                  <div>
-                    {this.state.shown ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="cancel-icon-white"></div></button>
-                    ) : (
-                      ""
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
+                <Col md="6" className="search-user-block mb-3">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <div>
+                      {this.state.shown ? (
+                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                          <div className="cancel-icon-white"></div></button>
+                      ) : (
+                        ""
+                      )}
+                      {AddAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn mr5"}
+                          onClick={this.formToggle}
+                          title="Add"
+                        >
+                          <div className={"plus mr-0"}></div>
+                          {/* ADD */}
+                        </button>
+                      )}
+                      {BulkUploadAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn mr5"}
+                          onClick={this.bulkToggle}
+                          title="Bulk Upload"
+                        >
+                          <div className={"upload mr-0"}></div>
+                          {/* Bulk Upload */}
+                        </button>
+                      )}
+                      {
+                        DownloadAccessibility &&
+                        <>
+
+                          <ExcelFile filename={'InterestMaster'} fileExtension={'.xls'} element={
+                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                              {/* DOWNLOAD */}
+                            </button>}>
+
+                            {this.onBtExport()}
+                          </ExcelFile>
+
+                        </>
+
+
+
+                      }
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                        <div className="refresh mr-0"></div>
                       </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.bulkToggle}
-                        title="Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
-                        {/* Bulk Upload */}
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
 
-                        <ExcelFile filename={'InterestMaster'} fileExtension={'.xls'} element={
-                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                            {/* DOWNLOAD */}
-                          </button>}>
-
-                          {this.onBtExport()}
-                        </ExcelFile>
-
-                      </>
-
-
-
-                    }
-                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
-                    </button>
-
+                    </div>
                   </div>
-                </div>
-              </Col>
-            </Row>
-          </form>
+                </Col>
+              </Row>
+            </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-            <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={dataCount} />
+              </div>
+              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout='autoHeight'
+                  // columnDefs={c}
+                  rowData={this.props.interestRateDataList}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={this.onGridReady}
+                  gridOptions={gridOptions}
+                  // loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: 'imagClass'
+                  }}
+                  rowSelection={'multiple'}
+                  onFilterModified={this.onFloatingFilterChanged}
+                  onSelectionChanged={this.onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                >
+                  <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
+                  <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
+                  <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                  <AgGridColumn width={150} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                </AgGridReact>
+                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+              </div>
             </div>
-            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout='autoHeight'
-                // columnDefs={c}
-                rowData={this.props.interestRateDataList}
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={this.onGridReady}
-                gridOptions={gridOptions}
-                // loadingOverlayComponent={'customLoadingOverlay'}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
-                rowSelection={'multiple'}
-                onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
-                onSelectionChanged={this.onRowSelect}
-                frameworkComponents={frameworkComponents}
-              >
-                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
-                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
-                <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn width={150} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-              </AgGridReact>
-              {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-            </div>
+
+            {
+              isBulkUpload && <BulkUpload
+                isOpen={isBulkUpload}
+                closeDrawer={this.closeBulkUploadDrawer}
+                isEditFlag={false}
+                fileName={'InterestRate'}
+                isZBCVBCTemplate={true}
+                messageLabel={'Interest Rate'}
+                anchor={'right'}
+              />
+            }
+            {
+              this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
+            }
           </div>
-
-          {
-            isBulkUpload && <BulkUpload
-              isOpen={isBulkUpload}
-              closeDrawer={this.closeBulkUploadDrawer}
-              isEditFlag={false}
-              fileName={'InterestRate'}
-              isZBCVBCTemplate={true}
-              messageLabel={'Interest Rate'}
-              anchor={'right'}
-            />
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
-          }
         </div >
       </ >
     );

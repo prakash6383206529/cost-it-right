@@ -11,10 +11,12 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
+import { MESSAGES } from '../../../config/message';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 
 function RowMaterialMaster(props) {
 
@@ -37,7 +39,8 @@ function RowMaterialMaster(props) {
     const [isRMAssociated, setIsRMAssociated] = useState(false);
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
-
+    const disabledClass = useSelector((state) => state.comman.disabledClass)
+    const dispatch = useDispatch();
 
     /**
         * @method componentDidMount
@@ -102,7 +105,7 @@ function RowMaterialMaster(props) {
     * @description toggling the tabs
     */
     const toggle = (tab) => {
-
+        dispatch(setSelectedRowForPagination([]))
         if (activeTab !== tab) {
             setactiveTab(tab);
             setStopApiCallOnCancel(false)
@@ -205,9 +208,8 @@ function RowMaterialMaster(props) {
             <Row>
                 <Col>
                     <div>
-                        <Nav tabs className="subtabs mt-0">
-
-
+                        <Nav tabs className="subtabs mt-0 p-relative">
+                            {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
                             {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>

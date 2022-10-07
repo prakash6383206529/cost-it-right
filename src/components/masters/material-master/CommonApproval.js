@@ -19,7 +19,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, isResetClick } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 
@@ -84,7 +84,7 @@ function CommonApproval(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
@@ -118,7 +118,8 @@ function CommonApproval(props) {
 
     var floatingFilterStatus = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "common"
     }
     useEffect(() => {
         if (approvalList?.length > 0) {
@@ -127,6 +128,7 @@ function CommonApproval(props) {
         else {
             setNoData(false)
         }
+        dispatch(getGridHeight({ value: approvalList?.length, component: "common" }))
     }, [approvalList])
 
 
@@ -724,6 +726,7 @@ function CommonApproval(props) {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={onFloatingFilterChanged}
                                     isRowSelectable={isRowSelectable}
+                                    enableBrowserTooltips={true}
                                 >
 
 
@@ -787,7 +790,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && props?.isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}

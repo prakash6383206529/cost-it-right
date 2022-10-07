@@ -1,3 +1,5 @@
+import { getConfigurationKey } from "../helper";
+
 export const MESSAGES = {
   INVALID_EMAIL_PASSWORD: 'Either email or password is invalid or your account is inactive',
   SOME_ERROR: 'Opps! Something went wrong. Please try again later',
@@ -334,6 +336,12 @@ export const MESSAGES = {
 
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
-  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully'
+  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully',
 
+  // COMMON MESSAGES 
+  DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+
+  //ERROR MESSAGES
+  PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,
+  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`
 }

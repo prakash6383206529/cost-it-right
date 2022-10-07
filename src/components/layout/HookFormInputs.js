@@ -95,7 +95,7 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -137,7 +137,7 @@ export const NumberFieldHookForm = (field) => {
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
+          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
       </div>
     </>
   )
@@ -145,7 +145,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -153,18 +153,19 @@ export const SearchableSelectHookForm = (field) => {
   let temp = 300;
   if (dropdownHeight < 6) {
     if (dropdownHeight === 0) {
-      temp = 130
+      temp = 128
     }
     else {
-      temp = dropdownHeight * 47;
+      temp = dropdownHeight * 49;
     }
   }
-
+  const onFocusChange = () => {
+    onFocus && onFocus()
+  }
   const customStyles = {
     menuList: (provided) => ({
       ...provided,
       maxHeight: temp,
-      marginTop: 0,
       left: 0,
       overflowX: 'hidden'
     }),
@@ -172,6 +173,7 @@ export const SearchableSelectHookForm = (field) => {
       ...provided,
       marginTop: "7px",
       left: 0,
+      top: 44,
       marginRight: "5px",
       marginLeft: "5px",
       width: 'calc(100% - 10px)',
@@ -204,7 +206,8 @@ export const SearchableSelectHookForm = (field) => {
 
                 }}
                 menuPlacement="auto"
-                styles={customStyles}
+                styles={dropDownClass && customStyles}
+                onFocus={onFocusChange}
                 options={options}
                 onBlur={onBlur}
                 selected={value}

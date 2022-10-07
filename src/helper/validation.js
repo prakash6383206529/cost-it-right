@@ -371,3 +371,7 @@ export const strongPassword = value =>
 export const decimalAndNumberValidation = (value) => {
     return value && !/^\d{0,4}(\.\d{0,7})?$/i.test(value) ? 'Maximum length for integer is 4 and for decimal is 7' : undefined;
 }
+
+export const decimalAndNumberValidationBoolean = (value) => {
+    return value && !/^\d{0,6}(\.\d{0,6})?$/i.test(value) ? true : false;
+}

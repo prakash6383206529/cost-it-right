@@ -117,4 +117,52 @@
       }
     }
 
-  
+//RUN SIMULATION DRAWER DISCOUNT TOGGLE SCSS
+.drawer-side-input-other {
+  width: 100%;
+  margin-bottom: -1rem;
+  .toggle-button-per-and-fix {
+    margin-top: -0.5rem;
+    display: flex !important;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    .form-group.inputbox.withBorder {
+      min-width: 16.7rem;
+      min-height: 0;
+      margin-bottom: 0 !important;
+    }
+    .normal-switch {
+      margin-top: 30px !important;
+    }
+    .additonal-discount-container {
+      display: flex;
+      grid-gap: 10px;
+      margin-left: 15px;
+      .auto-width {
+        min-height: auto !important;
+        margin-bottom: 0 !important;
+        label {
+          white-space: nowrap;
+        }
+        &.inputbox {
+          border-bottom: none;
+        }
+      }
+    }
+    .text-help {
+      position: absolute;
+    }
+  }
+}
+
+ 
+.check-box-container:nth-child(11), .check-box-container:nth-child(12) {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+.check-box-container:nth-child(11) {
+    border-top: 1px solid rgba(180, 197, 226, 0.51) !important;
+   .drawer-side-input-other  {
+    padding-top: 12px;
+   }
+}

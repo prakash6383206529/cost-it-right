@@ -29,7 +29,10 @@ import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { required } from 'joi';
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import _ from 'lodash';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -76,8 +79,14 @@ class VendorListing extends Component {
             globalTake: defaultPageSize,
             disableFilter: true,
             disableDownload: false,
-            noData: false
+            noData: false,
+            dataCount: 0
         }
+    }
+
+
+    componentWillUnmount() {
+        this.props.setSelectedRowForPagination([])
     }
 
     componentDidMount() {
@@ -118,7 +127,6 @@ class VendorListing extends Component {
     };
 
 
-
     /**
     * @method applyPermission
     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -130,6 +138,7 @@ class VendorListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
+
                 this.setState({
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -159,7 +168,9 @@ class VendorListing extends Component {
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-            this.setState({ isLoader: false })
+            setTimeout(() => {
+                this.setState({ isLoader: false })
+            }, 300);
             this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ totalRecordCount: 0 })
@@ -180,6 +191,7 @@ class VendorListing extends Component {
 
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 setTimeout(() => {
                     let button = document.getElementById('Excel-Downloads-vendor')
                     button && button.click()
@@ -291,6 +303,27 @@ class VendorListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
+
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
+                if (item.VendorId === props.node.data.VendorId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
 
     handleChange = (cell, row) => {
         let data = {
@@ -485,18 +518,22 @@ class VendorListing extends Component {
     };
 
     resetState = () => {
+        this.props.setSelectedRowForPagination([])
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        this.setState({ dataCount: 0 })
     }
     onExcelDownload = () => {
 
         this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
 
         let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
                 let button = document.getElementById('Excel-Downloads-vendor')
                 button && button.click()
             }, 400);
@@ -505,6 +542,35 @@ class VendorListing extends Component {
 
             this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
+    }
+    onRowSelect = (event) => {
+        let selectedRows = this.state.gridApi?.getSelectedRows()
+
+        if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = this.props.selectedRowForPagination
+        } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                    if (this.props.selectedRowForPagination[i].VendorId === event.data.VendorId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(this.props.selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = this.props.selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "VendorId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+        this.setState({ dataCount: uniqeArray.length })
+        this.setState({ selectedRowData: selectedRows })
+
     }
 
     onBtExport = () => {
@@ -571,7 +637,8 @@ class VendorListing extends Component {
             customNoRowsOverlay: NoContentFound,
             indexFormatter: this.indexFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
 
         return (
@@ -582,12 +649,14 @@ class VendorListing extends Component {
                         <h1 className="mb-0">Vendor Master</h1>
                     </Col>
                 </Row>
-                {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row zindex-2">
-                    <Col md="12">
-                        <div className="d-flex justify-content-end bd-highlight w100">
+                    <Col md="3"></Col>
+                    <Col md="9">
+                        <div className="d-flex justify-content-end bd-highlight w100 ">
+                            {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
+
                             <div className="warning-message d-flex align-items-center">
-                                {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <div className='d-flex'>
                                 <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
@@ -638,11 +707,14 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                {this.state.isLoader && <LoaderCustom />}
+                {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -661,11 +733,12 @@ class VendorListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            onRowSelected={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                             enablePivot={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
+                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                             <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -690,7 +763,7 @@ class VendorListing extends Component {
                             <WarningMessage message="All the above details of supplier is entered through SAP." />
                         </div>
                     </div>
-                </div>
+                </div>}
 
 
                 {
@@ -735,12 +808,13 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier, auth, }) {
+function mapStateToProps({ comman, supplier, auth, simulation }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
+    const { selectedRowForPagination } = simulation;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
 
 /**
@@ -755,7 +829,9 @@ export default connect(mapStateToProps, {
     activeInactiveVendorStatus,
     deleteSupplierAPI,
     getVendorsByVendorTypeID,
-    getVendorTypeByVendorSelectList
+    getVendorTypeByVendorSelectList,
+    setSelectedRowForPagination,
+    disabledClass
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {

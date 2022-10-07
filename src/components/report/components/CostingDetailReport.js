@@ -18,8 +18,9 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
+import { MESSAGES } from '../../../config/message'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -86,28 +87,33 @@ function ReportListing(props) {
 
     var floatingFilterOverhead = {
         maxValue: 1,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "costingReport"
     }
 
     var floatingFilterProfit = {
         maxValue: 2,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "costingReport"
     }
 
     var floatingFilterRejection = {
 
         maxValue: 3,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "costingReport"
     }
 
     var floatingFilterIcc = {
         maxValue: 4,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "costingReport"
     }
 
     var floatingFilterStatus = {
         maxValue: 5,
-        suppressFilterButton: true
+        suppressFilterButton: true,
+        component: "costingReport"
     }
 
 
@@ -122,6 +128,7 @@ function ReportListing(props) {
     let reportListingData = useSelector((state) => state.report.reportListing)
     let allReportListingData = useSelector((state) => state.report.allReportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const disabledClassSelector = useSelector(state => state.comman.disabledClass);
 
 
     useEffect(() => {
@@ -387,6 +394,7 @@ function ReportListing(props) {
             if (res && isPagination === false) {  // CODE WRITTEN FOR EXCEL DOWNLOAD
                 setTimeout(() => {
                     setDisableDownload(false)
+                    dispatch(disabledClass(false))
                     let button = document.getElementById('Excel-Downloads')
                     button.click()
                 }, 800);
@@ -451,10 +459,11 @@ function ReportListing(props) {
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
         setNoData(false)
-        dispatch(getGridHeight(reportListingData?.length))
+        dispatch(getGridHeight({ value: reportListingData?.length, component: "costingReport" }))
     }, [reportListingData])
 
     const onFloatingFilterChanged = (value) => {
+        dispatch(getGridHeight({ value: reportListingData?.length, component: "costingReport" }))
         if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         setEnableSearchFilterButton(false)
 
@@ -654,11 +663,12 @@ function ReportListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
-
+        dispatch(disabledClass(true))
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
+                dispatch(disabledClass(false))
                 let button = document.getElementById('Excel-Downloads')
                 button.click()
             }, 400);
@@ -703,7 +713,7 @@ function ReportListing(props) {
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Details</h1>
+                <h1 className="mb-0">Costing Breakup Details</h1>
 
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
@@ -711,8 +721,9 @@ function ReportListing(props) {
                     </Col> */}
                     <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
+                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-sidebar"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             <div className="warning-message d-flex align-items-center">
-                                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -769,6 +780,7 @@ function ReportListing(props) {
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
+                        <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -804,7 +816,7 @@ function ReportListing(props) {
                         <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
+                        <AgGridColumn field='RejectionApplicability' cellClass={"customDropdown"} headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
                         <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
@@ -827,6 +839,8 @@ function ReportListing(props) {
                         <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>

@@ -24,6 +24,7 @@ import ReactExport from 'react-export-excel';
 import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
+import SelectRowWrapper from '../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,7 +59,8 @@ class UsersListing extends Component {
 			cell: [],
 			row: [],
 			isLoader: false,
-			noData: false
+			noData: false,
+			dataCount: 0
 		}
 	}
 
@@ -116,7 +118,7 @@ class UsersListing extends Component {
 
 	onRowSelect = () => {
 		const selectedRows = this.state.gridApi?.getSelectedRows()
-		this.setState({ selectedRowData: selectedRows })
+		this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
 	}
 
 	onBtExport = () => {
@@ -507,7 +509,7 @@ class UsersListing extends Component {
 	*/
 	render() {
 		const { handleSubmit, initialConfiguration } = this.props;
-		const { EditAccessibility, AddAccessibility, noData } = this.state;
+		const { EditAccessibility, AddAccessibility, noData, dataCount } = this.state;
 
 		const isFirstColumn = (params) => {
 
@@ -629,6 +631,7 @@ class UsersListing extends Component {
 					<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+							<SelectRowWrapper dataCount={dataCount} />
 						</div>
 						<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 							{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

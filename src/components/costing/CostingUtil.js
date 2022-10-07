@@ -1,13 +1,16 @@
 
+import { useDispatch } from "react-redux";
+import { reactLocalStorage } from "reactjs-localstorage";
 import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
+import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
-  let Arr = JSON.parse(localStorage.getItem('costingArray'))
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let Arr = reactLocalStorage.getObject('costingArray')
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let assemblyWorkingRow = []
 
   if (tabId === 1) {
@@ -32,13 +35,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "TotalCostINR": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "TotalCostINR": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
           "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
           "IsApplyBOPHandlingCharges": item.CostingPartDetails?.IsApplyBOPHandlingCharges,
           "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
           "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
           "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability,
-          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff
+          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff,
+          "BOPHandlingChargeType": item && item.CostingPartDetails?.BOPHandlingChargeType
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -127,7 +131,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
       "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
       "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges,
+      "BOPHandlingChargeType": tabData && tabData.CostingPartDetails?.BOPHandlingChargeType
     },
     "LoggedInUserId": loggedInUserId()
 
@@ -138,14 +143,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 //TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
 
 // TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
-  let costingArr = JSON.parse(localStorage.getItem('costingArray'))
+  let costingArr = reactLocalStorage.getObject('costingArray')
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
 }
@@ -243,4 +248,36 @@ export const formatCostingApprovalObj = (costingObj) => {
   obj.destinationPlantId = costingObj.destinationPlantId
 
   return obj
+}
+
+export const clearCosting = (dispatch) => {
+  dispatch(getBriefCostingById('', (res) => { }))
+  reactLocalStorage.setObject('costingArray', [])
+  reactLocalStorage.setObject('surfaceCostingArray', [])
+  dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+  dispatch(setComponentItemData({}, () => { }))
+
+  dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+  dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+
+
+  dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+  dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+
+  dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
+  dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
+
+  dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+
+  dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+
+  dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
+  dispatch(setSurfaceCostData({}, () => { }))
+
+  dispatch(setProcessGroupGrid([]))
+  dispatch(savePartNumber(''))
+  dispatch(saveBOMLevel(''))
+  dispatch(setPartNumberArrayAPICALL([]))
+  dispatch(isDataChange(false))
+
 }
