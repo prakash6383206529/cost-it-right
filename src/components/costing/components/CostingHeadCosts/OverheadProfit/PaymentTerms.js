@@ -9,6 +9,7 @@ import Switch from "react-switch";
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
@@ -79,9 +80,10 @@ function PaymentTerms(props) {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
 
             const reqParams = {
-                VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID
+                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+                isVendor: costData.IsVendor,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                effectiveDate: costData?.EffectiveDate ? (DayTime(costData?.EffectiveDate).format('DD/MM/YYYY')) : ''
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
