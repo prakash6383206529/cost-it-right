@@ -45,7 +45,7 @@ function AddOperation(props) {
   useEffect(() => {
     const data = {
       VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
-      PlantId: initialConfiguration?.IsDestinationPlantConfigure && (costData.VendorType === VBCTypeId || costData.VendorType === NCCTypeId) ? costData.DestinationPlantId : (costData.VendorType === ZBCTypeId || costData.VendorType === CBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
       TechnologyId: costData?.TechnologyId,
       VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
       EffectiveDate: CostingEffectiveDate,
@@ -53,6 +53,7 @@ function AddOperation(props) {
       CostingTypeId: costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
+    console.log('costData: ', costData);
     dispatch(getOperationDrawerDataList(data, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;

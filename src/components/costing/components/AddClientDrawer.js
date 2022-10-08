@@ -60,7 +60,8 @@ function AddClientDrawer(props) {
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
         DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
         DestinationPlant: DestinationPlant,
-        customerName: customer.label
+        CustomerName: customer.label,
+        CustomerId: customer.value
       })
   };
 

@@ -210,7 +210,6 @@ function Rejection(props) {
                         RejectionTotalCost: checkForNull(RejectionPercentage)
                     })
                     break;
-
                 default:
                     break;
             }
