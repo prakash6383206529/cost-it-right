@@ -6,7 +6,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
 import values from 'redux-form/lib/values';

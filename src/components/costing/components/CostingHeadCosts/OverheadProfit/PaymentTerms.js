@@ -6,7 +6,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
@@ -79,6 +79,7 @@ function PaymentTerms(props) {
 
     const callPaymentTermAPI = (isCallAPI) => {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
+            console.log('costData: ', costData);
 
             const reqParams = {
                 vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
