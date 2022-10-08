@@ -304,6 +304,11 @@ function CostingSimulation(props) {
                     setCommonStateForList(res)
                 }))
                 break;
+            case Number(MACHINERATE):
+                dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                    setCommonStateForList(res)
+                }))
+                break;
 
             default:
                 break;
