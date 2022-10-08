@@ -326,10 +326,10 @@ function OverheadProfit(props) {
         setModelType(newValue)
         const reqParams = {
           ModelTypeId: newValue.value,
-          VendorId: costData.costingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+          VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
           costingTypeId: costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
-          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.costingTypeId !== VBCTypeId) || (costData?.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.costingTypeId === VBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
           customerId: costData.CustomerId
         }
 

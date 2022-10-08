@@ -50,7 +50,7 @@ function AddSurfaceTreatment(props) {
       VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
       EffectiveDate: CostingEffectiveDate,
       CostingId: costData.CostingId,
-      PlantId: initialConfiguration?.IsDestinationPlantConfigure && (costData.VendorType === VBCTypeId || costData.VendorType === NCCTypeId) ? costData.DestinationPlantId : (costData.VendorType === ZBCTypeId || costData.VendorType === CBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
       CostingTypeId: costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }

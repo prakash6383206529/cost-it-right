@@ -397,13 +397,13 @@ function CostingDetails(props) {
           let zbvArray = []
           let cbcArray = []
           Data && Data.map((item) => {
-            if (item.CostingHead === NCCTypeId) {
+            if (String(item.CostingTypeId) === NCCTypeId) {
               nccArray.push(item)
-            } else if (item.CostingHead === VBCTypeId) {
+            } else if (String(item.CostingTypeId) === VBCTypeId) {
               vbcArray.push(item)
-            } else if (item.CostingHead === ZBCTypeId) {
+            } else if (String(item.CostingTypeId) === ZBCTypeId) {
               zbvArray.push(item)
-            } else if (item.CostingHead === CBCTypeId) {
+            } else if (String(item.CostingTypeId) === CBCTypeId) {
               cbcArray.push(item)
             }
 
@@ -412,6 +412,7 @@ function CostingDetails(props) {
           setZBCPlantGrid(zbvArray)
           setNccGrid(nccArray)
           setVBCVendorGrid(vbcArray)
+          setCBCGrid(cbcArray)
           setvbcVendorOldArray(Data)
           setIsVBCLoader(false)
           setIsZBCLoader(false)
@@ -787,8 +788,11 @@ function CostingDetails(props) {
     } else if (type === VBCTypeId) {
       let tempData = vbcVendorGrid[index]
       return tempData.SelectedCostingVersion !== undefined ? true : false
-    } else {
+    } else if (type === NCCTypeId) {
       let tempData = nccGrid[index]
+      return tempData.SelectedCostingVersion !== undefined ? true : false
+    } else {
+      let tempData = cbcGrid[index]
       return tempData.SelectedCostingVersion !== undefined ? true : false
     }
   }
@@ -860,6 +864,8 @@ function CostingDetails(props) {
       }
       console.log('tempData: ', tempData);
 
+      console.log('CBCTypeId: ', CBCTypeId);
+      console.log('type: ', type);
       const data = {
         PartId: part.value,
         PartTypeId: partInfo.PartTypeId,
@@ -872,12 +878,12 @@ function CostingDetails(props) {
         VendorPlantCode: tempData.VendorPlantCode,
         VendorName: tempData.VendorName,
         VendorCode: tempData.VendorCode,
-        PlantId: (type === ZBCTypeId || type === CBCTypeId) ? tempData.PlantId : EMPTY_GUID,
-        PlantName: (type === ZBCTypeId || type === CBCTypeId) ? tempData.PlantName : '',
-        PlantCode: (type === ZBCTypeId || type === CBCTypeId) ? tempData.PlantCode : '',
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.DestinationPlantId : EMPTY_GUID,
-        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.DestinationPlantName : '',
-        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.DestinationPlantCode : '',
+        PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,
+        PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',
+        PlantCode: (type === ZBCTypeId) ? tempData.PlantCode : '',
+        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantId : EMPTY_GUID,
+        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
@@ -891,11 +897,9 @@ function CostingDetails(props) {
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
         CostingTypeId: type,
-        CustomerId: tempData.CustomerId,
-        CustomerName: tempData.CustomerName
-
+        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type === CBCTypeId ? tempData.CustomerName : ''
       }
-      console.log('type: ', type);
 
       dispatch(createCosting(data, (res) => {
         if (res.data.Result) {
@@ -1192,7 +1196,7 @@ function CostingDetails(props) {
           Price: '',
         }
         tempArray = Object.assign([...cbcGrid], { [index]: tempData })
-        setNccGrid(tempArray)
+        setCBCGrid(tempArray)
         setValue(`${cbcGridFields}.${index}.CostingVersion`, '')
       }
     }))
@@ -2317,7 +2321,7 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.customerName ? `${item.customerName}` : '-'}</td>
+                                      <td>{item.CustomerName ? `${item.CustomerName}` : '-'}</td>
                                       <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
