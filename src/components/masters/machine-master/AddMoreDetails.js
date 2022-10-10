@@ -214,6 +214,7 @@ class AddMoreDetails extends Component {
         setTimeout(() => {
           if (fieldsObj?.EffectiveDate) {
             this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
+            this.setState({ isDateChange: false })
           }
           if (Object.keys(machineType)?.length === 0) {
           } else {
