@@ -446,7 +446,7 @@ class AddVolume extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],

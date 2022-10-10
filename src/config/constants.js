@@ -3,7 +3,6 @@
  */
 
 import { reactLocalStorage } from "reactjs-localstorage";
-
 export const config = () => {
 
   let headers = {
@@ -1992,14 +1991,14 @@ export const statusOptions = [
 
 ]
 //CONSTANTS FOR COSTING HEAD
-export const ZBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC]
-export const VBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC]
-export const CBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC]
-export const NCCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC]
-export const ZBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC]
-export const VBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC]
-export const CBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC]
-export const NCCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC]
+export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
+export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
+export const CBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC])
+export const NCCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
+export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC])
+export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
+export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
+export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
@@ -2007,4 +2006,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.572";
+export const VERSION = "V1.2.573";
