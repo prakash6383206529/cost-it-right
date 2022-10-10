@@ -926,7 +926,7 @@ export const API = {
   getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-and-operation-impacted-simulation-costings`,
   runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-selected-surface-treatment-and-operation-costing`,
   draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-process`,
-  runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-process-costing`,
+  runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-selected-machine-process-costing`,
   draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
   runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-selected-bought-out-part-costing`,
 
@@ -934,6 +934,7 @@ export const API = {
   getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-bought-out-part-impacted-simulation-costings`,
   getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
   getCostingBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-simulated-bought-out-part-costings`,
+  getMachineRateCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-machine-process-costings`,
 
   getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data-by-costingId`,
   getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,

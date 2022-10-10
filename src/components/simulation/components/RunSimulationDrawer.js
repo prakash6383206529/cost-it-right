@@ -260,7 +260,6 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
-                runSimulationCosting()
                 break;
             case Number(BOPDOMESTIC):
                 dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
