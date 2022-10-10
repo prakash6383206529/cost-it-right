@@ -162,30 +162,12 @@ export function checkPartWithTechnology(data, callback) {
 }
 
 /**
- * @method createZBCCosting
+ * @method createCosting
  * @description CREATE ZBC COSTING
  */
-export function createZBCCosting(data, callback) {
+export function createCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createZBCCosting, data, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method createVBCCosting
- * @description CREATE VBC COSTING
- */
-export function createVBCCosting(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.createVBCCosting, data, config())
+    const request = axios.post(API.createCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -217,13 +199,13 @@ export function getZBCExistingCosting(PartId, callback) {
 }
 
 /**
- * @method getVBCExistingCosting
+ * @method getExistingCosting
  * @description get VBC Costing Select List By Part
  */
-export function getVBCExistingCosting(PartId, callback) {
+export function getExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getVBCExistingCosting}/${PartId}`, config())
+    const request = axios.get(`${API.getExistingCosting}/${PartId}`, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -596,39 +578,13 @@ export function getBOPData(data, callback) {
 
 /**
  * @method getRMDrawerDataList
- * @description GET RM DATALIST IN RM DRAWER IN COSTING
+ * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
  */
 export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}`
-    // const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`, config(),)
-    const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, config())
-    request.then((response) => {
-      if (response.data.Result || response.status === 204) {
-        dispatch({
-          type: GET_RM_DRAWER_DATA_LIST,
-          payload: response.status === 204 ? [] : response.data.DataList
-        })
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getRMDrawerVBCDataList
- * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
- */
-export function getRMDrawerVBCDataList(data, callback) {
-  return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&effectiveDate=${data.EffectiveDate}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}`
+    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`
     //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
-    const request = axios.get(`${API.getRMDrawerVBCDataList}?${queryParams}`, config());
+    const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -647,37 +603,12 @@ export function getRMDrawerVBCDataList(data, callback) {
 
 /**
  * @method getBOPDrawerDataList
- * @description GET BOP DATALIST IN RM DRAWER IN COSTING
+ * @description GET BOP DATALIST IN BOP DRAWER IN COSTING VBC
  */
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&costingId=${data.CostingId}`
-    const request = axios.get(`${API.getBOPDrawerDataList}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: BOP_DRAWER_LIST,
-          payload: response.data.DataList
-        })
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getBOPDrawerVBCDataList
- * @description GET BOP DATALIST IN BOP DRAWER IN COSTING VBC
- */
-export function getBOPDrawerVBCDataList(data, callback) {
-  return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getBOPDrawerVBCDataList}?${queryParams}`, config());
+    const queryParams = `vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const request = axios.get(`${API.getBOPDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -696,32 +627,12 @@ export function getBOPDrawerVBCDataList(data, callback) {
 
 /**
  * @method getOperationDrawerDataList
- * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING
+ * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING VBC
  */
 export function getOperationDrawerDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getOperationDrawerDataList}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getOperationDrawerVBCDataList
- * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING VBC
- */
-export function getOperationDrawerVBCDataList(data, callback) {
-  return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getOperationDrawerVBCDataList}?${queryParams}`, config());
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const request = axios.get(`${API.getOperationDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -736,36 +647,12 @@ export function getOperationDrawerVBCDataList(data, callback) {
 
 /**
  * @method getProcessDrawerDataList
- * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING
+ * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
  */
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result || response.status === 204) {
-        dispatch({
-          type: GET_PROCESS_DRAWER_DATA_LIST,
-          payload: response.status === 204 ? [] : response.data.DataList
-        })
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getProcessDrawerVBCDataList
- * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
- */
-export function getProcessDrawerVBCDataList(data, callback) {
-  return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getProcessDrawerVBCDataList}?${queryParams}`, config());
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -905,37 +792,13 @@ export function saveCostingSurfaceTab(data, callback) {
 }
 
 /**
- *
-
-/**
  * @method getSurfaceTreatmentDrawerDataList
- * @description GET SURFACE TREATMENT DATALIST IN SURFACE TREATMENT DRAWER IN COSTING
+ * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
  */
 export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`
-    const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getSurfaceTreatmentDrawerVBCDataList
- * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
- */
-export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
-  return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}?${queryParams}`, config());
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -998,7 +861,7 @@ export function setOverheadProfitData(TabData, callback) {
 export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.EffectiveDate}/${data.IsVendor}/${data.plantId}`, config(),)
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.EffectiveDate}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -1071,7 +934,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.plantId}`, config())
+    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.customerId}/${data.plantId}/${data.costingTypeId}`, config())
     request
       .then((response) => {
         callback(response)
@@ -1092,7 +955,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.plantId}`, config(),)
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
 
     request.then((response) => {
       callback(response)
@@ -2244,8 +2107,8 @@ export function setAllCostingInArray(data, isNewArray) {
 }
 
 /**
- * @method getVBCExistingCosting
- * @description get VBC Costing Select List By Part
+ * @method getExistingCosting
+ * @description get Costing Select List By Part
  */
 export function getNCCExistingCosting(PartId, callback) {
   return (dispatch) => {
@@ -2264,7 +2127,7 @@ export function getNCCExistingCosting(PartId, callback) {
 
 
 /**
- * @method createZBCCosting
+ * @method createCosting
  * @description CREATE ZBC COSTING
  */
 export function createNCCCosting(data, callback) {

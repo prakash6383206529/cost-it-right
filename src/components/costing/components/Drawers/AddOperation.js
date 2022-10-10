@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -43,48 +43,28 @@ function AddOperation(props) {
   };
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData?.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-      }
-      dispatch(getOperationDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData?.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-      }
-      dispatch(getOperationDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      TechnologyId: costData?.TechnologyId,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      CostingTypeId: costData.CostingTypeId,
+      CustomerId: costData.CustomerId
     }
+    console.log('costData: ', costData);
+    dispatch(getOperationDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
   }, []);
-
 
   const onRowSelect = (event) => {
     if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {

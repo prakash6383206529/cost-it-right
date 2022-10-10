@@ -711,6 +711,7 @@ class AddBOPImport extends Component {
     let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
 
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
+      console.log('selectedPlants.length: ', selectedPlants.length);
       console.log('1');
       return false;
     }
@@ -1099,7 +1100,7 @@ class AddBOPImport extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {(costingTypeId !== VBCTypeId || getConfigurationKey().IsDestinationPlantConfigure) && (getConfigurationKey().IsCBCApplicableOnPlant) && (
+                          {((costingTypeId === ZBCTypeId) || (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
@@ -1431,24 +1432,23 @@ class AddBOPImport extends Component {
                           </button>
 
 
-                          {
-                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :
-                              <button
-                                type="submit"
-                                className="user-btn mr5 save-btn"
-                                disabled={isViewMode || setDisable}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                          {isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                            <button type="submit"
+                              class="user-btn approval-btn save-btn mr5"
+                              disabled={isViewMode || setDisable}
+                            >
+                              <div className="send-for-approval"></div>
+                              {'Send For Approval'}
+                            </button>
+                            :
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={isViewMode || setDisable}
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
                           }
                         </div>
                       </Row>
