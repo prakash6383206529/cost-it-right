@@ -359,7 +359,6 @@ function RMImportListing(props) {
   * @description edit material type
   */
   const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
-    console.log('rowData: ', rowData);
     let data = {
       isEditFlag: true,
       isViewFlag: isViewMode,
@@ -367,7 +366,6 @@ function RMImportListing(props) {
       costingTypeId: rowData.CostingTypeId,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
-    console.log('data: ', data);
     props.getDetails(data, rowData?.IsRMAssociated);
   }
 
