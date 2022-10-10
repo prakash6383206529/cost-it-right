@@ -10,6 +10,7 @@ import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/Assem
 import { LEVEL0 } from '../../../../config/constants';
 import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabSurfaceTreatment(props) {
 
@@ -31,7 +32,7 @@ function TabSurfaceTreatment(props) {
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr));
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
       }))
     }
   }, [costData]);
@@ -185,7 +186,7 @@ function TabSurfaceTreatment(props) {
           formatData(Params, Data, i.CostingChildPartDetails)
         }
 
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
         let partIndex = tempArr && tempArr.findIndex(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
         let partObj = tempArr && tempArr.find(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
@@ -197,14 +198,14 @@ function TabSurfaceTreatment(props) {
         tempArr = Object.assign([...tempArr], { [partIndex]: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
 
 
         const mapArray = (data) => data.map(item => {
 
           let newItem = item
-          let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
           let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
           if (obj && Object.keys(obj).length > 0) {
@@ -255,7 +256,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-    let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+    let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
     let tempPartNumber = []
     updatedArr && updatedArr.map((item) => {
       if (item.IsCostingLocked === true) {
@@ -304,7 +305,7 @@ function TabSurfaceTreatment(props) {
   //         i.IsOpenAssemblyDrawer = false;
 
   //         if (i.PartType === 'Assembly') {
-  //           let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  //           let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
   //           let subAssemblyArray = i.CostingChildPartDetails
 
   //           let assemblyObj = tempArrForCosting[0]
@@ -335,7 +336,7 @@ function TabSurfaceTreatment(props) {
   //           i.CostingPartDetails.TransportationCost = getTotalTransportationCost(CostingChildPartDetails, Children.CostingPartDetails.TransportationCost, params);
   //         }
 
-  //         // let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  //         // let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
 
   //         // if (params.BOMLevel !== LEVEL0) {
   //         //   let childArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === params.PartNumber)
@@ -376,7 +377,7 @@ function TabSurfaceTreatment(props) {
         i.IsOpen = params.IsCollapse ? !i.IsOpen : false;
         i.IsOpenAssemblyDrawer = false;
 
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
 
 
         if (params.BOMLevel !== LEVEL0) {
@@ -429,13 +430,13 @@ function TabSurfaceTreatment(props) {
         assemblyObj.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj.IsOpen
         tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
 
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         const mapArray = (data) => data.map(item => {
 
           let newItem = item
-          let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
 
           let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
@@ -543,7 +544,7 @@ function TabSurfaceTreatment(props) {
         } else {
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
         }
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
 
 
         let partObj = tempArr[0]
@@ -554,8 +555,8 @@ function TabSurfaceTreatment(props) {
         tempArr = Object.assign([...tempArr], { 0: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
 
         return i;
       });
@@ -650,7 +651,7 @@ function TabSurfaceTreatment(props) {
         } else {
           dispatchTransportationCost(transportationObj, params, i.CostingChildPartDetails)
         }
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
 
         let partObj = tempArr[0]
 
@@ -661,8 +662,8 @@ function TabSurfaceTreatment(props) {
         tempArr = Object.assign([...tempArr], { 0: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
         return i;
       });
 
@@ -719,7 +720,7 @@ function TabSurfaceTreatment(props) {
   const surfaceCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -729,7 +730,7 @@ function TabSurfaceTreatment(props) {
   const transportCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -801,13 +802,13 @@ function TabSurfaceTreatment(props) {
   /**
   * @method updateCostingValuesInStructure
   * @description UPDATE WHOLE COSTING VALUE IN RMCCTAB DATA REDUCER TO SHOW UPDATED VALUE ON UI
- */
+  */
 
   const updateCostingValuesInStructure = () => {
     //MAKING THIS MAP ARRAY COMMON
     const mapArray = (data) => data.map(item => {
       let newItem = item
-      let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
       if (obj && Object.keys(obj).length > 0) {
@@ -888,7 +889,7 @@ function TabSurfaceTreatment(props) {
 
             if (objectToUpdate.PartType === 'Sub Assembly') {
               let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
-
+              let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
               initialPartNo = objectToUpdate.AssemblyPartNumber
               let surfaceCostGrid = params.PartNumber === objectToUpdate.PartNumber ? surfaceGrid : []
               let subAssemObj = calculationForSubAssembly(surfaceCostGrid, objectToUpdate, quant, 'Operation', tempArr, {}, params)
@@ -942,7 +943,7 @@ function TabSurfaceTreatment(props) {
 
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (OPERATION COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
 
@@ -977,8 +978,8 @@ function TabSurfaceTreatment(props) {
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         return i;
       });
@@ -1098,7 +1099,7 @@ function TabSurfaceTreatment(props) {
 
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (OPERATION COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
         // THIS ARRAY IS FOR FINDING THE SUBASSEMBLIES  WHICH  HAVE SAME PART ON WHICH WE ARE DOING COSTING
@@ -1130,8 +1131,8 @@ function TabSurfaceTreatment(props) {
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         return i;
 
