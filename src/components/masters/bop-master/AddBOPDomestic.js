@@ -221,7 +221,7 @@ class AddBOPDomestic extends Component {
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
@@ -612,11 +612,12 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
+    console.log('bu');
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
       sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    console.log('userDetails: ', userDetails);
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -624,6 +625,7 @@ class AddBOPDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
+    console.log('plantArray: ', plantArray);
 
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
@@ -738,12 +740,13 @@ class AddBOPDomestic extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        Plant: [plantArray],
         VendorPlant: [],
-        DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
+        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetails.Plants[0].PlantId,
         Attachements: files,
         CustomerId: client.value
       }
+      console.log('costingTypeId === CBCTypeId : ', costingTypeId === CBCTypeId);
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged) {
