@@ -389,20 +389,22 @@ function CostingDetails(props) {
       dispatch(getExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
+          console.log('Data: ', Data);
           let vbcArray = []
           let nccArray = []
           let zbvArray = []
           let cbcArray = []
           Data && Data.map((item) => {
-            if (String(item.CostingTypeId) === NCCTypeId) {
+            if (item.CostingTypeId === NCCTypeId) {
               nccArray.push(item)
-            } else if (String(item.CostingTypeId) === VBCTypeId) {
+            } else if (item.CostingTypeId === VBCTypeId) {
               vbcArray.push(item)
-            } else if (String(item.CostingTypeId) === ZBCTypeId) {
+            } else if (item.CostingTypeId === ZBCTypeId) {
               zbvArray.push(item)
-            } else if (String(item.CostingTypeId) === CBCTypeId) {
+            } else if (item.CostingTypeId === CBCTypeId) {
               cbcArray.push(item)
             }
+            console.log('cbcArray: ', cbcArray);
 
             return null
           })
@@ -625,6 +627,7 @@ function CostingDetails(props) {
    * @description HIDE VENDOR DRAWER
    */
   const closeClientDrawer = (e = '', clientData = {}) => {
+    console.log('clientData: ', clientData);
     if (Object.keys(clientData).length > 0) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = cbcGrid.findIndex(el => (el.CustomerId === clientData.CustomerId && el.DestinationPlantId === clientData.DestinationPlantId))
@@ -632,6 +635,7 @@ function CostingDetails(props) {
         Toaster.warning('Already added, Please select another plant.')
         return false;
       }
+
       let tempArr = [...cbcGrid, { ...clientData, Status: '' }]
       setTimeout(() => {
         setCBCGrid(tempArr)
@@ -861,8 +865,10 @@ function CostingDetails(props) {
       }
       console.log('tempData: ', tempData);
 
-      console.log('CBCTypeId: ', CBCTypeId);
+      console.log('CBCTypeIdgggbb: ', CBCTypeId);
       console.log('type: ', type);
+      const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
+      console.log('userDetailsCosting: ', userDetailsCosting.Plants[0].PlantName);
       const data = {
         PartId: part.value,
         PartTypeId: partInfo.PartTypeId,
@@ -878,9 +884,9 @@ function CostingDetails(props) {
         PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,
         PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',
         PlantCode: (type === ZBCTypeId) ? tempData.PlantCode : '',
-        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantId : EMPTY_GUID,
-        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantName : '',
-        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData.DestinationPlantCode : '',
+        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
+        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
+        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
@@ -2281,7 +2287,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th className='vendor'>{`Customer`}</th>
-                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant`}</th>}
+                                  {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant`}</th>}
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -2298,7 +2304,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{item.CustomerName ? `${item.CustomerName}` : '-'}</td>
-                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
+                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
