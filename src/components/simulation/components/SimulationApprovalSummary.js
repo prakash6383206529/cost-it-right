@@ -341,7 +341,7 @@ function SimulationApprovalSummary(props) {
         // setCompareCostingObj(el)
         let obj = {
             simulationId: simulationDetail?.SimulationId,
-            costingId: data?.CostingId
+            costingId: data?.costingId
         }
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
