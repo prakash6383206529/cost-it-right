@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, COMBINED_PROCESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
 
@@ -182,6 +182,19 @@ function CostingDetailSimulationDrawer(props) {
                                                 <Col md="3">
                                                     <label>New BOP Cost</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                        {
+                                            (Number(master) === Number(MACHINERATE)) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Old Machine Rate</label>
+                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New Machine Rate</label>
+                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
