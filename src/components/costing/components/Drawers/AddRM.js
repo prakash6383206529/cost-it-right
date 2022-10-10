@@ -111,6 +111,9 @@ function AddRM(props) {
 
   const getDataList = (materialId = null, gradeId = null) => {
     console.log('costData: ', costData);
+    console.log('(initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId: ', (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId);
+    console.log('costData.CostingTypeId === CBCTypeId: ', costData.CostingTypeId === CBCTypeId);
+    console.log('(initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)): ', (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)));
     const data = {
       VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
       PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,

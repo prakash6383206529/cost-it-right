@@ -292,7 +292,7 @@ class AddInterestRate extends Component {
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
             this.setState({
               isEditFlag: true,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
               selectedPlants: Data.Plants[0]?.PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0]?.PlantId }] : [],

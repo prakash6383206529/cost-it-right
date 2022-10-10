@@ -158,7 +158,7 @@ class AddFreight extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
               TransportMode:
                 modeObj && modeObj !== undefined

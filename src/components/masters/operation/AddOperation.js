@@ -351,7 +351,7 @@ class AddOperation extends Component {
               isEditFlag: true,
               IsFinancialDataChanged: false,
               isLoader: false,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               selectedTechnology: technologyArray,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],

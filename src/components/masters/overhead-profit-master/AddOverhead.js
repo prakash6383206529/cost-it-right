@@ -170,7 +170,7 @@ class AddOverhead extends Component {
               // isLoader: false,
               // IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               // costingHead: Head,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],

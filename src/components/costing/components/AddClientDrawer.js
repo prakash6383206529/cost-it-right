@@ -49,17 +49,20 @@ function AddClientDrawer(props) {
   * @description TOGGLE DRAWER
   */
   const toggleDrawer = (event) => {
+    console.log('bbub');
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     // label=>PlantName
+    const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
+    console.log('userDetailsCosting: ', userDetailsCosting);
     props.closeDrawer('',
       {
         ...data,
-        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
-        DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
-        DestinationPlant: DestinationPlant,
+        DestinationPlantCode: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.PlantCode : userDetailsCosting.Plants[0].PlantCode,
+        DestinationPlantId: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.value : userDetailsCosting.Plants[0].PlantId,
+        DestinationPlantName: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.PlantName : userDetailsCosting.Plants[0].PlantName,                 //PlantName
+        DestinationPlant: DestinationPlant ? DestinationPlant : userDetailsCosting.Plants,
         CustomerName: customer.label,
         CustomerId: customer.value
       })
@@ -172,7 +175,7 @@ function AddClientDrawer(props) {
                   />
                 </Col>
 
-                {initialConfiguration?.IsDestinationPlantConfigure &&
+                {getConfigurationKey().IsCBCApplicableOnPlant &&
 
                   <Col md="12">
                     <SearchableSelectHookForm

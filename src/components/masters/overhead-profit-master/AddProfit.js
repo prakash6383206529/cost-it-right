@@ -160,7 +160,7 @@ class AddProfit extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
