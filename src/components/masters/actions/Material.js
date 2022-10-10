@@ -747,7 +747,6 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
  * @description get Raw Material Details
  */
 export function getRawMaterialDetailsAPI(data, isValid, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
         if (isValid) {
             axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.costingTypeId}`, config())
@@ -1120,7 +1119,6 @@ export function updateRMImportAPI(requestData, callback) {
  * @description get Raw Material Import Details By Id.
  */
 export function getRMImportDataById(data, isValid, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
         if (isValid) {
             axios.get(`${API.getRMImportDataById}/${data.Id}/${data.costingTypeId}`, config())

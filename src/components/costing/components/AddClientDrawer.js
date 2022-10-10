@@ -49,13 +49,11 @@ function AddClientDrawer(props) {
   * @description TOGGLE DRAWER
   */
   const toggleDrawer = (event) => {
-    console.log('bbub');
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     // label=>PlantName
     const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
-    console.log('userDetailsCosting: ', userDetailsCosting);
     props.closeDrawer('',
       {
         ...data,
