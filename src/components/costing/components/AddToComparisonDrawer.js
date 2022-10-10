@@ -7,7 +7,7 @@ import { getPlantSelectListByType, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
@@ -135,8 +135,9 @@ function AddToComparisonDrawer(props) {
    * @description for handling rendering for different checkbox
    */
   const handleComparison = (value) => {
+    console.log('value: ', value);
     setValue('comparisonValue', value)
-    if (value === 'ZBC') {
+    if ((value) === ZBCTypeId) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
@@ -148,7 +149,7 @@ function AddToComparisonDrawer(props) {
         setValue('costings', '')
 
       }))
-    } else if (value === 'VBC') {
+    } else if ((value) === ZBCTypeId) {
       setCostingDropdown([])
       setIsZbcSelected(false)
       setIsVbcSelected(true)
@@ -158,7 +159,7 @@ function AddToComparisonDrawer(props) {
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', '', () => { }))
 
-    } else if (value === 'CBC') {
+    } else if ((value) === ZBCTypeId) {
       setisCbcSelected(true)
       setIsZbcSelected(false)
       setIsVbcSelected(false)
@@ -416,7 +417,7 @@ function AddToComparisonDrawer(props) {
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
           obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
-
+          obj.costingTypeId = obj?.CostingTypeId ? obj?.CostingTypeId : ''
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
@@ -616,7 +617,7 @@ function AddToComparisonDrawer(props) {
                     control={control}
                     Controller={Controller}
                     register={register}
-                    handleChange={() => handleComparison("ZBC")}
+                    handleChange={() => handleComparison(ZBCTypeId)}
                   />
                   <RadioHookForm
                     customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
@@ -627,7 +628,7 @@ function AddToComparisonDrawer(props) {
                     control={control}
                     Controller={Controller}
                     register={register}
-                    handleChange={() => handleComparison("VBC")}
+                    handleChange={() => handleComparison(VBCTypeId)}
                   />
                   <RadioHookForm
                     customClassName="d-inline-flex flex-row-reverse align-items-baseline"
@@ -638,7 +639,7 @@ function AddToComparisonDrawer(props) {
                     control={control}
                     Controller={Controller}
                     register={register}
-                    handleChange={() => handleComparison("CBC")}
+                    handleChange={() => handleComparison(CBCTypeId)}
                   />
                 </Col>
               </Row>

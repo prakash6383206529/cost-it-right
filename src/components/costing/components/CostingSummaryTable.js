@@ -320,6 +320,7 @@ const CostingSummaryTable = (props) => {
   *
   */
   const editHandler = (index) => {
+    console.log('viewCostingData: ', viewCostingData);
     const editObject = {
       plantId: viewCostingData[index]?.plantId,
       plantName: viewCostingData[index]?.plantName,
@@ -334,6 +335,7 @@ const CostingSummaryTable = (props) => {
       destinationPlantCode: viewCostingData[index]?.destinationPlantCode,
       destinationPlantName: viewCostingData[index]?.destinationPlantName,
       destinationPlantId: viewCostingData[index]?.destinationPlantId,
+      costingTypeId: viewCostingData[index]?.costingTypeId
     }
 
     setIsEditFlag(true)
@@ -351,7 +353,6 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    console.log('tempData: ', tempData);
     const type = viewCostingData[index]?.costingHead
 
     const Data = {
@@ -551,7 +552,6 @@ const CostingSummaryTable = (props) => {
           obj.nPOPriceWithCurrency = viewCostingData[index]?.nPOPriceWithCurrency
           obj.currencyRate = viewCostingData[index]?.currency.currencyValue
           obj.variance = Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.oldPoPrice : 0) - Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.poPrice : 0)
-
           let date = viewCostingData[index]?.effectiveDate
           if (viewCostingData[index]?.effectiveDate) {
             let variance = Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.oldPoPrice : 0) - Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.poPrice : 0)
@@ -615,6 +615,7 @@ const CostingSummaryTable = (props) => {
           obj.destinationPlantCode = viewCostingData[index]?.destinationPlantCode
           obj.destinationPlantName = viewCostingData[index]?.destinationPlantName
           obj.destinationPlantId = viewCostingData[index]?.destinationPlantId
+          obj.costingTypeId = viewCostingData[index]?.costingTypeId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))

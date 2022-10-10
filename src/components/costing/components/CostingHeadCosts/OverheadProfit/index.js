@@ -328,7 +328,6 @@ function OverheadProfit(props) {
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.costingTypeId !== undefined) {
         setModelType(newValue)
 
-        console.log('costData: ', costData);
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
