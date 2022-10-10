@@ -22,7 +22,6 @@ import {
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
     GET_ASSEMBLY_SIMULATION_LIST,
-    GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
@@ -1009,8 +1008,8 @@ export function getVerifyMachineRateSimulationList(token, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_VERIFY_MACHINERATE_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationMachineProcesstImpactedCostings
                 })
                 callback(response)
             }

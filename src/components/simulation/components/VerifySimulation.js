@@ -138,7 +138,7 @@ function VerifySimulation(props) {
                 dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationMachineRateImpactedCostings.length === 0) {           //   for condition
+                        if (data.SimulationMachineProcesstImpactedCostings.length === 0) {           //   for condition
                             Toaster.warning('No approved costing exist for this machine rate.')
                             setHideRunButton(true)
                             return false

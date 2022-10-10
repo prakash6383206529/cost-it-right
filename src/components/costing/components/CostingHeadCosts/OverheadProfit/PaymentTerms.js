@@ -79,7 +79,6 @@ function PaymentTerms(props) {
 
     const callPaymentTermAPI = (isCallAPI) => {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
-            console.log('costData: ', costData);
 
             const reqParams = {
                 vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
