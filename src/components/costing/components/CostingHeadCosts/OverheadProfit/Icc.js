@@ -29,6 +29,7 @@ function Icc(props) {
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
 
@@ -63,7 +64,7 @@ function Icc(props) {
                 vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 isVendor: costData.IsVendor,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
-                effectiveDate: costData?.EffectiveDate ? (DayTime(costData?.EffectiveDate).format('DD/MM/YYYY')) : ''
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
