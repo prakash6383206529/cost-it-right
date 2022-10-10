@@ -177,6 +177,7 @@ function MasterSendForApproval(props) {
             senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
+            senderObj.CostingTypeId = ''
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL

@@ -2290,7 +2290,7 @@ export function setIdsOfProcessGroup(data) {
 export function getMachineProcessGroupDetail(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&costingTypeId=${data.CostingTypeId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {

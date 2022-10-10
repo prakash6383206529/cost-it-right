@@ -380,6 +380,7 @@ const SendForApproval = (props) => {
       tempObj.Attachment = files
       tempObj.IsRegularized = isRegularize
       tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+      tempObj.CostingTypeId = data.costingTypeId
 
       temp.push(tempObj)
       return null
