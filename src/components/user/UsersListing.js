@@ -157,6 +157,7 @@ class UsersListing extends Component {
 			userType: this.props.RFQUser ? 'RFQ' : 'CIR'
 		}
 		this.setState({ isLoader: true })
+
 		this.props.getAllUserDataAPI(data, res => {
 			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
@@ -167,9 +168,8 @@ class UsersListing extends Component {
 					userData: Data,
 				})
 			} else {
-
 			}
-		});
+		})
 	}
 
 	/**

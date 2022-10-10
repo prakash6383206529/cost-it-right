@@ -153,6 +153,23 @@ function UserRegistration(props) {
       setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? {
         label: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentName, value: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentId
       } : '')
+
+      setValue('Reporter', registerUserData && registerUserData.ReporterName !== undefined ? {
+        label: registerUserData?.ReporterName
+        , value: registerUserData?.ReporterId
+      } : '')
+      setValue('Vendor', registerUserData && registerUserData.Departments !== undefined ? {
+        label: registerUserData?.VendorName
+        , value: registerUserData?.VendorId
+      } : '')
+      setVendor({
+        label: registerUserData?.VendorName
+        , value: registerUserData?.VendorId
+      })
+      setReporter({
+        label: registerUserData?.ReporterName
+        , value: registerUserData?.ReporterId
+      })
     }
 
   }, [registerUserData])
@@ -1147,7 +1164,7 @@ function UserRegistration(props) {
       DepartmentId: '',
       RoleId: '',
     }
-    dispatch(getAllUserDataAPI(data, res => { }))
+    // dispatch(getAllUserDataAPI(data, res => { }))
     props.hideForm()
   }
 
@@ -1161,14 +1178,27 @@ function UserRegistration(props) {
     updatedData.IsRemoveCosting = RemoveCostingFlag;
     //set state here true
     setIsLoader(true)
-    dispatch(updateUserAPI(updatedData, (res) => {
-      if (res && res.data && res.data.Result) {
-        //set state false
-        setIsLoader(false)
-        Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
-      }
-      cancel();
-    }))
+
+
+    if (props?.RFQUser || isRfqUser) {
+
+      dispatch(updateRfqUser(updatedData, (res) => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+        }
+        cancel();
+      }))
+    }
+    else {
+
+      dispatch(updateUserAPI(updatedData, (res) => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+        }
+        cancel();
+      }))
+    }
+
 
   }
 
@@ -1331,6 +1361,7 @@ function UserRegistration(props) {
 
       } else {
 
+
         if (props?.RFQUser || isRfqUser) {
           reset();
           dispatch(updateRfqUser(updatedData, (res) => {
@@ -1455,7 +1486,7 @@ function UserRegistration(props) {
                     title={'Personal Details:'}
                     customClass={'Personal-Details'} />
 
-                  <div className={`row form-group ${props?.RFQUser ? 'rfq-portal-container': ''}`}>
+                  <div className={`row form-group ${props?.RFQUser ? 'rfq-portal-container' : ''}`}>
                     <div className="input-group col-md-3 input-withouticon" >
                       <TextFieldHookForm
                         label="First Name"
@@ -1528,7 +1559,7 @@ function UserRegistration(props) {
                         <div className="Phone phoneNumber col-md-8">
                           <NumberFieldHookForm
                             label="Phone Number"
-                            name={"PhoneNumber"} 
+                            name={"PhoneNumber"}
                             errors={errors.PhoneNumber}
                             Controller={Controller}
                             control={control}
@@ -1570,68 +1601,69 @@ function UserRegistration(props) {
                           />
                         </div>
                       </div>
-                    </div> 
+                    </div>
                       :
-                    <>
-                     <Row className="mx-0 w-100 mt-5">
-                      <Col md="12">
-                        <HeaderTitle
-                        title={'Additional Details:'}
-                        customClass={'Personal-Details'} />
-                      </Col>
-                      <Col md="3">
-                          <div className="Phone phoneNumber">
-                            <SearchableSelectHookForm
-                              name="Vendor"
-                              type="text"
-                              label="Vendor"
-                              errors={errors.Vendor}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              mandatory={true}
-                              rules={{
-                                required: true,
-                              }}
-                              //component={searchableSelect}
-                              placeholder={'Select Vendor'}
-                              options={searchableSelectType('vendor')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(role == null || role.length === 0) ? [required] : []}
-                              required={true}
-                              handleChange={vendorHandler}
-                            //valueDescription={role}
-                            />
-                          </div>
-                        </Col>
-                        <Col md="3">
-                          <div className="phoneNumber pl-0">
-                            <SearchableSelectHookForm
-                              name="Reporter"
-                              type="text"
-                              label={`Reporter`}
+                      <>
+                        <Row className="mx-0 w-100 mt-5">
+                          <Col md="12">
+                            <HeaderTitle
+                              title={'Additional Details:'}
+                              customClass={'Personal-Details'} />
+                          </Col>
+                          <Col md="3">
+                            <div className="Phone phoneNumber">
+                              <SearchableSelectHookForm
+                                name="Vendor"
+                                type="text"
+                                label="Vendor"
+                                errors={errors.Vendor}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
+                                disabled={isEditFlag ? true : false}
+                                //component={searchableSelect}
+                                placeholder={'Select Vendor'}
+                                options={searchableSelectType('vendor')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={(role == null || role.length === 0) ? [required] : []}
+                                required={true}
+                                handleChange={vendorHandler}
+                              //valueDescription={role}
+                              />
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="phoneNumber pl-0">
+                              <SearchableSelectHookForm
+                                name="Reporter"
+                                type="text"
+                                label={`Reporter`}
 
-                              errors={errors.Reporter}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              mandatory={true}
-                              rules={{
-                                required: true,
-                              }}
+                                errors={errors.Reporter}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
 
-                              component={searchableSelect}
-                              placeholder={'Select Reporter'}
-                              options={searchableSelectType('reporter')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(department == null || department.length === 0) ? [required] : []}
-                              required={true}
-                              handleChange={handleReporterChange}
-                            //valueDescription={department}
-                            />
-                          </div>
-                       </Col>
-                      </Row>
+                                component={searchableSelect}
+                                placeholder={'Select Reporter'}
+                                options={searchableSelectType('reporter')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(department == null || department.length === 0) ? [required] : []}
+                                required={true}
+                                handleChange={handleReporterChange}
+                              //valueDescription={department}
+                              />
+                            </div>
+                          </Col>
+                        </Row>
                       </>
                     }
                   </div>
@@ -1987,6 +2019,7 @@ function UserRegistration(props) {
                               moduleData={moduleDataHandler}
                               isNewRole={false}
                               updatedData={Modules}
+                              refVariable={false}
                             />
 
                           </div>)}
