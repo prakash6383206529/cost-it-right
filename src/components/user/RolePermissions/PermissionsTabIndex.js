@@ -55,7 +55,10 @@ class PermissionsTabIndex extends Component {
                 }
             }, 500)
         })
-        //this.props.onRef(this);
+
+        if (this.props.refVariable) {
+            this.props.onRef(this);
+        }
     }
 
 
