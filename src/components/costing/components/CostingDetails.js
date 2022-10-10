@@ -392,7 +392,6 @@ function CostingDetails(props) {
       dispatch(getExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
-          console.log('Data: ', Data);
           let vbcArray = []
           let nccArray = []
           let zbvArray = []
@@ -407,7 +406,6 @@ function CostingDetails(props) {
             } else if (item.CostingTypeId === CBCTypeId) {
               cbcArray.push(item)
             }
-            console.log('cbcArray: ', cbcArray);
 
             return null
           })
@@ -630,7 +628,6 @@ function CostingDetails(props) {
    * @description HIDE VENDOR DRAWER
    */
   const closeClientDrawer = (e = '', clientData = {}) => {
-    console.log('clientData: ', clientData);
     if (Object.keys(clientData).length > 0) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = cbcGrid.findIndex(el => (el.CustomerId === clientData.CustomerId && el.DestinationPlantId === clientData.DestinationPlantId))
@@ -866,12 +863,7 @@ function CostingDetails(props) {
       } else if (type === CBCTypeId) {
         tempData = cbcGrid[index]
       }
-      console.log('tempData: ', tempData);
-
-      console.log('CBCTypeIdgggbb: ', CBCTypeId);
-      console.log('type: ', type);
       const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
-      console.log('userDetailsCosting: ', userDetailsCosting.Plants[0].PlantName);
       const data = {
         PartId: part.value,
         PartTypeId: partInfo.PartTypeId,

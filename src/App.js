@@ -24,13 +24,11 @@ class App extends Component {
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {
           let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[0]
-          // console.log('shortFormList: ', shortFormList);
           return shortFormList
         })
         let objFull = {}
         costingHeadsListArray && costingHeadsListArray.map(item => {
           let fullFormList = objFull[item.split("=")[1]] = item.match(/\d+/g)[0]
-          // console.log('fullFormList: ', fullFormList);
           return fullFormList
         })
         reactLocalStorage.setObject('CostingHeadsListShortForm', objShort)

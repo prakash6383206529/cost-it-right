@@ -351,7 +351,6 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    console.log('tempData: ', tempData);
     const type = viewCostingData[index]?.costingHead
 
     const Data = {
