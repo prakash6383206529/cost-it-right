@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType, getReporterList } from '../.././actions/Common';
-import { getCostingSpecificTechnology, getPartSelectListByTechnology, getVBCDetailByVendorId, } from '../costing/actions/Costing'
+import { getVendorWithVendorCodeSelectList, getPlantSelectListByType, getReporterList } from '../.././actions/Common';
+import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { EMPTY_GUID_0, ZBC, EMPTY_DATA, FILE_URL } from '../.././config/constants';
+import { ZBC, EMPTY_DATA, FILE_URL } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -28,6 +28,8 @@ function AddRfq(props) {
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm();
 
     const [vendor, setVendor] = useState([]);
+    const [isEditFlag, setIsEditFlag] = useState(false);
+    const [isViewFlag, setIsViewFlag] = useState(false);
     const [data, setData] = useState({});
     const [selectedVendors, setSelectedVendors] = useState([]);
     const [DestinationPlant, setDestinationPlant] = useState([]);
@@ -41,10 +43,10 @@ function AddRfq(props) {
     const [partList, setPartList] = useState([])
     const [vendorList, setVendorList] = useState([])
     const [updateButton, setUpdateButton] = useState(false)
-    const [updateButtonSecond, setUpdateButtonSecond] = useState(false)
+    const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
-    const [selectedRowFirst, setSelectedRowFirst] = useState({})
-    const [selectedRowSecond, setSelectedSecond] = useState({})
+    const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
+    const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [disableCondition, setDisableCondition] = useState(true)
     const [files, setFiles] = useState([])
@@ -83,9 +85,13 @@ function AddRfq(props) {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
         if (props?.data?.isEditFlag) {
+            setIsEditFlag(true)
+            setIsViewFlag(props?.data?.isViewFlag)
+            dispatch(getQuotationById(props?.data?.Id, (res) => {
 
+            })
+            )
         }
-
     }, [])
 
 
@@ -135,22 +141,22 @@ function AddRfq(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            // dispatch(fileUploadCosting(data, (res) => {
-            //     // setDisableFalseFunction()
-            //     if ('response' in res) {
-            //         status = res && res?.response?.status
-            //         dropzone.current.files.pop()
-            //     }
-            //     else {
-            //         let Data = res.data[0]
-            //         files.push(Data)
-            //         setFiles(files)
-            //         setAttachmentLoader(false)
-            //         setTimeout(() => {
-            //             setIsOpen(!IsOpen)
-            //         }, 500);
-            //     }
-            // }))
+            dispatch(fileUploadQuotation(data, (res) => {
+                // setDisableFalseFunction()
+                if ('response' in res) {
+                    status = res && res?.response?.status
+                    dropzone.current.files.pop()
+                }
+                else {
+                    let Data = res.data[0]
+                    files.push(Data)
+                    setFiles(files)
+                    setAttachmentLoader(false)
+                    setTimeout(() => {
+                        setIsOpen(!IsOpen)
+                    }, 500);
+                }
+            }))
         }
 
         if (status === 'rejected_file_type') {
@@ -191,7 +197,7 @@ function AddRfq(props) {
         setPartList(arr)
     }
 
-    const deleteItemSecond = (gridData, props) => {
+    const deleteItemVendorTable = (gridData, props) => {
 
         let arr = []
         gridData && gridData.map((item) => {
@@ -203,11 +209,11 @@ function AddRfq(props) {
         setVendorList(arr)
     }
 
-    const editItemSecond = (gridData, props) => {
+    const editItemVendorTable = (gridData, props) => {
 
-        setSelectedSecond(props.node.data)
+        setSelectedVendorTable(props.node.data)
 
-        setUpdateButtonSecond(true)
+        setUpdateButtonVendorTable(true)
         setValue('vendor', { label: props?.node?.data?.Vendor, value: props?.node?.data?.VendorId })
         setValue('contactPerson', {
             label: props?.node?.data?.ContactPerson
@@ -215,18 +221,16 @@ function AddRfq(props) {
 
         })
 
-
     }
 
     const editItem = (gridData, props) => {
 
-        setSelectedRowFirst(props.node.data)
+        setSelectedRowPartNoTable(props.node.data)
         setUpdateButton(true)
         setValue('partNumber', { label: props?.node?.data?.PartNo, value: props?.node?.data?.PartId })
         setValue('annualForecastQuantity', props?.node?.data?.Quantity)
         setValue('technology', props?.node?.data?.technology)
     }
-
 
 
     /**
@@ -237,7 +241,7 @@ function AddRfq(props) {
 
         const temp = [];
 
-        if (label === 'Vendor') {
+        if (label === 'vendor') {
             vendorSelectList && vendorSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
@@ -246,7 +250,7 @@ function AddRfq(props) {
             return temp;
         }
 
-        if (label === 'DestinationPlant') {
+        if (label === 'destinationPlant') {
             plantSelectList && plantSelectList.map((item) => {
                 if (item.PlantId === '0') return false
                 temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
@@ -311,13 +315,24 @@ function AddRfq(props) {
         obj.PartList = partList
         obj.Attachments = []
 
-        dispatch(createRfqQuotation(obj, (res) => {
-            if (res?.data?.Result) {
-                Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
-                cancel()
-            }
-        }))
+        if (isEditFlag) {
+            dispatch(updateRfqQuotation(obj, (res) => {
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    cancel()
+                }
+            }))
 
+        } else {
+
+            dispatch(createRfqQuotation(obj, (res) => {
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    cancel()
+                }
+            }))
+
+        }
     }
 
 
@@ -353,12 +368,12 @@ function AddRfq(props) {
         )
     };
 
-    const buttonFormatterSecond = (props) => {
+    const buttonFormatterVendorTable = (props) => {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemSecond(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemSecond(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -367,12 +382,12 @@ function AddRfq(props) {
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         totalValueRenderer: buttonFormatter,
-        buttonFormatter: buttonFormatterSecond
+        buttonFormatter: buttonFormatterVendorTable
 
     };
 
 
-    const addRowSecond = () => {
+    const addRowVendorTable = () => {
 
         let obj = {}
         obj.VendorId = getValues('vendor')?.value
@@ -386,15 +401,29 @@ function AddRfq(props) {
             return false;
         }
 
-        setVendorList([...vendorList, obj])
+        let arr = [...vendorList, obj]
+
+        if (updateButtonVendorTable) {
+            arr = []
+            vendorList && vendorList.map((item) => {
+                if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
+                    return false
+                } else {
+                    arr.push(item)
+                }
+            })
+            arr.push(obj)
+        }
+
+        setVendorList(arr)
         setValue('vendor', "")
         setValue('contactPerson', "")
-        setUpdateButtonSecond(false)
+        setUpdateButtonVendorTable(false)
 
     }
 
 
-    const addRowFirst = () => {
+    const addRowPartNoTable = () => {
 
         let obj = {}
         obj.PartId = getValues('partNumber').value
@@ -409,6 +438,18 @@ function AddRfq(props) {
 
         let arr = [...partList, obj]
 
+        if (updateButton) {
+            arr = []
+            partList && partList.map((item) => {
+                if (JSON.stringify(selectedRowPartNoTable) === JSON.stringify(item)) {
+                    return false
+                } else {
+                    arr.push(item)
+                }
+            })
+            arr.push(obj)
+        }
+
         setPartList(arr)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
@@ -418,7 +459,7 @@ function AddRfq(props) {
     }
 
 
-    const onCancel = () => {
+    const onResetPartNoTable = () => {
         setUpdateButton(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
@@ -426,8 +467,8 @@ function AddRfq(props) {
     }
 
 
-    const onCancelSecond = () => {
-        setUpdateButtonSecond(false)
+    const onResetVendorTable = () => {
+        setUpdateButtonVendorTable(false)
         setValue('vendor', "")
         setValue('contactPerson', "")
     }
@@ -493,11 +534,10 @@ function AddRfq(props) {
                                         mandatory={true}
                                         handleChange={handleTechnologyChange}
                                         errors={errors.Vendor}
+                                        disabled={isEditFlag}
                                         isLoading={VendorLoaderObj}
                                     />
                                 </Col>
-
-
 
                                 <Col md="12">
                                     <SearchableSelectHookForm
@@ -514,11 +554,10 @@ function AddRfq(props) {
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
                                         errors={errors.partNo}
-                                        disabled={partNoDisable}
+                                        disabled={partNoDisable || isEditFlag}
                                         isLoading={plantLoaderObj}
                                     />
                                 </Col>
-
 
                                 <div className="input-group col-md-3 input-withouticon">
                                     <NumberFieldHookForm
@@ -538,6 +577,7 @@ function AddRfq(props) {
                                             }
                                         }}
                                         handleChange={() => { }}
+                                        disabled={isEditFlag}
                                         placeholder={'Enter'}
                                         customClassName={'withBorder'}
                                     />
@@ -547,18 +587,18 @@ function AddRfq(props) {
                             <button
                                 type="button"
                                 className={'user-btn mt30 pull-left ml-3'}
-                                onClick={() => addRowFirst()}
-                                disabled={false}
+                                onClick={() => addRowPartNoTable()}
+                                disabled={isEditFlag}
                             >
                                 <div className={'plus'}></div>{!updateButton ? "ADD" : "UPDATE"}
                             </button>
 
                             <button
-                                onClick={onCancel} // Need to change this cancel functionality
+                                onClick={onResetPartNoTable} // Need to change this cancel functionality
                                 type="submit"
                                 value="CANCEL"
                                 className="reset ml-10 cancel-btn mt-4 ml-2"
-                                disabled={false}
+                                disabled={isEditFlag}
                             >
                                 <div className={''}></div>
                                 RESET
@@ -614,12 +654,13 @@ function AddRfq(props) {
                                         rules={{ required: false }}
                                         register={register}
                                         defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("Vendor")}
+                                        options={renderListing("vendor")}
                                         mandatory={true}
                                         // handleChange={handleVendorChange}
                                         handleChange={() => { }}
                                         errors={errors.Vendor}
                                         isLoading={VendorLoaderObj}
+                                        disabled={isViewFlag}
                                     />
                                 </Col>
 
@@ -639,7 +680,7 @@ function AddRfq(props) {
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
                                         errors={errors.DestinationPlant}
-                                        disabled={false}
+                                        disabled={isViewFlag}
                                         isLoading={plantLoaderObj}
                                     />
                                 </Col>
@@ -648,18 +689,18 @@ function AddRfq(props) {
                             <button
                                 type="button"
                                 className={'user-btn mt30 pull-left ml-3'}
-                                onClick={() => addRowSecond()}
-                                disabled={false}
+                                onClick={() => addRowVendorTable()}
+                                disabled={isViewFlag}
                             >
-                                <div className={'plus'}></div>{!updateButtonSecond ? "ADD" : "UPDATE"}
+                                <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                             </button>
 
                             <button
-                                onClick={onCancelSecond} // Need to change this cancel functionality
+                                onClick={onResetVendorTable} // Need to change this cancel functionality
                                 type="submit"
                                 value="CANCEL"
                                 className="reset ml-10 cancel-btn mt-4 ml-2"
-                                disabled={false}
+                                disabled={isViewFlag}
                             >
                                 <div className={''}></div>
                                 RESET
@@ -710,12 +751,13 @@ function AddRfq(props) {
                                         rules={{ required: true }}
                                         register={register}
                                         // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("DestinationPlant")}
+                                        options={renderListing("destinationPlant")}
                                         mandatory={true}
                                         // handleChange={handleVendorChange}
                                         handleChange={() => { }}
                                         errors={errors.plant}
                                         isLoading={VendorLoaderObj}
+                                        disabled={isEditFlag}
                                     />
                                 </Col>
                                 <Col md="12">
@@ -733,7 +775,7 @@ function AddRfq(props) {
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
                                         errors={errors.remark}
-                                        disabled={false}
+                                        disabled={isEditFlag}
                                     // isLoading={plantLoaderObj}
                                     />
                                 </Col>
@@ -779,7 +821,7 @@ function AddRfq(props) {
                                                 extra.reject ? { color: "red" } : {},
                                         }}
                                         classNames="draper-drop"
-                                        disabled={false}
+                                        disabled={isEditFlag}
                                     />
                                 </div>
                             </Col>
@@ -822,7 +864,8 @@ function AddRfq(props) {
                                         {"Cancel"}
                                     </button>
 
-                                    <button type="submit" className="submit-button save-btn">
+                                    <button type="submit" className="submit-button save-btn"
+                                        disabled={isViewFlag}>
                                         <div class="plus"></div>
                                         {"Send"}
                                     </button>

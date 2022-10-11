@@ -3,7 +3,8 @@ import axios from 'axios';
 import {
     API,
     API_FAILURE,
-    GET_RM_DOMESTIC_LIST,
+    GET_QUOTATION_BY_ID,
+    GET_QUOTATION_LIST,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -21,7 +22,7 @@ export function getQuotationList(callback) {
             if (response.data.Result || response.status === 204) {
 
                 dispatch({
-                    type: GET_RM_DOMESTIC_LIST,
+                    type: GET_QUOTATION_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
                 })
 
@@ -35,8 +36,6 @@ export function getQuotationList(callback) {
         });
     };
 }
-
-
 
 
 export function createRfqQuotation(data, callback) {
@@ -53,6 +52,91 @@ export function createRfqQuotation(data, callback) {
             callback(error)
         });
     };
+}
+
+export function cancelRfqQuotation(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.cancelRfqQuotation, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function updateRfqQuotation(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.updateRfqQuotation, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
 
 
+export function getQuotationById(Id, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getQuotationById}?quotationId=${Id}`, config())
+            .then((response) => {
+                dispatch({
+                    type: GET_QUOTATION_BY_ID,
+                    payload: response.data.Data,
+                });
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+
+/**
+ * @method fileUploadQuotation
+ * @description File Upload Quotation
+ */
+export function fileUploadQuotation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.fileUploadQuotation, data, config())
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+
+
+
+export function sendReminderForQuotation(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.sendReminderForQuotation, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
 }
