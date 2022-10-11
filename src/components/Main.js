@@ -55,6 +55,7 @@ import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 import SimulationInsights from './report/components/SimulationInsights'
 import SimulationRoutes from './simulation/Routes'
 import CommonApproval from './masters/material-master/CommonApproval'
+import RfqListing from './rfq/RfqListing'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -345,6 +346,8 @@ class Main extends Component {
 
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
+                    <Route path="/rfq-listing" component={RfqListing} />
+
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}
