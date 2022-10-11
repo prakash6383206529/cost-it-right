@@ -400,8 +400,8 @@ function SimulationApprovalSummary(props) {
                 item.BoughtOutPartName = 'Multiple BOP'
                 item.BoughtOutPartNumber = 'Multiple BOP'
             } if (item?.IsMultipleMachine === true) {
-                item.MachineName = 'Multiple Machine'
-                item.MachineNumber = 'Multiple Machine'
+                item.MachineName = 'Multiple Process'
+                item.MachineNumber = 'Multiple Process'
             }
             return item
         })
