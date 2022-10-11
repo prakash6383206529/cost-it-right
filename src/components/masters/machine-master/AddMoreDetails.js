@@ -214,6 +214,7 @@ class AddMoreDetails extends Component {
         setTimeout(() => {
           if (fieldsObj?.EffectiveDate) {
             this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
+            this.setState({ isDateChange: false })
           }
           if (Object.keys(machineType)?.length === 0) {
           } else {
@@ -2476,7 +2477,7 @@ class AddMoreDetails extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={(disableMachineType || this.state.isViewFlag)}
+                                disabled={(disableMachineType || this.state.isViewFlag || this.state.labourType.length !== 0)}
                               />
                             </div>
                           </div>
