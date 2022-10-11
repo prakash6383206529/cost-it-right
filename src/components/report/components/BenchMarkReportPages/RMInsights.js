@@ -594,8 +594,7 @@ function Insights(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-
-        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
+        params.api.sizeColumnsToFit()
 
     };
 
@@ -729,8 +728,8 @@ function Insights(props) {
                     {showListing && <>
                         <Row>
                             <Col md="12">
-                                <div className={`ag - grid - react`}>
-                                    <div className={`ag - grid - wrapper rminsights_table  ${rowData && rowData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-react`}>
+                                    <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-theme-material">
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
