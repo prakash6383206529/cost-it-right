@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -335,7 +335,9 @@ const CostingSummaryTable = (props) => {
       destinationPlantCode: viewCostingData[index]?.destinationPlantCode,
       destinationPlantName: viewCostingData[index]?.destinationPlantName,
       destinationPlantId: viewCostingData[index]?.destinationPlantId,
-      costingTypeId: viewCostingData[index]?.costingTypeId
+      costingTypeId: viewCostingData[index]?.costingTypeId,
+      customerName: viewCostingData[index]?.customerName,
+      customerId: viewCostingData[index]?.customerId
     }
 
     setIsEditFlag(true)
@@ -616,6 +618,8 @@ const CostingSummaryTable = (props) => {
           obj.destinationPlantName = viewCostingData[index]?.destinationPlantName
           obj.destinationPlantId = viewCostingData[index]?.destinationPlantId
           obj.costingTypeId = viewCostingData[index]?.costingTypeId
+          obj.customerName = viewCostingData[index]?.customerName
+          obj.customerId = viewCostingData[index]?.customerId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -974,7 +978,7 @@ const CostingSummaryTable = (props) => {
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             // const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
-                            const title = data.CostingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.CostingTypeId === VBCTypeId ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.CustomerName
+                            const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.costingTypeId === VBCTypeId ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
@@ -1003,8 +1007,9 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
+                                    {console.log('data: ', data)}
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingHeadCheck === ZBC ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck) ? data.costingHeadCheck : data.costingHead}</span></span> : data.costingHeadCheck === VBC ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck) ? data.costingHeadCheck : data.costingHead}</span></span> : data.costingHeadCheck === NCC ? <span>{data?.vendorName}<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck) ? data.costingHeadCheck : data.costingHead}</span></span> : 'CBC'}</span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingTypeId === ZBCTypeId ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === VBCTypeId ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck) ? data.costingHeadCheck : data.costingHead}</span></span> : data.costingTypeId === NCCTypeId ? <span>{data?.vendorName}<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === CBCTypeId ? <span>{data.customerName}<span className='sub-heading'>{(data.costingHeadCheck)}</span></span> : ''}</span>
                                     }
                                   </div>
                                   <div className="action  text-right">
