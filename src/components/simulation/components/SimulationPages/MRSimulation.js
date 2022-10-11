@@ -83,7 +83,7 @@ function MRSimulation(props) {
         }
     }, [list])
 
-    const oldCPFormatter = (props) => {
+    const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -91,8 +91,8 @@ function MRSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        Number(row.OldMachineRate) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -151,6 +151,10 @@ function MRSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewMachineRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -226,7 +230,7 @@ function MRSimulation(props) {
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
         newRateFormatter: newRateFormatter,
-        oldCPFormatter: oldCPFormatter,
+        oldRateFormatter: oldRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter
@@ -372,8 +376,11 @@ function MRSimulation(props) {
                                             // frameworkComponents={frameworkComponents}
                                             >
                                                 <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>}
                                                 {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
+                                                <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
+                                                <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
@@ -382,8 +389,8 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="MachineRate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewMachineRate" headerName="New" colId='NewMachineRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Old" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="New" colId='NewMachineRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

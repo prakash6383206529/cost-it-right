@@ -1887,14 +1887,17 @@ export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "Technologies", value: "Technologies" },
     { label: "VendorName", value: "VendorName" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "Plants", value: "Plants" },
+    { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
     { label: "MachineTonnage", value: "MachineTonnage" },
     { label: "ProcessName", value: "ProcessName" },
     { label: "MachineRate", value: "MachineRate" },
     { label: "NewMachineRate", value: "NewMachineRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "MachineId", value: "MachineId" },
+    { label: "MachineProcessRateId", value: "MachineProcessRateId" }
 ]
 
 export const BOPDomesticSimulation = [
@@ -3617,7 +3620,7 @@ export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumb
 
 export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'Plants', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
-export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'DestinationPlant', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate']
+export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'Plants', 'MachineName', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate', 'MachineId', 'MachineProcessRateId']
 
 
 export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost', 'NewCC', 'RemainingTotal', 'TotalCost', 'EffectiveDate', 'CostingId']
