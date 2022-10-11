@@ -6,7 +6,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, PROCESS, EMPTY_GUID,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
@@ -732,23 +732,23 @@ export function formViewData(costingSummary, header = '') {
 
   //USED FOR DOWNLOAD PURPOSE
 
-  obj.overHeadApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-'
-  obj.overHeadApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails?.NetOverheadCost : '-'
-  obj.ProfitApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-'
-  obj.ProfitApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI.CostingPartDetails?.NetProfitCost : '-'
-  obj.rejectionApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-'
-  obj.rejectionApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
-  obj.iccApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
-  obj.iccApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-  obj.paymentApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
-  obj.paymentcApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
-  obj.toolMaintenanceCostApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
-  obj.toolMaintenanceCostApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
-  obj.otherDiscountType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
-  obj.otherDiscountApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0
-  obj.otherDiscountValuePercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0
-  obj.otherDiscountCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
-  obj.currencyTitle = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency : '-'
+  obj.overHeadApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-'
+  obj.overHeadApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
+  obj.ProfitApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-'
+  obj.ProfitApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProfitCost !== null ? dataFromAPI.CostingPartDetails.NetProfitCost : '-'
+  obj.rejectionApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability : '-'
+  obj.rejectionApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionTotalCost : 0
+  obj.iccApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
+  obj.iccApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
+  obj.paymentApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
+  obj.paymentcApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
+  obj.toolMaintenanceCostApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0
+  obj.toolMaintenanceCostApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0
+  obj.otherDiscountType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType : 0
+  obj.otherDiscountApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountApplicability : 0
+  obj.otherDiscountValuePercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage : 0
+  obj.otherDiscountCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue : 0
+  obj.currencyTitle = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.Currency !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.Currency : '-'
   obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
   obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
   obj.PoPriceWithDate = `${obj?.poPrice}(${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
@@ -759,7 +759,9 @@ export function formViewData(costingSummary, header = '') {
   obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
   obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
   obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
-  obj.costingTypeId = obj?.CostingTypeId ? obj?.CostingTypeId : ''
+  obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
+  obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
+  obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
   temp.push(obj)
   return temp
 }

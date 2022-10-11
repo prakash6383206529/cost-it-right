@@ -446,8 +446,10 @@ class AddRMDomestic extends Component {
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
+        console.log('data: ', data);
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
+          console.log('Data: ', Data);
           this.setState({ DataToChange: Data })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')

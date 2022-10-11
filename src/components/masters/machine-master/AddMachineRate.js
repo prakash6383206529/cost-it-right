@@ -340,7 +340,7 @@ class AddMachineRate extends Component {
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              costingTypeId: Data.CostingTypeId,
+              costingTypeId: (Data.CostingTypeId),
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
