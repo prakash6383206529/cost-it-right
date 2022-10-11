@@ -5,6 +5,7 @@ import ERSimulation from './SimulationPages/ERSimulation';
 import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
+import MRSimulation from './SimulationPages/MRSimulation';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
@@ -14,12 +15,14 @@ export function Impactedmasterdata(props) {
         let operationListing = false
         let exchangeRateListing = false
         let bopListing = false
+        let machineListing = false
 
         if (data?.length !== 0) {
             rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
             operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
+            machineListing = data?.MachineImpactedMasterDataList?.length === 0 || data?.MachineImpactedMasterDataList === null ? false : true
         }
 
         return (<>
@@ -27,7 +30,7 @@ export function Impactedmasterdata(props) {
             {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
             {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
-            {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
+            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
         </>
         )
 
