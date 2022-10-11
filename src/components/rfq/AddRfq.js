@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getPlantSelectListByType, getReporterList } from '../.././actions/Common';
+import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { ZBC, EMPTY_DATA, FILE_URL } from '../.././config/constants';
+import { EMPTY_DATA, FILE_URL } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -30,27 +30,20 @@ function AddRfq(props) {
     const [vendor, setVendor] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
-    const [data, setData] = useState({});
     const [selectedVendors, setSelectedVendors] = useState([]);
-    const [DestinationPlant, setDestinationPlant] = useState([]);
-    //dropdown loader 
     const [inputLoader, setInputLoader] = useState(false)
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [agGridTable, setAgGridTable] = useState(true)
     const [tableData, setTableData] = useState([])
     const [partList, setPartList] = useState([])
     const [vendorList, setVendorList] = useState([])
-    const [updateButton, setUpdateButton] = useState(false)
+    const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
     const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
-    const [rmRowDataState, setRmRowDataState] = useState({})
-    const [disableCondition, setDisableCondition] = useState(true)
     const [files, setFiles] = useState([])
-    const [initialFiles, setInitialFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
     const [isDisable, setIsDisable] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
@@ -60,8 +53,8 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
+    const plantList = useSelector(state => state.comman.plantList)
 
     useEffect(() => {
         setVendorInputLoader(true)
@@ -69,8 +62,7 @@ function AddRfq(props) {
         dispatch(getVendorWithVendorCodeSelectList(() => {
             setVendorInputLoader(false)
         }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-
+        dispatch(fetchPlantDataAPI(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -226,7 +218,7 @@ function AddRfq(props) {
     const editItem = (gridData, props) => {
 
         setSelectedRowPartNoTable(props.node.data)
-        setUpdateButton(true)
+        setUpdateButtonPartNoTable(true)
         setValue('partNumber', { label: props?.node?.data?.PartNo, value: props?.node?.data?.PartId })
         setValue('annualForecastQuantity', props?.node?.data?.Quantity)
         setValue('technology', props?.node?.data?.technology)
@@ -250,10 +242,10 @@ function AddRfq(props) {
             return temp;
         }
 
-        if (label === 'destinationPlant') {
-            plantSelectList && plantSelectList.map((item) => {
+        if (label === 'plant') {
+            plantList && plantList.map((item) => {
                 if (item.PlantId === '0') return false
-                temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
+                temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
                 return null
             })
             return temp
@@ -438,7 +430,7 @@ function AddRfq(props) {
 
         let arr = [...partList, obj]
 
-        if (updateButton) {
+        if (updateButtonPartNoTable) {
             arr = []
             partList && partList.map((item) => {
                 if (JSON.stringify(selectedRowPartNoTable) === JSON.stringify(item)) {
@@ -454,13 +446,13 @@ function AddRfq(props) {
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
         setValue('technology', "")
-        setUpdateButton(false)
+        setUpdateButtonPartNoTable(false)
 
     }
 
 
     const onResetPartNoTable = () => {
-        setUpdateButton(false)
+        setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
         setValue('technology', "")
@@ -590,7 +582,7 @@ function AddRfq(props) {
                                 onClick={() => addRowPartNoTable()}
                                 disabled={isEditFlag}
                             >
-                                <div className={'plus'}></div>{!updateButton ? "ADD" : "UPDATE"}
+                                <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                             </button>
 
                             <button
@@ -751,7 +743,7 @@ function AddRfq(props) {
                                         rules={{ required: true }}
                                         register={register}
                                         // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("destinationPlant")}
+                                        options={renderListing("plant")}
                                         mandatory={true}
                                         // handleChange={handleVendorChange}
                                         handleChange={() => { }}

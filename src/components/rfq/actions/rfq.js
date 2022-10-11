@@ -3,15 +3,10 @@ import axios from 'axios';
 import {
     API,
     API_FAILURE,
-    GET_QUOTATION_BY_ID,
     GET_QUOTATION_LIST,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import Toaster from '../../common/Toaster';
-import { loggedInUserId, userDetails } from '../../../helper';
-import { MESSAGES } from '../../../config/message';
-
 
 
 export function getQuotationList(callback) {
@@ -54,10 +49,10 @@ export function createRfqQuotation(data, callback) {
     };
 }
 
-export function cancelRfqQuotation(data, callback) {
+export function cancelRfqQuotation(id, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.cancelRfqQuotation, data, config());
+        const request = axios.post(API.cancelRfqQuotation, id, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -87,14 +82,10 @@ export function updateRfqQuotation(data, callback) {
 }
 
 
-export function getQuotationById(Id, callback) {
+export function getQuotationById(id, callback) {
     return (dispatch) => {
-        axios.get(`${API.getQuotationById}?quotationId=${Id}`, config())
+        axios.get(`${API.getQuotationById}?quotationId=${id}`, config())
             .then((response) => {
-                dispatch({
-                    type: GET_QUOTATION_BY_ID,
-                    payload: response.data.Data,
-                });
                 callback(response)
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
