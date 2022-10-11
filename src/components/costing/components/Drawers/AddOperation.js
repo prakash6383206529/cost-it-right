@@ -53,7 +53,6 @@ function AddOperation(props) {
       CostingTypeId: costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
-    console.log('costData: ', costData);
     dispatch(getOperationDrawerDataList(data, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;

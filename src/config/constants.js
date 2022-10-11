@@ -3,7 +3,6 @@
  */
 
 import { reactLocalStorage } from "reactjs-localstorage";
-
 export const config = () => {
 
   let headers = {
@@ -926,15 +925,16 @@ export const API = {
   draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment-and-operation`,
   getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-and-operation-impacted-simulation-costings`,
   runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-selected-surface-treatment-and-operation-costing`,
-  draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-rate`,
-  runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-rate-costing`,
+  draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-process`,
+  runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-selected-machine-process-costing`,
   draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
   runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-selected-bought-out-part-costing`,
 
-  getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-rate-impacted-simulation-costings`,
+  getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-process-impacted-simulation-costings`,
   getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-bought-out-part-impacted-simulation-costings`,
   getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
   getCostingBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-simulated-bought-out-part-costings`,
+  getMachineRateCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-machine-process-costings`,
 
   getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data-by-costingId`,
   getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,
@@ -1562,7 +1562,6 @@ export const SET_TOKEN_CHECK_BOX = 'SET_TOKEN_CHECK_BOX'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
-export const GET_VERIFY_MACHINERATE_SIMULATION_LIST = 'GET_VERIFY_MACHINERATE_SIMULATION_LIST'
 export const GET_ASSEMBLY_SIMULATION_LIST = 'GET_ASSEMBLY_SIMULATION_LIST'
 export const GET_ASSEMBLY_SIMULATION_LIST_SUMMARY = 'GET_ASSEMBLY_SIMULATION_LIST_SUMMARY'
 export const SET_DATA_TEMP = 'SET_DATA_TEMP'
@@ -1995,14 +1994,14 @@ export const statusOptions = [
 
 ]
 //CONSTANTS FOR COSTING HEAD
-export const ZBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC]
-export const VBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC]
-export const CBCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC]
-export const NCCTypeId = reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC]
-export const ZBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC]
-export const VBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC]
-export const CBCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC]
-export const NCCTypeIdFull = reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC]
+export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
+export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
+export const CBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC])
+export const NCCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
+export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC])
+export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
+export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
+export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
@@ -2010,4 +2009,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.572";
+export const VERSION = "V1.2.574";

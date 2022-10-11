@@ -251,7 +251,7 @@ class AddBOPImport extends Component {
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : {},
               selectedPlants: plantObj,
@@ -711,13 +711,10 @@ class AddBOPImport extends Component {
     let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
 
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
-      console.log('selectedPlants.length: ', selectedPlants.length);
-      console.log('1');
       return false;
     }
     let cbcPlantArray = []
     if (costingTypeId === CBCTypeId) {
-      console.log('2');
       userDetails?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
@@ -803,7 +800,6 @@ class AddBOPImport extends Component {
       }
 
     } else {
-      console.log('else');
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ IsSendForApproval: true })
       } else {
@@ -830,8 +826,8 @@ class AddBOPImport extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
+        Plant: [plantArray],
+        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetails.Plants[0].PlantId,
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
         VendorPlant: [],

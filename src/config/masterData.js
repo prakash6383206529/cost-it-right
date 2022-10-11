@@ -3387,6 +3387,65 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Variance", value: "Variance" },
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 ]
+
+export const CostingSimulationDownloadMR = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldMachineRate", value: "OldMachineRate" },
+    { label: "NewMachineRate", value: "NewMachineRate" },
+    { label: "MRVariance", value: "MRVariance" },
+    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
+    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
+    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const MRGridForToken = [
+    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
+    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
+    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+]
+
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]

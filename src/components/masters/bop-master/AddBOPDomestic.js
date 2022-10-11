@@ -221,7 +221,7 @@ class AddBOPDomestic extends Component {
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
-              costingTypeId: String(Data.CostingTypeId),
+              costingTypeId: Data.CostingTypeId,
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
@@ -612,7 +612,6 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
       sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
@@ -738,9 +737,9 @@ class AddBOPDomestic extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        Plant: [plantArray],
         VendorPlant: [],
-        DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
+        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetails.Plants[0].PlantId,
         Attachements: files,
         CustomerId: client.value
       }

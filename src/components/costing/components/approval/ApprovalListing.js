@@ -674,7 +674,7 @@ function ApprovalListing(props) {
       costingObj.destinationPlantId = item.DestinationPlantId
       costingObj.technologyId = item?.TechnologyId
       costingObj.CostingHead = item?.CostingHead
-
+      costingObj.costingTypeId = item.CostingTypeId
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
