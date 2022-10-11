@@ -3484,6 +3484,39 @@ export const MRGridForToken = [
     { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
 ]
 
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
+
+    { label: "Machine Name", value: "MachineName" },
+    { label: "Machine Number", value: "MachineNumber" },
+    { label: "Old Machine Cost", value: "OldNetMachineCost" },
+    { label: "New Machine Cost", value: "NewNetMachineCost" },
+    { label: "Machine Variance", value: "NetMachineCostVariance" },
+
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
+]
+
+export const MRGridForTokenSummary = [
+    { label: "Machine Name", value: "MachineName" },
+    { label: "Machine Number", value: "MachineNumber" },
+    { label: "Old Net Machine Cost", value: "OldNetMachineCost" },
+    { label: "New Net Machine Cost", value: "NewNetMachineCost" },
+    { label: "Machine Variance", value: "NetMachineCostVariance" },
+]
+
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
