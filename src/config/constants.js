@@ -1963,7 +1963,6 @@ export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptions = [
-
   { label: "Draft", value: "1" },
   { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
@@ -1982,7 +1981,6 @@ export const statusOptions = [
   { label: "ApprovedByASMSimulation", value: "16" },
   { label: "Linked", value: "17" },
   { label: "RejectedBySystem", value: "18" },
-
 ]
 
 // KEY AND IV
