@@ -19,7 +19,7 @@ function PaymentTerms(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     const dispatch = useDispatch()
-
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
@@ -83,7 +83,7 @@ function PaymentTerms(props) {
                 vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 isVendor: costData.IsVendor,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
-                effectiveDate: costData?.EffectiveDate ? (DayTime(costData?.EffectiveDate).format('DD/MM/YYYY')) : ''
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
