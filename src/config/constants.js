@@ -965,7 +965,11 @@ export const API = {
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
-
+  updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
+  getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
+  cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
+  fileUploadQuotation: `${BASE_URL}/rfq-quotation/quotation-file-upload`,
+  sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`
 }
 
 //Api constants
@@ -1586,6 +1590,9 @@ export const GET_REPORT_LIST = 'GET_REPORT_LIST'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
 export const GET_BENCHMARK_RM_LIST = 'GET_BENCHMARK_RM_LIST'
 
+//RFQ CONSTANTS
+export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
+export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
