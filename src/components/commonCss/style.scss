@@ -1602,7 +1602,7 @@ body {
     height: 25px;
     display: inline-block;
     background-color: #256BD1;
-    font-family: $FontAwesome  !important;
+    font-family: $FontAwesome !important;
     color: #fff !important;
     border-radius: 3px;
     text-align: center;
@@ -2176,7 +2176,7 @@ html {
       content: 'Net Cost Range (INR)';
       position: absolute;
       left: -7px;
-      font-family: $roboto  !important;
+      font-family: $roboto !important;
       font-size: 10px;
       top: -30px;
       color: #A4ABC5;
@@ -2184,7 +2184,7 @@ html {
   }
 
   position: relative;
-  font-family: $roboto  !important;
+  font-family: $roboto !important;
 
   .input-range__slider-container {
     right: 0;
@@ -3442,16 +3442,19 @@ body {
         }
       }
     }
+
     .cr-brdr-main {
       input {
         height: 30px;
         width: 40%;
         margin: 2px 0;
       }
+
       .text-error-title .text-help {
         margin-top: -3px;
       }
     }
+
     .date-section {
       min-height: 80px;
     }
@@ -4347,6 +4350,7 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 400;
+  align-items: flex-start !important;
 
   &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
@@ -4373,7 +4377,7 @@ body {
 .warning-row {
   img {
     width: 12px;
-    height: auto;
+    height: 21px;
     object-fit: contain;
   }
 }
@@ -8854,15 +8858,18 @@ table.group-process-table {
   position: absolute;
   z-index: 12;
   cursor: not-allowed;
+
   &.min-width {
     width: 97%;
   }
 }
+
 .selection-wrapper {
   font-size: 14px;
   margin-top: 5px;
   margin-bottom: -10px;
   color: #3d4465;
+
   span {
     font-weight: 600;
   }
