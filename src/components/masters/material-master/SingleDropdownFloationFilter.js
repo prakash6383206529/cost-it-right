@@ -62,18 +62,20 @@ function SingleDropdownFloationFilter(props) {
 
 
     const valueChanged = (event) => {
-        setShowInputData(event)
-        setSelectedPlants(event)
+
+        let arr = [event]
+        setShowInputData(arr)
+        setSelectedPlants(arr)
         let plants = ""
-        event && event.map((item, index) => {
+        arr && arr.map((item, index) => {
             if (index > 0) {
                 plants = plants + "," + item.label
             } else {
                 plants = item.label
             }
         })
-        dispatch(agGridStatus(plants, props?.maxValue, event))
-        setCurrentValue(event?.target?.value)
+        dispatch(agGridStatus(plants, props?.maxValue, arr))
+        setCurrentValue(arr?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
 
     }
@@ -121,7 +123,7 @@ function SingleDropdownFloationFilter(props) {
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
-                    isMulti={true}
+                    isMulti={false}
                     mandatory={true}
                     dropDownClass={true}
                     handleChange={(e) => {
