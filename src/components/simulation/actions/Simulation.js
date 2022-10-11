@@ -595,7 +595,8 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
-            BoughtOutPartImpactedMasterDataList: []
+            BoughtOutPartImpactedMasterDataList: [],
+            MachineProcessImpactedMasterDataList: []
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
@@ -623,7 +624,8 @@ export function getImpactedMasterData(simulationId, callback) {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
-            BoughtOutPartImpactedMasterDataList: []
+            BoughtOutPartImpactedMasterDataList: [],
+            MachineProcessImpactedMasterDataList: []
         }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, config());

@@ -23,7 +23,7 @@ export function Impactedmasterdata(props) {
             operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
-            machineListing = data?.MachineImpactedMasterDataList?.length === 0 || data?.MachineImpactedMasterDataList === null ? false : true
+            machineListing = data?.MachineProcessImpactedMasterDataList?.length === 0 || data?.MachineProcessImpactedMasterDataList === null ? false : true
         }
 
         return (<>
@@ -31,7 +31,7 @@ export function Impactedmasterdata(props) {
             {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
             {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
-            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
+            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
         </>
         )
 
