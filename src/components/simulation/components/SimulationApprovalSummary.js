@@ -9,14 +9,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, MACHINERATE, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -102,6 +102,7 @@ function SimulationApprovalSummary(props) {
     const isRMDomesticOrRMImport = ((Number(SimulationTechnologyId) === Number(RMDOMESTIC)) || (Number(SimulationTechnologyId) === Number(RMIMPORT)));
     const isBOPDomesticOrImport = ((Number(SimulationTechnologyId) === Number(BOPDOMESTIC)) || (Number(SimulationTechnologyId) === Number(BOPIMPORT)))
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
+    const isMachineRate = String(SimulationTechnologyId) === MACHINERATE;
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
@@ -398,6 +399,9 @@ function SimulationApprovalSummary(props) {
             } if (item.IsMultipleBOP === true) {
                 item.BoughtOutPartName = 'Multiple BOP'
                 item.BoughtOutPartNumber = 'Multiple BOP'
+            } if (item?.IsMultipleMachine === true) {
+                item.MachineName = 'Multiple Process'
+                item.MachineNumber = 'Multiple Process'
             }
             return item
         })
@@ -418,6 +422,10 @@ function SimulationApprovalSummary(props) {
             }
             if (showSurfaceTreatmentColumn || isSurfaceTreatment) {
                 finalGrid = [...finalGrid, ...STGridForTokenSummary]
+                isTokenAPI = true
+            }
+            if (showMachineRateColumn || isMachineRate) {
+                finalGrid = [...finalGrid, ...MRGridForTokenSummary]
                 isTokenAPI = true
             }
             // if (showExchangeRateColumn || isOperation) {         
@@ -444,6 +452,8 @@ function SimulationApprovalSummary(props) {
             case BOPDOMESTIC:
             case BOPIMPORT:
                 return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, downloadGrid.length > 0 ? downloadGrid : [])
+            case MACHINERATE:
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid.length > 0 ? downloadGrid : [])
             default:
                 break;
         }
