@@ -960,6 +960,9 @@ export const API = {
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
 
+  //RFQ
+  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
+  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
