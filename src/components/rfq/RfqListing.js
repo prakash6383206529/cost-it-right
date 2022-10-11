@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
@@ -12,7 +12,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
-import WarningMessage from '.././common/WarningMessage';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
@@ -25,12 +24,7 @@ function RfqListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const rmDataList = useSelector((state) => state.material.rmDataList);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
     const [showPopup, setShowPopup] = useState(false)
-    const [deletedId, setDeletedId] = useState('')
-    const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [disableDownload, setDisableDownload] = useState(false)
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -78,8 +72,8 @@ function RfqListing(props) {
         setAddRfq(true)
     }
 
-    const cancelItem = (data) => {
-        dispatch(cancelRfqQuotation(data, (res) => {
+    const cancelItem = (id) => {
+        dispatch(cancelRfqQuotation(id, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
             }
@@ -103,12 +97,11 @@ function RfqListing(props) {
     }
 
     const onPopupConfirm = () => {
-        confirmDelete(deletedId);
+        confirmDelete();
     }
 
     const closePopUp = () => {
         setShowPopup(false)
-        setShowPopupBulk(false)
     }
     /**
     * @method buttonFormatter
@@ -175,10 +168,6 @@ function RfqListing(props) {
 
     }
 
-    const onRowSelect = (event) => {
-        var selectedRows = gridApi && gridApi?.getSelectedRows();
-
-    }
 
     const defaultColDef = {
         resizable: true,
@@ -189,24 +178,9 @@ function RfqListing(props) {
         checkboxSelection: isFirstColumn
     };
 
-    const checkBoxRenderer = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        if (selectedRowForPagination?.length > 0) {
-            selectedRowForPagination.map((item) => {
-                if (item.RawMaterialId === props.node.data.RawMaterialId) {
-                    props.node.setSelected(true)
-                }
-                return null
-            })
-            return cellValue
-        } else {
-            return cellValue
-        }
-    }
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-        checkBoxRenderer: checkBoxRenderer
 
     }
 
@@ -221,7 +195,6 @@ function RfqListing(props) {
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
@@ -252,7 +225,7 @@ function RfqListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -273,11 +246,9 @@ function RfqListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         rowSelection={'multiple'}
-                                        onRowSelected={onRowSelect}
-
                                         suppressRowClickSelection={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="QuotationId" headerName='RFQ Id' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="QuotationId" headerName='RFQ Id' ></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
                                         <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
