@@ -7,7 +7,7 @@ import { getPlantSelectListByType, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
@@ -15,19 +15,19 @@ import DayTime from '../../common/DayTimeWrapper'
 
 function AddToComparisonDrawer(props) {
   const { editObject, isEditFlag, viewMode } = props
+  console.log('editObject: ', editObject);
 
-  const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
-    vendorPlantName, vendorPlantId, destinationPlantName, destinationPlantId } = editObject
-
-
+  const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
+    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId } = editObject
 
   const defaultValue = {
-    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC',
+    comparisonValue: isEditFlag ? costingTypeId === ZBCTypeId ? 'ZBC' : costingTypeId === VBCTypeId ? 'VBC' : 'CBC' : 'ZBC',
     plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
     costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
     vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
     vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
     destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
+    clientName: customerId !== '-' ? { label: customerName, value: customerId } : '',
   }
 
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -80,14 +80,14 @@ function AddToComparisonDrawer(props) {
 
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-      if (typeOfCosting === 0) { //ZBC COSTING CONDITION
+      if (costingTypeId === ZBCTypeId) { //ZBC COSTING CONDITION
         setIsZbcSelected(true)
         setIsVbcSelected(false)
         setisCbcSelected(false)
         dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
         // dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
+      } else if (costingTypeId === VBCTypeId) {//VBC COSTING CONDITION
 
         setIsZbcSelected(false)
         setIsVbcSelected(true)
@@ -96,7 +96,7 @@ function AddToComparisonDrawer(props) {
         // dispatch(getPlantBySupplier(VendorId, (res) => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, destinationPlantId, () => { }))
-      } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
+      } else if (costingTypeId === CBCTypeId) {//CBC COSTING CONDITION
         setIsZbcSelected(false)
         setIsVbcSelected(false)
         setisCbcSelected(true)
@@ -135,7 +135,6 @@ function AddToComparisonDrawer(props) {
    * @description for handling rendering for different checkbox
    */
   const handleComparison = (value) => {
-    console.log('value: ', value);
     setValue('comparisonValue', value)
     if ((value) === ZBCTypeId) {
       setIsZbcSelected(true)
@@ -149,7 +148,7 @@ function AddToComparisonDrawer(props) {
         setValue('costings', '')
 
       }))
-    } else if ((value) === ZBCTypeId) {
+    } else if ((value) === VBCTypeId) {
       setCostingDropdown([])
       setIsZbcSelected(false)
       setIsVbcSelected(true)
@@ -159,7 +158,7 @@ function AddToComparisonDrawer(props) {
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', '', () => { }))
 
-    } else if ((value) === ZBCTypeId) {
+    } else if ((value) === CBCTypeId) {
       setisCbcSelected(true)
       setIsZbcSelected(false)
       setIsVbcSelected(false)
@@ -417,7 +416,9 @@ function AddToComparisonDrawer(props) {
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
           obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
-          obj.costingTypeId = obj?.CostingTypeId ? obj?.CostingTypeId : ''
+          obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
+          obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
+          obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
@@ -541,13 +542,13 @@ function AddToComparisonDrawer(props) {
       })
       return temp
     }
-    if (label === 'client') {
-      clientSelectList && clientSelectList.map((item) => {
-        if (item.Value === '0') return false
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
+        return null;
+      });
+      return temp;
     }
     if (label === 'costing') {
       if (viewMode === true) {
@@ -722,7 +723,7 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Client Name"}
+                        label={"Customer Name"}
                         name={"clientName"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -730,7 +731,7 @@ function AddToComparisonDrawer(props) {
                         rules={{ required: true }}
                         register={register}
                         //defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderListing('client')}
+                        options={renderListing("ClientList")}
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.clientName}

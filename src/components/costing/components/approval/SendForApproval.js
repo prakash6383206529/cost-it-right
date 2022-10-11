@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
+import { FILE_URL, NCC, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -376,6 +376,8 @@ const SendForApproval = (props) => {
       tempObj.IsRegularized = isRegularize
       tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
       tempObj.CostingTypeId = data.costingTypeId
+      tempObj.CustomerId = data.customerId
+      tempObj.CustomerName = data.customerName
 
       temp.push(tempObj)
       return null
@@ -555,7 +557,6 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
-
                 <div
                   onClick={(e) => toggleDrawer(e)}
                   disabled={isDisable}
@@ -571,15 +572,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : `${data.vendorName}`}
+                          {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No:`}{" "}
                           <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId) ? `Vendor Code` : `Customer Code`}
+                          <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}

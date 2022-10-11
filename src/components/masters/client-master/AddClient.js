@@ -262,7 +262,7 @@ class AddClient extends Component {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Client' : 'Add Client'}</h2>
+                                                <h2>{this.state.isEditFlag ? 'Update Customer' : 'Add Customer'}</h2>
                                             </div>
                                         </div>
                                     </div>
