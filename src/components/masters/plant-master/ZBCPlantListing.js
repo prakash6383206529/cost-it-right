@@ -7,7 +7,7 @@ import { fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -239,6 +239,7 @@ class ZBCPlantListing extends Component {
             state: state && state.hasOwnProperty('value') ? state.value : '',
             city: city && city.hasOwnProperty('value') ? city.value : '',
             is_vendor: false,
+            CostingTypeId: ZBCTypeId
         }
         this.props.getFilteredPlantList(filterData, (res) => {
             this.setState({ isLoader: false })

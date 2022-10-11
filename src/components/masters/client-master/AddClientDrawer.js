@@ -288,7 +288,7 @@ class AddClientDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Client</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, 'cancel')}
