@@ -6,6 +6,7 @@ import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
+import MRSimulation from './SimulationPages/MRSimulation';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
@@ -15,7 +16,7 @@ export function Impactedmasterdata(props) {
         let operationListing = false
         let exchangeRateListing = false
         let bopListing = false
-        let machineRateListing = false
+        let machineListing = false
         let combinedProcessListing = false
 
 
@@ -24,7 +25,7 @@ export function Impactedmasterdata(props) {
             operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
-            machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
+            machineListing = data?.MachineImpactedMasterDataList?.length === 0 || data?.MachineImpactedMasterDataList === null ? false : true
             combinedProcessListing = data?.CombinedProcessImpactedMasterDataList?.length === 0 || data?.CombinedProcessImpactedMasterDataList === null ? false : true
         }
 
@@ -33,6 +34,7 @@ export function Impactedmasterdata(props) {
             {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
             {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
+            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
             {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
             {/* {surfaceTreatment && masterId && <OperationSTSimulation isSurfaceTreatmentMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
             {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
