@@ -253,7 +253,7 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+            tempObj.SimulationTypeId = Data.SimulatedCostingList[0].SimulationTypeId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
@@ -882,11 +882,12 @@ function CostingSimulation(props) {
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
         setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
-        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineProcessSimulation === true ? true : false)
         setIsMultipleMasterSimulation(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
             costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||
             costingSimulationListAllKeys?.IsRawMaterialSimulation === true || costingSimulationListAllKeys?.IsOperationSimulation === true ||
-            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true)
+            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
+            costingSimulationListAllKeys?.IsMachineProcessSimulation === true)
 
 
 
@@ -1418,7 +1419,7 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                                TypeOfCosting={amendmentDetails.CostingHead}
+                                TypeOfCosting={amendmentDetails.SimulationHeadId}
 
                             />
                         }

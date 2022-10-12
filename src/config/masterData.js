@@ -3513,11 +3513,11 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
 ]
 
 export const MRGridForTokenSummary = [
-    { label: "Machine Name", value: "MachineName" },
-    { label: "Machine Number", value: "MachineNumber" },
-    { label: "Old Net Machine Cost", value: "OldNetMachineCost" },
-    { label: "New Net Machine Cost", value: "NewNetMachineCost" },
-    { label: "Machine Variance", value: "NetMachineCostVariance" },
+    { label: "Process Name", value: "ProcessName" },
+    { label: "Process Code", value: "ProcessCode" },
+    { label: "Old Net Process Cost", value: "OldNetProcessCost" },
+    { label: "New Net Process Cost", value: "NewNetProcessCost" },
+    { label: "Process Variance", value: "NetProcessCostVariance" },
 ]
 
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]

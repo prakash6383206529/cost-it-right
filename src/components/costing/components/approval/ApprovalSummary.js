@@ -73,7 +73,8 @@ function ApprovalSummary(props) {
           ExchangeRateImpactedMasterDataList: [],
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
-          BoughtOutPartImpactedMasterDataList: []
+          BoughtOutPartImpactedMasterDataList: [],
+          MachineProcessImpactedMasterDataList: []
         }
         let masterId
         let Data = []
@@ -98,7 +99,8 @@ function ApprovalSummary(props) {
     let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
