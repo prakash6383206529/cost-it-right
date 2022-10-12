@@ -1744,7 +1744,8 @@ class AddRMImport extends Component {
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
