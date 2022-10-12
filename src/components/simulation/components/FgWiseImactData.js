@@ -72,7 +72,7 @@ export function Fgwiseimactdata(props) {
         if (approvalSummaryTrue) {
             props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
         } else {
-            let obj = { costingId: CostingApprovalProcessSummaryId }
+            let obj = { CostingId: CostingApprovalProcessSummaryId }
             props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, obj)
         }
     }
