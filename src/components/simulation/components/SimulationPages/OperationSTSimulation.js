@@ -237,7 +237,6 @@ function OperationSTSimulation(props) {
     };
 
 
-    let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
         if (!isEffectiveDateSelected) {
@@ -265,10 +264,10 @@ function OperationSTSimulation(props) {
         }
         setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-
-        obj.CostingHead = list[0].CostingHead === "Vendor Based" ? VBC : ZBC
+        obj.SimulationTypeId = list[0].CostingTypeId
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
 
