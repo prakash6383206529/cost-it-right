@@ -229,7 +229,7 @@ function BOPCost(props) {
   const SaveItem = (index) => {
     let bopGridData = gridData[index]
     if (gridData && gridData.filter(e => e?.Quantity === 0)?.length > 0) {
-      Toaster.warning('Please enter number not 0')
+      Toaster.warning('Quantity cannot be 0')
       return false
     }
     if (bopGridData.BoughtOutPartUOM === 'Number') {
