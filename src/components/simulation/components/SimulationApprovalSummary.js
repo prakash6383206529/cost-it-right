@@ -16,7 +16,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, MACHINERATE, } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, MACHINERATE, VBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -130,7 +130,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId } = res.data.Data
 
             let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
                 return o.CostingId;
@@ -150,7 +150,7 @@ function SimulationApprovalSummary(props) {
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
-                , TotalImpactPerQuarter: TotalImpactPerQuarter
+                , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId
 
             })
             setFiles(Attachements)
@@ -209,7 +209,8 @@ function SimulationApprovalSummary(props) {
         let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
-            impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+            impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
             setEditWarning(true)
@@ -224,7 +225,7 @@ function SimulationApprovalSummary(props) {
         setShowOperationColumn(keysForDownloadSummary?.IsOperationSimulation === true ? true : false)
         setShowRMColumn(keysForDownloadSummary?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
-        setShowMachineRateColumn(keysForDownloadSummary?.IsMachineRateSimulation === true ? true : false)
+        setShowMachineRateColumn(keysForDownloadSummary?.IsMachineProcessSimulation === true ? true : false)
 
         setTimeout(() => {
 
@@ -242,13 +243,14 @@ function SimulationApprovalSummary(props) {
         // if (costingList.length > 0 && effectiveDate) {
         setLoader(false)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
-            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
+            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
                         RawMaterialImpactedMasterDataList: [],
-                        BoughtOutPartImpactedMasterDataList: []
+                        BoughtOutPartImpactedMasterDataList: [],
+                        MachineProcessImpactedMasterDataList: []
                     }
 
                     let masterId
@@ -268,8 +270,7 @@ function SimulationApprovalSummary(props) {
                 }))
                 // }
                 // if (simulationDetail.SimulationId) {
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => {
-                }))
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
             }
         }
 
@@ -724,7 +725,7 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
-    const bopMaterailFormat = (props) => {
+    const bopNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
@@ -733,12 +734,32 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
-    const bopNumberFormat = (props) => {
+    const processNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        temp = (row.IsMultipleProcess === true) ? 'Multiple Process' : row.ProcessName
+        return cell != null ? temp : '-';
+    }
+
+    const processCodeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        temp = (row.IsMultipleProcess === true) ? 'Multiple Process' : row.ProcessCode
+        return cell != null ? temp : '-';
+    }
+
+    const processCostFormatter = (props) => {
+        const cell = props?.value;
+        return cell != null ? cell : '-';
+    }
+
+    const bopNumberFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleBOP === true) ? 'Multiple BOP' : row.BoughtOutPartNumber
-
         return cell != null ? temp : '-';
     }
 
@@ -841,7 +862,7 @@ function SimulationApprovalSummary(props) {
         BOPVarianceFormatter: BOPVarianceFormatter,
         OPVarianceFormatter: OPVarianceFormatter,
         STVarianceFormatter: STVarianceFormatter,
-        bopMaterailFormat: bopMaterailFormat,
+        bopNameFormatter: bopNameFormatter,
         newSTFormatter: newSTFormatter,
         oldSTFormatter: oldSTFormatter,
         newOperationFormatter: newOperationFormatter,
@@ -849,8 +870,11 @@ function SimulationApprovalSummary(props) {
         plantFormatter: plantFormatter,
         rawMaterailCodeSpecFormatter: rawMaterailCodeSpecFormatter,
         operationCodeFormatter: operationCodeFormatter,
-        bopNumberFormat: bopNumberFormat,
-        impactPerQuarterFormatter: impactPerQuarterFormatter
+        bopNumberFormatter: bopNumberFormatter,
+        impactPerQuarterFormatter: impactPerQuarterFormatter,
+        processCodeFormatter: processCodeFormatter,
+        processNameFormatter: processNameFormatter,
+        processCostFormatter: processCostFormatter
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -1044,7 +1068,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                             {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
-                                                                keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation)
+                                                                keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation)
                                                                 ?
                                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
@@ -1123,15 +1147,21 @@ function SimulationApprovalSummary(props) {
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>}
 
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopMaterailFormat'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormat'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessName" headerName="Process Name" cellRenderer='processNameFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName="Process Code" cellRenderer='processCodeFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Old Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="New Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Process Cost Variance" cellRenderer='processCostFormatter' ></AgGridColumn>}
+
 
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
-                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation) &&
+                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
                                                                 < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact for Quarter(INR)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
@@ -1266,7 +1296,7 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>
 
-                        {DataForAssemblyImpactForFg[0]?.CostingHead === VBC && <>
+                        {simulationDetail?.SimulationHeadId === VBCTypeId && <>
                             <Row className="mb-4 reset-btn-container">
                                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                                 <Col md="6" className="text-right">
