@@ -4,10 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
-import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
-import { getVBCDetailByVendorId, } from '../actions/Costing';
+import { getPlantSelectListByType } from '../../../actions/Common';
 import { getConfigurationKey } from '../../../helper';
-import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import { ZBC } from '../../../config/constants';
 import { getClientSelectList } from '../../masters/actions/Client';
 
 function AddClientDrawer(props) {
@@ -16,7 +15,6 @@ function AddClientDrawer(props) {
 
   const [customer, setCustomer] = useState([]);
   const [data, setData] = useState({});
-  const [selectedVendors, setSelectedVendors] = useState([]);
   const [DestinationPlant, setDestinationPlant] = useState([]);
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)

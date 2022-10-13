@@ -2,7 +2,7 @@ import axios from 'axios'
 import {
   API, API_REQUEST, API_FAILURE, API_SUCCESS, GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS, GET_COSTING_BY_COSTINGID, GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
   SET_CED_ROW_DATA_TO_COST_SUMMARY, SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY, SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY, GET_FREIGHT_HEAD_SUCCESS, GET_FREIGHT_AMOUNT_DATA_SUCCESS,
-  EMPTY_COSTING_DATA, GET_ZBC_COSTING_SELECTLIST_BY_PART, GET_COSTING_TECHNOLOGY_SELECTLIST, GET_COSTING_PART_SELECTLIST, GET_PART_INFO, GET_COSTING_DATA_BY_COSTINGID,
+  EMPTY_COSTING_DATA, GET_ZBC_COSTING_SELECTLIST_BY_PART, GET_COSTING_TECHNOLOGY_SELECTLIST, GET_PART_INFO, GET_COSTING_DATA_BY_COSTINGID,
   GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST, GET_RATE_CRITERIA_BY_CAPACITY, SET_RMCC_TAB_DATA, SET_COSTING_DATALIST_BY_COSTINGID, SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID, SET_PO_PRICE, SET_RMCCBOP_DATA,
   SET_SURFACE_COST_DATA, SET_OVERHEAD_PROFIT_COST_DATA, SET_DISCOUNT_COST_DATA, GET_COSTING_DETAILS_BY_COSTING_ID, SET_COSTING_VIEW_DATA,
   STORE_PART_VALUE, GET_COST_SUMMARY_BY_PART_PLANT, SET_COSTING_APPROVAL_DATA, GET_COSTING_STATUS, SET_ITEM_DATA, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION,
@@ -35,6 +35,7 @@ import {
   SET_PROCESS_GROUP_GRID,
   SAVE_BOM_LEVEL_STOP_API_CALL,
   SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
+  ZBCTypeId,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -75,31 +76,6 @@ export function getCostingTechnologySelectList(callback) {
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_TECHNOLOGY_SELECTLIST,
-            payload: response.data.SelectList,
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
-  }
-}
-
-/**
- * @method getAllPartSelectList
- * @description GET TECHNOLOGY SELECTLIST
- */
-export function getAllPartSelectList(callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getAllPartSelectList}`, config())
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COSTING_PART_SELECTLIST,
             payload: response.data.SelectList,
           })
           callback(response)
@@ -175,25 +151,6 @@ export function createCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
-    })
-  }
-}
-
-/**
- * @method getZBCExistingCosting
- * @description get ZBC Costing Select List By Part
- */
-export function getZBCExistingCosting(PartId, callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getZBCExistingCosting}/${PartId}`, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      //apiErrors(error);
     })
   }
 }
@@ -1734,7 +1691,7 @@ export function storePartNumber(partNo) {
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
     if (partNo !== '' && plantId !== '') {
-      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/0`, config(),)
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${ZBCTypeId}`, config(),)
       request
         .then((response) => {
           if (response.data.Result || response.status === 204) {
