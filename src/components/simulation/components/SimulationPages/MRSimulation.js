@@ -289,7 +289,7 @@ function MRSimulation(props) {
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.SimulationTypeId = list[0].CostingTypeId
+        obj.SimulationHeadId = list[0].CostingTypeId
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
