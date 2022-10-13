@@ -28,7 +28,7 @@ function RfqListing(props) {
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
-    const [rowData, setRowData] = useState([{ TechnologyName: "sheet", QuotationId: "2424", RMGrade: "" }])
+    const [rowData, setRowData] = useState([])
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
 
