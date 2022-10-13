@@ -81,13 +81,14 @@ const SendForApproval = (props) => {
     regularizationObj.partId = viewApprovalData[0].partId
     regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
     regularizationObj.vendorId = viewApprovalData[0].vendorId
-
-    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
-      if (res && res?.data && res?.data?.Data) {
-        let Data = res.data.Data
-        setDataToChange(Data)
-      }
-    }))
+    if (viewApprovalData[0].costingTypeId === NCCTypeId) {
+      dispatch(checkRegularizationLimit(regularizationObj, (res) => {
+        if (res && res?.data && res?.data?.Data) {
+          let Data = res.data.Data
+          setDataToChange(Data)
+        }
+      }))
+    }
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
