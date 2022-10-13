@@ -1501,7 +1501,7 @@ class AddMoreDetails extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
         count++;
       }
-      if (!this.state.UOM.label === HOUR && (fieldsObj.MachineRate === 0 || fieldsObj.MachineRate === undefined)) {
+      if (!(this.state.UOM.label === HOUR) && (checkForNull(fieldsObj.MachineRate) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
         count++;
       }
@@ -1529,7 +1529,7 @@ class AddMoreDetails extends Component {
 
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
-        Toaster.warning('Machine Rate can not be zero or negative')
+        Toaster.warning('Machine Rate cannot be zero or negative')
         return false;
       }
 
@@ -1594,6 +1594,23 @@ class AddMoreDetails extends Component {
       return true;
     })
 
+    let count = 0;
+    if (processName.length === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+      count++;
+    }
+    if (UOM.length === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+      count++;
+    }
+    if (!(this.state.UOM.label === HOUR) && checkForNull(fieldsObj.MachineRate) === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
+      count++;
+    }
+    if (count > 0) {
+      return false
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.processId === processName.value && el.UnitOfMeasurementId === UOM.value))
     if (isExist !== -1) {
@@ -1619,7 +1636,14 @@ class AddMoreDetails extends Component {
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
-
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
+      Toaster.warning('Machine Rate cannot be zero or negative')
+      return false;
+    }
+    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+    if (MachineRate <= 0 || isNaN(MachineRate)) {
+      return false;
+    }
     this.setState({ IsFinancialDataChanged: true })
     let tempArray = [];
 
