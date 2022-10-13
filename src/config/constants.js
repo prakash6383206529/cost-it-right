@@ -484,7 +484,6 @@ export const API = {
 
   //COSTING API
   createCosting: `${BASE_URL}/costing/create-costing`,
-  // getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exist-costings-list`,
   getExistingCosting: `${BASE_URL}/costing/get-exist-costings-list`,
   getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
@@ -497,15 +496,11 @@ export const API = {
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
   getFgWiseImpactDataForCosting: `${BASE_URL}/costing/get-fgwise-impact-detail`,
-  //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
-  // getBOPDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-bop-detail`,
   getBOPDrawerDataList: `${BASE_URL}/costing/get-costing-bop-detail`,
-  // getOperationDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-operation-detail`,
   getOperationDrawerDataList: `${BASE_URL}/costing/get-costing-cc-operation-detail`,
-  // getProcessDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-machine-detail`,
   getProcessDrawerDataList: `${BASE_URL}/costing/get-costing-cc-machine-detail`,
   saveCostingRMCCTab: `${BASE_URL}/costing/save-costing-detail-for-rm-bop-cc`,
   saveComponentCostingRMCCTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-rm-bop-cc`,
@@ -515,7 +510,6 @@ export const API = {
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
   saveCostingSurfaceTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
-  // getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-costing-surface-treatment-operation-list`,
 
   getOverheadProfitTabData: `${BASE_URL}/costing/get-costing-detail-for-overhead-and-profit`,
@@ -525,7 +519,6 @@ export const API = {
   saveAssemblyOverheadProfitTab: `${BASE_URL}/costing/save-assembly-costing-detail-for-overhead-and-profit`,
   getInventoryDataByHeads: `${BASE_URL}/costing/get-costing-interest-rate-icc-applicability`,
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-costing-interest-rate-payment-term-applicability`,
-  getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
@@ -554,7 +547,6 @@ export const API = {
   getCostingDetailsById: `${BASE_URL}/costing-sheet-metal/get-costing-details-by-id`,
   getZBCCostingSelectListByPart: `${BASE_URL}/costing-sheet-metal/get-costing-select-list-by-part`,
   getCostingTechnologySelectList: `${BASE_URL}/costing/get-technology-select-list`,
-  getAllPartSelectList: `${BASE_URL}/costing/get-part-select-list`,
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
@@ -588,7 +580,6 @@ export const API = {
 
 
   // PROCESS COST CALCULATION
-  getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
   getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
   saveDefaultProcessCostCalculation: `${BASE_URL}/costing/save-process-default-calculation-details`,
@@ -885,6 +876,7 @@ export const API = {
   getClientDataList: `${BASE_URL}/client/get-all-client`,
   deleteClient: `${BASE_URL}/client/delete`,
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
+  checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
