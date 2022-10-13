@@ -884,7 +884,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
                     <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
-                    <AgGridColumn field="CustomerName" headerName="CustomerName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
 

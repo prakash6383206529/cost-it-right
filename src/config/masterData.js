@@ -1125,6 +1125,7 @@ export const MHRMoreZBC = [
 
 export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Company Name", value: "CompanyName", },
+    { label: "Company Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
     { label: "Country", value: "CountryName", },
