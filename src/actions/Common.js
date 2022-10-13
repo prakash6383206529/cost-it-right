@@ -1452,30 +1452,6 @@ export function getICCAppliSelectList(callback) {
 }
 
 /**
- * @method getICCAppliSelectListKeyValue
- * @description GET ICC APPLICABILITY SELECTLIST KEY VALUE USED IN OVERHEAD PROFIT COSTING
- */
-export function getICCAppliSelectListKeyValue(callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getICCAppliSelectListKeyValue}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ICC_APPLICABILITY_SELECTLIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-/**
  * @method getPaymentTermsAppliSelectList
  * @description GET PAYMENT TERMS APPLICABILITY SELECTLIST
  */

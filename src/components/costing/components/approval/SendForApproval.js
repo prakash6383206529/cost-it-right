@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -132,7 +132,7 @@ const SendForApproval = (props) => {
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
-    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
+    drawerDataObj.CostingHead = viewApprovalData[0].costingTypeId === ZBCTypeId ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
@@ -399,13 +399,13 @@ const SendForApproval = (props) => {
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
       tempObj.PlantId =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantId : ''
+        (data.costingTypeId === ZBCTypeId) ? data.plantId : ''
       tempObj.PlantNumber =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
+        (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
       tempObj.PlantName =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantName : ''
+        (data.costingTypeId === ZBCTypeId) ? data.plantName : ''
       tempObj.PlantCode =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
+        (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -430,17 +430,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorId : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorId : ''
       tempObj.VendorCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorCode : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorePlantId : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantCode : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorName : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorName : ''
       tempObj.VendorPlantName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantName : ''
+        (data.costingTypeId === VBCTypeId) ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
@@ -452,7 +452,7 @@ const SendForApproval = (props) => {
       tempObj.CostingTypeId = data.costingTypeId
       tempObj.CustomerId = data.customerId
       tempObj.CustomerName = data.customerName
-
+      tempObj.CustomerCode = data.customerCode
       temp.push(tempObj)
       return null
     })
@@ -646,15 +646,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
+                          {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No:`}{" "}
                           <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId) ? `Vendor Code` : `Customer Code`}
-                          <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
+                          {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code` : `Customer Code`}
+                          <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
@@ -872,7 +872,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
+                        {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -1038,7 +1038,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId !== NCCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>

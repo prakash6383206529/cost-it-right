@@ -1147,36 +1147,6 @@ export function saveDefaultProcessCostCalculationData(data, callback) {
   }
 }
 
-/**
- * @method getProcessCalculation
- * @description Get Process Calculation
-*/
-
-export function getProcessCalculation(costingId, processId, processCalculationId, technologyId, processType, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&processCalculationId=${processCalculationId ? processCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}&processType=${processType}`
-    const request = axios.get(`${API.getProcessCalculation}?${queryParams}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        // dispatch({
-        //   type: GET_RAW_MATERIAL_CALCI_INFO,
-        //   payload: response.data.Data,
-        // });
-        callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-
-
 export function getProcessMachiningCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });

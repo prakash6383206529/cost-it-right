@@ -762,6 +762,8 @@ export function formViewData(costingSummary, header = '') {
   obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
   obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
+  obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
+  obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
   temp.push(obj)
   return temp
 }

@@ -17,7 +17,6 @@ import DayTime from '../../common/DayTimeWrapper'
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
   const { editObject, isEditFlag, viewMode } = props
-  console.log('editObject: ', editObject);
 
   const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId } = editObject
@@ -454,6 +453,8 @@ function AddToComparisonDrawer(props) {
           obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
           obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
           obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
+          obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
+          obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {

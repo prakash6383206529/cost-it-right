@@ -238,7 +238,6 @@ class ZBCPlantListing extends Component {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
             city: city && city.hasOwnProperty('value') ? city.value : '',
-            is_vendor: false,
             CostingTypeId: ZBCTypeId
         }
         this.props.getFilteredPlantList(filterData, (res) => {
