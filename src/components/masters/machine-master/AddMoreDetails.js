@@ -3576,23 +3576,19 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
+                                  {this.state.labourGrid?.length === 0 && <tr>
+                                    <td colSpan={"5"}>
+                                      <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                  </tr>}
                                 </tbody>
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-
                                       <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
-                                {this.state.labourGrid?.length === 0 &&
-                                  <tbody>
-                                    <tr>
-                                      <td colSpan={"5"}>
-                                        <NoContentFound title={EMPTY_DATA} />
-                                      </td>
-                                    </tr>
-                                  </tbody>}
                               </Table>
                             </Col>
                           </div>
@@ -3777,14 +3773,12 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
-                                </tbody>
-                                {this.state.processGrid.length === 0 && <tbody>
                                   <tr>
-                                    <td colSpan={"4"}>
+                                    {this.state.processGrid?.length === 0 && <td colSpan={"6"}>
                                       <NoContentFound title={EMPTY_DATA} />
-                                    </td>
+                                    </td>}
                                   </tr>
-                                </tbody>}
+                                </tbody>
                               </Table>
 
                             </Col>
