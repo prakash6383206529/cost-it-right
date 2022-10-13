@@ -7,15 +7,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBC, CBCTypeId, EMPTY_DATA, NCC, NCCTypeId, REJECTED_BY_SYSTEM, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, NCCTypeId, REJECTED_BY_SYSTEM, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
+import { DRAFT, EMPTY_GUID, REJECTED, COSTING } from '../../../config/constants';
 import {
-  getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+  getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting,
@@ -854,6 +854,7 @@ function CostingDetails(props) {
     if (checkSOBTotal()) {
 
       let tempData;
+
       if (type === VBCTypeId) {
         tempData = vbcVendorGrid[index]
       } else if (type === NCCTypeId) {
@@ -895,8 +896,9 @@ function CostingDetails(props) {
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
         CostingTypeId: type,
-        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
-        CustomerName: type === CBCTypeId ? tempData.CustomerName : ''
+        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
+        CustomerCode: type === CBCTypeId ? tempData.CustomerCode : ''
       }
 
       dispatch(createCosting(data, (res) => {
@@ -2389,36 +2391,29 @@ function CostingDetails(props) {
 
 
                   </>
-                )
-                }
-                {
-                  stepTwo && (
-                    <CostingTypeContext.Provider value={costingType}>
-                      <ViewCostingContext.Provider value={IsCostingViewMode} >
-                        <EditCostingContext.Provider value={IsCostingEditMode} >
-                          <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                            <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
-                              <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
-                                <CostingStatusContext.Provider value={approvalStatus}>
-                                  <CostingDetailStepTwo
-                                    backBtn={backToFirstStep}
-                                    partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                                    costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                                    toggle={props.toggle}
-                                    IsCostingViewMode={IsCostingViewMode}
-                                    IsCopyCostingMode={IsCopyCostingMode}
-                                  />
-                                </CostingStatusContext.Provider>
-                              </VbcExistingCosting.Provider>
-                            </SelectedCostingDetail.Provider>
-                          </CopyCostingContext.Provider>
-                        </EditCostingContext.Provider>
-                      </ViewCostingContext.Provider>
-                    </CostingTypeContext.Provider>
-                  )
-                }
-              </form >
-            </div >
+                )}
+                {stepTwo && (
+                  <CostingTypeContext.Provider value={costingType}>
+                    <ViewCostingContext.Provider value={IsCostingViewMode} >
+                      <EditCostingContext.Provider value={IsCostingEditMode} >
+                        <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                          <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                            <CostingStatusContext.Provider value={approvalStatus}>
+                              <CostingDetailStepTwo
+                                backBtn={backToFirstStep}
+                                toggle={props.toggle}
+                                IsCostingViewMode={IsCostingViewMode}
+                                IsCopyCostingMode={IsCopyCostingMode}
+                              />
+                            </CostingStatusContext.Provider>
+                          </VbcExistingCosting.Provider>
+                        </CopyCostingContext.Provider>
+                      </EditCostingContext.Provider>
+                    </ViewCostingContext.Provider>
+                  </CostingTypeContext.Provider>
+                )}
+              </form>
+            </div>
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
             }

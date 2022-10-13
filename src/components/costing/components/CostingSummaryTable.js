@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
-  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getBriefCostingById,
+  setCostingViewData, setCostingApprovalData, getBriefCostingById,
   storePartNumber, getSingleCostingDetails, createCosting
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -337,7 +337,8 @@ const CostingSummaryTable = (props) => {
       destinationPlantId: viewCostingData[index]?.destinationPlantId,
       costingTypeId: viewCostingData[index]?.costingTypeId,
       customerName: viewCostingData[index]?.customerName,
-      customerId: viewCostingData[index]?.customerId
+      customerId: viewCostingData[index]?.customerId,
+      customerCode: viewCostingData[index]?.customerCode,
     }
 
     setIsEditFlag(true)
@@ -355,7 +356,8 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    const type = viewCostingData[index]?.costingHead
+    console.log('tempData: ', tempData);
+    const type = viewCostingData[index]?.costingTypeId
 
     const Data = {
       PartId: partNumber.partId,
@@ -369,12 +371,12 @@ const CostingSummaryTable = (props) => {
       VendorPlantCode: tempData.vendorPlantCode,
       VendorName: tempData.vendorName,
       VendorCode: tempData.vendorCode,
-      PlantId: (type === ZBC || type === CBC) ? tempData.plantId : EMPTY_GUID,
-      PlantName: (type === ZBC || type === CBC) ? tempData.plantName : '',
-      PlantCode: (type === ZBC || type === CBC) ? tempData.plantCode : '',
-      DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantId : EMPTY_GUID,
-      DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantName : '',
-      DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure && (type === VBC || type === NCC) ? tempData.destinationPlantCode : '',
+      PlantId: (type === ZBCTypeId || type === CBCTypeId) ? tempData.plantId : EMPTY_GUID,
+      PlantName: (type === ZBCTypeId || type === CBCTypeId) ? tempData.plantName : '',
+      PlantCode: (type === ZBCTypeId || type === CBCTypeId) ? tempData.plantCode : '',
+      DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.destinationPlantId : EMPTY_GUID,
+      DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.destinationPlantName : '',
+      DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId) ? tempData.destinationPlantCode : '',
       UserId: loggedInUserId(),
       LoggedInUserId: loggedInUserId(),
       ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -387,8 +389,11 @@ const CostingSummaryTable = (props) => {
       DrawingNumber: partInfo.DrawingNumber,
       Price: partInfo.Price,
       EffectiveDate: partInfo.EffectiveDate,
-      CostingHead: type
-
+      CostingHead: type,
+      CostingTypeId: type,
+      CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+      CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
+      Customer: type === CBCTypeId ? tempData.Customer : ''
     }
     dispatch(createCosting(Data, (res) => {
       if (res.data?.Result) {
@@ -620,6 +625,8 @@ const CostingSummaryTable = (props) => {
           obj.costingTypeId = viewCostingData[index]?.costingTypeId
           obj.customerName = viewCostingData[index]?.customerName
           obj.customerId = viewCostingData[index]?.customerId
+          obj.customerCode = viewCostingData[index]?.customerCode
+          obj.customer = viewCostingData[index]?.customer
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -978,7 +985,7 @@ const CostingSummaryTable = (props) => {
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             // const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
-                            const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.costingTypeId === VBCTypeId ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
+                            const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
@@ -1007,9 +1014,8 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
-                                    {console.log('data: ', data)}
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingTypeId === ZBCTypeId ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === VBCTypeId ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck) ? data.costingHeadCheck : data.costingHead}</span></span> : data.costingTypeId === NCCTypeId ? <span>{data?.vendorName}<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === CBCTypeId ? <span>{data.customerName}<span className='sub-heading'>{(data.costingHeadCheck)}</span></span> : ''}</span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingTypeId === ZBCTypeId ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck)}</span></span> : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === CBCTypeId ? <span>{data.customerName}<span className='sub-heading'>{(data.costingHeadCheck)}</span></span> : ''}</span>
                                     }
                                   </div>
                                   <div className="action  text-right">

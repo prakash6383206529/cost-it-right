@@ -162,7 +162,6 @@ export function checkAndGetCustomerCode(code, name, callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.checkAndGetCustomerCode}?customerCode=${code}&customerName=${name}`, config());
         request.then((response) => {
-            console.log('response: ', response);
             if (response && response.status === 200) {
                 callback(response);
             }

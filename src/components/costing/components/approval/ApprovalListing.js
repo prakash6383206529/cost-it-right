@@ -502,6 +502,10 @@ function ApprovalListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
+  const renderCustomer = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
+  }
 
   const renderVendor = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -678,6 +682,8 @@ function ApprovalListing(props) {
       costingObj.costingTypeId = item.CostingTypeId
       costingObj.customerId = item.CustomerId
       costingObj.customerName = item.CustomerName
+      costingObj.customerCode = item.CustomerCode
+      costingObj.customer = item.Customer
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -836,6 +842,7 @@ function ApprovalListing(props) {
 
   const frameworkComponents = {
     renderPlant: renderPlant,
+    renderCustomer: renderCustomer,
     renderVendor: renderVendor,
     priceFormatter: priceFormatter,
     oldpriceFormatter: oldpriceFormatter,
@@ -945,6 +952,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor(Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant(Code)"></AgGridColumn>
+                          <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>

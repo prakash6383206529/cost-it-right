@@ -728,7 +728,6 @@ export function formViewData(costingSummary, header = '') {
 
   //USED FOR DOWNLOAD PURPOSE
 
-  console.log('dataFromAPI: ', dataFromAPI);
   obj.overHeadApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-'
   obj.overHeadApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
   obj.ProfitApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-'
@@ -759,6 +758,8 @@ export function formViewData(costingSummary, header = '') {
   obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
   obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
+  obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
+  obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
   temp.push(obj)
   return temp
 }
