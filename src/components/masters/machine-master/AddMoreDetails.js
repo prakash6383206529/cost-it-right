@@ -1593,7 +1593,6 @@ class AddMoreDetails extends Component {
       return true;
     })
 
-
     let count = 0;
     if (processName.length === 0) {
       this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
@@ -1644,7 +1643,6 @@ class AddMoreDetails extends Component {
     if (MachineRate <= 0 || isNaN(MachineRate)) {
       return false;
     }
-
     this.setState({ IsFinancialDataChanged: true })
     let tempArray = [];
 
