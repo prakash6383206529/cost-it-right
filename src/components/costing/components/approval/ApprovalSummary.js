@@ -15,7 +15,7 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
-import { EMPTY_GUID, NCC, VBC } from '../../../../config/constants'
+import { CBCTypeId, EMPTY_GUID, NCC, VBC, VBCTypeId } from '../../../../config/constants'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
@@ -324,13 +324,17 @@ function ApprovalSummary(props) {
                   <thead>
                     <tr>
                       <th>{`Costing ID:`}</th>
-                      {approvalDetails.TypeOfCosting === VBC && (
+                      {console.log('approvalDetails: ', approvalDetails)}
+                      {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor Name:`}</th>
+                      )}
+                      {approvalDetails.CostingTypeId === CBCTypeId && (
+                        <th>{`Customer Name`}</th>
                       )}
                       {
                         checkVendorPlantConfigurable() &&
                         <th>
-                          {approvalDetails.TypeOfCosting === VBC ? 'Vendor Plant' : 'Plant'}{` Code:`}
+                          {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
                       {
@@ -364,13 +368,14 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.TypeOfCosting === VBC && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === VBCTypeId && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === CBCTypeId && <td> {(approvalDetails.CustomerName || approvalDetails.CustomerCode) ? `${approvalDetails.CustomerName}(${approvalDetails.CustomerCode})` : '-'}</td>}
                       {/* </td> */}
                       {
                         checkVendorPlantConfigurable() &&
                         <td>
                           {
-                            approvalDetails.TypeOfCosting === VBC ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            approvalDetails.CostingTypeId === VBCTypeId ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
                         </td>
                       }
