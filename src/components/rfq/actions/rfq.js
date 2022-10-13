@@ -5,6 +5,7 @@ import {
     API_FAILURE,
     GET_QUOTATION_LIST,
     config,
+    API_REQUEST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -52,7 +53,7 @@ export function createRfqQuotation(data, callback) {
 export function cancelRfqQuotation(id, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.cancelRfqQuotation, id, config());
+        const request = axios.post(`${API.cancelRfqQuotation}?quotationId=${id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -111,6 +112,26 @@ export function fileUploadQuotation(data, callback) {
             apiErrors(error)
             callback(error)
         })
+    }
+}
+
+
+
+
+/**
+ * @method fileDeleteQuotation
+ * @description DELETE QUOTATION FILES
+ */
+export function fileDeleteQuotation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        axios.delete(`${API.fileDeleteQuotation}/${data.Id}/${data.DeletedBy}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                apiErrors(error)
+                dispatch({ type: API_FAILURE })
+            })
     }
 }
 

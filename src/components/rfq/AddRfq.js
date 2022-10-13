@@ -15,10 +15,11 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
+import { a } from 'react-dom-factories';
 
 const gridOptions = {};
 
@@ -46,6 +47,7 @@ function AddRfq(props) {
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
     const [isDisable, setIsDisable] = useState(false)
+    const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -93,13 +95,17 @@ function AddRfq(props) {
                 Id: FileId,
                 DeletedBy: loggedInUserId(),
             }
-            Toaster.success('File has been deleted successfully.')
-            let tempArr = files && files.filter(item => item.FileId !== FileId)
-            setFiles(tempArr)
+            dispatch(fileDeleteQuotation(deleteData, (res) => {
+                Toaster.success('File has been deleted successfully.')
+                let tempArr = files && files.filter(item => item.FileId !== FileId)
+                setFiles(tempArr)
+                setIsOpen(!IsOpen)
+            }))
         }
         if (FileId == null) {
             let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
             setFiles(tempArr)
+            setIsOpen(!IsOpen)
         }
 
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
@@ -119,6 +125,13 @@ function AddRfq(props) {
 
 
 
+    const setDisableFalseFunction = () => {
+        const loop = Number(dropzone.current.files.length) - Number(files.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     const handleChangeStatus = ({ meta, file }, status) => {
 
         if (status === 'removed') {
@@ -134,10 +147,11 @@ function AddRfq(props) {
             let data = new FormData()
             data.append('file', file)
             dispatch(fileUploadQuotation(data, (res) => {
-                // setDisableFalseFunction()
+                setDisableFalseFunction()
                 if ('response' in res) {
                     status = res && res?.response?.status
                     dropzone.current.files.pop()
+                    setAttachmentLoader(false)
                 }
                 else {
                     let Data = res.data[0]
@@ -154,7 +168,7 @@ function AddRfq(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            // setDisableFalseFunction()
+            setDisableFalseFunction()
             setAttachmentLoader(false)
             dropzone.current.files.pop()
             Toaster.warning("File size greater than 20 mb not allowed")
@@ -177,7 +191,7 @@ function AddRfq(props) {
 
     }
 
-    const deleteItem = (gridData, props) => {
+    const deleteItemPartTable = (gridData, props) => {
 
         let arr = []
         gridData && gridData.map((item) => {
@@ -186,6 +200,10 @@ function AddRfq(props) {
                 arr.push(item)
             }
         })
+
+        if (arr.length === 0) {
+            setDisableTechnology(false)
+        }
         setPartList(arr)
     }
 
@@ -198,6 +216,7 @@ function AddRfq(props) {
                 arr.push(item)
             }
         })
+
         setVendorList(arr)
     }
 
@@ -215,7 +234,7 @@ function AddRfq(props) {
 
     }
 
-    const editItem = (gridData, props) => {
+    const editItemPartTable = (gridData, props) => {
 
         setSelectedRowPartNoTable(props.node.data)
         setUpdateButtonPartNoTable(true)
@@ -234,9 +253,20 @@ function AddRfq(props) {
         const temp = [];
 
         if (label === 'vendor') {
+
             vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
+                let isExist = false
+                if (item.Value === '0') { return false }
+                if (vendorList.length > 0) {            // EXISTING VENDOR IN TABLE SHOULD NOT APPEAR IN DROPDOWN
+                    vendorList.map((element) => {
+                        if (element.VendorId === item.Value) {
+                            isExist = true
+                        }
+                    })
+                }
+                if (!isExist) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null;
             });
             return temp;
@@ -263,8 +293,18 @@ function AddRfq(props) {
 
         if (label === 'partNo') {
             partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                let isExist = false
+                if (item.Value === '0') { return false }
+                if (partList.length > 0) {            // EXISTING PART IN TABLE SHOULD NOT APPEAR IN DROPDOWN
+                    partList.map((element) => {
+                        if (element.PartId === item.Value) {
+                            isExist = true
+                        }
+                    })
+                }
+                if (!isExist) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null
             })
             return temp
@@ -354,8 +394,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -445,9 +485,9 @@ function AddRfq(props) {
         setPartList(arr)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
-        setValue('technology', "")
+        // setValue('technology', "")
         setUpdateButtonPartNoTable(false)
-
+        setDisableTechnology(true)
     }
 
 
@@ -455,7 +495,7 @@ function AddRfq(props) {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
-        setValue('technology', "")
+        // setValue('technology', "")
     }
 
 
@@ -526,7 +566,7 @@ function AddRfq(props) {
                                         mandatory={true}
                                         handleChange={handleTechnologyChange}
                                         errors={errors.Vendor}
-                                        disabled={isEditFlag}
+                                        disabled={isEditFlag || disableTechnology}
                                         isLoading={VendorLoaderObj}
                                     />
                                 </Col>

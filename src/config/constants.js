@@ -961,6 +961,7 @@ export const API = {
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
   cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
   fileUploadQuotation: `${BASE_URL}/rfq-quotation/quotation-file-upload`,
+  fileDeleteQuotation: `${BASE_URL}/rfq-quotation/delete-quotation-attachment-file`,
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`
 }
 
@@ -2008,4 +2009,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.577";
+export const VERSION = "V1.2.578";
