@@ -389,7 +389,7 @@ function TabSurfaceTreatment(props) {
         let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
 
 
-        if (params.BOMLevel !== LEVEL0) {
+        if (params.BOMLevel !== LEVEL0 && !CostingViewMode) {
           let childArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === params.PartNumber)
           let subbAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex(item => item.PartNumber === params.PartNumber)
           let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
