@@ -982,6 +982,7 @@ export const API = {
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
   cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
   fileUploadQuotation: `${BASE_URL}/rfq-quotation/quotation-file-upload`,
+  fileDeleteQuotation: `${BASE_URL}/rfq-quotation/delete-quotation-attachment-file`,
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`
 }
 
