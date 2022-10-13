@@ -404,7 +404,6 @@ export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
         const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
-            console.log('response: ', response);
             if (response && response.status === 200) {
                 callback(response);
             }

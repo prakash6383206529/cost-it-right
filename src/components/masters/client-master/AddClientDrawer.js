@@ -305,7 +305,6 @@ class AddClientDrawer extends Component {
      * @description Renders the component
      */
     render() {
-        console.log(this.state.companyCode, 'code');
         const { handleSubmit, isEditFlag, } = this.props;
         const { country, isViewMode, setDisable, isDisableCode } = this.state;
         return (
