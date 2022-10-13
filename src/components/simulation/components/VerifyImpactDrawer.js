@@ -10,7 +10,7 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
-import { VBC } from '../../../config/constants';
+import { VBC, VBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
@@ -46,8 +46,8 @@ function VerifyImpactDrawer(props) {
     let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
-
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -67,7 +67,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBC || TypeOfCosting === 1)) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBCTypeId || TypeOfCosting === 1)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))

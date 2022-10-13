@@ -87,7 +87,7 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
+        obj.SimulationHeadId = list[0].CostingTypeId
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 

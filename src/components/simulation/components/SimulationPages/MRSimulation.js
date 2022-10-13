@@ -181,7 +181,15 @@ function MRSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
+        for (let i = 0; i < list?.length; i++) {
+            gridOptions?.api?.startEditingCell({
+                rowIndex: i,
+                colKey: 'NewMachineRate'
+            })
+            setTimeout(() => {
+                gridOptions?.api?.stopEditing()
+            }, 200);
+        }
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -219,6 +227,21 @@ function MRSimulation(props) {
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    // TRIGGER ON EVERY CHNAGE IN CELL
+    const onCellValueChanged = (props) => {
+        if (typeof (checkForNull(props?.value)) === 'number') {
+            let data = [...list]
+            let filteredDataWithoutEditedRow = data && data.filter(e => e?.MachineId === props?.data?.MachineId)
+            filteredDataWithoutEditedRow && filteredDataWithoutEditedRow.map((item, index) => {
+                item.NewMachineRate = props?.value
+                return null
+            })
+        } else {
+            return false
+        }
+        gridApi.redrawRows()
+    }
+
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
@@ -233,9 +256,9 @@ function MRSimulation(props) {
         oldRateFormatter: oldRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
-        OldcostFormatter: OldcostFormatter
+        OldcostFormatter: OldcostFormatter,
+        onCellValueChanged: onCellValueChanged
     };
-    let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
         if (!isEffectiveDateSelected) {
@@ -263,12 +286,13 @@ function MRSimulation(props) {
         }
         setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
+        obj.SimulationHeadId = list[0].CostingTypeId
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
-        obj.EffectiveDate = DayTime(effectiveDate)
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
 
         let tempArr = []
         arr && arr.map(item => {
@@ -373,11 +397,11 @@ function MRSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
-                                            // frameworkComponents={frameworkComponents}
+                                                onCellValueChanged={onCellValueChanged}
                                             >
-                                                <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>}
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
