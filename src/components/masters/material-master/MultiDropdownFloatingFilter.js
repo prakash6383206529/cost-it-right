@@ -62,6 +62,11 @@ function MultiDropdownFloatingFilter(props) {
 
 
     const valueChanged = (event) => {
+
+        if (!Array.isArray(event)) {
+            event = [event]
+        }
+
         setShowInputData(event)
         setSelectedPlants(event)
         let plants = ""
@@ -132,7 +137,7 @@ function MultiDropdownFloatingFilter(props) {
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                     options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
-                    isMulti={true}
+                    isMulti={activate || props?.maxValue == 5 ? false : true}
                     dropDownClass={true}
                     mandatory={true}
                     handleChange={(e) => {
