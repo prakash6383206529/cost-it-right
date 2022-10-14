@@ -48,8 +48,6 @@ function CostingDetailStepTwo(props) {
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
   const partType = Number(costingData?.TechnologyId) === ASSEMBLY
 
-  let data = useSelector(state => state.costing)
-
   useEffect(() => {
     if (partNo.isChanged === true) {
       props.backBtn()
