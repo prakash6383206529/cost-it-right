@@ -255,7 +255,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode || (Number(costData?.ETechnologyType) === ASSEMBLY) ? true : false}
+                            disabled={CostingViewMode || (Number(costData?.TechnologyId) === ASSEMBLY) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

@@ -26,7 +26,7 @@ function Rejection(props) {
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
-    const partType = costData?.TechnologyName === ASSEMBLYNAME
+    const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
     const dispatch = useDispatch()
 

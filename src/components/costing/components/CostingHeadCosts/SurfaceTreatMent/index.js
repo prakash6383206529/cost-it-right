@@ -8,12 +8,12 @@ import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { createToprowObjAndSave, findrmCctData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { ASSEMBLY, IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 // import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
@@ -40,11 +40,10 @@ function SurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
-  const [surfaceTableData, setSurfacetableData] = useState(item?.CostingPartDetails?.SurfaceTreatmentDetails)
-  const [transportObj, setTrasportObj] = useState(item?.CostingPartDetails?.TransportationDetails)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
-
   const [callDiscountApi, setCallDiscountApi] = useState(false)
+  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
