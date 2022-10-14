@@ -8,7 +8,11 @@ import {
   GET_VOLUME_DATA_LIST,
   GET_VOLUME_DATA_BY_PART_AND_YEAR,
   config,
+  GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
+  GET_VOLUME_LIMIT,
+  CHECK_REGULARIZATION_LIMIT
 } from '../../../config/constants'
+import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
 // const config() = config
 
@@ -92,18 +96,24 @@ export function getVolumeData(VolumeId, callback) {
  * @method getVolumeDataList
  * @description get all operation list
  */
-export function getVolumeDataList(filterData, callback) {
+export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const QueryParams = `year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}&CostingHead=${filterData.costing_head}`
-    axios
-      .get(`${API.getVolumeDataList}?${QueryParams}`, config())
+    //dispatch({ type: API_REQUEST });    
+    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+    axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
-          dispatch({
-            type: GET_VOLUME_DATA_LIST,
-            payload: response.status === 204 ? [] : response.data.DataList
-          })
+          if (isPagination) {
+            dispatch({
+              type: GET_VOLUME_DATA_LIST,
+              payload: response.status === 204 ? [] : response.data.DataList
+            })
+          } else {
+            dispatch({
+              type: GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
+              payload: response.status === 204 ? [] : response.data.DataList
+            })
+          }
           callback(response.status === 204 ? [] : response)
         }
       })
@@ -121,9 +131,10 @@ export function getVolumeDataList(filterData, callback) {
  */
 export function deleteVolume(ID, callback) {
   return (dispatch) => {
+    const QueryParams = `volumeId=${ID.volumeId}&VolumeApprovedId=${ID.volumeApprovedId}&VolumeBudgetedId=${ID.volumeBudgetedId}&LoggedInUserId=${userDetails().LoggedInUserId}`
     dispatch({ type: API_REQUEST })
     axios
-      .delete(`${API.deleteVolume}/${ID}`, config())
+      .delete(`${API.deleteVolume}?${QueryParams}`, config())
       .then((response) => {
         callback(response)
       })
@@ -253,6 +264,92 @@ export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) 
         if (response.data.Result === true || response.status === 202) {
           dispatch({
             type: GET_VOLUME_DATA_BY_PART_AND_YEAR,
+            payload: response.data.Data,
+          });
+          callback(response);
+        }
+      }).catch((error) => {
+        // apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method createVolumeLimit
+ * @description CREATE VOLUME LIMIT 
+ */
+export function createVolumeLimit(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createVolumeLimit, data, config())
+    request
+      .then((response) => {
+        if (response.status === 200) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+        callback(error);
+      })
+  }
+}
+/**
+ * @method updateVolumeLimit
+ * @description UPDATE VOLUME LIMIT 
+ */
+export function updateVolumeLimit(data, callback) {
+  return (dispatch) => {
+    axios
+      .put(`${API.updateVolumeLimit}`, data, config())
+      .then((response) => {
+        callback(response)
+      })
+      .catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+        callback(error);
+      })
+  }
+}
+
+/**
+ * @method getVolumeLimit
+ * @description Get Volume Limit
+ */
+export function getVolumeLimit(technologyId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.get(`${API.getVolumeLimit}/${technologyId}`, config())
+      .then((response) => {
+        if (response.data.Result === true || response.status === 202) {
+          dispatch({
+            type: GET_VOLUME_LIMIT,
+            payload: response.data.Data,
+          });
+          callback(response);
+        }
+      }).catch((error) => {
+        // apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method checkRegularizationLimit
+ * @description Get Volume Limit
+ */
+export function checkRegularizationLimit(obj, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    let queryParams = `TechnologyId=${obj.technologyId}&PartId=${obj.partId}&PlantId=${obj.destinationPlantId}&VendorId=${obj.vendorId}`
+    axios.get(`${API.checkRegularizationLimit}?${queryParams}`, config())
+      .then((response) => {
+        if (response.data.Result === true || response.status === 202) {
+          dispatch({
+            type: CHECK_REGULARIZATION_LIMIT,
             payload: response.data.Data,
           });
           callback(response);

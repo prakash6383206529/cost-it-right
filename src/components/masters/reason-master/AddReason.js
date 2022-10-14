@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
 import Toaster from '../../common/Toaster';
@@ -64,19 +64,19 @@ class AddReason extends Component {
     }
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', type)
   };
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -84,7 +84,7 @@ class AddReason extends Component {
       isEditFlag: false,
     })
     this.props.setEmptyReason();
-    this.toggleDrawer('')
+    this.toggleDrawer('', type)
   }
 
   /**
@@ -97,9 +97,9 @@ class AddReason extends Component {
 
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
-      if (DataToCheck.Reason == values.Reason) {
+      if (DataToCheck.Reason === values.Reason) {
 
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -114,7 +114,7 @@ class AddReason extends Component {
         if (res?.Result === true) {
           Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
         }
-        this.cancel()
+        this.cancel('submit')
       });
     } else {
 
@@ -128,7 +128,7 @@ class AddReason extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.REASON_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -166,10 +166,10 @@ class AddReason extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "UPDATE REASON" : "ADD REASON"}</h3>
+                    <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(e)}
+                    onClick={this.cancel}
                     className={"close-button right"}
                   ></div>
                 </Col>
@@ -180,8 +180,8 @@ class AddReason extends Component {
                     label={`Reason`}
                     name={"Reason"}
                     type="text"
-                    placeholder={""}
-                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter]}
+                    placeholder={this.state.isEditFlag ? '-' : "Enter"}
+                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
                     component={renderText}
                     required={true}
                     className=" "
@@ -216,7 +216,7 @@ class AddReason extends Component {
                   <button
                     type={"button"}
                     className=" mr15 cancel-btn"
-                    onClick={this.cancel}
+                    onClick={() => { this.cancel('cancel') }}
                     disabled={setDisable}
                   >
                     <div className={"cancel-icon"}></div>
@@ -269,6 +269,7 @@ export default connect(mapStateToProps, {
   setEmptyReason,
 })(reduxForm({
   form: 'AddReason',
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

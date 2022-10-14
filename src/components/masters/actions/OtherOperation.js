@@ -19,13 +19,14 @@ import {
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
+    SET_OPERATION_DATA,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
-import { setItemData } from '../../costing/actions/Costing';
 
 // const config() = config
 
@@ -250,14 +251,15 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  * @method getOperationsDataList
  * @description get all operation list
  */
-export function getOperationsDataList(filterData, temp, callback) {
+export function getOperationsDataList(filterData, skip, take, isPagination, obj, callback) {
 
     return (dispatch) => {
 
         let payload
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
-        axios.get(`${API.getOperationsDataList}?${QueryParams}`, config())
+        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${filterData.OperationType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+        axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {
 
@@ -267,11 +269,20 @@ export function getOperationsDataList(filterData, temp, callback) {
                     payload = []
                 }
                 else {
+
                     payload = response?.data?.DataList
-                    dispatch({
-                        type: GET_OPERATION_COMBINED_DATA_LIST,
-                        payload: payload
-                    })
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    } else {
+
+                        dispatch({
+                            type: GET_ALL_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    }
                 }
                 callback(response);
             }).catch((error) => {
@@ -373,9 +384,6 @@ export function deleteOperationAPI(OperationId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -743,5 +751,19 @@ export function getOperationApprovalList(callback) {
             callback(error);
             apiErrors(error)
         });
+    };
+}
+
+/**
+ * @method setOperationList
+ * @description setOperationList
+ */
+export function setOperationList(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_OPERATION_DATA,
+            payload: data
+        })
     };
 }

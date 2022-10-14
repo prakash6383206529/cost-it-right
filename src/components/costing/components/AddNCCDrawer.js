@@ -5,14 +5,14 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { getZBCDetailByPlantId, } from '../actions/Costing';
+import { getVBCDetailByVendorId, getZBCDetailByPlantId, } from '../actions/Costing';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
-import { getPlantCode, getVendorCode } from '../../../helper/validation';
+import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 
 function AddNCCDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control, reset,setValue } =useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -44,14 +44,15 @@ function AddNCCDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
+
     props.closeDrawer('', {
-             ...data,
-            VendorCode: Object.keys(vendor).length>0 ? getVendorCode(vendor.label):'',
-            VendorId:  Object.keys(vendor).length>0 ? vendor.value:EMPTY_GUID_0,
-            VendorName:  Object.keys(vendor).length>0 ?vendor.label:'',
-            Vendor: vendor,
-          })
-  
+      ...data,
+      VendorCode: Object.keys(vendor).length > 0 ? vendor.VendorCode : '',
+      VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
+      VendorName: Object.keys(vendor).length > 0 ? vendor.VendorName : '',
+      Vendor: vendor,
+    })
+
   };
 
   /**
@@ -63,13 +64,14 @@ function AddNCCDrawer(props) {
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0' || selectedPlants.includes(item.Value)) return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
     }
     if (label === 'Vendor') {
+      // console.log(vendorSelectList, "vendorSelectList");
       vendorSelectList && vendorSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
@@ -87,10 +89,16 @@ function AddNCCDrawer(props) {
   const handlePlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setPlant(newValue)
-      setValue('Plant',{label:newValue.label,value:newValue.value})
+      setValue('Plant', { label: newValue.label, value: newValue.value })
       dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
         if (res && res.data && res.data.Data) {
-          setPlantData(res.data.Data)
+          let obj = res.data.Data
+          if (obj.DestinationPlantId == undefined) {
+            obj.DestinationPlantId = res.data.Data.PlantId
+            obj.DestinationPlantName = res.data.Data.PlantName
+            obj.DestinationPlantCode = res.data.Data.PlantCode
+          }
+          setPlantData(obj)
         }
       }))
     } else {
@@ -104,8 +112,16 @@ function AddNCCDrawer(props) {
  */
   const handleVendorChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setVendor(newValue)
-   
+
+      let data = {
+        VendorId: newValue.value,
+        VendorPlantId: "00000000-0000-0000-0000-000000000000",
+      }
+      dispatch(getVBCDetailByVendorId(data, res => {
+        if (res && res.data && res.data.Data) {
+          setVendor(res.data.Data)
+        }
+      }))
     } else {
       setVendor([])
     }
@@ -139,10 +155,10 @@ function AddNCCDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Add Vendor/Plant"}</h3>
+                  <h3>{"Add Vendor"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>
@@ -154,7 +170,7 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -170,14 +186,14 @@ function AddNCCDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: false }}
                     register={register}
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
-                    mandatory={false}
+                    mandatory={true}
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
                   />

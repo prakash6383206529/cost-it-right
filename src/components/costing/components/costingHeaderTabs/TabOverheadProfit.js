@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -13,7 +13,6 @@ import { ViewCostingContext } from '../CostingDetails';
 function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
-  const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
   const [isPressedST, setIsPressST] = useState(false)
   const dispatch = useDispatch()
@@ -41,9 +40,6 @@ function TabOverheadProfit(props) {
     }
   }, [OverheadProfitTabData])
 
-
-  //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
-  const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -491,14 +487,6 @@ function TabOverheadProfit(props) {
   }
 
   /**
-  * @method onPressApplicability
-  * @description SET ASSEMBLY LEVEL APPLICABILITY
-  */
-  const onPressApplicability = () => {
-    setIsApplicableForChildParts(!IsApplicableForChildParts)
-  }
-
-  /**
   * @method onPressIncludeSurfaceTreatment
   * @description SET INCLUDE SURFACE TREATMENT
   */
@@ -506,6 +494,7 @@ function TabOverheadProfit(props) {
     dispatch(setSurfaceCostInOverheadProfit(!IsIncludeSurfaceTreatment, () => { }))
     setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
     setIsPressST(true)
+    dispatch(isOverheadProfitDataChange(true))
   }
 
   /**

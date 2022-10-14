@@ -7,19 +7,20 @@ import Switch from 'react-switch';
 import { DatePickerHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { getPlantBySupplier, } from '../../../../actions/Common';
 import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
-import { VBC, ZBC } from '../../../../config/constants';
+import { NCC, VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
   const loggedUserId = loggedInUserId()
 
-  const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, } = props
+  const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, nccGrid } = props
+
 
 
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
@@ -27,12 +28,13 @@ function CopyCosting(props) {
     reValidateMode: 'onChange',
     defaultValues: {
       fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
-      fromVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      fromVendorName: type === VBC || type === NCC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
+      fromDestinationPlant: type === VBC || type === NCC ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.DestinationPlantId, vendorId: copyCostingData.VendorId } : '',
+      fromNcccostingId: selectedCostingId.nccCosting,
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
 
@@ -53,6 +55,7 @@ function CopyCosting(props) {
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
+  const [isFromNcc, setIsFromNcc] = useState(type === NCC ? true : false)
   const [isToZbc, setIsToZbc] = useState(type === ZBC ? true : false)
   const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
   const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
@@ -82,8 +85,7 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.DestinationPlantId,
-            vendorId: item.VendorId
+            value: item.VendorId
           })
         ))
     } else {
@@ -91,17 +93,33 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.VendorId,
-            vendorId: item.VendorId
+            value: item.VendorId
             // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
         ))
     }
-    setVendorName(VbcTemp)
+
+
+    let uniqueArray = _.uniqBy(VbcTemp, "value")
+    setVendorName(uniqueArray)
 
     if (type === ZBC) {
       getCostingDropDown(copyCostingData.PlantId, ZBC)
-    } else {
+    } else if (type === NCC) {
+      let tempPlant = []
+      let tempVendor = []
+      nccGrid && nccGrid.map((item) => {
+        tempPlant.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })
+        tempVendor.push({
+          label: `${item.VendorName}(${item.VendorCode})`,
+          value: item.VendorId
+        })
+      })
+      setDestinationPlant(tempPlant)
+      setVendorName(tempVendor)
+      // setVendorCostingId([copyCostingData?.SelectedCostingVersion])
+    }
+    else {
       getVendorPlantDropdown(copyCostingData.VendorId, 'from')
       filterCostingDropDown(copyCostingData.VendorId)
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
@@ -177,13 +195,19 @@ function CopyCosting(props) {
    */
   function filterCostingDropDown(value) {
     const temp = []
-
+    let CostingOptionsValue;
     const filterValue = vbcVendorGrid.filter((item) => value === item.VendorId)
 
-    const { CostingOptions } = filterValue[0]
+    if (filterValue) {
+      const { CostingOptions } = filterValue[0]
+      CostingOptionsValue = CostingOptions
 
-    CostingOptions &&
-      CostingOptions.map((costing) => {
+    } else {
+      CostingOptionsValue = []
+    }
+
+    CostingOptionsValue &&
+      CostingOptionsValue.map((costing) => {
         temp.push({
           label: costing.DisplayCostingNumber,
           value: costing.CostingId,
@@ -261,11 +285,12 @@ function CopyCosting(props) {
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
 
-      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
+      temp.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
       return temp
 
     })
-    setDestinationPlant(temp)
+    let uniqueArray = _.uniqBy(temp, "value")
+    setDestinationPlant(uniqueArray)
 
   }
 
@@ -286,7 +311,7 @@ function CopyCosting(props) {
    */
   const submitForm = debounce(handleSubmit((value) => {
     setIsDisable(true)
-    const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
+
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
     let obj = {}
@@ -330,7 +355,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
+      obj.ToVendorId = value.toVendorName && value.toVendorName.value
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
@@ -352,10 +377,9 @@ function CopyCosting(props) {
     }
 
 
-
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
+    obj.ToDestinationPlantCode = value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode
     obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
@@ -392,6 +416,7 @@ function CopyCosting(props) {
   }), 500)
 
   const onPopupConfirm = () => {
+    props.setCostingOptionSelect()
     setDisablePopup(true)
     dispatch(
       saveCopyCosting(updatedObj, (res) => {
@@ -453,7 +478,7 @@ function CopyCosting(props) {
                   <div className="left-border">{"From:"}</div>
                 </Col>
                 <Col md="6" className="text-right">
-                  {
+                  {type !== NCC &&
                     <div className="switch d-inline-block">
                       <label className="switch-level justify-content-end">
                         <div className={"left-title"}>ZBC</div>
@@ -485,7 +510,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Plant"}
                       name={"fromPlant"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -502,7 +527,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Costing ID"}
                       name={"fromcostingId"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -524,7 +549,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Vendor"}
                       name={"fromVendorName"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -542,7 +567,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}
                         name={"fromVendorPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -561,7 +586,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
                         name={"fromDestinationPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -580,7 +605,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Costing ID"}
                       name={"fromVbccostingId"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -595,6 +620,69 @@ function CopyCosting(props) {
                   </div>
                 </Row>
               )}
+
+
+              {isFromNcc && (
+                <Row className="pl-3">
+
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Plant"}
+                        name={"fromDestinationPlant"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={destinationPlant}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.fromPlant}
+                        disabled={true}
+                      />
+                    </div>
+                  )}
+
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={"Vendor"}
+                      name={"fromVendorName"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={vendorName}
+                      mandatory={true}
+                      handleChange={handleFromVendorName}
+                      errors={errors.fromVendorName}
+                      disabled={true}
+                    />
+                  </div>
+
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={"Costing ID"}
+                      name={"fromNcccostingId"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={vendorCostingId}
+                      mandatory={true}
+                      handleChange={() => { }}
+                      errors={errors.fromVbccostingId}
+                      disabled={true}
+                    />
+                  </div>
+                </Row>
+              )}
+
               <hr />
 
               <Row className="pl-3 align-items-center">
@@ -602,7 +690,7 @@ function CopyCosting(props) {
                   <div className="left-border">{"To:"}</div>
                 </Col>
                 <Col md="6" className="text-right">
-                  {
+                  {type !== NCC &&
                     <div className="switch d-inline-block">
                       <label className="switch-level justify-content-end">
                         <div className={"left-title"}>ZBC</div>
@@ -634,7 +722,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Plant"}
                       name={"toPlant"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -674,7 +762,7 @@ function CopyCosting(props) {
                   <SearchableSelectHookForm
                     label={'Costing ID'}
                     name={'tocostingId'}
-                    placeholder={'-Select-'}
+                    placeholder={'Select'}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -695,7 +783,7 @@ function CopyCosting(props) {
                     <SearchableSelectHookForm
                       label={"Vendor"}
                       name={"toVendorName"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -713,7 +801,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}
                         name={"toVendorPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -732,7 +820,7 @@ function CopyCosting(props) {
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
                         name={"toDestinationPlant"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -806,7 +894,7 @@ function CopyCosting(props) {
                   <SearchableSelectHookForm
                     label={'Costing ID'}
                     name={'toVbccostingId'}
-                    placeholder={'-Select-'}
+                    placeholder={'Select'}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -818,6 +906,85 @@ function CopyCosting(props) {
                     errors={errors.toVbccostingId}
                   />
                 </div> */}
+                </Row>
+              )}
+
+
+              {isFromNcc && (
+                <Row className="pl-3">
+
+
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Plant"}
+                        name={"nccToPlant"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={destinationPlant}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.Plant}
+                      />
+                    </div>
+                  )}
+
+
+
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={"Vendor"}
+                      name={"nccToVendorName"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={vendorName}
+                      mandatory={true}
+                      handleChange={handleToVendorName}
+                      errors={errors.toVendorName}
+                      disabled={false}
+                    />
+                  </div>
+
+                  <div className="form-group mb-0 col-md-12">
+                    <div className="inputbox date-section">
+                      <DatePickerHookForm
+                        name={`EffectiveDate`}
+                        label={'Effective Date'}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                        handleChange={(date) => {
+                          handleEffectiveDateChange(date)
+                        }}
+                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                        rules={{ required: true }}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="DD/MM/YYYY"
+                        minDate={new Date(minDate)}
+                        //maxDate={new Date()}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        customClassName="withBorder"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+                        disabled={false}
+                        mandatory={true}
+                        errors={errors.EffectiveDate}
+                      />
+                    </div>
+                  </div>
                 </Row>
               )}
               <Row className="justify-content-between my-3">

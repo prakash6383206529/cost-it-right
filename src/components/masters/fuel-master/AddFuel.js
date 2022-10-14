@@ -4,10 +4,10 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
 import {
-  searchableSelect, focusOnError, renderText,
+  searchableSelect, focusOnError, renderNumberInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
-import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
+import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
@@ -46,7 +46,13 @@ class AddFuel extends Component {
       DeleteChanged: true,
       HandleChanged: true,
       RateChange: [],
-      setDisable: false
+      setDisable: false,
+      errorObj: {
+        state: false,
+        rate: false,
+        effectiveDate: false
+      },
+      isGridEdit: false
     }
   }
 
@@ -56,13 +62,16 @@ class AddFuel extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
+    if (!this.state.isViewMode) {
+      this.props.getAllCity(countryId => {
+        this.props.fetchStateDataAPI(countryId, () => { })
+      })
+    }
     this.getDetails(data);
-    this.props.getUOMSelectList(() => { })
-    this.props.getFuelComboData(() => { })
-    this.props.getAllCity(countryId => {
-      this.props.fetchStateDataAPI(countryId, () => { })
-    })
-
+    if (!(data.isEditFlag || data.isViewMode)) {
+      this.props.getFuelByPlant('', () => { })
+      this.props.getUOMSelectList(() => { })
+    }
   }
 
   /**
@@ -82,11 +91,6 @@ class AddFuel extends Component {
           const Data = res.data.Data;
           this.setState({ RateChange: Data })
           setTimeout(() => {
-            const { fuelComboSelectList } = this.props;
-
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => Number(item.Value) === Data.FuelId)
-            const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
-
             let rateGridArray = Data && Data.FuelDetatils.map((item) => {
               return {
                 Id: item.Id,
@@ -99,8 +103,8 @@ class AddFuel extends Component {
 
             this.setState({
               isEditFlag: true,
-              fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -123,6 +127,10 @@ class AddFuel extends Component {
   handleFuel = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ fuel: newValue, })
+      this.props.getUOMByFuelId(newValue.value, (res) => {
+        let Data = res.data.DynamicData
+        this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+      })
     } else {
       this.setState({ fuel: [] })
     }
@@ -154,50 +162,74 @@ class AddFuel extends Component {
   };
 
   checkForSpecialCharacter = (value) => {
-    if (value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)) {
+    if (value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)) {
       return false;
     }
     return true;
   }
 
+  checkDuplicateRateGrid = (rateGrid, StateName, effectiveDate, rateGridEditIndex) => {
+    let countForGrid = 0
+    rateGrid && rateGrid.map((item, index) => {
+      if ((String(StateName?.value) === String(item.StateId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY'))) && rateGridEditIndex !== index) {
+        countForGrid++
+      }
+      return null
+    })
+
+    if (countForGrid !== 0) {
+      Toaster.warning('Rate for this State and Effective Date already exist')
+    }
+    return countForGrid
+  }
 
   rateTableHandler = () => {
     const { StateName, rateGrid, effectiveDate, } = this.state;
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
-    if (decimalLengthsix(Rate)) {
-      Toaster.warning("Decimal value should not be more than 6")
-      return false
-    }
-    if (positiveAndDecimalNumber(Rate)) {
-      Toaster.warning("Enter valid value")
-      return false
 
-    } else {
-      if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
-        Toaster.warning('Fields should not be empty');
+    let count = 0;
+    setTimeout(() => {
+
+      if (StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+        count++
+      }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
+        count++
+      }
+      if (effectiveDate === "") {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++
+      }
+      if (count > 0) {
+        return false
+      }
+      if (this.props.invalid === true) {
+        Toaster.warning('Please fill all mandatory fields first')
         return false;
       }
-    }
+      if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate) !== 0) {
+        return false
+      }
+      tempArray.push(...rateGrid, {
+        Id: '',
+        StateLabel: StateName ? StateName.label : '',
+        StateId: StateName ? StateName.value : '',
+        //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+        effectiveDate: effectiveDate,
+        Rate: Rate,
+      })
 
-
-
-    tempArray.push(...rateGrid, {
-      Id: '',
-      StateLabel: StateName ? StateName.label : '',
-      StateId: StateName ? StateName.value : '',
-      //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
-      effectiveDate: effectiveDate,
-      Rate: Rate,
-    })
-
-    this.setState({
-      rateGrid: tempArray,
-      StateName: [],
-      effectiveDate: new Date(),
-    }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+      this.setState({
+        rateGrid: tempArray,
+        StateName: [],
+        effectiveDate: '',
+      }, () => this.props.change('Rate', ''));
+      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+    }, 200);
   }
 
 
@@ -208,8 +240,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: "",
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
-
+    this.setState({ AddUpdate: false, isEditIndex: false })
 
   }
 
@@ -221,8 +252,18 @@ class AddFuel extends Component {
     const { StateName, rateGrid, effectiveDate, rateGridEditIndex } = this.state;
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
+    if (this.checkDuplicateRateGrid(rateGrid, StateName, effectiveDate, rateGridEditIndex) !== 0) {
+      return false
+    }
+    if (this.props.invalid === true) {
+      return false;
+    }
     let tempArray = [];
 
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { rate: true } })
+      return false;
+    }
     let tempData = rateGrid[rateGridEditIndex];
     tempData = {
       Id: tempData.Id,
@@ -238,11 +279,11 @@ class AddFuel extends Component {
     this.setState({
       rateGrid: tempArray,
       StateName: [],
-      effectiveDate: new Date(),
+      effectiveDate: '',
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, errorObj: { rate: false } })
   };
 
   /**
@@ -282,14 +323,19 @@ class AddFuel extends Component {
   */
   deleteItem = (index) => {
     const { rateGrid } = this.state;
+    this.setState({
+      rateGridEditIndex: '',
+      isEditIndex: false,
+      effectiveDate: '',
 
+      StateName: '',
+    }, () => this.props.change('Rate', 0))
     let tempData = rateGrid.filter((item, i) => {
       if (i === index) {
         return false;
       }
       return true;
     });
-
     this.setState({
       rateGrid: tempData
     })
@@ -300,9 +346,22 @@ class AddFuel extends Component {
     this.setState({ isOpenFuelDrawer: true })
   }
 
-  closeFuelDrawer = (e = '') => {
+  closeFuelDrawer = (e = '', reqData = {}) => {
     this.setState({ isOpenFuelDrawer: false }, () => {
-      this.props.getFuelComboData(() => { })
+      this.props.getFuelByPlant('', () => {
+        const { fuelDataByPlant } = this.props;
+
+        /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(reqData).length > 0) {
+          let fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => item.Text === reqData.FuelName)
+
+          this.props.getUOMByFuelId(fuelObj.Value, (res) => {
+            let Data = res.data.DynamicData
+            this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+          })
+          this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
+        }
+      })
     })
   }
 
@@ -322,12 +381,13 @@ class AddFuel extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { fuelComboSelectList, UOMSelectList, stateList } = this.props;
+    const { fuelDataByPlant, UOMSelectList, stateList } = this.props;
     const temp = [];
     if (label === 'fuel') {
-      fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
+      fuelDataByPlant && fuelDataByPlant.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -335,6 +395,7 @@ class AddFuel extends Component {
       stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -344,7 +405,7 @@ class AddFuel extends Component {
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
-
+        return null
       });
       return temp;
     }
@@ -360,7 +421,7 @@ class AddFuel extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -372,8 +433,10 @@ class AddFuel extends Component {
       rateGrid: [],
       isEditFlag: false,
     })
-    this.props.getFuelDetailData('', res => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getFuelDetailData('', res => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -384,7 +447,7 @@ class AddFuel extends Component {
     const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
-      Toaster.warning('Rate should not be empty.');
+      Toaster.warning("Please fill fuel's rate details for atleast one state");
       return false;
     }
 
@@ -392,7 +455,7 @@ class AddFuel extends Component {
       return {
         Id: item.Id,
         Rate: item.Rate,
-        EffectiveDate: item.effectiveDate,
+        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         StateId: item.StateId
       }
     })
@@ -417,13 +480,13 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
       this.setState({ setDisable: true })
       let requestData = {
-        FuelDetailId: FuelDetailId,
+        FuelGroupEntryId: FuelDetailId,
         LoggedInUserId: loggedInUserId(),
         FuelId: fuel.value,
         UnitOfMeasurementId: UOM.value,
@@ -434,7 +497,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       })
 
@@ -452,7 +515,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -470,7 +533,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit } = this.state;
 
     return (
       <>
@@ -483,7 +546,7 @@ class AddFuel extends Component {
                   <div className="shadow-lgg login-formg">
                     <div className="row">
                       <div className="col-md-6">
-                        <h1>{isEditFlag ? `Update Fuel` : `Add Fuel`}</h1>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel</h1>
                       </div>
                     </div>
                     <form
@@ -537,7 +600,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -549,14 +612,14 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={true}
                                 />
                               </div>
                             </div>
                           </Col>
                         </Row>
 
-                        <Row>
+                        <Row className='rate-form-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Rate:"}</h5>
@@ -570,34 +633,37 @@ class AddFuel extends Component {
                                   type="text"
                                   label="State"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? '-' : "Select"}
                                   options={this.renderListing("state")}
                                   required={true}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.state && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <Field
-                              label={`Rate (INR)`}
-                              name={"Rate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderText}
-                              required={true}
-                              className=""
-                              customClassName=" withBorder"
-                              disabled={isViewMode}
-                            />
+                            <div className='p-relative'>
+                              <Field
+                                label={`Rate (INR)`}
+                                name={"Rate"}
+                                type="text"
+                                placeholder={isViewMode ? '-' : 'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                component={renderNumberInputField}
+                                required={true}
+                                className=""
+                                customClassName="mb-0 withBorder"
+                                disabled={isViewMode}
+                              />
+                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            </div>
                           </Col>
                           <Col md="3">
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span>
-                                {/* <span className="asterisk-required">*</span> */}
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -609,41 +675,51 @@ class AddFuel extends Component {
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
                                   dropdownMode="select"
-                                  placeholderText="Select date"
+                                  placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <div>
+                            <div className='pt-2 pr-0'>
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    <div className={"cancel-icon"}></div>Cancel
+                                  </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  className={"user-btn mt30 pull-left"}
-                                  disabled={isViewMode}
-                                  onClick={this.rateTableHandler}
-                                >
-                                  <div className={"plus"}></div>ADD
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    className={"user-btn mt30 pull-left"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableHandler}
+                                  >
+                                    <div className={"plus"}></div>ADD
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    Reset
+                                  </button>
+                                </>
                               )}
-                              <button
-                                type="button"
-                                className={"mr15 ml-3 mt30 add-cancel-btn cancel-btn"}
-                                disabled={isViewMode}
-                                onClick={this.rateTableReset}
-                              >
-                                <div className={"cancel-icon"}></div>Cancel
-                              </button>
-
                             </div>
                           </Col>
                           <Col md="12">
@@ -673,7 +749,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Edit mr-2"
                                             type={"button"}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
                                               this.editItemDetails(index)
                                             }
@@ -681,7 +757,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Delete"
                                             type={"button"}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
@@ -691,10 +767,15 @@ class AddFuel extends Component {
                                     );
                                   })}
                               </tbody>
+
+                              {this.state.rateGrid.length === 0 && (
+                                <tbody className='border'>
+                                  <tr>
+                                    <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                  </tr>
+                                </tbody>
+                              )}
                             </Table>
-                            {this.state.rateGrid.length === 0 && (
-                              <NoContentFound title={EMPTY_DATA} />
-                            )}
                           </Col>
                         </Row>
                       </div>
@@ -704,7 +785,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -753,10 +834,10 @@ function mapStateToProps(state) {
   let initialValues = {};
 
   const { UOMSelectList, stateList } = comman;
-  const { fuelComboSelectList } = fuel;
+  const { fuelDataByPlant } = fuel;
   const { initialConfiguration } = auth;
 
-  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration, UOMSelectList, stateList }
+  return { initialValues, fieldsObj, fuelDataByPlant, initialConfiguration, UOMSelectList, stateList }
 
 }
 
@@ -767,16 +848,18 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getFuelComboData,
+  getFuelByPlant,
   createFuelDetail,
   updateFuelDetail,
   getFuelDetailData,
   getUOMSelectList,
   fetchStateDataAPI,
-  getAllCity
+  getAllCity,
+  getUOMByFuelId
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

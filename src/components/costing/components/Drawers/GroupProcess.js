@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
-import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
+import { getMachineProcessGroupDetail, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
-import { Checkbox } from "@material-ui/core";
 import NoContentFound from "../../../common/NoContentFound";
 import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
 
@@ -24,12 +23,14 @@ function GroupProcess(props) {
 
     useEffect(() => {
         let data = {
-            VendorId: costData.VendorId,
-            TechnologyId: Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting) ? String(`${costData.ETechnologyType},${MACHINING}`) : `${costData.ETechnologyType}`,
+            VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+            TechnologyId: Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting) ? String(`${costData?.TechnologyId},${MACHINING}`) : `${costData?.TechnologyId}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
             CostingId: costData.CostingId,
             EffectiveDate: CostingEffectiveDate,
+            PlantId: (getConfigurationKey()?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+            CostingTypeId: costData.CostingTypeId,
+            CustomerId: costData.CustomerId
         }
         setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
@@ -63,6 +64,7 @@ function GroupProcess(props) {
             if (el.GroupName === clickedData.GroupName && el.MachineId === clickedData.MachineId) {
                 removeCondition = true
             }
+            return null
         })
 
         let tempData = selectedData
@@ -89,6 +91,7 @@ function GroupProcess(props) {
             if (el.GroupName === item.GroupName && el.MachineId === item.MachineId) {
                 result = true
             }
+            return null
         })
         return result
     }
@@ -114,9 +117,15 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
+                                        <label className="custom-checkbox" > {item.GroupName} {!findGroupCode(item, selectedProcessGroupId) &&
+                                            <>
+                                                <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />
+                                                <span className="before-box" />
+                                            </>
+                                        }
+                                        </label>
                                     </span>
-                                        {item.GroupName}</td>
+                                    </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
                                     <td className='process-name'>{item.Tonnage} <div onClick={() => {

@@ -3,15 +3,15 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
-import { renderText } from "../layout/FormInputs";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString } from "../../helper/validation";
+import { focusOnError, renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import DayTime from "../common/DayTimeWrapper"
-import { getConfigurationKey, userDetails } from "../../helper";
+import { getConfigurationKey, loggedInUserId } from "../../helper";
 
 
 class Department extends Component {
@@ -33,7 +33,9 @@ class Department extends Component {
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
 		if (isEditFlag) {
-			this.props.getDepartmentAPI(DepartmentId, () => { })
+			this.props.getDepartmentAPI(DepartmentId, (res) => {
+				this.setState({ DataToChange: res?.data?.Data })
+			})
 		} else {
 			this.props.setEmptyDepartmentAPI('', () => { })
 		}
@@ -48,7 +50,7 @@ class Department extends Component {
 		const { reset } = this.props;
 		reset();
 		this.props.setEmptyDepartmentAPI('', () => { })
-		this.toggleDrawer('')
+		this.toggleDrawer('', 'cancel')
 	}
 
 	/**
@@ -61,12 +63,12 @@ class Department extends Component {
 		this.props.setEmptyDepartmentAPI('', () => { })
 	}
 
-	toggleDrawer = (event) => {
+	toggleDrawer = (event, type) => {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;
 		}
 
-		this.props.closeDrawer('')
+		this.props.closeDrawer('', type)
 	};
 
 	/**
@@ -78,95 +80,61 @@ class Department extends Component {
 	onSubmit(values) {
 		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
+		const { DataToChange } = this.state;
 		this.setState({ isLoader: true })
 
 		if (isEditFlag) {
-
+			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode) {
+				this.toggleDrawer('', 'cancel')
+				return false
+			}
 			// Update existing department
 			let formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
 				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
+				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
 				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
-			}
-			let comObj = {
-				CompanyId: departmentDetail.CompanyId,
-				LoggedInUserId: userDetails().LoggedInUserId,
-				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
 			this.setState({ isLoader: true })
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
 					if (this.state.isCompanyConfigurable) {
-						this.props.updateCompanyAPI(comObj, () => {
-							Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
-						})
-					} else {
+						Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
+					}
+					else {
 						// IF COMPANY CONFIGURABLE IS FALSE
 						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
 					}
 				}
 				reset();
-				this.toggleDrawer('')
+				this.toggleDrawer('', 'submit')
 				this.props.setEmptyDepartmentAPI('', () => { })
 			})
 
 		} else {
 
-			let obj = {
-				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
-				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
+			let depObj = {
+				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
+				CompanyId: '',
+				LoggedInUserId: loggedInUserId()
 			}
-			// IF COMPANY CONFIGURABLE KEY IS TRUE
-			if (this.state.isCompanyConfigurable) {
-
-				// ADD NEW COMPANY VIA DEPARTMENT
-				this.props.addCompanyAPI(obj, (res) => {
-					if (res && res.data && res.data.Result) {
-						const id = res.data.Identity
-						let formReq = {
-							DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-							DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
-							CompanyId: id
-						}
-						this.props.addDepartmentAPI(formReq, (res) => {
-
-							if (res && res.data && res.data.Result) {
-								Toaster.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
-								reset();
-								this.toggleDrawer('')
-							}
-						})
-					}
-				})
-			} else {
-				// IF COMPANY CONFIGURABLE KEY IS FALSE
-				let depObj = {
-					DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-					DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
-					CompanyId: ''
+			this.props.addDepartmentAPI(depObj, (res) => {
+				if (res && res.data && res.data.Result) {
+					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+					reset();
+					this.toggleDrawer('', 'submit')
 				}
-				this.props.addDepartmentAPI(depObj, (res) => {
-					if (res && res.data && res.data.Result) {
-						Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
-						reset();
-						this.toggleDrawer('')
-					}
-				})
-			}
-
-
+			})
 		}
-
 	}
 
 	render() {
-		const { handleSubmit, pristine, reset, submitting, isEditFlag } = this.props;
-		const { isLoader, isSubmitted } = this.state;
+		const { handleSubmit, isEditFlag } = this.props;
+		const { isSubmitted } = this.state;
 
 		return (
 			<div>
@@ -184,7 +152,7 @@ class Department extends Component {
 											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
 										</div>
 										<div
-											onClick={(e) => this.toggleDrawer(e)}
+											onClick={(e) => this.toggleDrawer(e, 'cancel')}
 											className={'close-button right'}>
 										</div>
 									</Col>
@@ -198,7 +166,7 @@ class Department extends Component {
 												name={"DepartmentName"}
 												type="text"
 												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
 												component={renderText}
 												required={true}
 												maxLength={26}
@@ -206,14 +174,14 @@ class Department extends Component {
 											/>
 										</div>
 										{
-											this.state.isCompanyConfigurable &&
+
 											<div className="input-group col-md-12 input-withouticon" >
 												<Field
 													label="Code"
-													name={"CompanyCode"}
+													name={"DepartmentCode"}
 													type="text"
 													placeholder={''}
-													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
 													component={renderText}
 													required={true}
 													customClassName={'withBorder'}
@@ -275,10 +243,10 @@ const mapStateToProps = ({ auth }) => {
 	const { departmentDetail } = auth;
 	let initialValues = {};
 
-	if (departmentDetail && departmentDetail != undefined) {
+	if (departmentDetail && departmentDetail !== undefined) {
 		initialValues = {
 			DepartmentName: departmentDetail.DepartmentName,
-			CompanyCode: departmentDetail.DepartmentCode,
+			DepartmentCode: departmentDetail.DepartmentCode,
 			Description: departmentDetail.Description,
 		}
 	}
@@ -302,4 +270,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,
+	touchOnChange: true,
+	onSubmitFail: errors => {
+		focusOnError(errors);
+	},
 })(Department));

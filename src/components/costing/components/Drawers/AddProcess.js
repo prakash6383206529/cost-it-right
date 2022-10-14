@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,6 +17,8 @@ import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../co
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
+import { PaginationWrapper } from '../../../common/commonPagination';
+import { hyphenFormatter } from '../../../masters/masterUtil';
 
 const gridOptions = {};
 
@@ -50,8 +52,10 @@ function AddProcess(props) {
     let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
       if (item.GroupName) {
         tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else if (tempArr?.IsChild) {      //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
       } else {
-        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId, IsChild: true })        // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
       }
 
       let obj = item
@@ -78,68 +82,41 @@ function AddProcess(props) {
   }, [processDrawerList])
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      let data = {}
-
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      } else {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(costData.ETechnologyType),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
+    let data = {}
+    if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
       }
-      dispatch(getProcessDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-      let data = {}
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      else {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(costData.ETechnologyType),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      dispatch(getProcessDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
     }
+    else {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(costData?.TechnologyId),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
+      }
+    }
+    dispatch(getProcessDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
   }, []);
 
   const onRowSelect = (event) => {
@@ -148,9 +125,10 @@ function AddProcess(props) {
 
     if (isTabSwitch) {
       selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
-        if (item.ProcessId == rowData.ProcessId && item.MachineRateId == rowData.MachineRateId) {
+        if (item.ProcessId === rowData.ProcessId && item.MachineRateId === rowData.MachineRateId) {
           Execute = false
         }
+        return null
       })
     }
 
@@ -165,11 +143,12 @@ function AddProcess(props) {
       processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
 
-    dispatch(setSelectedDataOfCheckBox(processData))
-
     var selectedRows = gridApi.getSelectedRows();
-
-    // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    if (selectedRows?.length === 0) {
+      dispatch(setSelectedDataOfCheckBox([]))
+    } else {
+      dispatch(setSelectedDataOfCheckBox(processData))
+    }
     setSelectedRowData(selectedRows)
   }
 
@@ -178,7 +157,7 @@ function AddProcess(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedProcessAndGroup.length === 0) {
+    if (selectedProcessAndGroup?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -207,6 +186,7 @@ function AddProcess(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
@@ -221,8 +201,7 @@ function AddProcess(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -235,9 +214,10 @@ function AddProcess(props) {
 
     if (selectedRowData?.length > 0) {
       selectedRowData.map((item) => {
-        if (item.ProcessId == props.node.data.ProcessId && item.MachineRateId == props.node.data.MachineRateId) {
+        if (item.ProcessId === props.node.data.ProcessId && item.MachineRateId === props.node.data.MachineRateId) {
           props.node.setSelected(true)
         }
+        return null
       })
       return cellValue
     } else {
@@ -256,7 +236,8 @@ function AddProcess(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    hyphenFormatter: hyphenFormatter
   };
 
   useEffect(() => {
@@ -315,7 +296,7 @@ function AddProcess(props) {
                 </Col>
               </Row>
               <Row>
-                <Col className='px-3'>
+                <Col className="hidepage-size">
                   {processGroup && groupMachineId === '' && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
@@ -343,8 +324,7 @@ function AddProcess(props) {
                     {activeTab === '1' && (
                       <TabPane tabId="1">
                         <Row className="mx-0">
-                          <Col className="hidepage-size mt-2 px-0">
-
+                          <Col className="pt-2 px-0">
                             <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -362,7 +342,7 @@ function AddProcess(props) {
                                   domLayout='autoHeight'
                                   rowData={tableData}
                                   pagination={true}
-                                  paginationPageSize={10}
+                                  paginationPageSize={defaultPageSize}
                                   onGridReady={onGridReady}
                                   gridOptions={gridOptions}
                                   loadingOverlayComponent={'customLoadingOverlay'}
@@ -381,20 +361,14 @@ function AddProcess(props) {
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                  <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                  </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                               </div>
                             </div>
                           </Col>
@@ -412,8 +386,8 @@ function AddProcess(props) {
               </Row>
 
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left d-flex justify-content-end">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-left d-flex justify-content-end bluefooter-butn">
                   <button
                     type={'button'}
                     className="reset cancel-btn mr5"

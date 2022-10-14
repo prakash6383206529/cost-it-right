@@ -11,12 +11,13 @@ import { EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/consta
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setIsToolCostUsed, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setIsToolCostUsed, setProcessGroupGrid, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
+import { debounce } from 'lodash';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -30,7 +31,6 @@ function ProcessCost(props) {
   })
   const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse)
   const trimValue = getConfigurationKey()
-  const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
   const [parentCalciIndex, setParentCalciIndex] = useState('')
@@ -49,7 +49,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
 
@@ -59,10 +59,13 @@ function ProcessCost(props) {
     arr && arr.map((item) => {
       if (item.GroupName === '' || item.GroupName === null) {
         apiArr.push(item)
+      } else if (item?.IsChild) {                 //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
       } else {
         apiArr.push(item)
         item.ProcessList && item.ProcessList.map(processItem => {
           processItem.GroupName = item.GroupName
+          processItem.IsChild = true              // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
           apiArr.push(processItem)
           return null
         })
@@ -71,6 +74,29 @@ function ProcessCost(props) {
     })
     return apiArr
   }
+
+  /**
+   *
+   * @param {*} arr
+   * @returns ARRAY HAVING ONLY PARENT OBJECT | USED TO SET REDUCER EVERY TIME
+   */
+  const formatReducerArray = (arr) => {
+    let apiArr = []
+    arr && arr.map((item) => {
+      if (item?.IsChild) {
+        return false
+      } else {
+        apiArr.push(item)
+      }
+      return null
+    })
+    return apiArr
+  }
+
+  // ****************** SPECIFICALLY WHEN ACCORDION IS OPENED WITHOUT API CALL ******************
+  useEffect(() => {
+    dispatch(setProcessGroupGrid(formatReducerArray(data && data.CostingProcessCostResponse)))
+  }, [data && data.CostingProcessCostResponse])
 
   useEffect(() => {
     const Params = {
@@ -83,11 +109,10 @@ function ProcessCost(props) {
       if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
         dispatch(isDataChange(true))
       }
-      if (isFromApi) {
-        let apiArr = formatMainArr(tabData?.CostingProcessCostResponse)
+      if (isFromApi && tabData) {
+        let apiArr = formatMainArr(tabData && tabData?.CostingProcessCostResponse)
         tabData.CostingProcessCostResponse = apiArr
       }
-
 
       if (JSON.stringify(tabData) !== JSON.stringify(props.data)) {
         if (isAssemblyTechnology) {
@@ -111,6 +136,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [id]: tempData })
       setTimeout(() => {
         setGridData(tempArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
         setIsCalculator(true)
       }, 100)
     } else {
@@ -128,6 +154,7 @@ function ProcessCost(props) {
 
       setTimeout(() => {
         setGridData(parentTempArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(parentTempArr)))
         setIsCalculator(true)
       }, 100);
     }
@@ -137,7 +164,7 @@ function ProcessCost(props) {
    * @method toggleWeightCalculator
    * @description For opening weight calculator
   */
-  const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+  const toggleWeightCalculator = debounce((id, list = [], parentIndex = '') => {
     setCalciIndex(id)
     setParentCalciIndex(parentIndex)
     setListData(list)
@@ -169,7 +196,7 @@ function ProcessCost(props) {
       }))
     }
     // setCalculatorData(calciData)
-  }
+  }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
 
@@ -205,7 +232,8 @@ function ProcessCost(props) {
         setIsFromApi(false)
         setTabData(tempArr2)
         setGridData(tempArray)
-        setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+        dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
+        setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
         // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
       }, 100)
@@ -226,7 +254,7 @@ function ProcessCost(props) {
       }
       let gridTempArr = Object.assign([...listData], { [calciIndex]: tempData })
 
-      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -248,7 +276,7 @@ function ProcessCost(props) {
       }
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, initialConfiguration.NoOfDecimalForInputOutput))
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
 
       let apiArr = []
@@ -281,12 +309,12 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(processTemparr)
 
+      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
     }
   }
 
 
   const onRemarkPopUpClickk = (index) => {
-
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -304,6 +332,7 @@ function ProcessCost(props) {
     setTabData(tempArr)
     setGridData(gridTempArr)
 
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
     if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
@@ -345,6 +374,8 @@ function ProcessCost(props) {
     setIsFromApi(false)
     setTabData(tempArr)
     setGridData(processTemparr)
+    dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
+    ///////////////////
 
     if (getValues(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`)) {
       Toaster.success('Remark saved successfully')
@@ -359,6 +390,10 @@ function ProcessCost(props) {
     button.click()
 
   }
+
+  useEffect(() => {
+    dispatch(setIsToolCostUsed(data && data.IsShowToolCost))
+  }, [data && data.IsShowToolCost])
 
   /**
    * @method DrawerToggle
@@ -399,7 +434,7 @@ function ProcessCost(props) {
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
+        setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
       })
 
@@ -417,6 +452,7 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setGridData(tempArr)
+      dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
       setTabData(tempArr2)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -488,11 +524,12 @@ function ProcessCost(props) {
 
         let tempArr = [...gridData, ...rowArr]
         setDataInGridAndApi(tempArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
 
       }
     } else {
       if (rowData.length > 0) {
-        let parentTempData = gridData[groupNameIndex]
+        let parentTempData = processGroupGrid[groupNameIndex]
         let parentProcessList = parentTempData.ProcessList
         let rowArr = rowData && rowData.map((el) => {
           let processQuantityMain = 1
@@ -531,8 +568,9 @@ function ProcessCost(props) {
           Quantity: calculateRowQuantity(arr),
           ProcessCost: calculateRowProcessCost(arr)
         }
-        let mainArr = Object.assign([...gridData], { [groupNameIndex]: parentTempData })
+        let mainArr = Object.assign([...processGroupGrid], { [groupNameIndex]: parentTempData })
         setDataInGridAndApi(mainArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(mainArr)))
       }
     }
 
@@ -576,7 +614,7 @@ function ProcessCost(props) {
 
   const deleteItem = (index) => {
     let tempArr2 = [];
-    let tempArrAfterDelete = gridData && gridData.filter((el, i) => {
+    let tempArrAfterDelete = processGroupGrid && processGroupGrid.filter((el, i) => {
       if (i === index) return false;
       return true
     })
@@ -603,12 +641,13 @@ function ProcessCost(props) {
 
       })
       setGridData(tempArrAfterDelete)
+      dispatch(setProcessGroupGrid(formatReducerArray(tempArrAfterDelete)))
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
+        setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
       })
     }, 200)
@@ -636,7 +675,7 @@ function ProcessCost(props) {
   }
 
   const deleteGroupProcess = (index, parentIndex, list) => {
-    let parentTempData = gridData[parentIndex]
+    let parentTempData = processGroupGrid[parentIndex]
     let tempArr2 = [];
     let tempArrAfterDelete = list && list.filter((el, i) => {
       if (i === index) return false;
@@ -664,7 +703,7 @@ function ProcessCost(props) {
       ProductionPerHour: tempArrAfterDelete.length > 0 && tempArrAfterDelete[0].UOMType !== TIME ? '-' : ProductionPerHourTotal,
       Quantity: QuantityTotal
     }
-    tempArr2 = Object.assign([...gridData], { [parentIndex]: parentTempData })
+    tempArr2 = Object.assign([...processGroupGrid], { [parentIndex]: parentTempData })
     let apiArr = formatMainArr(tempArr2)
     let ProcessCost = 0
     ProcessCost = tempArr2 && tempArr2.reduce((accummlator, el) => {
@@ -676,10 +715,11 @@ function ProcessCost(props) {
       ProcessCost: ProcessCost
     }
     setGridData(tempArr2)
+    dispatch(setProcessGroupGrid(formatReducerArray(tempArr2)))
     setTabData(tempArr3)
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.Quantity`, el.Quantity)
+      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       return null
     })
 
@@ -694,7 +734,7 @@ function ProcessCost(props) {
   const handleQuantityChange = (event, index) => {
 
     let tempArr = []
-    let tempData = gridData[index]
+    let tempData = processGroupGrid[index]
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
       let processCost = 0
@@ -712,7 +752,7 @@ function ProcessCost(props) {
         ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
         ProcessCost: processCost
       }
-      let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+      let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
 
       let ProcessCostTotal = 0
       ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -731,6 +771,7 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(gridTempArr)
+      dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
@@ -741,7 +782,7 @@ function ProcessCost(props) {
         IsCalculatedEntry: false,
         ProcessCost: ProcessCost,
       }
-      let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+      let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
 
       let ProcessCostTotal = 0
       ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -759,6 +800,7 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(gridTempArr)
+      dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setTimeout(() => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, "")
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
@@ -770,7 +812,7 @@ function ProcessCost(props) {
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex) => {
 
     let tempArr = []
-    let processTempData = gridData[parentIndex]
+    let processTempData = processGroupGrid[parentIndex]
     let tempData = list[index]
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
@@ -791,7 +833,7 @@ function ProcessCost(props) {
         ProcessCost: processCost
       }
       let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
 
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -813,7 +855,8 @@ function ProcessCost(props) {
         ProcessCost: ProcessCostTotal,
         ProcessList: gridTempArr
       }
-      let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
+      let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
+
       let apiArr = formatMainArr(processTemparr)
 
 
@@ -822,7 +865,7 @@ function ProcessCost(props) {
       }, 0)
 
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
-      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, getConfigurationKey().NoOfDecimalForInputOutput))
 
       tempArr = {
         ...tabData,
@@ -835,6 +878,7 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(processTemparr)
 
+      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
     } else {
 
       const ProcessCost = tempData.MHR * 0
@@ -860,7 +904,7 @@ function ProcessCost(props) {
         ...processTempData,
         ProcessCost: ProcessCostTotal
       }
-      let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
+      let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
       let apiArr = formatMainArr(processTemparr)
 
       tempArr = {
@@ -872,6 +916,7 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
+      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     }
   }
@@ -951,53 +996,60 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
-
   const renderSingleProcess = (process, parentIndex) => {
     return (
       process.ProcessList && process.ProcessList.map((item, index) => {
         return (
           <tr>
-            <td>-</td>
+            <td>{'-'}</td>
             <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-            <td style={{ width: 150 }}>
-              <span className="d-inline-block w90px mr-2">
-                {
-                  <NumberFieldHookForm
-                    label=""
-                    name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                      //required: true,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
-                    defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
-                    className=""
-                    customClassName={'withBorder'}
-                    handleChange={(e) => {
-                      e.preventDefault()
-                      handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
-                    }}
+            <td>
+              <div className='d-flex align-items-center'>
+                <span className="d-inline-block  mr-2">
 
-                    // errors={}
-                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                  {
+                    <NumberFieldHookForm
+                      label=""
+                      name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          value: /^\d{0,6}(\.\d{0,4})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 4',
+                        },
+                      }}
+                      errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[index] && errors.SingleProcessGridField[index][parentIndex] && errors.SingleProcessGridField[index][parentIndex].Quantity : ''}
+                      defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
+                      }}
+
+                      // errors={}
+                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                    />
+
+                  }
+
+                </span>
+                <div className='min15'>
+                  <button
+                    className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                    type={'button'}
+                    onClick={() => toggleWeightCalculator(index, process.ProcessList, parentIndex)}
                   />
-                }
-              </span>
-              <button
-                className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                type={'button'}
-                onClick={() => toggleWeightCalculator(index, process.ProcessList, parentIndex)}
-              />
+                </div>
+              </div>
             </td>
             <td style={{ width: 100 }}>
               {
@@ -1041,7 +1093,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index][parentIndex] !== undefined ? errors.SingleProcessGridField[index][parentIndex].remarkPopUp : ''}
+                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
@@ -1107,25 +1159,24 @@ function ProcessCost(props) {
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
-                    <th style={{ width: "150px" }}>{`Process`}</th>
+                    <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
-                    <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
-                    <th style={{ width: "220px" }}>{`Machine Rate`}</th>
-                    <th style={{ width: "220px" }}>{`UOM`}</th>
-                    <th style={{ width: "220px" }}>{`Parts/Hour`}</th>
-                    <th style={{ width: "220px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
-                    <th style={{ width: "220px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "150px" }}>{`Machine Tonnage`}</th>
+                    <th style={{ width: "150px" }}>{`Machine Rate`}</th>
+                    <th style={{ width: "160px" }}>{`UOM`}</th>
+                    <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
+                    <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
+                    <th style={{ width: "110px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {gridData &&
-                    gridData.map((item, index) => {
-
+                  {processGroupGrid &&
+                    processGroupGrid.map((item, index) => {
                       return (
                         <>
                           <tr key={index}>
-                            <td className='text-overflow process-name'>
+                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name'}`}>
                               {
                                 (item?.GroupName === '' || item?.GroupName === null) ? '' :
                                   <div onClick={() => {
@@ -1142,11 +1193,11 @@ function ProcessCost(props) {
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
                             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-                            <td style={{ width: 150 }}>
+                            <td >
                               {
 
-                                <>
-                                  <span className="d-inline-block w90px mr-2">
+                                <div className='d-flex align-items-center'>
+                                  <span className="d-inline-block mr-2">
                                     {
                                       <NumberFieldHookForm
                                         label=""
@@ -1156,13 +1207,14 @@ function ProcessCost(props) {
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                          //required: true,
+                                          required: true,
                                           pattern: {
-                                            value: /^[0-9]\d*(\.\d+)?$/i,
-                                            message: 'Invalid Number.',
+                                            value: /^\d{0,6}(\.\d{0,4})?$/i,
+                                            message: 'Maximum length for integer is 6 and for decimal is 4',
                                           },
                                         }}
-                                        defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                        errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
+                                        defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
                                         className=""
                                         customClassName={'withBorder'}
                                         handleChange={(e) => {
@@ -1170,25 +1222,27 @@ function ProcessCost(props) {
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        // errors={}
                                         disabled={(CostingViewMode || IsLocked || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
+
                                   </span>
-                                  {
-                                    (item.GroupName === '' || item.GroupName === null) &&
-                                    <button
-                                      className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                                      type={'button'}
-                                      onClick={() => toggleWeightCalculator(index)}
-                                    />
-                                  }
-                                </>
+                                  <div className='min15'>
+                                    {
+                                      (item.GroupName === '' || item.GroupName === null) &&
+                                      <button
+                                        className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                                        type={'button'}
+                                        onClick={() => toggleWeightCalculator(index)}
+                                      />
+                                    }
+                                  </div>
+                                </div>
 
 
                               }
                             </td>
-                            <td style={{ width: 100 }}>
+                            <td>
                               {
                                 <TextFieldHookForm
                                   label=""
@@ -1258,7 +1312,7 @@ function ProcessCost(props) {
                       )
                       // }
                     })}
-                  {gridData && gridData.length === 0 && (
+                  {processGroupGrid && processGroupGrid.length === 0 && (
                     <tr>
                       <td colSpan={12}>
                         <NoContentFound title={EMPTY_DATA} />
@@ -1278,6 +1332,7 @@ function ProcessCost(props) {
                 setOperationCost={setOperationCost}
                 item={props.item}
                 IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
               />
 
               <OperationCostExcludedOverhead
@@ -1285,6 +1340,7 @@ function ProcessCost(props) {
                 setOtherOperationCost={setOtherOperationCost}
                 item={props.item}
                 IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
               />
             </>
           }

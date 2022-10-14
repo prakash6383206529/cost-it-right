@@ -150,6 +150,26 @@ export function registerUserAPI(requestData, callback) {
     };
 }
 
+
+export function registerRfqUser(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.registerRfqUser, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+                dispatch(getRegisterSuccess(response));
+            })
+            .catch((error) => {
+                dispatch(getRegisterFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+
+
 /**
  * @method getRegisterSuccess
  * @description return object containing action type
@@ -202,7 +222,7 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}&userType=${data.userType}`, config())
             .then((response) => {
                 dispatch({
                     type: GET_USER_DATA_SUCCESS,
@@ -301,6 +321,24 @@ export function updateUserAPI(requestData, callback) {
             });
     };
 }
+
+export function updateRfqUser(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateRfqUser, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                callback(error);
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+
 
 /**
  * @method setEmptyUserDataAPI
@@ -938,10 +976,10 @@ export function getSimulationLevelDataList(callback) {
  * @method fetchPlantDataAPI
  * @description Used to fetch plant list
  */
-export function getAllTechnologyAPI(callback) {
+export function getAllTechnologyAPI(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnology}`, config());
+        const request = axios.get(`${API.getTechnology}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -964,10 +1002,10 @@ export function getAllTechnologyAPI(callback) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getSimulationTechnologySelectList(callback) {
+export function getSimulationTechnologySelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1612,10 +1650,10 @@ export function getTopAndLeftMenuData(callback) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getMastersSelectList(callback) {
+export function getMastersSelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMastersSelectList}`, config());
+        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1764,5 +1802,22 @@ export function getUsersMasterLevelAPI(UserId, callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+/**
+ * @method activeInactiveRole
+ * @description active Inactive User
+ */
+export function activeInactiveRole(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.activeInactiveRole}`, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

@@ -1,13 +1,13 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { Row, Col, Label, } from 'reactstrap';
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getTechnologySelectList, getPlantSelectListByType
+  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -26,19 +26,21 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
-import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+import { labelWithUOMAndCurrency } from '../../../helper';
+import { getClientSelectList, } from '../actions/Client';
+
 
 const selector = formValueSelector('AddRMImport');
 
@@ -52,7 +54,7 @@ class AddRMImport extends Component {
       isEditFlag: false,
       isViewFlag: this.props?.data?.isViewFlag ? true : false,
       RawMaterialID: EMPTY_GUID,
-
+      costingHead: 'zero',
       RawMaterial: [],
       RMGrade: [],
       RMSpec: [],
@@ -60,16 +62,16 @@ class AddRMImport extends Component {
       Technology: [],
       selectedPlants: [],
       IsFinancialDataChanged: true,
-
+      costingTypeId: ZBCTypeId,
       vendorName: [],
       VendorCode: '',
-      selectedVendorPlants: [],
       vendorLocation: [],
       isVendorNameNotSelected: false,
-
+      client: [],
       HasDifferentSource: false,
       sourceLocation: [],
       oldDate: '',
+      nameDrawer: [],
 
       UOM: [],
       currency: [],
@@ -105,10 +107,12 @@ class AddRMImport extends Component {
       approveDrawer: false,
       uploadAttachements: true,
       isFinalApprovar: false,
-      disablePopup: false,
       setDisable: false,
-      inputLoader: false
-
+      inputLoader: false,
+      attachmentLoader: false,
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false,
+      finalApprovalLoader: false
     }
   }
 
@@ -117,11 +121,12 @@ class AddRMImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(() => { })
-    this.props.getUOMSelectList(() => { })
-    this.props.getSupplierList(() => { })
-    this.props.fetchPlantDataAPI(() => { })
-    this.props.getCurrencySelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
+      this.props.getSupplierList(() => { })
+      this.props.getCurrencySelectList(() => { })
+      this.props.getUOMSelectList(() => { })
+      this.props.fetchPlantDataAPI(() => { })
+    }
   }
 
   /**
@@ -130,34 +135,45 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
-    this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
-    this.props.getRawMaterialCategory(res => { });
-    this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
-
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
+    if (!this.state.isViewFlag) {
+      this.props.getAllCity(cityId => {
+        this.props.getCityByCountry(cityId, 0, () => { })
+      })
     }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    if (!(data.isEditFlag || data.isViewFlag)) {
+      this.props.getRawMaterialCategory(res => { });
+      this.props.getRawMaterialNameChild('', () => { })
+      this.setState({ inputLoader: true })
+      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getClientSelectList(() => { })
+    }
+    if (!this.state.isViewFlag) {
+      let obj = {
+        MasterId: RM_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
       }
-    })
+      this.setState({ finalApprovalLoader: true })
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
-
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
-
-      this.handleNetCost()
+    if (!this.state.isViewFlag) {
+      if (this.props.fieldsObj !== prevProps.fieldsObj) {
+        this.handleNetCost()
+      }
     }
   }
 
@@ -222,8 +238,24 @@ class AddRMImport extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    this.setState({ Technology: newValue })
+    if (newValue && newValue !== '') {
+      this.setState({ Technology: newValue, nameDrawer: true }, () => {
+        this.setState({ RawMaterial: [] })
+        this.setState({ nameDrawer: false })
+      })
+    }
   }
+  /**
+* @method handleClient
+* @description called
+*/
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
 
   /**
   * @method handleCategoryType
@@ -248,25 +280,16 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+      this.setState({ vendorName: [], vendorLocation: [] })
     }
   };
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  };
-
   /**
   * @method handleVendorLocation
   * @description called
@@ -387,19 +410,12 @@ class AddRMImport extends Component {
           else {
             this.setState({ showWarning: false })
           }
-
-
           this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
-
-
-
         })
       }
     }
-
-
   }
 
   /**
@@ -445,94 +461,53 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data, inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          }
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
-            this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
+          setTimeout(() => {
+            this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+            this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+            this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+            this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+            this.setState({
+              IsFinancialDataChanged: false,
+              isEditFlag: true,
+              isShowForm: true,
+              costingTypeId: Data.CostingTypeId,
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialId } : [],
+              RMGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
+              RMSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
+              Category: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
+              Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              HasDifferentSource: Data.HasDifferentSource,
+              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
+              UOM: Data.UnitOfMeasurementName !== undefined ? { label: Data.UnitOfMeasurementName, value: Data.UOM } : [],
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              remarks: Data.Remark,
+              files: Data.FileList,
+              singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              // FreightCharge:Data.FreightCharge
+              netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
 
-              setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList, technologySelectList, plantSelectList } = this.props;
-
-                const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
-                const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
-                const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
-                const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-                const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-                const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-                const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-                this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
-                this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
-                this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
-                this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-
-                let plantArray = [];
-                Data && Data.Plant.map((item) => {
-                  plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                  return plantArray;
-                })
-
-
-                let vendorPlantArray = [];
-                Data && Data.VendorPlant.map((item) => {
-                  vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                  return vendorPlantArray;
-                })
-
-
-                const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-                const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
-
-                this.setState({
-                  IsFinancialDataChanged: false,
-                  isEditFlag: true,
-                  isShowForm: true,
-                  IsVendor: Data.IsVendor,
-                  RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
-                  RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                  RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                  Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                  Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-                  selectedPlants: plantArray,
-                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                  selectedVendorPlants: vendorPlantArray,
-                  HasDifferentSource: Data.HasDifferentSource,
-                  sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-                  remarks: Data.Remark,
-                  files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
-                  // FreightCharge:Data.FreightCharge
-                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-
-                }, () => this.setState({ isLoader: false }))
-                // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-                let files = Data.FileList && Data.FileList.map((item) => {
-                  item.meta = {}
-                  item.meta.id = item.FileId
-                  item.meta.status = 'done'
-                  return item
-                })
-                if (this.dropzone.current !== null) {
-                  this.dropzone.current.files = files
-                }
-              }, 200);
-            });
-
-          })
-          this.props.getPlantBySupplier(Data.Vendor, () => { })
-
-
+            }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.FileList && Data.FileList.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
+          }, 200);
+          // this.props.getPlantBySupplier(Data.Vendor, () => { })
         }
       })
     } else {
@@ -541,29 +516,27 @@ class AddRMImport extends Component {
   }
 
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = () => {
+     * @method onPressVendor
+     * @description Used for Vendor checked
+     */
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: !this.state.IsVendor,
+      costingTypeId: costingHeadFlag,
       vendorName: [],
-      selectedVendorPlants: [],
-      vendorLocation: [],
-    }, () => {
-      const { IsVendor } = this.state;
-      this.setState({ inputLoader: true })
-      if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-      } else {
-
-        this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
-        this.props.getPlantBySupplier('', () => { })
-        this.props.getCityBySupplier(0, () => { })
-      }
     });
+    if (costingHeadFlag === VBCTypeId) {
+      this.setState({ inputLoader: true })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    }
+    else if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
+    else {
+      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
+      this.props.getPlantBySupplier('', () => { })
+      this.props.getCityBySupplier(0, () => { })
+    }
   }
-
   /**
   * @method onPressDifferentSource
   * @description Used for Different Source checked
@@ -579,7 +552,7 @@ class AddRMImport extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild(() => {
+      this.props.getRawMaterialNameChild('', () => {
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
@@ -606,7 +579,7 @@ class AddRMImport extends Component {
 
   /**
   * @method closeGradeDrawer
-  * @description  used to toggle grade Popup/Drawer
+  * @description  used to toggle grade Drawer
   */
   closeGradeDrawer = (e = '') => {
     this.setState({ isOpenGrade: false }, () => {
@@ -640,9 +613,9 @@ class AddRMImport extends Component {
 
   closeVendorDrawer = (e = '', formData) => {
     this.setState({ isOpenVendor: false }, () => {
-      const { IsVendor } = this.state
-      if (!IsVendor) {
-        this.props.getVendorListByVendorType(IsVendor, () => {
+      const { costingTypeId } = this.state
+      if (costingTypeId !== VBCTypeId) {
+        this.props.getVendorListByVendorType(ZBCTypeId, () => {
           const { vendorListByVendorType } = this.props
           if (Object.keys(formData).length > 0) {
             const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
@@ -673,8 +646,8 @@ class AddRMImport extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -683,9 +656,9 @@ class AddRMImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, filterPlantList,
-      cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props;
+    const { gradeSelectList, rmSpecification,
+      cityList, categoryList, filterCityListBySupplier, clientSelectList, rawMaterialNameSelectList,
+      UOMSelectList, currencySelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -720,8 +693,8 @@ class AddRMImport extends Component {
       return temp;
     }
     if (label === 'technology') {
-      technologySelectList &&
-        technologySelectList.map((item) => {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -730,16 +703,16 @@ class AddRMImport extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
         return null;
       });
       return temp;
     }
     if (label === 'singlePlant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
@@ -748,14 +721,6 @@ class AddRMImport extends Component {
       vendorListByVendorType && vendorListByVendorType.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
         return null;
       });
       return temp;
@@ -802,6 +767,14 @@ class AddRMImport extends Component {
       });
       return temp;
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
 
   }
 
@@ -815,7 +788,7 @@ class AddRMImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  clearForm = () => {
+  clearForm = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -825,7 +798,6 @@ class AddRMImport extends Component {
       Category: [],
       selectedPlants: [],
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       HasDifferentSource: false,
       sourceLocation: [],
@@ -834,20 +806,19 @@ class AddRMImport extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
-      showPopup: false,
       updatedObj: {}
     })
     this.props.getRMImportDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -858,12 +829,6 @@ class AddRMImport extends Component {
     this.clearForm()
   }
 
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -871,7 +836,7 @@ class AddRMImport extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -879,7 +844,7 @@ class AddRMImport extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -894,8 +859,9 @@ class AddRMImport extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -961,14 +927,13 @@ class AddRMImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
-      selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
+    const { RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
+      HasDifferentSource, sourceLocation, UOM, currency, client,
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, costingTypeId, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration, fieldsObj } = this.props;
-    this.setState({ setDisable: true, disablePopup: false })
-
-    if (vendorName.length <= 0) {
+    const { fieldsObj } = this.props;
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -982,19 +947,24 @@ class AddRMImport extends Component {
 
     this.setState({ isVendorNameNotSelected: false })
 
-    let plantArray = [];
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return plantArray;
-    })
+    let plantArray = []
+    if (costingTypeId === VBCTypeId) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    } else {
 
-
-
-    let vendorPlantArray = [];
-    selectedVendorPlants && selectedVendorPlants.map((item) => {
-      vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return vendorPlantArray;
-    })
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
+    let cbcPlantArray = []
+    if (costingTypeId === CBCTypeId) {
+      userDetails?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
+      })
+    }
+    let sourceLocationValue = (costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value)
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
@@ -1003,10 +973,10 @@ class AddRMImport extends Component {
       })
       let requestData = {
         RawMaterialId: RawMaterialID,
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         HasDifferentSource: HasDifferentSource,
-        Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
-        SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
+        Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
+        SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
@@ -1023,28 +993,23 @@ class AddRMImport extends Component {
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
-        IsFinancialDataChanged: isDateChange ? true : false
+        IsFinancialDataChanged: isDateChange ? true : false,
+        VendorPlant: [],
+        CustomerId: client.value
       }
       //DONT DELETE COMMENTED CODE BELOW
-
-      let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-
-      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-        Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-        String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-        && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-        && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-          (sourceLocationValue ? sourceLocationValue : '-'))) {
-        this.cancel()
-        return false
-      }
-
 
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+          this.props.updateRMImportAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+            }
+          })
+          this.setState({ updatedObj: requestData })
           return
 
         } else {
@@ -1055,46 +1020,36 @@ class AddRMImport extends Component {
         }
 
       }
-
-
-      if (isSourceChange) {
-        this.props.updateRMImportAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
-
-          }
-        })
-      }
       else {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (JSON.stringify(files) === JSON.stringify(DataToChange.FileList) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          this.props.updateRMImportAPI(requestData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm('submit')
+            }
+          })
+          return false
+
+        }
+
       }
-
-
-      // else {
-      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-      //     this.cancel()
-      //     return false
-      //   }
-      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-      //     this.setState({ showPopup: true, updatedObj: requestData })
-      //   }
-
-
 
     } else {
 
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         RawMaterialId: RawMaterialID,
         IsFinancialDataChanged: isDateChange ? true : false,
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         RawMaterial: RawMaterial.value,
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
@@ -1102,8 +1057,8 @@ class AddRMImport extends Component {
         TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
-        Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
-        SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
+        Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
+        SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
@@ -1111,8 +1066,7 @@ class AddRMImport extends Component {
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
-        Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
+        Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
@@ -1120,11 +1074,12 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
-        IsSendForApproval: false
+        IsSendForApproval: false,
+        VendorPlant: [],
+        CustomerId: client.value
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
@@ -1132,6 +1087,15 @@ class AddRMImport extends Component {
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          Toaster.warning('Please change data to send RM for approval')
+          return false
+        }
 
 
         if (IsFinancialDataChanged) {
@@ -1158,11 +1122,11 @@ class AddRMImport extends Component {
           if (isEditFlag) {
 
 
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
               Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
               String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
                 values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-              this.cancel()
+              this.cancel('submit')
               return false
             }
           }
@@ -1178,28 +1142,12 @@ class AddRMImport extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            this.clearForm();
+            this.clearForm('submit');
           }
         });
       }
     }
   }
-
-
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-        this.clearForm();
-      }
-    })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1217,7 +1165,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, costingHead, setDisable, costingTypeId } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1242,19 +1190,17 @@ class AddRMImport extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
               <div className="row">
                 <div className="col-md-12">
                   <div className="shadow-lgg login-formg">
+                    {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
                     <div className="row">
                       <div className="col-md-6">
                         <h2>
-                          {isEditFlag
-                            ? `Update Raw Material (Import)`
-                            : `Add Raw Material (Import)`}
+                          {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
                         </h2>
                       </div>
                     </div>
@@ -1266,29 +1212,50 @@ class AddRMImport extends Component {
                     >
                       <div className="add-min-height">
                         <Row>
-                          <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                              <div className={"left-title"}>Zero Based</div>
-                              <Switch
-                                onChange={this.onPressVendor}
-                                checked={this.state.IsVendor}
-                                id="normal-switch"
+                          <Col md="12">
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === ZBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(ZBCTypeId)
+                                }
                                 disabled={isEditFlag ? true : false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={"right-title"}>
-                                Vendor Based
-                              </div>
-                            </label>
-                          </Col>
-                        </Row>
+                              />{" "}
+                              <span>Zero Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === VBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(VBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Vendor Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === CBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(CBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Customer Based</span>
+                            </Label>
+                          </Col>                        </Row>
                         <Row>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
@@ -1327,7 +1294,7 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {(!isEditFlag) && (
                                 <div
                                   onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}
@@ -1401,23 +1368,24 @@ class AddRMImport extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={'Enter'}
-                              validate={[required]}
+                              placeholder={'-'}
+                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? [] : [required]}
                               component={renderText}
-                              required={true}
+                              required={!initialConfiguration?.IsAutoGeneratedRawMaterialCode}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
 
                           </Col>
 
-                          {(this.state.IsVendor === false && (
+                          {((costingTypeId === ZBCTypeId || (costingTypeId === ZBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
                             <Col md="3">
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
+                                title={showDataOnHover(this.state.selectedPlants)}
                                 selection={
                                   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
@@ -1435,7 +1403,7 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
                             <Col md="3">
                               <Field
                                 label={'Destination Plant'}
@@ -1453,83 +1421,95 @@ class AddRMImport extends Component {
                               />
                             </Col>
                           }
-                        </Row>
-
-
-                        <Row>
-                          <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
-                              <h5>{"Vendor:"}</h5>
-                              {!this.state.IsVendor && (
-                                <label
-                                  className={`custom-checkbox w-auto mb-0 ${this.state.IsVendor ? "disabled" : ""
-                                    }`}
-                                  onChange={this.onPressDifferentSource}
-                                >
-                                  Has Difference Source?
-                                  <input
-                                    type="checkbox"
-                                    checked={this.state.HasDifferentSource}
-                                    disabled={this.state.IsVendor ? true : false}
-                                  />
-                                  <span
-                                    className=" before-box"
-                                    checked={this.state.HasDifferentSource}
-                                    onChange={this.onPressDifferentSource}
-                                  />
-                                </label>
-                              )}
-                            </div>
-                          </Col>
-                          <Col md="3" className='mb-4'>
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
-                              <div className="fullinput-icon">
-                                <AsyncSelect
-                                  name="DestinationSupplierId"
-                                  ref={this.myRef}
-                                  key={this.state.updateAsyncDropdown}
-                                  loadOptions={promiseOptions}
-                                  onChange={(e) => this.handleVendorName(e)}
-                                  value={this.state.vendorName}
-                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
-
-                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                              </div>
-                              {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
-                            </div>
-                          </Col>
-                          {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                          {costingTypeId === CBCTypeId && (
                             <Col md="3">
                               <Field
-                                label="Vendor Plant"
-                                name="DestinationSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing("VendorPlant")}
-                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                selectionChanged={this.handleVendorPlant}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
+                                name="clientName"
+                                type="text"
+                                label={"Customer Name"}
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("ClientList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.client == null ||
+                                    this.state.client.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handleClient}
+                                valueDescription={this.state.client}
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>
                           )}
+                        </Row>
+
+                        <Row>
+                          {costingTypeId !== CBCTypeId && (
+                            <>
+                              <Col md="12" className="filter-block">
+                                <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
+                                  <h5>{"Vendor:"}</h5>
+                                  {costingTypeId !== VBCTypeId && (
+                                    <label
+                                      className={`custom-checkbox w-auto mb-0 ${costingTypeId === VBCTypeId ? "disabled" : ""
+                                        }`}
+                                      onChange={this.onPressDifferentSource}
+                                    >
+                                      Has Difference Source?
+                                      <input
+                                        type="checkbox"
+                                        checked={this.state.HasDifferentSource}
+                                        disabled={costingTypeId === VBCTypeId ? true : false}
+                                      />
+                                      <span
+                                        className=" before-box"
+                                        checked={this.state.HasDifferentSource}
+                                        onChange={this.onPressDifferentSource}
+                                      />
+                                    </label>
+                                  )}
+                                </div>
+                              </Col>
+                              <Col md="3" className='mb-4'>
+                                <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div className="fullinput-icon p-relative">
+                                    {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="DestinationSupplierId"
+                                      ref={this.myRef}
+                                      key={this.state.updateAsyncDropdown}
+                                      loadOptions={promiseOptions}
+                                      onChange={(e) => this.handleVendorName(e)}
+                                      value={this.state.vendorName}
+                                      placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
+                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                      isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+
+                                  </div>
+                                  {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
+                                </div>
+                                {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help'>This field is required.</div>}
+                              </Col>
+                            </>
+                          )}
                           {(this.state.HasDifferentSource ||
-                            this.state.IsVendor) && (
+                            costingTypeId === VBCTypeId) && (
                               <>
                                 <Col md="3">
                                   <Field
                                     label={`Source`}
                                     name={"Source"}
                                     type="text"
-                                    placeholder={"Enter"}
+                                    placeholder={isViewFlag ? "-" : "Enter"}
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     disabled={isViewFlag}
@@ -1545,7 +1525,7 @@ class AddRMImport extends Component {
                                     type="text"
                                     label="Source Location"
                                     component={searchableSelect}
-                                    placeholder={"Select"}
+                                    placeholder={isViewFlag ? "-" : "Select"}
                                     options={this.renderListing("SourceLocation")}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
@@ -1559,33 +1539,28 @@ class AddRMImport extends Component {
 
 
 
-                        <Row>
+                        <Row className='UOM-label-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="UnitOfMeasurementId"
-                                  type="text"
-                                  label="UOM"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("uom")}
-                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleUOM}
-                                  valueDescription={this.state.UOM}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-
-                            </div>
+                          <Col md="3" className='dropdown-flex'>
+                            <Field
+                              name="UnitOfMeasurementId"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("uom")}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleUOM}
+                              valueDescription={this.state.UOM}
+                              disabled={isEditFlag || isViewFlag}
+                            />
                           </Col>
-                          <Col md="3">
+                          <Col md="3" className='dropdown-flex'>
                             <Field
                               name="Currency"
                               type="text"
@@ -1621,19 +1596,21 @@ class AddRMImport extends Component {
                                   component={renderDatePicker}
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
-
+                                  placeholder="Select Date"
+                                  onFocus={() => onFocus(this, true)}
                                 />
                               </div>
                             </div>
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"cutOffPrice"}
                               type="text"
-                              placeholder={""}
-                              validate={[positiveAndDecimalNumber]}
-                              component={renderText}
+                              placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               className=" "
@@ -1643,12 +1620,12 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
                               maxLength="15"
@@ -1658,12 +1635,12 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ScrapRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               className=""
                               maxLength="15"
@@ -1674,12 +1651,12 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"FreightCharge"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1689,12 +1666,12 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ShearingCost"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1704,12 +1681,12 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"NetLandedCost"}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
 
                               className=" "
@@ -1721,12 +1698,12 @@ class AddRMImport extends Component {
                             this.state.showCurrency &&
                             <Col md="3">
                               <Field
-                                label={`Net Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label)}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={"-"}
                                 validate={[]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 required={false}
 
                                 className=" "
@@ -1735,7 +1712,6 @@ class AddRMImport extends Component {
                               />
                             </Col>
                           }
-
 
                         </Row>
 
@@ -1749,7 +1725,7 @@ class AddRMImport extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewFlag ? '-' : "Type here..."}
                               value={this.state.remarks}
                               className=""
                               customClassName=" textAreaWithBorder"
@@ -1772,7 +1748,6 @@ class AddRMImport extends Component {
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="*"
@@ -1811,6 +1786,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
+                              {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                               {this.state.files &&
                                 this.state.files.map((f) => {
                                   const withOutTild = f.FileURL.replace(
@@ -1848,31 +1824,30 @@ class AddRMImport extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {
-                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                onClick={() => scroll.scrollToTop()}
-                                disabled={isViewFlag || setDisable}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :
-                              <button
-                                type="submit"
-                                className="user-btn mr5 save-btn"
-                                disabled={isViewFlag || setDisable}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                          {!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                            <button type="submit"
+                              class="user-btn approval-btn save-btn mr5"
+                              onClick={() => scroll.scrollToTop()}
+                              disabled={isViewFlag || setDisable}
+                            >
+                              <div className="send-for-approval"></div>
+                              {'Send For Approval'}
+                            </button>
+                            :
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={isViewFlag || setDisable}
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
                           }
                         </div>
                       </Row>
@@ -1920,6 +1895,7 @@ class AddRMImport extends Component {
               EditAccessibilityRMANDGRADE={
                 this.props.EditAccessibilityRMANDGRADE
               }
+              Technology={this.state.Technology.value}
             />
           )}
           {isOpenCategory && (
@@ -1963,11 +1939,9 @@ class AddRMImport extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={true}
+                UOM={this.state.UOM}
               />
             )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>
@@ -1981,16 +1955,17 @@ class AddRMImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, auth } = state;
+  const { comman, material, auth, costing, client } = state;
   const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
-    currencySelectList, technologySelectList, plantSelectList } = comman;
+    currencySelectList, plantSelectList } = comman;
 
   const { initialConfiguration } = auth;
-
+  const { costingSpecifiTechnology } = costing
+  const { clientSelectList } = client;
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
     gradeSelectList, vendorListByVendorType } = material;
 
@@ -2010,8 +1985,8 @@ function mapStateToProps(state) {
     plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList,
-    initialConfiguration,
+    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, plantSelectList,
+    initialConfiguration, costingSpecifiTechnology, clientSelectList
   }
 
 }
@@ -2043,14 +2018,18 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   getCurrencySelectList,
   fetchPlantDataAPI,
-  getTechnologySelectList,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   fileDeleteRMDomestic,
-  masterFinalLevelUser
+  masterFinalLevelUser,
+  getCityByCountry,
+  getAllCity,
+  getCostingSpecificTechnology,
+  getClientSelectList
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddRMImport));

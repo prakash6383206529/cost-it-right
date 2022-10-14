@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    required, email, minLength7, maxLength70,minLength10, acceptAllExceptSingleSpecialCharacter,
-    maxLength80, maxLength20, postiveNumber, maxLength10, maxLength5,maxLength12, checkWhiteSpaces
+    required, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
+    maxLength80, maxLength20, postiveNumber, maxLength5, maxLength12, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -28,14 +28,6 @@ class AddClient extends Component {
             state: [],
             showStateCity: true,
         }
-    }
-
-    /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
-    componentDidMount() {
-        this.props.fetchCountryDataAPI(() => { })
     }
 
     /**
@@ -98,6 +90,7 @@ class AddClient extends Component {
             countryList && countryList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -105,6 +98,7 @@ class AddClient extends Component {
             stateList && stateList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -112,6 +106,7 @@ class AddClient extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null
             });
             return temp;
         }
@@ -148,22 +143,13 @@ class AddClient extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
 
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
-
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
-
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            country: { label: CountryObj.Text, value: CountryObj.Value },
-                            state: { label: StateObj.Text, value: StateObj.Value },
-                            city: { label: CityObj.Text, value: CityObj.Value },
+                            country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+                            state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+                            city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
                         })
                     }, 500)
 
@@ -276,7 +262,7 @@ class AddClient extends Component {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Client' : 'Add Client'}</h2>
+                                                <h2>{this.state.isEditFlag ? 'Update Customer' : 'Add Customer'}</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -292,8 +278,8 @@ class AddClient extends Component {
                                                     label={`Company Name`}
                                                     name={"CompanyName"}
                                                     type="text"
-                                                    placeholder={''}
-                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
+                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
                                                     className=""
@@ -306,8 +292,8 @@ class AddClient extends Component {
                                                     label={`Client Name`}
                                                     name={"ClientName"}
                                                     type="text"
-                                                    placeholder={''}
-                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
+                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
                                                     className=""
@@ -319,7 +305,7 @@ class AddClient extends Component {
                                                     name="ClientEmailId"
                                                     label="Email Id"
                                                     component={renderEmailInputField}
-                                                    placeholder={'Enter'}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, email, minLength7, maxLength70]}
                                                     required={true}
                                                     maxLength={70}
@@ -335,9 +321,9 @@ class AddClient extends Component {
                                                             label="Phone No."
                                                             name={"PhoneNumber"}
                                                             type="text"
-                                                            placeholder={''}
-                                                            validate={[required, postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
-                                                            component={renderText}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
+                                                            validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
+                                                            component={renderNumberInputField}
                                                             required={true}
                                                             // maxLength={10}
                                                             className=""
@@ -349,9 +335,9 @@ class AddClient extends Component {
                                                             label="Extension"
                                                             name={"Extension"}
                                                             type="text"
-                                                            placeholder={''}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             required={true}
                                                             // maxLength={3}
                                                             className=""
@@ -368,10 +354,10 @@ class AddClient extends Component {
                                                     name="MobileNumber"
                                                     label="Mobile No."
                                                     type="text"
-                                                    placeholder={''}
-                                                    component={renderText}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
+                                                    component={renderNumberInputField}
                                                     isDisabled={false}
-                                                    validate={[required, postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
+                                                    validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                     required={true}
                                                     // maxLength={10}
                                                     customClassName={'withBorder'}
@@ -433,7 +419,7 @@ class AddClient extends Component {
                                                     label="ZipCode"
                                                     name={"ZipCode"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, postiveNumber]}
                                                     component={renderText}
                                                     required={true}
@@ -509,7 +495,6 @@ function mapStateToProps({ comman, client }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     createClient,
@@ -518,5 +503,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddClient',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddClient));
 

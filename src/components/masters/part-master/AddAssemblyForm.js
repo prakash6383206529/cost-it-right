@@ -3,25 +3,30 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { getRandomSixDigit } from '../../../helper/util';
+import { getRandomSixDigit, onFocus } from '../../../helper/util';
+import { ASSEMBLY, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ASSEMBLYNAME } from '../../../config/constants';
 import { PartEffectiveDate } from './AddAssemblyPart';
+import AsyncSelect from 'react-select/async';
 
 class AddAssemblyForm extends Component {
 
     static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             assemblyPart: [],
             parentPart: [],
             isAddMore: false,
             childData: [],
-            isLoader: false
-
+            isLoader: false,
+            updateAsyncDropdown: false,
+            issubAssembyNoNotSelected: false,
+            showErrorOnFocus: false
         }
     }
 
@@ -49,7 +54,7 @@ class AddAssemblyForm extends Component {
     */
     handleAssemblyPartChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ assemblyPart: newValue }, () => {
+            this.setState({ assemblyPart: newValue, issubAssembyNoNotSelected: false }, () => {
                 const { assemblyPart } = this.state;
                 this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => { })
             });
@@ -118,7 +123,11 @@ class AddAssemblyForm extends Component {
     onSubmit = (values) => {
         const { isAddMore, assemblyPart } = this.state;
         const { DrawerPartData } = this.props;
-
+        if (assemblyPart.length <= 0) {
+            this.setState({ issubAssembyNoNotSelected: true })
+            return false
+        }
+        this.setState({ issubAssembyNoNotSelected: false })
         let childData = {
             PartNumber: assemblyPart ? assemblyPart : [],
             Position: { "x": 600, "y": 50 },
@@ -139,12 +148,16 @@ class AddAssemblyForm extends Component {
         if (isAddMore) {
 
             this.props.setChildParts(childData)
-            this.setState({
-                assemblyPart: []
-            })
+            // this.setState({
+            //     assemblyPart: []
+            // })
+            this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
         } else {
             this.props.toggleDrawer('', childData)
         }
+        setTimeout(() => {
+            this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+        }, 1000);
 
     }
     handleKeyDown = function (e) {
@@ -158,6 +171,23 @@ class AddAssemblyForm extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
+        const filterList = (inputValue) => {
+            let tempArr = []
+            tempArr = this.renderListing("assemblyPart").filter(i =>
+                i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+            );
+            if (tempArr.length <= 100) {
+                return tempArr
+            } else {
+                return tempArr.slice(0, 100)
+            }
+        };
+
+        const promiseOptions = inputValue =>
+            new Promise(resolve => {
+                resolve(filterList(inputValue));
+
+            });
         return (
             <>
 
@@ -168,22 +198,27 @@ class AddAssemblyForm extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                     <Row>
+
                         <Col md='6'>
-                            {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
-                            <Field
-                                name="AssemblyPart"
-                                type="text"
-                                label={'Assembly Part No.'}
-                                component={searchableSelect}
-                                placeholder={'Assembly Part'}
-                                options={this.renderListing('assemblyPart')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.assemblyPart == null || this.state.assemblyPart.length === 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleAssemblyPartChange}
-                                valueDescription={this.state.assemblyPart}
-                                disabled={this.state.isLoader ? true : false}
-                            />
+                            <label>{"Assembly Part No."}<span className="asterisk-required">*</span></label>
+                            <div className='p-relative'>
+                                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                                <AsyncSelect
+                                    name="AssemblyPart"
+                                    ref={this.myRef}
+                                    key={this.state.updateAsyncDropdown}
+                                    cacheOptions defaultOptions
+                                    options={this.renderListing('assemblyPart')}
+                                    loadOptions={promiseOptions}
+                                    onChange={(e) => this.handleAssemblyPartChange(e)}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the assembly numbers' : "No results found"}
+                                    onFocus={() => onFocus(this)}
+                                    onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                    }}
+                                />
+                                {((this.state.showErrorOnFocus && this.state.assemblyPart.length === 0) || this.state.issubAssembyNoNotSelected) && <div className='text-help'>This field is required.</div>}
+                            </div>
                         </Col>
                         <Col md="6">
                             <Field
@@ -354,4 +389,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddAssemblyForm',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddAssemblyForm));

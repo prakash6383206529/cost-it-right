@@ -1,10 +1,8 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -29,11 +27,11 @@ function StandardRub(props) {
     const [timeOutId, setTimeoutId] = useState([])
     const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
-    const [allRmData, setAllRmData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
+    const [isDisable, setIsDisable] = useState(false)
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? WeightCalculatorRequest.ShotWeight : '',
@@ -47,10 +45,6 @@ function StandardRub(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
-
-
-    const dispatch = useDispatch()
-    const [grossWeights, setGrossWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '')
 
     const fieldValues = useWatch({
         control,
@@ -75,8 +69,8 @@ function StandardRub(props) {
                 label: item.RMName, value: count
             })
             count++
+            return null
         })
-        setAllRmData(arr)
         setRmDropDownData(arr)
     }, [])
 
@@ -223,9 +217,8 @@ function StandardRub(props) {
                 label: item.RMName, value: count
             })
             count++
+            return null
         })
-        setAllRmData(arr)
-
         setAgGridTable(false)
         gridData.pop()
         // grid.applyTransaction({ remove: [rowData] })
@@ -244,9 +237,10 @@ function StandardRub(props) {
         arr && arr.map((item) => {
             let count = 0
             gridData && gridData.map((ele) => {
-                if (item.label == ele.RmName) {
+                if (item.label === ele.RmName) {
                     count++
                 }
+                return null
             })
 
             if (count > 0) {
@@ -254,6 +248,7 @@ function StandardRub(props) {
             } else {
                 dropDown.push(item)
             }
+            return null
         })
         setRmDropDownData(dropDown)
         /////
@@ -288,10 +283,6 @@ function StandardRub(props) {
 
 
     const buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
         // props.gridApi?.applyTransaction({ remove: gridOptions.rowData })
 
         let isEditable;
@@ -325,15 +316,8 @@ function StandardRub(props) {
         setGridApi(params.api)
         params.api.paginationGoToPage(0);
     };
-    const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
-    };
-
 
     const addRow = () => {
-
-
         let obj = {
             RmName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),
@@ -431,7 +415,8 @@ function StandardRub(props) {
 
     }
 
-    const onSubmit = () => {
+    const onSubmit = debounce(handleSubmit(() => {
+        setIsDisable(true)
         let obj = {}
         obj.LayoutType = 'Default'
         obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
@@ -448,14 +433,9 @@ function StandardRub(props) {
         obj.RmDropDownData = rmDropDownData
         obj.CalculatedRmTableData = tableData
 
-        dispatch(saveRawMaterialCalciData(obj, res => {
-            if (res.data.Result) {
-                obj.WeightCalculationId = res.data.Identity
-                Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', obj, obj)
-            }
-        }))
-    }
+        //APPLY NEW ACTION HERE 
+
+    }), 500)
 
     const cancel = () => {
         props.toggleDrawer('')
@@ -470,11 +450,20 @@ function StandardRub(props) {
     const UnitFormat = () => {
         return <>Volume(mm<sup>3</sup>)</>
     }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form"
+                        // onSubmit={handleSubmit(onSubmit)}
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={'mt25'}>
                             <div className="border pl-3 pr-3 pt-3">
                                 {/* <Col md="12">
@@ -502,7 +491,7 @@ function StandardRub(props) {
                                         <SearchableSelectHookForm
                                             label={`Raw Material`}
                                             name={'RawMaterial'}
-                                            placeholder={'-Select-'}
+                                            placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -525,9 +514,9 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         //value: /^[0-9]*$/i,
                                                         value: /^[0-9]\d*(\.\d+)?$/i,
@@ -550,7 +539,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -575,7 +564,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -601,7 +590,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -706,7 +695,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 //   rules={{
                                                 //     required: true,
                                                 //     pattern: {
@@ -858,11 +847,12 @@ function StandardRub(props) {
                                 <div className={'cancel-icon'}></div>
                                 CANCEL
                             </button>
+
                             <button
-                                type="submit"
-                                // disabled={isSubmitted ? true : false}
+                                type="button"
+                                className="submit-button  save-btn"
                                 onClick={onSubmit}
-                                className="btn-primary save-btn"
+                                disabled={props.CostingViewMode || isDisable ? true : false}
                             >
                                 <div className={'save-icon'}></div>
                                 {'SAVE'}

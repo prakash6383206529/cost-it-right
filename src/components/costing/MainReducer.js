@@ -3,9 +3,10 @@ import Costing from './reducers/Costing';
 import CostWorking from './reducers/CostWorking';
 import SubAssembly from './reducers/SubAssembly';
 
-export default {
+const mainReducer = {
   approval: Approval,
   costing: Costing,
   costWorking: CostWorking,
   subAssembly: SubAssembly,
 }
+export default mainReducer;

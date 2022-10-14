@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLY } from '../../../../../config/masterData';
@@ -53,7 +53,6 @@ function PaymentTerms(props) {
             setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-                dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
     }, [tempPaymentTermObj, paymentTermsApplicability])
@@ -69,6 +68,7 @@ function PaymentTerms(props) {
         callPaymentTermAPI(value)
 
         dispatch(gridDataAdded(true))
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     /**
@@ -80,30 +80,30 @@ function PaymentTerms(props) {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
 
             const reqParams = {
-                VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor
+                VendorId: costData?.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+                costingTypeId: costData.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData.CustomerId
             }
 
-            if (costData?.IsVendor && (costData.IsVendor !== null || costData.IsVendor !== undefined)) {
-                dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+            dispatch(getPaymentTermsDataByHeads(reqParams, res => {
 
-                    if (res && res.data && res.data.Result) {
-                        let Data = res.data.Data;
-                        setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-                        setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-                        setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                        checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                        setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-                    } else if (res.status === 204) {
-                        setValue('RepaymentPeriodDays', '')
-                        setValue('RepaymentPeriodPercentage', '')
-                        setValue('RepaymentPeriodCost', '')
-                        checkPaymentTermApplicability('')
-                        setPaymentTermsApplicability([])
-                    }
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+                    setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                    setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
+                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                } else if (res.status === 204) {
+                    setValue('RepaymentPeriodDays', '')
+                    setValue('RepaymentPeriodPercentage', '')
+                    setValue('RepaymentPeriodCost', '')
+                    checkPaymentTermApplicability('')
+                    setPaymentTermsApplicability([])
+                }
 
-                }))
-            }
+            }))
 
         } else {
             setPaymentTermsApplicability([])
@@ -284,7 +284,7 @@ function PaymentTerms(props) {
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                handleChange={() => { }}
+                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                 defaultValue={''}
                                 className=""
                                 customClassName={'withBorder'}
@@ -312,7 +312,7 @@ function PaymentTerms(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
@@ -334,7 +334,7 @@ function PaymentTerms(props) {
                                             message: 'Invalid Number.'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

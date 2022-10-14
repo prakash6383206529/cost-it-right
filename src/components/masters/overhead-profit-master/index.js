@@ -9,6 +9,8 @@ import ProfitListing from './ProfitListing';
 import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
+import { MESSAGES } from '../../../config/message';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 
 class OverheadProfit extends Component {
   constructor(props) {
@@ -23,6 +25,7 @@ class OverheadProfit extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
+      stopApiCallOnCancel: false
     }
   }
 
@@ -64,11 +67,14 @@ class OverheadProfit extends Component {
   * @description toggling the tabs
   */
   toggle = (tab) => {
+
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
+        activeTab: tab,
+        stopApiCallOnCancel: false
       });
     }
+    this.props.setSelectedRowForPagination([])
   }
 
   displayOverheadForm = () => {
@@ -79,8 +85,12 @@ class OverheadProfit extends Component {
     this.setState({ isProfitForm: true, isOverheadForm: false, })
   }
 
-  hideForm = () => {
-    this.setState({ isOverheadForm: false, isProfitForm: false, data: {} })
+  hideForm = (type) => {
+    this.setState({ isOverheadForm: false, isProfitForm: false, data: {}, stopApiCallOnCancel: false })
+    if (type === 'cancel') {
+      this.setState({ stopApiCallOnCancel: true })
+
+    }
   }
 
   getOverHeadDetails = (data) => {
@@ -126,7 +136,8 @@ class OverheadProfit extends Component {
           <Row>
             <Col>
               <div>
-                <Nav tabs className="subtabs mt-0">
+                <Nav tabs className="subtabs mt-0 p-relative">
+                  {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                   <NavItem>
                     <NavLink
                       className={classnames({
@@ -154,7 +165,7 @@ class OverheadProfit extends Component {
                 </Nav>
 
                 <TabContent activeTab={this.state.activeTab}>
-                  {this.state.activeTab == 1 && (
+                  {this.state.activeTab === '1' && (
                     <TabPane tabId="1">
                       <OverheadListing
                         formToggle={this.displayOverheadForm}
@@ -164,11 +175,12 @@ class OverheadProfit extends Component {
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
                         ViewAccessibility={this.state.ViewAccessibility}
+                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       />
                     </TabPane>
                   )}
 
-                  {this.state.activeTab == 2 && (
+                  {this.state.activeTab === '2' && (
                     <TabPane tabId="2">
                       <ProfitListing
                         formToggle={this.displayProfitForm}
@@ -178,7 +190,7 @@ class OverheadProfit extends Component {
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
                         ViewAccessibility={this.state.ViewAccessibility}
-
+                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       />
                     </TabPane>
                   )}
@@ -197,14 +209,16 @@ class OverheadProfit extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ overheadProfit, auth }) {
+function mapStateToProps({ overheadProfit, auth, comman }) {
   const { loading } = overheadProfit;
   const { leftMenuData, topAndLeftMenuData } = auth;
-  return { loading, leftMenuData, topAndLeftMenuData }
+  const { disabledClass } = comman
+  return { loading, leftMenuData, topAndLeftMenuData, disabledClass }
 }
 
 
 export default connect(mapStateToProps,
   {
+    setSelectedRowForPagination
   })(OverheadProfit);
 

@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col } from "reactstrap";
 import Drawer from "@material-ui/core/Drawer";
 
-import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../../costing/actions/Costing";
-import axios from "axios";
+import { getCostingSpecificTechnology } from "../../costing/actions/Costing";
 import { NumberFieldHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs";
-import { loggedInUserId } from "../../../helper";
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from "../../../helper";
+import Toaster from "../../common/Toaster";
+import { createVolumeLimit, getVolumeLimit, updateVolumeLimit } from "../actions/Volume";
 
 const AddLimit = (props) => {
     const {
@@ -21,13 +22,8 @@ const AddLimit = (props) => {
     } = useForm();
 
     const [technology, setTechnology] = useState([]);
-    const [data, setData] = useState([]);
-    const [regularization, setRegularization] = useState([]);
-    const [deviation, setDeviation] = useState([]);
-
-
-    const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
-
+    const [dataToChange, setDataToChange] = useState([]);
+    const [isDisable, setIsDisable] = useState(false)
     const dispatch = useDispatch();
     const technologySelectList = useSelector(
         (state) => state.costing.costingSpecifiTechnology
@@ -65,10 +61,28 @@ const AddLimit = (props) => {
     const handleTechnologyChange = (newValue, actionMeta) => {
         if (newValue && newValue !== "") {
             setTechnology(newValue);
+            dispatch(getVolumeLimit(newValue.value, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data
+                    setValue('RegularizationLimit', Data.RegularizationLimit)
+                    setValue('MaxDeviation', Data.MaxDeviationLimit)
+                    setIsDisable(true)
+                    setDataToChange(Data)
+                }
+            }))
         } else {
             setTechnology([]);
         }
     };
+
+    const handleMaxDeviationLimit = (e) => {
+        if (e.target.value > 100) {
+            Toaster.warning('Max Deviation can not be greater than 100.')
+            setTimeout(() => {
+                setValue("MaxDeviation", '')
+            }, 100);
+        }
+    }
 
     /**
      * @method toggleDrawer
@@ -85,7 +99,7 @@ const AddLimit = (props) => {
         //     setDeviation,
         // }
         // axios.post(``, postData).then(res => {
-        //     console.log(res);
+        //     
         // });
     };
 
@@ -99,7 +113,42 @@ const AddLimit = (props) => {
         props.closeDrawer("", {});
     };
     const onSubmit = (data) => {
-        toggleDrawer("");
+        if (isDisable === true) {
+            let updatedData = {
+                TechnologyId: technology.value,
+                TechnologyName: technology.label,
+                LoggedInUserId: loggedInUserId(),
+                RegularizationLimit: data.RegularizationLimit,
+                MaxDeviationLimit: data.MaxDeviation,
+                TechnologyRegularizationLimitId: dataToChange.TechnologyRegularizationLimitId,
+            }
+            if (((dataToChange.MaxDeviationLimit ? String(dataToChange.MaxDeviationLimit) : '') === (data.MaxDeviation ? String(data.MaxDeviation) : '')) && ((dataToChange.RegularizationLimit ? String(dataToChange.RegularizationLimit) : '') === (data.RegularizationLimit ? String(data.RegularizationLimit) : ''))) {
+                Toaster.warning("Please change data to update")
+                return false
+            }
+            else {
+                dispatch(updateVolumeLimit(updatedData, (res) => {
+                    if (res?.data?.Result) {
+                        Toaster.success("Limit updated successfully")
+                    }
+                }))
+                toggleDrawer("");
+            }
+        }
+        else {
+            let formData = {
+                TechnologyId: technology.value,
+                LoggedInUserId: loggedInUserId(),
+                RegularizationLimit: getValues('RegularizationLimit'),
+                MaxDeviationLimit: getValues('MaxDeviation')
+            }
+            dispatch(createVolumeLimit(formData, (res) => {
+                if (res?.data?.Result) {
+                    Toaster.success("Limit added successfully")
+                }
+            }))
+            toggleDrawer("");
+        }
     };
 
     /**
@@ -141,6 +190,7 @@ const AddLimit = (props) => {
                                         mandatory={true}
                                         handleChange={handleTechnologyChange}
                                         errors={errors.Technology}
+                                        disabled={isDisable}
                                     />
                                 </Col>
                             </Row>
@@ -148,43 +198,34 @@ const AddLimit = (props) => {
                                 <Col md="12">
                                     <NumberFieldHookForm
                                         label="Regularization Limit"
-                                        name={"Regularization Limit"}
+                                        name={"RegularizationLimit"}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={true}
+                                        rules={{ required: true }}
                                         handleChange={() => { }}
                                         defaultValue={""}
                                         className=""
                                         customClassName={"withBorder"}
-                                        errors={errors.remarks}
+                                        errors={errors.RegularizationLimit}
                                         disabled={false}
                                     />
                                 </Col>
                                 <Col md="12">
                                     <NumberFieldHookForm
                                         label="Max Deviation Limit (%)"
-                                        name={"Max Deviation"}
+                                        name={"MaxDeviation"}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: "Invalid Number.",
-                                            },
-                                            max: {
-                                                value: 100,
-                                                message: "Should not be greater then 100",
-                                            },
-                                        }}
-                                        handleChange={() => { }}
+                                        rules={{ required: true }}
+                                        handleChange={handleMaxDeviationLimit}
                                         defaultValue={""}
                                         className=""
                                         customClassName={"withBorder"}
-                                        errors={errors.remarks}
+                                        errors={errors.MaxDeviation}
                                         disabled={false}
                                     />
                                 </Col>
@@ -201,8 +242,8 @@ const AddLimit = (props) => {
                                     </button>
 
                                     <button type="submit" className="submit-button save-btn">
-                                        <div class="plus"></div>
-                                        {"Submit"}
+                                        <div class={"save-icon"}></div>
+                                        {isDisable === true ? "Update" : "Submit"}
                                     </button>
                                 </div>
                             </Row>

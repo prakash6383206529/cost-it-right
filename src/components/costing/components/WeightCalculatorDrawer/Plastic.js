@@ -9,6 +9,7 @@ import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
+import { debounce } from 'lodash'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -58,7 +59,7 @@ function Plastic(props) {
     burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
-
+  const [isDisable, setIsDisable] = useState(false)
 
 
   const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
@@ -168,8 +169,9 @@ function Plastic(props) {
   const cancel = () => {
     props.toggleDrawer('')
   }
-  const onSubmit = () => {
-    DisableMasterBatchCheckbox(true)
+  const onSubmit = debounce(handleSubmit((values) => {
+    DisableMasterBatchCheckbox(!item.CostingPartDetails.IsApplyMasterBatch ? true : false)
+    setIsDisable(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
@@ -195,6 +197,7 @@ function Plastic(props) {
     obj.NetLossWeight = lostWeight
 
     dispatch(saveRawMaterialCalculationForPlastic(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
@@ -202,7 +205,7 @@ function Plastic(props) {
         props.toggleDrawer('', obj)
       }
     }))
-  }
+  }), 500);
 
   const tableData = (value = []) => {
     setTableVal(value)
@@ -215,10 +218,18 @@ function Plastic(props) {
     updatedValue.burningValue = value
     setDataToSend(updatedValue)
   }
+
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Fragment>
       <Row>
-        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate className="form"
+          onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
           <Col md="12">
             <div className="costing-border px-4">
               <Row>
@@ -232,7 +243,7 @@ function Plastic(props) {
               <Row className={''}>
                 <Col md="3" >
                   <NumberFieldHookForm
-                    label={`Gross Weight (Kg)`}
+                    label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -242,7 +253,7 @@ function Plastic(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                       // maxLength: 4,
                     }}
@@ -266,7 +277,7 @@ function Plastic(props) {
                       required: false,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                        message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -298,7 +309,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <NumberFieldHookForm
-                    label={`Total Gross Weight (Kg)`}
+                    label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
                     Controller={Controller}
                     control={control}
@@ -324,7 +335,7 @@ function Plastic(props) {
                       required: true,
                       pattern: {
                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                        message: 'Maximum length for integer is 4 and for decimal is 7',
                       },
 
                     }}
@@ -426,7 +437,7 @@ function Plastic(props) {
             </div>
           </Col>
 
-          {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
+          {!CostingViewMode && <div className="col-sm-12 text-right mt-4">
             <button
               type={'button'}
               className="reset mr15 cancel-btn"
@@ -434,7 +445,9 @@ function Plastic(props) {
               <div className={'cancel-icon'}></div> {'Cancel'}
             </button>
             <button
-              type={'submit'}
+              type="button"
+              onClick={onSubmit}
+              disabled={props.CostingViewMode || isDisable ? true : false}
               className="submit-button save-btn">
               <div className={'save-icon'}></div>
               {'Save'}

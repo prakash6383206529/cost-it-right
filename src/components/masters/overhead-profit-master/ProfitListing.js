@@ -1,20 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, } from "redux-form";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import {
-    getProfitDataList, deleteProfit, activeInactiveProfit, fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
+    getProfitDataList, deleteProfit, activeInactiveProfit,
 } from '../actions/OverheadProfit';
-import { EMPTY_DATA } from '../../../config/constants';
-import { loggedInUserId, } from '../../../helper';
+import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { ProfitMaster } from '../../../config/constants';
@@ -23,7 +19,13 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
+import { PaginationWrapper } from '../../common/commonPagination';
+import WarningMessage from '../../common/WarningMessage';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import _ from 'lodash';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,137 +33,381 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class ProfitListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpen: false,
-            isEditFlag: false,
-            tableData: [],
-            IsVendor: false,
-            shown: false,
+function ProfitListing(props) {
 
-            costingHead: [],
-            ModelType: [],
-            vendorName: [],
-            overheadAppli: [],
-            showPopup: false,
-            deletedId: '',
-            isLoader:false
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
+
+    const [tableData, setTableData] = useState([])
+    const dispatch = useDispatch()
+    const [showPopup, setShowPopup] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [isLoader, setIsLoader] = useState(false)
+    const [noData, setNoData] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [selectedRowData, setSelectedRowData] = useState([])
+    const [disableDownload, setDisableDownload] = useState(false)
+
+    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+    const [disableFilter, setDisableFilter] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(false)
+    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    const [filterModel, setFilterModel] = useState({});
+    const [pageNo, setPageNo] = useState(1)
+    const [pageNoNew, setPageNoNew] = useState(1)
+    const [totalRecordCount, setTotalRecordCount] = useState(1)
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [dataCount, setDataCount] = useState(0)
+    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
+    let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
+    let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
+
+    var filterParams = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDateNew: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+    var floatingFilterProfit = {
+        maxValue: 2,
+        suppressFilterButton: true,
+        component: 'profit'
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (!props.stopApiCallOnCancel) {
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+            }
+        }, 300);
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
+
+    }, [])
+
+
+    useEffect(() => {
+        if (overheadProfitList?.length > 0) {
+            setTotalRecordCount(overheadProfitList[0].TotalRecordCount)
         }
-    }
+        else {
+            setNoData(false)
+        }
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
+    }, [overheadProfitList])
 
-    /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
-    componentDidMount() {
-        this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorWithVendorCodeSelectList()
-        this.getDataList()
-    }
+    useEffect(() => {
 
-    // Get updated Table data list after any action performed.
-    getUpdatedData = () => {
-        this.getDataList()
-    }
+        if (statusColumnData) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
 
-    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
+    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
             profit_applicability_type_id: overhead,
             model_type_id: modelType,
         }
-        this.setState({isLoader:true})
-        this.props.getProfitDataList(filterData, (res) => {
-            this.setState({isLoader:false})
+        if (isPagination === true) {
+            setIsLoader(true)
+        }
+        let obj = { ...dataObj }
+        dispatch(getProfitDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            setIsLoader(false)
+            if (res && res.status === 204) {
+                setTotalRecordCount(0)
+                setPageNo(0)
+            }
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                setTableData(Data)
             } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
+                setTableData([])
             } else {
-                this.setState({ tableData: [] })
+                setTableData([])
             }
-        })
+
+            if (res && isPagination === false) {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-profit')
+                    button && button.click()
+                }, 500);
+            }
+
+            if (res) {
+                let isReset = true
+                setTimeout(() => {
+                    for (var prop in obj) {
+                        if (obj[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                }, 300);
+
+                setTimeout(() => {
+                    setWarningMessage(false)
+                    if (take == 100) {
+                        setTimeout(() => {
+                            setWarningMessage(false)
+                        }, 100);
+                    }
+                    dispatch(isResetClick(false, "applicablity"))
+                }, 330);
+
+                setTimeout(() => {
+                    setIsFilterButtonClicked(false)
+                }, 600);
+            }
+        }))
     }
+
+
+    const onFloatingFilterChanged = (value) => {
+        if (overheadProfitList?.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+        setDisableFilter(false)
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model)
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            let isFilterEmpty = true
+
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+
+                    for (var property in floatingFilterData) {
+
+                        if (property === value.column.colId) {
+                            floatingFilterData[property] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+
+                if (isFilterEmpty) {
+                    setWarningMessage(false)
+                    for (var prop in floatingFilterData) {
+
+                        floatingFilterData[prop] = ""
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+            }
+
+        } else {
+
+            if (value.column.colId === "EffectiveDateNew" || value.column.colId === "CreatedDate" || value.column.colId === "EffectiveDate") {
+                return false
+            }
+
+            let valueString = value?.filterInstance?.appliedModel?.filter
+            if (valueString.includes("+")) {
+                valueString = encodeURIComponent(valueString)
+            }
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: valueString })
+        }
+    }
+
+
+    const onSearch = () => {
+
+        setWarningMessage(false)
+        setIsFilterButtonClicked(true)
+        setPageNo(1)
+        setPageNoNew(1)
+        setCurrentRowIndex(0)
+        gridOptions?.columnApi?.resetColumnState();
+        getDataList(null, null, null, null, 0, globalTake, true, floatingFilterData)
+    }
+
+
+
+    const resetState = () => {
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "applicablity"))
+        setIsFilterButtonClicked(false)
+        gridApi.deselectAll()
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+
+        for (var prop in floatingFilterData) {
+            floatingFilterData[prop] = ""
+
+        }
+
+        setFloatingFilterData(floatingFilterData)
+        setWarningMessage(false)
+        setPageNo(1)
+        setPageNoNew(1)
+        setCurrentRowIndex(0)
+        getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+        dispatch(setSelectedRowForPagination([]))
+        setGlobalTake(10)
+        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        setDataCount(0)
+    }
+
+
+    const onBtPrevious = () => {
+        if (currentRowIndex >= 10) {
+            setPageNo(pageNo - 1)
+            setPageNoNew(pageNo - 1)
+            const previousNo = currentRowIndex - 10;
+            getDataList(null, null, null, null, previousNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(previousNo)
+        }
+    }
+
+    const onBtNext = () => {
+
+        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
+            return false
+        }
+
+        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
+            return false
+        }
+
+        if (currentRowIndex < (totalRecordCount - 10)) {
+            setPageNo(pageNo + 1)
+            setPageNoNew(pageNo + 1)
+            const nextNo = currentRowIndex + 10;
+            getDataList(null, null, null, null, nextNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(nextNo)
+        }
+    };
+
+
+    const onPageSizeChanged = (newPageSize) => {
+
+        if (Number(newPageSize) === 10) {
+            getDataList(null, null, null, null, currentRowIndex, 10, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+            setGlobalTake(10)
+            setPageNo(pageNoNew)
+        }
+        else if (Number(newPageSize) === 50) {
+            getDataList(null, null, null, null, currentRowIndex, 50, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+            setGlobalTake(50)
+            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
+                setPageNo(Math.ceil(totalRecordCount / 50))
+                getDataList(null, null, null, null, 0, 50, true, floatingFilterData)
+            }
+        }
+        else if (Number(newPageSize) === 100) {
+            getDataList(null, null, null, null, currentRowIndex, 100, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+            setGlobalTake(100)
+            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
+                setPageNo(Math.ceil(totalRecordCount / 100))
+                getDataList(null, null, null, null, 0, 100, true, floatingFilterData)
+            }
+        }
+
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
+    };
+
 
     /**
     * @method viewOrEditItemDetails
     * @description edit or view material type
     */
-    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode
         }
-        this.props.getDetails(data);
+        props.getDetails(data);
     }
 
     /**
     * @method deleteItem
     * @description confirm delete
     */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
+    const deleteItem = (Id) => {
+        setShowPopup(true)
+        setDeletedId(Id)
     }
 
     /**
     * @method confirmDelete
     * @description confirm delete
     */
-    confirmDelete = (ID) => {
-        this.props.deleteProfit(ID, (res) => {
+    const confirmDelete = (ID) => {
+        dispatch(deleteProfit(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
-                this.getDataList()
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
-        });
-        this.setState({ showPopup: false })
+        }))
+        setShowPopup(false)
     }
 
-    onPopupConfirm = () => {
-        this.confirmDelete(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-    }
-    /**
-    * @method renderPaginationShowsTotal
-    * @description Pagination
-    */
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
+
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
     }
 
-    /**
-    * @method dashFormatter
-    * @description Renders dash
-    */
-    dashFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell == null ? '-' : cell;
+
+    const closePopUp = () => {
+        showPopup(false)
     }
+
 
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (props) => {
+    const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
-
-
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -170,7 +416,7 @@ class ProfitListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (props) => {
+    const costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let headText = '';
         if (cellValue === 'ZBC') {
@@ -186,7 +432,7 @@ class ProfitListing extends Component {
     /**
      * @method hyphenFormatter
      */
-    hyphenFormatter = (props) => {
+    const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
@@ -195,24 +441,23 @@ class ProfitListing extends Component {
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-    effectiveDateFormatter = (props) => {
+    const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
-
 
 
     /**
     * @method statusButtonFormatter
     * @description Renders buttons
     */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+    const statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                        onChange={() => handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
                         background="#ff6600"
                         onColor="#4DC771"
@@ -225,22 +470,22 @@ class ProfitListing extends Component {
         )
     }
 
-    handleChange = (cell, row, enumObject, rowIndex) => {
+    const handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
             Id: row.ProfitId,
             LoggedInUserId: loggedInUserId(),
             IsActive: !cell, //Status of the Profit.
         }
-        this.props.activeInactiveProfit(data, res => {
+        dispatch(activeInactiveProfit(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell === true) {
                     Toaster.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
                 }
-                this.getDataList(null, null, null, null)
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
-        })
+        }))
     }
 
     /**
@@ -248,46 +493,85 @@ class ProfitListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
 
-
-    formToggle = () => {
-        this.props.formToggle()
+    const formToggle = () => {
+        props.formToggle()
     }
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => { }
+    const onSubmit = (values) => { }
 
 
-
-    onGridReady = (params) => {
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+    const onRowSelect = (event) => {
+
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].ProfitId === event.data.ProfitId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "ProfitId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        setDataCount(uniqeArray.length)
+        setSelectedRowData(uniqeArray)
+    }
+
+
+    const checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.ProfitId === props.node.data.ProfitId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+    }
+
+    const onBtExport = () => {
+        let tempArr = []
+        tempArr = selectedRowForPagination
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
+        return returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
     };
 
-    onBtExport = () => {
-        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
-        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
-    };
-
-    returnExcelColumn = (data = [], TempData) => {
+    const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
-            } if (item.TypeOfHead === 'VBC') {
-                item.TypeOfHead = 'Vendor Based'
-            } if (item.TypeOfHead === 'ZBC') {
-                item.TypeOfHead = 'Zero Based'
-            } if (item.TypeOfHead === 'CBC') {
-                item.TypeOfHead = 'Client Based'
-            } if (item.ClientName === null) {
+            }
+            if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.ProfitBOPPercentage === null) {
                 item.ProfitBOPPercentage = ' '
@@ -297,10 +581,10 @@ class ProfitListing extends Component {
                 item.ProfitPercentage = ' '
             } if (item.ProfitRMPercentage === null) {
                 item.ProfitRMPercentage = ' '
-            } if (item.VendorName === '-') {
+            } if (item?.VendorName === '-') {
                 item.VendorName = ' '
             }
-            if (item.EffectiveDate.includes('T')) {
+            if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }
@@ -314,205 +598,182 @@ class ProfitListing extends Component {
             </ExcelSheet>);
     }
 
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-profit')
+                button && button.click()
+            }, 400);
+
+        } else {
+            getDataList(null, null, null, null, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
     }
 
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const onRowSelect = () => {
-            var selectedRows = this.state.gridApi.getSelectedRows();
-            if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
-            }
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
 
-            this.setState({ selectedRowData: selectedRows })
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+        return thisIsFirstColumn;
+    }
 
-        }
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        checkboxSelection: isFirstColumn
+    };
 
-        const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
+    const frameworkComponents = {
+        totalValueRenderer: buttonFormatter,
+        costingHeadFormatter: costingHeadFormatter,
+        effectiveDateFormatter: effectiveDateFormatter,
+        statusButtonFormatter: statusButtonFormatter,
+        hyphenFormatter: hyphenFormatter,
+        customNoRowsOverlay: NoContentFound,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
+    };
 
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return (
 
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
 
-        }
+        <>
+            {
+                isLoader ? <LoaderCustom customClass={"loader-center"} /> :
+                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                        <form noValidate>
+                            <Row className="pt-4">
+                                <Col md="9" className="search-user-block mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
+                                        <div className="warning-message d-flex align-items-center">
+                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        </div>
 
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
-            headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+                                        {AddAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={formToggle}
+                                                title="Add"
+                                            >
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                </button></div> :
+                                                    <>
+                                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>
+                                                        <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
+                                                            <button id={'Excel-Downloads-profit'} className="p-absolute" type="button" >
+                                                            </button>}>
+                                                            {onBtExport()}
+                                                        </ExcelFile>
+                                                    </>
+                                                }
+                                            </>
+                                        }
 
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            costingHeadFormatter: this.costingHeadFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter,
-            statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter
-        };
-
-        return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-            {this.state.isLoader && <LoaderCustom />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4">
-
-                        <Col md="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        ""
-                                    )}
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
                                         </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </form>
+                        <Row>
+                            <Col>
 
-                                            <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <SelectRowWrapper dataCount={dataCount} />
+                                    </div>
+                                    <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                        <AgGridReact
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
-                                    }
-
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-
+                                            rowData={overheadProfitList}
+                                            pagination={true}
+                                            paginationPageSize={10}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: 'imagClass'
+                                            }}
+                                            frameworkComponents={frameworkComponents}
+                                            rowSelection={'multiple'}
+                                            onRowSelected={onRowSelect}
+                                            onFilterModified={onFloatingFilterChanged}
+                                            suppressRowClickSelection={true}
+                                        //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
+                                        >
+                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
+                                            <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
+                                            <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
+                                            <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                            <AgGridColumn field="ProfitId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                        </AgGridReact>
+                                        <div className='button-wrapper'>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                            {
+                                                <div className="d-flex pagination-button-container">
+                                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                                    {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                                    {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                                    {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </form>
-                <Row>
-                    <Col>
 
+                            </Col>
+                        </Row>
+                        {
+                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
+                        }
+                    </div >
+            }
+        </>
+    );
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                                <AgGridReact
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-
-                                    rowData={this.props.overheadProfitList}
-                                    pagination={true}
-                                    paginationPageSize={10}
-                                    onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
-                                    frameworkComponents={frameworkComponents}
-                                    rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
-                                >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                    <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
-                                    <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn field="ProfitId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                    </Col>
-                </Row>
-                {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
-                }
-            </div >
-        );
-    }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps(state) {
-    const { overheadProfit, comman } = state;
-
-    const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
-
-    const { costingHead } = comman;
-
-    return { filterOverheadSelectList, overheadProfitList, costingHead }
 
 }
 
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-    getProfitDataList,
-    deleteProfit,
-    activeInactiveProfit,
-    fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList,
-    getProfitVendorFilterByModelSelectList,
-    getProfitModelFilterByVendorSelectList,
-    fetchCostingHeadsAPI
-})(reduxForm({
-    form: 'ProfitListing',
-    enableReinitialize: true,
-})(ProfitListing));
+export default ProfitListing
+
+

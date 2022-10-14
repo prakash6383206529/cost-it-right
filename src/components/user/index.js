@@ -4,14 +4,16 @@ import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstr
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
+import { reactLocalStorage } from 'reactjs-localstorage';
+
+var isFirstTabActive = false
 
 class User extends Component {
   constructor(props) {
@@ -26,7 +28,8 @@ class User extends Component {
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
-      count: 0
+      count: 0,
+      RFQUser: false
     }
   }
 
@@ -54,21 +57,46 @@ class User extends Component {
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
 
       if (userData !== undefined) {
-        this.setState({
-          ViewUserAccessibility: userData && userData.View ? userData.View : false,
-          ViewRoleAccessibility: roleData && roleData.View ? roleData.View : false,
-          ViewDepartmentAccessibility: departmentData && departmentData.View ? departmentData.View : false,
-          ViewLevelAccessibility: levelsData && levelsData.View ? levelsData.View : false,
-          activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
-        })
+
+        for (var prop in userData) {
+          if (userData[prop] === true) {
+            isFirstTabActive = true
+            this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+          }
+        }
       }
+
+      if (roleData !== undefined) {
+        for (var propRole in roleData) {
+          if (roleData[propRole] === true) {
+            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' })
+          }
+        }
+      }
+
+      if (departmentData !== undefined) {
+        for (var propDepart in departmentData) {
+          if (departmentData[propDepart] === true) {
+            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+          }
+        }
+      }
+
+      if (levelsData !== undefined) {
+        for (var propLevel in levelsData) {
+          if (levelsData[propLevel] === true) {
+            this.setState({ ViewLevelAccessibility: true })
+          }
+        }
+      }
+
     }
   }
 
   componentDidMount() {
     this.topAndLeftMenuFunction()
-  }
 
+  }
 
   componentDidUpdate() {
     if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
@@ -89,8 +117,8 @@ class User extends Component {
     }
   }
 
-  displayForm = () => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, })
+  displayForm = (RFQUser) => {
+    this.setState({ isUserForm: true, isRolePermissionForm: false, RFQUser: RFQUser })
   }
 
   displayRoleForm = () => {
@@ -102,7 +130,7 @@ class User extends Component {
   }
 
   getUserDetail = (data) => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data, RFQUser: data.RFQUser })
   }
 
   getRoleDetail = (data) => {
@@ -121,6 +149,7 @@ class User extends Component {
       return <UserRegistration
         data={data}
         hideForm={this.hideForm}
+        RFQUser={this.state.RFQUser}
       />
     }
 
@@ -157,11 +186,19 @@ class User extends Component {
                 Manage Levels
               </NavLink>
             </NavItem>}
+
+            {ViewUserAccessibility && <NavItem>
+              <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                RFQ User
+              </NavLink>
+            </NavItem>}
+
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
             {this.state.activeTab === '1' && ViewUserAccessibility &&
               <TabPane tabId="1">
                 <UsersListing
+                  RFQUser={false}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
                 />
@@ -182,6 +219,14 @@ class User extends Component {
               <TabPane tabId="4">
                 <LevelsListing
                   toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '5' && ViewUserAccessibility &&
+              <TabPane tabId="5">
+                <UsersListing
+                  RFQUser={true}
+                  formToggle={this.displayForm}
+                  getUserDetail={this.getUserDetail}
+                />
               </TabPane>}
           </TabContent>
         </div>

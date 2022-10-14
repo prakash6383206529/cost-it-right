@@ -75,6 +75,7 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
             obj['label'] = val.name
             obj['value'] = val._id
             cloneListValue.push(obj);
+            return null
         })
         return cloneListValue;
     }
@@ -107,6 +108,7 @@ export function formatGetPlanResult(result) {
             } else if ((item.code !== 'fps' && item.intervalLength === 1 && item.state === 'active')) {
                 planListMonthly.push(item);
             }
+            return null
         });
         planListArray.push(planListMonthly);
         planListArray.push(planListYearly);
@@ -118,17 +120,28 @@ export function formatGetPlanResult(result) {
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
+        let tempFinal = []
+        let count = 0
         costingArr && costingArr.map(item => {
             let checked = false
+            count = 0
             selectedRowData && selectedRowData.map(item1 => {
-                if (item1.CostingId === item.CostingId) {
-                    checked = true
-                    return false
+                if (_.isEqual(item, item1)) {
+                    count++
                 }
-                return true
+                return null
             })
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
+            if (count === 0) {                                              // NOT EQUAL
+                item.IsChecked = false
+                tempFinal.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
+            }
+            return null
         })
+
+        selectedRowData.forEach(object => {
+            temp.push({ CostingId: object.CostingId, CostingNumber: object.CostingNumber, IsChecked: true, LineNumber: object.LineNumber, SANumber: object.SANumber })
+        });
+        let apiArray = [...temp, ...tempFinal]
 
         // let uniqueArr = [];
         // temp.filter(function(item){
@@ -138,7 +151,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
         //      }
         //     return null;
         // });
-        let uniqueArr = _.uniqBy(temp, function (o) {
+        let uniqueArr = _.uniqBy(apiArray, function (o) {
             return o.CostingId;
         });
 

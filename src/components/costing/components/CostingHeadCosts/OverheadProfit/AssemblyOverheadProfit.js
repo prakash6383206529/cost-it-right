@@ -129,8 +129,8 @@ function AssemblyOverheadProfit(props) {
   */
   return (
     <>
-      <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} >
-        <td className='part-overflow'>
+      <tr className="accordian-row">
+        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
@@ -143,7 +143,7 @@ function AssemblyOverheadProfit(props) {
         <td className="costing-border-right">{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
-        <td colSpan={8} className="cr-innerwrap-td">
+        <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">
           <div className="user-page p-0">
             <div>
               <OverheadProfit

@@ -15,8 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -25,6 +24,8 @@ import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { ASSEMBLY } from '../../../../config/masterData';
+import { debounce } from 'lodash';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 function TabToolCost(props) {
 
@@ -46,7 +47,8 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = costData?.TechnologyName === ASSEMBLY
+  const partType = costData?.TechnologyName === ASSEMBLY   // ASSEMBLY TECHNOLOGY
+  const [disableSwitch, setDisableSwitch] = useState(false)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -57,6 +59,15 @@ function TabToolCost(props) {
     dispenseCallback()
   }, [IsToolCostApplicable])
 
+  useEffect(() => {
+
+    if (IsApplicableProcessWise && gridData && gridData.length === 0) {
+      setDisableSwitch(false)
+    } else if (gridData.length > 0) {
+      setDisableSwitch(true)
+    }
+  }, [gridData])
+
 
   useEffect(() => {
 
@@ -64,13 +75,22 @@ function TabToolCost(props) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
+      if (RMCCTabData[0].PartType === "Assembly") {
+        setDisableSwitch(true)
+      }
+
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
-        return { label: el.ProcessName, value: el.ProcessId };
+        if (el?.ProcessList?.length === 0) {
+          return { label: el.ProcessName, value: el.ProcessId };
+        } else {
+          return el.ProcessList && el.ProcessList.map((item) => {
+            return { label: item.ProcessName, value: item.ProcessId };
+          })
+        }
       })
       OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
         return { label: el.OperationName, value: el.OperationId };
       });
-
       setProcessArray(ProcessCostArray)
       setOperationArray(OperationCostArray)
     }
@@ -117,7 +137,7 @@ function TabToolCost(props) {
   * @description SET OVERALL APPLICABILITY DEATILS
   */
   const setOverAllApplicabilityCost = (OverAllToolObj) => {
-    let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
+    dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
     //dispatch(setToolTabData(arr, () => { }))
   }
   const onGridReady = (params) => {
@@ -137,11 +157,10 @@ function TabToolCost(props) {
     filter: true,
     sortable: true,
   };
-
   /**
-  * @method dispatchOverallApplicabilityCost
-  * @description SET OVERALL APPLICABILITY DEATILS
-  */
+   * @method dispatchOverallApplicabilityCost
+   * @description SET OVERALL APPLICABILITY DEATILS
+   */
   const dispatchOverallApplicabilityCost = (OverAllToolObj, arr) => {
     let tempArr = [];
     try {
@@ -161,7 +180,6 @@ function TabToolCost(props) {
     return tempArr;
 
   }
-
   /**
 * @method setToolCost
 * @description SET TOOL COST
@@ -211,6 +229,7 @@ function TabToolCost(props) {
   */
   const onPressApplicability = () => {
     setIsApplicableProcessWise(!IsApplicableProcessWise)
+    dispatch(isToolDataChange(true))
   }
 
   useEffect(() => {
@@ -224,25 +243,11 @@ function TabToolCost(props) {
   }, [IsApplicableProcessWise, props.activeTab])
 
   /**
-  * @method getTotal
-  * @description GET TOTAL COST
-  */
-  const getTotal = () => {
-    let cost = 0;
-
-    cost = ToolsDataList && ToolsDataList.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetToolCost);
-    }, 0)
-
-    return cost;
-  }
-
-  /**
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = (formData) => {
-    if (checkIsToolTabChange || gridData) {
+  const saveCosting = debounce(handleSubmit((formData) => {
+    if (checkIsToolTabChange) {
 
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -267,6 +272,7 @@ function TabToolCost(props) {
         }
       }
 
+
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
@@ -278,7 +284,7 @@ function TabToolCost(props) {
       }))
     }
 
-  }
+  }), 500);
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
@@ -303,14 +309,6 @@ function TabToolCost(props) {
     setIsEditFlag(true)
     setRowObjData(tempArr)
     setDrawerOpen(true)
-  }
-
-  /**
-* @method renderPaginationShowsTotal
-* @description Pagination
-*/
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
   }
 
   // const options = {
@@ -347,8 +345,7 @@ function TabToolCost(props) {
     decimalFormatter: decimalFormatter,
   };
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
 
@@ -361,6 +358,7 @@ function TabToolCost(props) {
     setRowObjData(gridData)
     setIsEditFlag(false)
     setDrawerOpen(true)
+    dispatch(isToolDataChange(true))
   }
 
   const closeDrawer = (e = '', rowData = {}) => {
@@ -388,12 +386,6 @@ function TabToolCost(props) {
     setDrawerOpen(false)
   }
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
-
   return (
     <>
       <div className="login-container signup-form">
@@ -401,8 +393,8 @@ function TabToolCost(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              <Row className="m-0  costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-30 py-4 border-section">
+              <Row className="m-0 py-3 costing-border border-bottom-0 align-items-center ">
+                <Col md="9" className="px-3 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability: </span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -413,7 +405,8 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode}
+                            disabled={CostingViewMode || disableSwitch}
+                            //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -430,27 +423,27 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
-                  {"Net Tool Cost"}
-                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
-
+                <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                  <div>
+                    {"Net Tool Cost:"}
+                    {IsApplicableProcessWise && <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
+                  </div>
                   {IsApplicableProcessWise &&
-                    <Col >
+                    <>
                       {!CostingViewMode && <button
                         type="button"
                         className={'user-btn'}
                         onClick={DrawerToggle}
                       >
                         <div className={'plus'}></div>ADD TOOL</button>}
-                    </Col>
+                    </>
                   }
                 </Col>
               </Row>
 
               <form
                 noValidate
-                className="form"
-                onSubmit={handleSubmit(onSubmit)}
+                className="form costing-border border-top-0 px-3"
               >
                 {!IsApplicableProcessWise &&
                   <Row>
@@ -497,9 +490,6 @@ function TabToolCost(props) {
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
                         <div className={`ag-grid-wrapper height-width-wrapper ${gridData && gridData?.length <= 0 ? "overlay-contain" : ""}`}>
-                          <div className="ag-grid-header">
-                            {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
-                          </div>
                           <div
                             className="ag-theme-material">
                             <AgGridReact
@@ -509,7 +499,7 @@ function TabToolCost(props) {
                               // columnDefs={c}
                               rowData={gridData}
                               pagination={true}
-                              paginationPageSize={10}
+                              paginationPageSize={defaultPageSize}
                               onGridReady={onGridReady}
                               gridOptions={gridOptions}
                               loadingOverlayComponent={'customLoadingOverlay'}
@@ -536,13 +526,7 @@ function TabToolCost(props) {
                               <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                               <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                              </select>
-                            </div>
+                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                           </div>
                         </div>
                       </div>
@@ -558,10 +542,10 @@ function TabToolCost(props) {
 
 
       {!CostingViewMode && IsApplicableProcessWise &&
-        <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+        <div className="col-sm-12 text-right bluefooter-butn btn-sticky-container">
           <button
             type={'button'}
-            className="submit-button mr5 save-btn"
+            className="submit-button save-btn"
             onClick={saveCosting}
           >
             <div className={'save-icon'}></div>

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import {
   deleteProcess,
   getProcessDataList,
@@ -22,6 +22,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import { PaginationWrapper } from '../../common/commonPagination'
+import { searchNocontentFilter } from '../../../helper'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -43,7 +46,9 @@ class ProcessListing extends Component {
       rowData: null,
       showPopup: false,
       deletedId: '',
-      isLoader: false
+      isLoader: false,
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -52,7 +57,9 @@ class ProcessListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.getDataList()
+    setTimeout(() => {
+      this.getDataList()
+    }, 300);
   }
 
   getDataList = (plant_id = '', machine_id = '') => {
@@ -119,8 +126,8 @@ class ProcessListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -217,8 +224,8 @@ class ProcessListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -316,12 +323,20 @@ class ProcessListing extends Component {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
   }
 
-  closeProcessDrawer = (e = '') => {
+  closeProcessDrawer = (e = '', formData, type) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
-      this.getDataList()
+      if (type === 'submit')
+        this.getDataList()
     })
-  }
 
+  }
+  /**
+    * @method onFloatingFilterChanged
+    * @description Filter data when user type in searching input
+    */
+  onFloatingFilterChanged = (value) => {
+    this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -345,12 +360,16 @@ class ProcessListing extends Component {
     params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+  }
   onBtExport = () => {
-    let tempArr = this.props.processList && this.props.processList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.processList ? this.props.processList : [])
     return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -359,6 +378,7 @@ class ProcessListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -370,14 +390,22 @@ class ProcessListing extends Component {
    */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const { isOpenProcessDrawer, isEditFlag, noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
+
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -415,9 +443,7 @@ class ProcessListing extends Component {
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
-                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
-
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                     <div className="refresh mr-0"></div>
                   </button>
@@ -430,11 +456,13 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.processList && this.props.processList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.processList && this.props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={this.state.dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
@@ -442,26 +470,23 @@ class ProcessListing extends Component {
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}
-                  paginationPageSize={10}
+                  paginationPageSize={defaultPageSize}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={this.onRowSelect}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
+                  onFilterModified={this.onFloatingFilterChanged}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
                   <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
-                <div className="paging-container d-inline-block float-right">
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
             </div>
 
@@ -509,5 +534,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'ProcessListing',
     enableReinitialize: true,
+    touchOnChange: true
   })(ProcessListing),
 )

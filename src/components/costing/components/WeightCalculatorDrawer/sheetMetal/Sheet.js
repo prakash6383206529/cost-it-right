@@ -1,24 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
+import { debounce } from 'lodash'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag, item } = props
-    const costData = useContext(costingInfoContext)
-    const CostingViewMode = useContext(ViewCostingContext);
+    const { rmRowData, item, CostingViewMode } = props
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -81,11 +78,11 @@ function Sheet(props) {
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
     })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
-    const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
     const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
+    const [isDisable, setIsDisable] = useState(false)
     // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
 
@@ -107,13 +104,13 @@ function Sheet(props) {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
-                    : { label: kgObj.Text, value: kgObj.Value })
+                    : { label: kgObj.Display, value: kgObj.Value })
                 setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
-                    : { label: kgObj.Text, value: kgObj.Value })
+                    : { label: kgObj.Display, value: kgObj.Value })
             }, 100);
 
         }))
@@ -235,7 +232,7 @@ function Sheet(props) {
                     const accept = AcceptableSheetMetalUOM.includes(item.Text)
                     if (accept === false) return false
                     if (item.Value === '0') return false
-                    temp.push({ label: item.Text, value: item.Value })
+                    temp.push({ label: item.Display, value: item.Value })
                     return null
                 })
             return temp
@@ -255,8 +252,14 @@ function Sheet(props) {
      * @method onSubmit
      * @description Used to Submit the form
      */
-    const onSubmit = (values) => {
-
+    const onSubmit = debounce(handleSubmit((values) => {
+        setIsDisable(true)
+        if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
+            Toaster.warning('Finish Weight can not be zero')
+            setIsDisable(false)
+            setValue('FinishWeightOfSheet', '')
+            return false
+        }
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -293,19 +296,19 @@ function Sheet(props) {
         }
 
         dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', data)
             }
         }))
-    }
+    }), 500);
 
     const handleUnit = (value) => {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
-        setUnit(value.label)
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
         setTimeout(() => {
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
@@ -314,9 +317,15 @@ function Sheet(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area (cm<sup>2</sup>)</>
+        return <>Net Surface Area(cm<sup>2</sup>)</>
         // return (<sup>2</sup>)
     }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
 
     /**
      * @method render
@@ -326,7 +335,8 @@ function Sheet(props) {
         <>
             <div className="user-page p-0">
                 <div>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form"
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
                                 <Col md="12" className={'mt25'}>
@@ -338,7 +348,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'SheetThickness'}
                                         Controller={Controller}
@@ -349,7 +359,7 @@ function Sheet(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -357,11 +367,11 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetThickness}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Width(mm)`}
                                         name={'SheetWidth'}
                                         Controller={Controller}
@@ -372,7 +382,7 @@ function Sheet(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -380,12 +390,12 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetWidth}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Length(mm)`}
                                         name={'SheetLength'}
                                         Controller={Controller}
@@ -396,7 +406,7 @@ function Sheet(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -404,11 +414,11 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetLength}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Weight of Sheet(g)`}
                                         name={'SheetWeight'}
                                         Controller={Controller}
@@ -434,7 +444,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Strip Width(mm)`}
                                         name={'StripWidth'}
                                         Controller={Controller}
@@ -445,7 +455,7 @@ function Sheet(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -453,11 +463,11 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.StripWidth}
-                                        disabled={false}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`No. of Strips`}
                                         name={'StripsNumber'}
                                         Controller={Controller}
@@ -474,7 +484,7 @@ function Sheet(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Blank Size(mm)`}
                                         name={'BlankSize'}
                                         Controller={Controller}
@@ -485,7 +495,7 @@ function Sheet(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -493,11 +503,11 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.BlankSize}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Components/Strip`}
                                         name={'ComponentPerStrip'}
                                         Controller={Controller}
@@ -513,7 +523,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
                                         Controller={Controller}
@@ -529,7 +539,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -540,7 +550,7 @@ function Sheet(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -548,7 +558,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -556,7 +566,7 @@ function Sheet(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -567,7 +577,7 @@ function Sheet(props) {
                                             required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -575,14 +585,14 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={false}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
                                     <SearchableSelectHookForm
                                         label={'Weight Unit'}
                                         name={'UOMDimension'}
-                                        placeholder={'-Select-'}
+                                        placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}
@@ -592,12 +602,12 @@ function Sheet(props) {
                                         mandatory={true}
                                         handleChange={handleUnit}
                                         errors={errors.UOMDimension}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
 
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
                                         Controller={Controller}
@@ -616,18 +626,18 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeightOfSheet'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
                                         }}
                                         handleChange={setFinishWeight}
@@ -635,7 +645,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.FinishWeightOfSheet}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -649,7 +659,9 @@ function Sheet(props) {
                                 <div className={'cancel-icon'}></div> {'Cancel'}
                             </button>
                             <button
-                                type={'submit'}
+                                type="button"
+                                onClick={onSubmit}
+                                disabled={CostingViewMode || isDisable ? true : false}
                                 className="submit-button save-btn">
                                 <div className={'save-icon'}></div>
                                 {'Save'}

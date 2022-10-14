@@ -4,9 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
-    maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
+    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -16,6 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { showDataOnHover } from '../../../helper';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -24,17 +25,13 @@ class AddVendorDrawer extends Component {
             selectedVendorType: [],
             selectedPlants: [],
             plantsArray: [],
-
             country: [],
             state: [],
             city: [],
-
             isOpenFuel: false,
             isOpenPlant: false,
-
             isOpenVendorPlant: false,
             VendorId: '',
-
             isVisible: false,
             vendor: '',
             DataToCheck: [],
@@ -49,11 +46,15 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getVendorPlantSelectList(() => { })
-        this.props.fetchCountryDataAPI(() => { })
-        this.props.fetchStateDataAPI(0, () => { })
-        this.props.fetchCityDataAPI(0, () => { })
+        if (!this.props.isViewMode) {
+            this.props.getVendorTypesSelectList()
+        }
+        if (!(this.props.isEditFlag || this.props.isViewMode)) {
+            this.props.getVendorPlantSelectList(() => { })
+            this.props.fetchCountryDataAPI(() => { })
+            this.props.fetchStateDataAPI(0, () => { })
+            this.props.fetchCityDataAPI(0, () => { })
+        }
     }
 
     /**
@@ -61,7 +62,9 @@ class AddVendorDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.getSupplierByIdAPI('', false, () => { })
+        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+            this.props.getSupplierByIdAPI('', false, () => { })
+        }
         this.getDetail()
     }
 
@@ -78,37 +81,7 @@ class AddVendorDrawer extends Component {
     * @description called
     */
     handleVendorType = (e) => {
-
-        const { supplierData, isEditFlag } = this.props;
-        if (isEditFlag) {
-
-            //DefaultIds Get in Edit Mode.
-            let DefaultVendorTypeIds = [];
-            supplierData && supplierData.VendorTypes && supplierData.VendorTypes.map((item, index) => {
-                DefaultVendorTypeIds.push(item.VendorTypeId)
-                return null;
-            })
-
-            //Selected Vendor Type IDs.
-            let SelectedVendorTypeIds = [];
-            e && e.map((item, index) => {
-                SelectedVendorTypeIds.push(Number(item.Value))
-                return null;
-            })
-
-            //Removed Vendor Type Id's
-            let removedVendorTypeIds = DefaultVendorTypeIds.filter(x => !SelectedVendorTypeIds.includes(x));
-
-            if (removedVendorTypeIds.length === 0) {
-                this.setState({ selectedVendorType: e });
-            } else {
-                Toaster.warning("You can not remove existing Vendor Type.");
-                return false;
-            }
-
-        } else {
-            this.setState({ selectedVendorType: e });
-        }
+        this.setState({ selectedVendorType: e });
         this.setState({ DropdownChanged: false })
     };
 
@@ -270,36 +243,20 @@ class AddVendorDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     let tempArr = [];
-                    let tempVendorPlant = [];
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
 
-                    Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
-                        tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
-                        return null;
-                    })
-
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
                             selectedVendorType: tempArr,
-                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-                            existedVendorPlants: tempVendorPlant,
-                            selectedVendorPlants: tempVendorPlant,
+                            country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
+                            state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
+                            city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -308,18 +265,18 @@ class AddVendorDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event, formData) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', formData)
+        this.props.closeDrawer('', type)
     };
 
     /**
     * @method cancel
     * @description used to Reset form
     */
-    cancel = (formData = {}) => {
+    cancel = (formData = {}, type) => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -332,7 +289,7 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('', formData)
+        this.toggleDrawer('', type)
     }
 
     /**
@@ -341,20 +298,13 @@ class AddVendorDrawer extends Component {
     */
     onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
-        const { supplierData, vendorPlantSelectList } = this.props;
+        const { supplierData } = this.props;
 
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
             vendorArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
             return vendorArray;
-        })
-
-        //Vendor Plants Array
-        let VendorPlantsArray = [];
-        vendorPlantSelectList && vendorPlantSelectList.map((item, index) => {
-            VendorPlantsArray.push(item.Value)
-            return null;
         })
 
         //DefaultIds Get in Edit Mode.
@@ -371,27 +321,15 @@ class AddVendorDrawer extends Component {
             return null;
         })
 
-        //Additonal Vendor Plant Id's
-        let AdditonalPlants = SelectedVendorPlantIds.filter(x => !DefaultVendorPlantIds.includes(x));
-
-        //Removed Vendor Plant Id's
-        let removedVendorPlants = DefaultVendorPlantIds.filter(x => !SelectedVendorPlantIds.includes(x));
-
-        let vendorPlantArray = [];
-        selectedVendorPlants && selectedVendorPlants.map((item) => {
-            vendorPlantArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
-            return vendorPlantArray;
-        })
-
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
-            if (DropdownChanged && DataToCheck.Email == values.Email && DataToCheck.PhoneNumber == values.PhoneNumber &&
-                DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
-                DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
-                DataToCheck.AddressLine2 == values.AddressLine2) {
+            if (DropdownChanged && DataToCheck.Email === values.Email && DataToCheck.PhoneNumber === values.PhoneNumber &&
+                DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
+                DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
+                DataToCheck.AddressLine2 === values.AddressLine2) {
 
-                this.toggleDrawer('')
+                this.toggleDrawer('', 'cancel')
                 return false
             }
             this.setState({ setDisable: true })
@@ -407,8 +345,6 @@ class AddVendorDrawer extends Component {
                 MobileNumber: values.MobileNumber,
                 Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
-                AddedVendorPlants: AdditonalPlants,
-                RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
             this.props.reset()
@@ -416,7 +352,7 @@ class AddVendorDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.cancel(formData)
+                    this.cancel(formData, 'submit')
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -429,7 +365,6 @@ class AddVendorDrawer extends Component {
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
-                VendorPlants: vendorPlantArray,
                 UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
                 AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
@@ -443,7 +378,7 @@ class AddVendorDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.cancel(formData);
+                    this.cancel(formData, 'submit');
                 }
             })
         }
@@ -460,7 +395,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, isVisible } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
         return (
             <div>
@@ -478,10 +413,10 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e)}
+                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>
@@ -492,8 +427,10 @@ class AddVendorDrawer extends Component {
                                             label="Vendor Type"
                                             name="VendorType"
                                             placeholder="Select"
+                                            title={showDataOnHover(this.state.selectedVendorType)}
                                             selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
+                                            validate={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [required] : []}
                                             selectionChanged={this.handleVendorType}
                                             optionValue={option => option.Value}
                                             optionLabel={option => option.Text}
@@ -508,8 +445,8 @@ class AddVendorDrawer extends Component {
                                             label={`Vendor Name`}
                                             name={"VendorName"}
                                             type="text"
-                                            placeholder={''}
-                                            validate={[required, maxLength71, checkWhiteSpaces]}
+                                            placeholder={this.state.isEditFlag ? '-' : 'Enter'}
+                                            validate={[required, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -524,8 +461,8 @@ class AddVendorDrawer extends Component {
                                             label={`Vendor Code`}
                                             name={"VendorCode"}
                                             type="text"
-                                            placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            placeholder={this.state.isEditFlag ? '-' : 'Enter'}
+                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}
@@ -540,7 +477,7 @@ class AddVendorDrawer extends Component {
                                             label={`Email Id`}
                                             name={"Email"}
                                             type="email"
-
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
                                             required={false}
@@ -559,9 +496,9 @@ class AddVendorDrawer extends Component {
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : 'Enter'}
                                                     validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     //required={true}
                                                     maxLength={12}
                                                     customClassName={'withBorder'}
@@ -573,9 +510,9 @@ class AddVendorDrawer extends Component {
                                                     label="Ext."
                                                     name={"Extension"}
                                                     type="text"
-                                                    placeholder={'Ext'}
+                                                    placeholder={isViewMode ? '-' : 'Ext'}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     //required={true}
                                                     // maxLength={5}
                                                     customClassName={'withBorder'}
@@ -588,8 +525,8 @@ class AddVendorDrawer extends Component {
                                             name="MobileNumber"
                                             label="Mobile Number"
                                             type="text"
-                                            placeholder={''}
-                                            component={renderText}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
+                                            component={renderNumberInputField}
                                             isDisabled={false}
                                             validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
@@ -655,9 +592,9 @@ class AddVendorDrawer extends Component {
                                             label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[required, postiveNumber, maxLength6]}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             required={true}
                                             maxLength={26}
                                             className=" "
@@ -672,7 +609,7 @@ class AddVendorDrawer extends Component {
                                             label="Address 1"
                                             name={"AddressLine1"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
@@ -687,7 +624,7 @@ class AddVendorDrawer extends Component {
                                             label="Address 2"
                                             name={"AddressLine2"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //required={true}
@@ -776,15 +713,18 @@ export default connect(mapStateToProps, {
     updateSupplierAPI,
     getSupplierByIdAPI,
     getRadioButtonSupplierType,
+    getAllCities,
     fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
-    getAllCities,
     getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
-    touchOnChange: true
+    touchOnChange: true,
+    onSubmitFail: (errors) => {
+        focusOnError(errors)
+    },
 })(AddVendorDrawer));

@@ -1,7 +1,7 @@
 
 import { Drawer } from '@material-ui/core';
 import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import { ProcessGroup } from '../masterUtil';
 
 function ProcessGroupDrawer(props) {

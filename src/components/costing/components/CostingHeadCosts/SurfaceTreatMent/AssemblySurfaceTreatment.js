@@ -8,6 +8,7 @@ import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
 import _ from 'lodash'
 import { EMPTY_GUID } from '../../../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
@@ -21,6 +22,7 @@ function AssemblySurfaceTreatment(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
@@ -34,20 +36,21 @@ function AssemblySurfaceTreatment(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId,
-        SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
+        AssemCostingId: item.AssemblyCostingId,
+        SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
           // props.toggleAssembly(Params, Data)
           let array = [];
-          array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          array = reactLocalStorage.getObject('surfaceCostingArray')
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
+          reactLocalStorage.setObject('surfaceCostingArray', uniqueArary);
           props.toggleAssembly(Params, Data)
 
           if (IsCollapse === false) {
@@ -87,9 +90,10 @@ function AssemblySurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
-        SubAssembId={item.CostingId}
+        subAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {
@@ -105,7 +109,7 @@ function AssemblySurfaceTreatment(props) {
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       IsAssemblyCalculation={true}
-      SubAssembId={item.CostingId}
+      subAssembId={item.CostingId}
     />
   })
 
@@ -118,10 +122,10 @@ function AssemblySurfaceTreatment(props) {
     <>
       <tr>
         <div className="accordian-row" style={{ display: 'contents' }}
-          onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
         >
-
-          <td className='part-overflow'>
+          <td className='part-overflow'
+            onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START 
+          >
             <span className={`part-name ${item && item.BOMLevel}`} title={item && item.PartNumber}>
               {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
             </span>
@@ -131,8 +135,8 @@ function AssemblySurfaceTreatment(props) {
           <td>{item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null && item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== 0) ?
-                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                  <span class="tooltiptext">
+                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon st-tooltip"></i>
+                  <span class="tooltiptext text-right">
                     {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
@@ -146,7 +150,7 @@ function AssemblySurfaceTreatment(props) {
             {
               item.CostingPartDetails && (item.CostingPartDetails.TotalTransportationCostWithQuantity !== null && item.CostingPartDetails.TotalTransportationCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                  <span class="tooltiptext">
+                  <span class="tooltiptext max225">
                     {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
@@ -185,9 +189,9 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
-            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}

@@ -22,7 +22,7 @@ import ClientReducer from './reducers/Client';
 import ExchangeRateReducer from './reducers/ExchangeRate';
 import TaxReducer from './reducers/Tax';
 
-export default {
+const mainReducer = {
   part: partReducer,
   unitOfMeasrement: UOMREducer,
   category: categoryReducer,
@@ -47,3 +47,4 @@ export default {
   exchangeRate: ExchangeRateReducer,
   tax: TaxReducer,
 }
+export default mainReducer;

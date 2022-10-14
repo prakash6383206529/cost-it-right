@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
+import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
 import { ASSEMBLY } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
-import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
+  const [IsOpenTool, setIsOpenTool] = useState(false);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const dispatch = useDispatch()
 
@@ -46,7 +48,7 @@ function AddAssemblyOperation(props) {
     props.closeDrawer()
   }
 
-  const getOperationGrid = (grid, operationCostAssemblyTechnology) => {
+  const getOperationGrid = (grid, operationCostAssemblyTechnology) => {   // ASSEMBLY TECHNOLOGY
     setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
     setOperationGridData(grid)
   }
@@ -195,7 +197,7 @@ function AddAssemblyOperation(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  disabled={CostingViewMode}
+                  disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

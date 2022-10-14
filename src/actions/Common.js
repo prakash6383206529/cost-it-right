@@ -50,7 +50,12 @@ import {
   GET_UOM_SELECTLIST_BY_UNITTYPE,
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
+  STATUS_COLUMN_DATA,
+  IS_RESET,
   config,
+  GET_GRID_HEIGHT,
+  GET_STATE_WHILE_DOWNLOADING,
+  GET_REPORTER_LIST
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1382,6 +1387,23 @@ export function getVendorWithVendorCodeSelectList(callback) {
   };
 }
 
+
+export function getReporterList(callback) {
+  return (dispatch) => {
+    const request = axios.get(API.getReporterList, config());
+    request.then((response) => {
+      dispatch({
+        type: GET_REPORTER_LIST,
+        payload: response.data.SelectList,
+      });
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
 /**
  * @method getUOMListByUnitType
  * @description UOM SELECT LIST BY UNIT TYPE
@@ -1413,30 +1435,6 @@ export function getICCAppliSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getICCAppliSelectList}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ICC_APPLICABILITY_SELECTLIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-/**
- * @method getICCAppliSelectListKeyValue
- * @description GET ICC APPLICABILITY SELECTLIST KEY VALUE USED IN OVERHEAD PROFIT COSTING
- */
-export function getICCAppliSelectListKeyValue(callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getICCAppliSelectListKeyValue}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1521,6 +1519,68 @@ export function getAllCity(callback) {
       dispatch({ type: API_FAILURE, });
       callback(error);
       apiErrors(error);
+    })
+  }
+}
+
+export function getPartSelectList(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getPartSelectLists}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+
+export function agGridStatus(data, id, arr = [], arrReports = []) {
+  return (dispatch) => {
+    dispatch({
+      type: STATUS_COLUMN_DATA,
+      payload: {
+        data: data,
+        id: id,
+        arr: arr,
+        arrReports: arrReports
+      },
+    })
+
+  }
+}
+
+
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function isResetClick(data, component) {
+  return (dispatch) => {
+    dispatch({
+      type: IS_RESET,
+      payload: { data: data, component: component },
+    })
+
+  }
+}
+
+//GET HEIGHT FOR DROPDOWN
+export function getGridHeight(value) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_GRID_HEIGHT,
+      payload: value,
+    })
+  }
+}
+//DISABLED NAVBAR, SIDEBAR, TAB AND ACTION BUTTONS WHILE DOWNLOADING DATA
+export const disabledClass = (value) => {
+  return (dispatch) => {
+    dispatch({
+      type: GET_STATE_WHILE_DOWNLOADING,
+      payload: value,
     })
   }
 }

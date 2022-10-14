@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,46 +11,34 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
 import { debounce } from 'lodash';
+import { PaginationWrapper } from '../../common/commonPagination';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
     const { cancelVerifyPage, isExchangeRate } = props
-    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
-    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
 
     const dispatch = useDispatch()
 
     useEffect(() => {
         verifyCostingList()
         dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
     const verifyCostingList = () => {
@@ -68,6 +55,7 @@ function OtherVerifySimulation(props) {
                     setSimualtionId(data.SimulationId)
                     setMasterId(data.SimulationtechnologyId)
                     setHideRunButton(false)
+                    setEffectiveDate(data.EffectiveDate)
                 }
             }))
         }
@@ -75,10 +63,6 @@ function OtherVerifySimulation(props) {
 
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
-
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
@@ -96,19 +80,16 @@ function OtherVerifySimulation(props) {
 
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
@@ -157,11 +138,9 @@ function OtherVerifySimulation(props) {
                 setObj(obj)
                 setSimulationDrawer(true)
 
-            default:
                 break;
+            default:
         }
-
-
     }, 500)
 
     const closeDrawer = (e = '', mode) => {
@@ -201,8 +180,7 @@ function OtherVerifySimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -251,7 +229,7 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className={`height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -291,22 +269,15 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
                                                 <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                {isExchangeRate &&
-                                                    <>
-                                                        <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
-                                                    </>
-                                                }
+
+
+                                                {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                                {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
+
+
 
                                             </AgGridReact>
-
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
                                 </div>
@@ -342,6 +313,7 @@ function OtherVerifySimulation(props) {
                     objs={objs}
                     masterId={masterId}
                     anchor={"right"}
+                    date={effectiveDate}
                 />
             }
         </>

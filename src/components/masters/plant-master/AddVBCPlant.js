@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength80, minLength10, maxLength12,checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength3, checkSpacesInString } from "../../../helper/validation";
 
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
@@ -14,8 +14,6 @@ import {
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddVBCPlant extends Component {
   constructor(props) {
@@ -28,6 +26,7 @@ class AddVBCPlant extends Component {
       state: [],
       PlantId: '',
       IsActive: true,
+      isViewMode: this.props?.isViewMode ? true : false,
     }
   }
 
@@ -205,7 +204,7 @@ class AddVBCPlant extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -215,7 +214,7 @@ class AddVBCPlant extends Component {
       PlantId: '',
     })
     this.props.getPlantUnitAPI('', res => { })
-    this.toggleDrawer('')
+    this.toggleDrawer('', type)
   }
 
   /**
@@ -247,7 +246,7 @@ class AddVBCPlant extends Component {
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     } else {
@@ -271,7 +270,7 @@ class AddVBCPlant extends Component {
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -288,7 +287,7 @@ class AddVBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, isViewMode } = this.props;
     const { country } = this.state;
     return (
       <>
@@ -337,7 +336,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.vendorHandler}
                       valueDescription={this.state.vendor}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -345,12 +344,13 @@ class AddVBCPlant extends Component {
                       label={`Plant Name`}
                       name={"PlantName"}
                       type="text"
-                      placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                      placeholder={isViewMode ? '-' : "Enter"}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -360,13 +360,13 @@ class AddVBCPlant extends Component {
                       label={`Plant Code`}
                       name={"PlantCode"}
                       type="text"
-                      placeholder={""}
-                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15]}
+                      placeholder={(isEditFlag || isViewMode) ? '-' : "Enter"}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15, checkSpacesInString]}
                       component={renderText}
                       //required={true}
                       className=""
                       customClassName={"withBorder"}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -376,13 +376,14 @@ class AddVBCPlant extends Component {
                           label="Phone Number"
                           name={"PhoneNumber"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           //    required={true}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
@@ -390,13 +391,14 @@ class AddVBCPlant extends Component {
                           label="Ext."
                           name={"Extension"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
                           // required={true}
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                     </Row>
@@ -408,13 +410,14 @@ class AddVBCPlant extends Component {
                       label="Address 1"
                       name={"AddressLine1"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //     required={true}
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -422,13 +425,14 @@ class AddVBCPlant extends Component {
                       label="Address 2"
                       name={"AddressLine2"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //   required={true}
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -439,7 +443,7 @@ class AddVBCPlant extends Component {
                       type="text"
                       label="Country"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("country")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
@@ -451,6 +455,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.countryHandler}
                       valueDescription={this.state.country}
+                      disabled={isViewMode}
                     />
                   </Col>
                   {(country.length === 0 || country.label === "India") && (
@@ -460,7 +465,7 @@ class AddVBCPlant extends Component {
                         type="text"
                         label="State"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("state")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         validate={
@@ -472,6 +477,7 @@ class AddVBCPlant extends Component {
                         required={true}
                         handleChangeDescription={this.stateHandler}
                         valueDescription={this.state.state}
+                        disabled={isViewMode}
                       />
                     </Col>
                   )}
@@ -484,7 +490,7 @@ class AddVBCPlant extends Component {
                       type="text"
                       label="City"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("city")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
@@ -496,6 +502,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.cityHandler}
                       valueDescription={this.state.city}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -503,13 +510,14 @@ class AddVBCPlant extends Component {
                       label="ZipCode"
                       name={"ZipCode"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[required, number, maxLength6]}
                       component={renderText}
                       required={true}
                       //maxLength={6}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -519,7 +527,7 @@ class AddVBCPlant extends Component {
                     <button
                       type={"button"}
                       className="mr15 cancel-btn"
-                      onClick={this.cancel}
+                      onClick={() => { this.cancel('cancel') }}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -527,6 +535,7 @@ class AddVBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
+                      disabled={isViewMode}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
@@ -585,4 +594,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddVBCPlant',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddVBCPlant));

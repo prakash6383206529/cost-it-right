@@ -12,6 +12,7 @@ import {
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
+    GET_ALL_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
     config,
     SET_PROCESS_GROUP_FOR_API,
@@ -21,6 +22,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config
 
@@ -39,6 +41,7 @@ export function createMachineType(data, callback) {
         }).catch((error) => {
             dispatch({ type: CREATE_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -158,7 +161,8 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.copyMachine}/${MachineId}`, '', config());
+        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`
+        const request = axios.post(`${API.copyMachine}?${queryParams}`, '', config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -175,22 +179,32 @@ export function copyMachine(MachineId, callback) {
  * @method getMachineDataList
  * @description GET DATALIST
  */
-export function getMachineDataList(data, callback) {
+export function getMachineDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
-        axios.get(`${API.getMachineDataList}?${queryParams}`, config())
+        const queryParams = `technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technologies !== undefined ? obj.Technologies : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+        axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
+                let value = []
+                if (response?.status !== 204) {
+                    value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+                }
+                if (response.data.Result === true || response?.status === 204) {
 
-                const value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
-
-                if (response.data.Result === true || response.status === 204) {
-                    dispatch({
-                        type: GET_MACHINE_DATALIST_SUCCESS,
-                        payload: response.status === 204 ? [] : value,
-                    });
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
+                    else {
+                        dispatch({
+                            type: GET_ALL_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
                     callback(response);
-
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -239,10 +253,10 @@ export function getMachineDetailsData(ID, callback) {
         if (ID !== '') {
             axios.get(`${API.getMachineDetailsData}/${ID}`, config())
                 .then((response) => {
-                    if (response.data.Result === true) {
+                    if (response.data.Result === true || response.status === 204) {
                         dispatch({
                             type: GET_MACHINE_DATA_SUCCESS,
-                            payload: response.data.Data,
+                            payload: response.status === 204 ? [] : response.data.Data,
                         });
                         callback(response);
                     }
@@ -430,7 +444,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
+        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
@@ -448,10 +462,10 @@ export function getFuelUnitCost(data, callback) {
  * @method getLabourCost
  * @description GET LABOUR COST
  */
-export function getLabourCost(data, callback) {
+export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
+        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
@@ -469,10 +483,10 @@ export function getLabourCost(data, callback) {
  * @method getPowerCostUnit
  * @description GET POWER COST UNIT
  */
-export function getPowerCostUnit(plantId, callback) {
+export function getPowerCostUnit(plantId, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, config())
+        axios.get(`${API.getPowerCostUnit}?PlantId=${plantId}&EffectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -15,35 +15,24 @@ function TransportationCost(props) {
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
-  const defaultValues = {
-    UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
-    Rate: data && data.Rate !== undefined ? data.Rate : 0,
-    Quantity: data && data.Quantity !== undefined ? data.Quantity : 0,
-    TransportationCost: data && data.TransportationCost !== undefined ? data.TransportationCost : 0,
-  }
+
 
   const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
   });
 
   const [uom, setUOM] = useState([])
   const [Quantity, setQuantity] = useState('')
   const [Rate, setRate] = useState('')
-  const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
-  const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
 
-  // const fieldValues = useWatch({
-  //   control,
-  //   name: ['TransportationCost'],
-  // });
+
 
   useEffect(() => {
 
@@ -75,6 +64,7 @@ function TransportationCost(props) {
       Quantity: getValues('Quantity'),
       TransportationCost: transportCost,
     }
+
     const Params = {
       index: props.index,
       BOMLevel: props.item.BOMLevel,
@@ -98,8 +88,6 @@ function TransportationCost(props) {
     dispatch(getUOMSelectList(() => { }))
   }, []);
 
-  const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
-
   /**
   * @method handleUOMChange
   * @description  USED TO HANDLE UOM CHANGE
@@ -108,7 +96,7 @@ function TransportationCost(props) {
     if (newValue && newValue !== '') {
       setValue('Rate', '')
       setValue('Quantity', '')
-      setValue('TransportationCost', '')
+      setValue('TransportationCost', 0)
       setTransportCost('')
       setTransportationType(newValue.value)
       setUOM(newValue)
@@ -116,6 +104,9 @@ function TransportationCost(props) {
       setUOM([])
       setTransportationType('')
     }
+    errors.TransportationCost = {}
+    errors.Rate = {}
+    errors.Quantity = {}
   }
 
   const handleRateChange = (event) => {
@@ -123,15 +114,14 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
+        if (event.target.value > 100) {
+          Toaster.warning('Value should not be greater than 100.')
+          event.target.value = '';
+          return false
+        }
         setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
-        if (event.target.value > 100) {
-          setPercentageLimit(true)
-        }
-        else if (event.target.value < 100) {
-          setPercentageLimit(false)
-        }
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
@@ -167,6 +157,7 @@ function TransportationCost(props) {
       }
     } else {
       Toaster.warning('Please enter valid number.')
+      event.target.value = '';
     }
   }
 
@@ -177,22 +168,37 @@ function TransportationCost(props) {
     }
     else {
       Toaster.warning('Please enter valid number.')
+      event.target.value = '';
     }
   }
 
   const reCalculation = () => {
 
+    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM !== 'Fixed') {
+      setValue('UOM', {})
+      setValue('Rate', '')
+      setValue('Quantity', '')
+    } else {
+      setValue('UOM', { label: data.UOM, value: data.UOMId })
+      setValue('Rate', checkForNull(data.Rate))
+      setValue('Quantity', checkForNull(data.Quantity))
+    }
     if (data.UOM === 'Rate') {
-      const cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(data.Rate) * checkForNull(data.Quantity);
       setTransportCost(cost)
       setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
     } else if (data.UOM === 'Fixed') {
       setTransportCost(data.TransportationCost)
       setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
     } else if (data.UOM === 'Percentage') {
-      setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate))))
-      setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
-      setRate(data.Rate)
+      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
+      setTransportCost(cost)
+      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+      setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate)
+    } else {
+      setTransportCost(0)
+      setRate(0)
+      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
     }
   }
 
@@ -201,8 +207,6 @@ function TransportationCost(props) {
   * @description RENDER LISTING
   */
   const renderListing = (label) => {
-
-    const temp = [];
 
     if (label === 'UOM') {
       // UOMSelectList && UOMSelectList.map(item => {
@@ -251,7 +255,7 @@ function TransportationCost(props) {
                 <SearchableSelectHookForm
                   label={'Type'}
                   name={'UOM'}
-                  placeholder={'-Select-'}
+                  placeholder={'Select'}
                   Controller={Controller}
                   control={control}
                   rules={{ required: true }}
@@ -277,8 +281,8 @@ function TransportationCost(props) {
                       required: false,
                       pattern: {
                         //value: /^[0-9]*$/i,
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.'
+                        value: (TransportationType === 'Percentage') ? /^((?:|0|[1-9]\d?|100)(?:\.\d{1,6})?)$/i : /^\d{0,6}(\.\d{0,6})?$/i,
+                        message: (TransportationType === 'Percentage') ? 'Percentage should not be greater than 100.' : 'Maximum length for integer is 6 and for decimal is 6'
                       },
                     }}
                     defaultValue={''}
@@ -291,7 +295,6 @@ function TransportationCost(props) {
                     errors={errors && errors.Rate}
                     disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
-                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Percentage cannot be greater than 100"} />}
                 </div>
               </Col>
               <Col md="3">
@@ -306,8 +309,8 @@ function TransportationCost(props) {
                     //required: true,
                     pattern: {
                       //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.'
+                      value: /^\d{0,6}?$/i,
+                      message: 'Maximum length for integer is 6.'
                     },
                   }}
                   defaultValue={''}
@@ -333,8 +336,8 @@ function TransportationCost(props) {
                   rules={{
                     //required: true,
                     pattern: {
-                      value: /^\d*\.?\d*$/,
-                      message: 'Invalid Number.'
+                      value: /^\d{0,6}(\.\d{0,6})?$/,
+                      message: 'Maximum length for integer is 6 and for decimal is 6.'
                     },
                   }}
                   defaultValue={''}

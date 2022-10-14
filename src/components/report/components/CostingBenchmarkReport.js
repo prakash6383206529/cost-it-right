@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing'
 import RMImportListing from '../../masters/material-master/RMImportListing'
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../../simulation/actions/Simulation'
+import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
@@ -24,7 +24,7 @@ import OperationInsights from '../../report/components/BenchMarkReportPages/Oper
 function CostingBenchmarkReport(props) {
 
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -42,6 +42,7 @@ function CostingBenchmarkReport(props) {
     const [blueDivison, setblueDivison] = useState(false)
 
     const dispatch = useDispatch()
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
@@ -77,23 +78,29 @@ function CostingBenchmarkReport(props) {
     }
 
 
+    const handleRM = (data) => {
+
+
+    }
+
 
     const renderModule = (value) => {
+
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleRM={handleRM} benchMark={true} />)
             case RMIMPORT:
                 return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' />)
             case MACHINERATE:
                 return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' />)
+                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -105,15 +112,15 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} />)
             case RMIMPORT:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} />)
             case MACHINERATE:
                 return (<MachineInsights />)
             case BOPDOMESTIC:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} />)
             case BOPIMPORT:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:

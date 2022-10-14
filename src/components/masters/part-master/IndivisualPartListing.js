@@ -5,10 +5,9 @@ import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -21,9 +20,14 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
+import DayTime from '../../common/DayTimeWrapper';
+import _ from 'lodash';
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import { searchNocontentFilter } from '../../../helper';
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -49,6 +53,7 @@ class IndivisualPartListing extends Component {
             endIndexCurrentPage: 9,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
             warningMessage: false,
@@ -57,21 +62,24 @@ class IndivisualPartListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            globalTake: defaultPageSize,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            disableFilter: true,
+            disableDownload: false,
+            noData: false,
+            dataCount: 0
         }
     }
 
 
-
-
     ApiActionCreator(skip, take, obj, isPagination) {
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
 
+        let constantFilterData = this.state.filterModel
+        let object = { ...this.state.floatingFilterData }
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             this.setState({ isLoader: false })
-
+            this.setState({ noData: false })
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
@@ -89,109 +97,114 @@ class IndivisualPartListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
 
                 })
-
-            } else {
-
             }
+            if (res && res.status === 204) {
+                this.setState({ totalRecordCount: 0, pageNo: 0 })
+            }
+
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-component-part')
+                    button && button.click()
+                }, 500);
+            }
+
+            if (res) {
+                if (res && res.data && res.data.DataList.length > 0) {
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                }
+                let isReset = true
+                setTimeout(() => {
+
+                    for (var prop in object) {
+                        if (prop !== "DepartmentCode" && object[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
+
+                }, 300);
+
+                setTimeout(() => {
+                    this.setState({ warningMessage: false })
+                }, 335);
+
+                setTimeout(() => {
+                    this.setState({ isFilterButtonClicked: false })
+                }, 600);
+            }
+
         })
 
     }
 
 
-    onBtNext(data) {
-
-        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
-
-            data.setState({ pageNo: data.state.pageNo + 1 })
-
-            const nextNo = data.state.currentRowIndex + 10;
-
-            data.ApiActionCreator(nextNo, 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: nextNo })
-        }
-
-    };
-
-    onBtPrevious(data) {
-
-        if (data.state.currentRowIndex >= 10) {
-
-            data.setState({ pageNo: data.state.pageNo - 1 })
-            const previousNo = data.state.currentRowIndex - 10;
-
-            data.ApiActionCreator(previousNo, 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: previousNo })
-
-        }
-
-
-    };
-
-
-    onSearch(data) {
-
-        this.setState({ warningMessage: false })
-        this.setState({ pageNo: 1 })
-        data.setState({ currentRowIndex: 0 })
-        data.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
-        data.setState({ enableExitFilterSearchButton: true })
-
+    componentWillUnmount() {
+        this.props.setSelectedRowForPagination([])
     }
-
-    onSearchExit(data) {
-
-        this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
-        let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
-        data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 100, emptyObj, true)
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-
-    }
-
-
 
     onFloatingFilterChanged = (value) => {
-        this.setState({ warningMessage: true })
-        this.setState({ enableSearchFilterSearchButton: true })
-
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
-
-            return false
-        } else {
-
-            if (value.column.colId === 'Technology') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, Technology: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'PartNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'PartName') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartName: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'ECNNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, ECNNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'RevisionNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'DrawingNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, DrawingNumber: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'EffectiveDateNew') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") } }) }
-
-
+        if (this.props.newPartsListing?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
         }
+        this.setState({ disableFilter: false })
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
     }
+
+
+    onSearch = () => {
+        onSearch(gridOptions, this, "Part", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+    }
+
+    resetState = () => {
+        this.props.setSelectedRowForPagination([])
+        resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
+        this.setState({ dataCount: 0 })
+
+    }
+
+    onBtPrevious = () => {
+        onBtPrevious(this, "Part")       //COMMON PAGINATION FUNCTION
+    }
+
+    onBtNext = () => {
+        onBtNext(this, "Part")   // COMMON PAGINATION FUNCTION
+
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+
+        onPageSizeChanged(this, newPageSize, "Part", this.state.currentRowIndex)  // COMMON PAGINATION FUNCTION
+    };
 
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
-
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+            }
+        }, 200);
     }
 
 
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState(() => {
-            this.getTableListData()
-        })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState(() => {
+                    this.getTableListData()
+                })
+            }
+        }, 200);
     }
 
     /**
@@ -202,6 +215,7 @@ class IndivisualPartListing extends Component {
         this.setState({ isLoader: true })
         this.props.getPartDataList((res) => {
             this.setState({ isLoader: false })
+            this.setState({ noData: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -263,14 +277,13 @@ class IndivisualPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -280,8 +293,25 @@ class IndivisualPartListing extends Component {
      */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.PartId === props.node.data.PartId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        } else {
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+        }
     }
+
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -351,6 +381,26 @@ class IndivisualPartListing extends Component {
         return serialNumber;
     }
 
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -378,15 +428,12 @@ class IndivisualPartListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false })
-        this.onSearchExit(this)
+        this.resetState()
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
-
-
-
 
 
     onGridReady = (params) => {
@@ -406,24 +453,35 @@ class IndivisualPartListing extends Component {
         //if resolution greater than 1920 table listing fit to 100%
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
 
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
+
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
+                let button = document.getElementById('Excel-Downloads-component-part')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-        }
-    };
+    }
+
 
     onBtExport = () => {
-        let tempArr = this.props.newPartsListing && this.props.newPartsListing
 
+        let tempArr = []
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this.props.selectedCostingListSimulation
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -449,60 +507,118 @@ class IndivisualPartListing extends Component {
             </ExcelSheet>);
     }
 
-
-
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isBulkUpload } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+
         }
 
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
-        };
+        }
+
+        const onRowSelect = (event) => {
+
+            var selectedRows = this.state.gridApi.getSelectedRows();
+
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+                selectedRows = this.props.selectedCostingListSimulation
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+                let finalData = []
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].PartId === event.data.PartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
+            }
+
+
+            let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            this.setState({ dataCount: uniqeArray.length })
+            this.setState({ selectedRowData: selectedRows })
+        }
+
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
         return (
             <>
-                <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
-                    <Row className="pt-3 no-filter-row">
-                        <Col md="12" className="search-user-block pr-0">
+                    <Row className="pt-4 no-filter-row">
+                        <Col md="9" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
+                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="warning-message d-flex align-items-center">
-                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
-                                <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
+                                <div className='d-flex'>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -525,18 +641,24 @@ class IndivisualPartListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
+                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                            </button></div> :
 
-                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                                <>
+                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-
+                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
 
@@ -544,21 +666,25 @@ class IndivisualPartListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header mt-4 pt-1">
-
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <SelectRowWrapper dataCount={this.state.dataCount} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
                                 rowData={this.props.newPartsListing}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={this.state.globalTake}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
+                                rowSelection={'multiple'}
+                                onRowSelected={onRowSelect}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -573,22 +699,16 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
+                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}  ></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                    {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                    {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                    {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                     <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                                 </div>
                             </div>
@@ -619,11 +739,12 @@ class IndivisualPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, auth }) {
-    const { newPartsListing } = part
+function mapStateToProps({ part, auth, simulation }) {
+    const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
+    const { selectedCostingListSimulation } = simulation;
 
-    return { newPartsListing, initialConfiguration };
+    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation };
 }
 
 /**
@@ -638,4 +759,6 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
+    setSelectedRowForPagination,
+    disabledClass
 })(IndivisualPartListing);

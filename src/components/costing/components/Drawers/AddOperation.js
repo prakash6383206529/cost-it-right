@@ -3,9 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -14,6 +13,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { PaginationWrapper } from '../../../common/commonPagination';
+import _ from 'lodash';
 const gridOptions = {};
 
 function AddOperation(props) {
@@ -42,61 +43,39 @@ function AddOperation(props) {
   };
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData.ETechnologyType,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-      }
-      dispatch(getOperationDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.ETechnologyType,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-      }
-      dispatch(getOperationDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      TechnologyId: costData?.TechnologyId,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      CostingTypeId: costData.CostingTypeId,
+      CustomerId: costData.CustomerId
     }
+    dispatch(getOperationDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
   }, []);
 
-
-  const onRowSelect = () => {
-    var selectedRows = gridApi.getSelectedRows();
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const OperationId = row.OperationId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
-    //   setSelectedRowData(tempArr)
-    // }
-
+  const onRowSelect = (event) => {
+    if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
+      if (_.includes(selectedRowData, event.data) === true) {
+        let arrayList = selectedRowData && selectedRowData.filter((item) => item.OperationId !== event.data.OperationId)
+        setSelectedRowData(arrayList)
+      } else {
+        setSelectedRowData([...selectedRowData, event.data])
+      }
+    } else {
+      setSelectedRowData(gridApi?.getSelectedRows())
+    }
   }
 
   /**
@@ -130,6 +109,7 @@ function AddOperation(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
@@ -145,8 +125,7 @@ function AddOperation(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -191,7 +170,7 @@ function AddOperation(props) {
           <Container>
             <div className={'drawer-wrapper drawer-1500px'}>
 
-              <Row className="drawer-heading mb-4">
+              <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
                     <h3>{'Add Operation:'}</h3>
@@ -204,7 +183,7 @@ function AddOperation(props) {
               </Row>
 
 
-              <Row className="mb-3 mx-0">
+              <Row className="mx-0">
                 <Col className="hidepage-size">
                   <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
@@ -224,7 +203,7 @@ function AddOperation(props) {
                         // columnDefs={c}
                         rowData={tableData}
                         pagination={true}
-                        paginationPageSize={10}
+                        paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         loadingOverlayComponent={'customLoadingOverlay'}
@@ -236,8 +215,8 @@ function AddOperation(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onRowSelected={onRowSelect}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
@@ -249,20 +228,14 @@ function AddOperation(props) {
 
 
                       </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
+                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-left px-3 d-flex bluefooter-butn justify-content-end">
                   <button
                     type={'button'}
                     className="reset mr5 cancel-btn"

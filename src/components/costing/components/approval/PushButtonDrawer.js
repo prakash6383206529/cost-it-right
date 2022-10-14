@@ -2,7 +2,7 @@ import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch } from 'react-redux'
-import { pushedApprovedCosting, createRawMaterialSAP, approvalPushedOnSap } from '../../actions/Approval'
+import { approvalPushedOnSap } from '../../actions/Approval'
 import { loggedInUserId } from '../../../../helper'
 import { useForm, Controller } from "react-hook-form";
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
@@ -19,7 +19,6 @@ function PushButtonDrawer(props) {
 
   const dispatch = useDispatch()
   const { register, handleSubmit, formState: { errors }, control } = useForm();
-  const [plant, setPlant] = useState([]);
   const [MaterialGroup, setMaterialGroup] = useState([]);
   const [PurchasingGroup, setPurchasingGroup] = useState([]);
 
@@ -31,10 +30,6 @@ function PushButtonDrawer(props) {
       return
     }
     props.closeDrawer('', 'Cancel')
-  }
-
-  const closeDrawerAfterPush = () => {
-
   }
 
   /**
@@ -82,9 +77,6 @@ function PushButtonDrawer(props) {
     }
   }
   const onSubmit = () => {
-
-
-
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/yyyy') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
@@ -182,7 +174,7 @@ function PushButtonDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Material Group"}
                     name={"MaterialGroup"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -201,7 +193,7 @@ function PushButtonDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Purchasing Group"}
                     name={"PurchasingGroup"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

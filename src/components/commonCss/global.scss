@@ -1,6 +1,8 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
 @import "./drawers.scss";
+@import "./masters.scss";
+@import "./costing.scss";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
@@ -103,6 +105,12 @@ a:hover {
 .w-100 {
   width: 100%;
 }
+.w-fit {
+  width: fit-content;
+}
+.min15 {
+  min-width: 15px !important;
+}
 .mtn1 {
   margin-top: -3px; //for invalid error message spacing
   padding-left: 5px;
@@ -110,9 +118,18 @@ a:hover {
 .mtn6 {
   margin-top: -3rem;
 }
+.height-0 {
+  height: 0 !important;
+}
 .disabled {
   opacity: 0.5;
     cursor: default;
+}
+.zindex-2 {
+  z-index: 2;
+}
+.zindex-1000 {
+  z-index: 1000 !important;
 }
 
 ::-webkit-input-placeholder {
@@ -218,7 +235,7 @@ a:hover {
   border: 1px solid $colorPrimary;
   &:hover {
     background-color: $colorPrimary !important;
-    transition: 0.3s all ease-in-out;
+    transition: 0.1s all ease-in-out;
   }
 }
 //START scroll to top button UI 10-12-2021
@@ -588,14 +605,6 @@ a:hover {
           color: #256bd1;
         }
       }
-      .ag-pinned-right-header {
-        .ag-header-cell {
-          border-right: 1px solid #e5eaf9;
-        }
-        // .ag-header-cell:first-child {
-        //   border-left: 1px solid #e5eaf9;
-        // }
-      }
       .ag-grid-wrapper {
         &.rminsights_table {
           min-height: auto;
@@ -609,6 +618,13 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
+        .ag-center-cols-clipper {
+          .ag-cell {
+            &:first-child { 
+              border-left: 1px solid #e5eaf9;
+            }
+          }
+        }
         .ag-header {
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
@@ -616,10 +632,18 @@ a:hover {
           .ag-header-cell-label {
             color: #3d4465;
           }
+          .ag-header-cell, .ag-header-group-cell{
+            &:first-child {
+              border-left: 1px solid #e5eaf9;
+            }
+          }
         }
         .ag-pinned-left-header,
         .ag-root-wrapper {
           border: none;
+        }
+        .ag-pinned-right-header {
+          border: none !important;
         }
         .ag-row {
           .ag-cell {
@@ -660,9 +684,6 @@ a:hover {
                 justify-content: center;
               }
             }
-            // &:first-child { comment for future purpose
-            //   border-left: 1px solid #e5eaf9;
-            // }
           }
         }
       }
@@ -736,11 +757,11 @@ a:hover {
           cursor: pointer;
         }
       }
-      &.no-tab-page {
-        .ag-grid-wrapper {
-          min-height: calc(100vh - 295px);
-        }
-      }
+      // &.no-tab-page {                           //IT WILL BE USE IN FUTURE DON'T REMOVE IT CODE
+      //   .ag-grid-wrapper {
+      //     min-height: calc(100vh - 295px);
+      //   }
+      // }
     }
     .levellisting-page-main {
       .ag-grid-react {
@@ -767,15 +788,24 @@ a:hover {
     }
   }
 }
-.ag-body-viewport, .ag-header {
-  border-left: 1px solid #e5eaf9;
-}
+
 .ag-theme-material {
   .ag-checkbox-input-wrapper {
-    height: 14px !important;
-    width: 14px !important;
-    font-size: 14px !important;
-    line-height: 14px !important;
+    height: 18px !important;
+    width: 18px !important;
+    font-size: 18px !important;
+    line-height: 18px !important;
+    &:focus-within {
+      box-shadow: none !important;
+    }
+    &::after {
+      color:  #c2cbe8 !important;
+    }
+    &.ag-checked {
+      &::after {
+        color: #4dc771 !important;
+      }
+    }
   }
   --ag-foreground-color: #8a91ac;
   .ag-paging-button:hover {
@@ -821,6 +851,13 @@ a:hover {
       font-weight: 500;
     }
   }
+.ag-ltr .ag-floating-filter-button {
+  margin-left: 4px !important;
+}
+input[type="date"].ag-input-field-input {
+    padding-bottom:0!important ;
+    min-width: 95px;
+}
 }
 .ag-root-wrapper-body.ag-layout-normal {
   border: 1px solid #e5eaf9;
@@ -876,7 +913,7 @@ a:hover {
       text-align: center;
       color: $headinlightgblack;
       font-size: $font-16;
-      &:first-child {
+      &:first-child,  &:nth-child(2) {
         text-align: left;
       }
     }
@@ -915,7 +952,7 @@ a:hover {
         padding-left: 0;
       }
     }
-    td.select-all-block {
+    .select-all-block {
       background-color: #f1f4f7;
       white-space: nowrap;
       span {
@@ -953,6 +990,7 @@ h3 {
 }
 .drawer-wrapper {
   width: 465px;
+  position: relative;
   .drawer-heading {
     background-color: #eaf0f9;
     border: #ced9e9 1px solid;
@@ -960,6 +998,9 @@ h3 {
     border-right-width: 0;
     padding: 22px 16px;
     margin-bottom: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 13;
     h3 {
       font-size: 22px;
       font-weight: $font-medium;
@@ -1073,7 +1114,7 @@ img {
 }
 
 .pt-30 {
-  padding-top: 30px;
+  padding-top: 30px !important;
 }
 
 .mt-4 {
@@ -1100,6 +1141,9 @@ p {
   margin-bottom: 0;
 }
 
+.border-bottom-none {
+  border-bottom: none !important;
+}
 .borderradius-0 {
   border-radius: 0;
 }
@@ -1630,7 +1674,7 @@ button .fas {
   position: relative;
   padding-left: 27px;
   margin-top: 0px;
-
+  max-width: max-content;
   input[type="checkbox"] {
     opacity: 0;
     display: none;
@@ -2241,7 +2285,7 @@ input:disabled,
 .form-control:disabled,
 .form-control[readonly] {
   &::placeholder {
-    color: #616366;
+    color: #A4ABC5;
   }
 }
 .select--is-disabled {
@@ -2410,6 +2454,7 @@ td,
   .ApprovedBySimulation,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
+  .RejectedBySystem,
   .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
@@ -2441,7 +2486,7 @@ td,
   .History {
     background-color: #c2cbe8;
   }
-  .Rejected {
+  .Rejected, .RejectedBySystem {
     background-color: #fc5774;
   }
   .Error {
@@ -2516,18 +2561,22 @@ body {
 
 .L1 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L2 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L3 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L4 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .sf-mainheader .nav-scroller {
@@ -2566,8 +2615,7 @@ body {
           }
         }
       }
-      .costing-simulation-page,
-      .simulation-page {
+      .costing-simulation-page {
         .ag-grid-react {
           .ag-grid-wrapper {
             min-height: calc(100vh - 300px);
@@ -2717,13 +2765,6 @@ body {
           }
         }
       }
-      .simulation-edit {
-        .ag-grid-react {
-          .ag-grid-wrapper {
-            min-height: calc(100vh - 246px);
-          }
-        }
-      }
       .smh-approval-summary-page,
       .dashboard-page {
         .ag-grid-wrapper {
@@ -2749,6 +2790,14 @@ body {
   }
   // ag-grid-react end
 }
+.ag-paging-panel {
+  .ag-paging-row-summary-panel {
+    display: none;
+  }
+  .ag-icon-first, .ag-icon-last {
+    display: none;
+  }
+}
 .ag-overlay-loading-center {
   display: none;
 }
@@ -2756,6 +2805,11 @@ body {
   .overlay-contain {
     .ag-center-cols-clipper {
       min-height: 150px !important;
+    }
+    &.master-approval-overlay {
+      .ag-center-cols-clipper {
+        min-height: auto !important;
+      }
     }
   }
 }
@@ -2881,6 +2935,14 @@ body {
   height: 100%;
   width: 100%;
 }
+
+//THIS IS DYNAMIC CLASS WHICH IS USED FOR DYNAMIC STYLE FOR SPECIFIC TOASTER
+.custom-class {
+  min-width: 570px;
+  .toaster-message {
+    margin-bottom: 6px;
+  }
+}
 // <-------------END toaster style--------------->
 
 //<--------------START Input and button focus CSS------->
@@ -2932,3 +2994,53 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
 }
 }
 //<--------------END Input and button focus CSS------->
+
+.simulation-edit, .other-costing-simulation {
+  .ag-grid-react {
+    .ag-grid-wrapper {
+      min-height: calc(100vh - 385px) !important;
+      @media screen and (min-width: $middleDesktop) {
+        min-height: calc(100vh - 385px) !important;
+      }
+    }
+  }
+}
+.custom-select-grid {
+  margin: 0 2px;
+  position: relative;
+  select {
+    padding: 5px;
+    border-color: $borderColor;
+    width: 100%;
+    border-radius: 4px;
+    color: $grid-font;
+    option {
+      color: $grid-font;
+      font-size: 14px;
+      color: $grid-font;
+      // padding:5px;
+      display: block;
+    }
+    &:focus {
+      box-shadow: 0 0 5px $inputBorderFocusColor !important;
+      border: 1px solid $inputBorderFocusColor !important;
+      animation-name: example;
+      animation-duration: 0.3s;
+    }
+  }
+  .chevron:before {
+    border-style: solid;
+    border-color: #959cb6;
+    border-width: 0.18em 0.18em 0 0;
+    content: "";
+    display: inline-block;
+    height: 0.65em;
+    position: absolute;
+    top: 0.55em;
+    transform: rotate(135deg);
+    vertical-align: top;
+    width: 0.65em;
+    background-color: #ffff;
+    right: 6px;
+  }
+}

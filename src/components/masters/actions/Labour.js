@@ -9,9 +9,11 @@ import {
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
     config,
-    GET_LABOUR_DATA_LIST
+    GET_LABOUR_DATA_LIST,
+    GET_LABOUR_TYPE_FOR_MACHINE_TYPE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config
 
@@ -192,10 +194,11 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
  * @method getLabourTypeByMachineTypeSelectList
  * @description GET LABOUR TYPE BY MACHINE TYPE
  */
-export function getLabourTypeByMachineTypeSelectList(ID, callback) {
+export function getLabourTypeByMachineTypeSelectList(data, callback) {
     return (dispatch) => {
-        if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, config());
+        const queryParams = `machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}`
+        if (data.machineTypeId !== '') {
+            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -235,5 +238,57 @@ export function labourBulkUpload(data, callback) {
             apiErrors(error);
             callback(error);
         });
+    };
+}
+
+/**
+ * @method getLabourTypeDetailsForMachineType
+ * @description get labour type for machine type
+ */
+export function getLabourTypeDetailsForMachineType(ID, callback) {
+    return (dispatch) => {
+
+        if (ID !== '') {
+            const request = axios.get(`${API.getLabourTypeDetailsForMachineType}/${ID}`, config());
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateLabour
+ * @description update labour
+ */
+export function updateLabourTypeForMachineType(requestData, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(API.updateLabourTypeForMachineType, requestData, config())
+
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
     };
 }

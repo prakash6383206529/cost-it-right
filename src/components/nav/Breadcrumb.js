@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { Link, } from "react-router-dom";
+import { reactLocalStorage } from "reactjs-localstorage";
 import "./Breadcrumb.scss";
 
 class Breadcrumb extends Component {
@@ -37,16 +36,18 @@ class Breadcrumb extends Component {
 	}
 
 	render() {
-		const { secondTitle, } = this.state;
 
-		let url = this.state.secondURL;
+		/************************************MAY BE USED LATER*****************************/
+		// const { secondTitle, } = this.state;
 
-		if (secondTitle === 'Master') {
-			url = 'raw-material-master'
-		}
-		if (secondTitle === 'Additional Masters') {
-			url = 'reason-master'
-		}
+		// let url = this.state.secondURL;
+
+		// // if (secondTitle === 'Master') {
+		// // 	url = 'raw-material-master'
+		// // }
+		// // if (secondTitle === 'Additional Masters') {
+		// // 	url = 'reason-master'
+		// // }
 
 		return (
 			<div className="breadcrumbs fixed-top">

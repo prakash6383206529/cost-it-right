@@ -8,15 +8,18 @@ import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { ASSEMBLY } from '../../../../../config/masterData';
+import { debounce } from 'lodash';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
+
+
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -30,6 +33,7 @@ function SurfaceTreatment(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const price = useContext(NetPOPriceContext)
   const costData = useContext(costingInfoContext);
 
   const CostingViewMode = useContext(ViewCostingContext);
@@ -37,7 +41,9 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY   // ASSEMBLY TECHNOLOGY
+
+  const [callDiscountApi, setCallDiscountApi] = useState(false)
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
@@ -61,13 +67,7 @@ function SurfaceTreatment(props) {
   const cancel = () => {
     props.closeDrawer()
   }
-
-  const onSubmit = data => toggleDrawer('')
-
-
-
   const setTransportationObj = (obj) => {
-
     setTransportationObject(obj)
     setTrasportObj(obj.tempObj)
 
@@ -96,8 +96,8 @@ function SurfaceTreatment(props) {
   * @method saveData
   * @description SAVE DATA ASSEMBLY
   */
-  const saveData = () => {
-    if (partType) {
+  const saveData = debounce(handleSubmit(() => {
+    if (partType) {   // ASSEMBLY TECHNOLOGY
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
       props.setSurfaceTreatmentCostAssemblyTechnology(item.CostingPartDetails.SurfaceTreatmentCost, item.CostingPartDetails.TransportationCost, item.CostingPartDetails.NetSurfaceTreatmentCost, surfaceTreatmentData.gridData, transportationObject)
     }
@@ -163,9 +163,9 @@ function SurfaceTreatment(props) {
         dispatch(saveCostingSurfaceTab(requestData, res => {
           if (res.data.Result) {
             Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-            InjectDiscountAPICall()
+            setCallDiscountApi(true)
+            props.closeDrawer('')
           }
-          props.closeDrawer('')
         }))
       }
     }
@@ -210,10 +210,16 @@ function SurfaceTreatment(props) {
 
       }
     }
-  }
+  }), 500);
 
+
+  useEffect(() => {
+    if (callDiscountApi) {
+      InjectDiscountAPICall()
+    }
+  }, [callDiscountApi])
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: price }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
@@ -244,7 +250,7 @@ function SurfaceTreatment(props) {
             <form
               noValidate
               className="form"
-              onSubmit={handleSubmit(onSubmit)}
+
             >
               <Row className="mb-3 pt-3">
                 <Col>
@@ -257,15 +263,15 @@ function SurfaceTreatment(props) {
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              {/* <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col> */}
+
                             </>
                             :
                             <>
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`} </Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(CostingViewMode || IsLocked) ?
+                                checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :
+                                checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                             </>
                         }
                       </Row>
@@ -303,8 +309,8 @@ function SurfaceTreatment(props) {
                 </Col>
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-right">
+              <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                <div className="col-sm-12 text-right bluefooter-butn">
                   <button
                     type={'button'}
                     className="reset mr5 cancel-btn"

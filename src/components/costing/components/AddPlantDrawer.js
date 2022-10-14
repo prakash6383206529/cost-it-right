@@ -7,7 +7,6 @@ import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { ZBC } from '../../../config/constants';
-import { getPlantCode } from '../../../helper/validation';
 
 function AddPlantDrawer(props) {
 
@@ -49,8 +48,8 @@ function AddPlantDrawer(props) {
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0' || selectedPlants.includes(item.Value)) return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -106,7 +105,7 @@ function AddPlantDrawer(props) {
                   <h3>{"Add Plant"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>
@@ -118,7 +117,7 @@ function AddPlantDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Plant"}
                     name={"Plant"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}

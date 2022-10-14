@@ -5,8 +5,6 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, checkForNull } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('EfficiencyDrawer');
 
 class EfficiencyDrawer extends Component {
@@ -14,6 +12,7 @@ class EfficiencyDrawer extends Component {
         super(props);
         this.state = {
             calculatedEfficiency: 0,
+            NoOfWorkingHours: 0
         }
     }
 
@@ -23,6 +22,7 @@ class EfficiencyDrawer extends Component {
     */
     componentDidMount() {
         this.props.change('NumberOfWorkingHoursPerYear', this.props.NumberOfWorkingHoursPerYear)
+        this.props.change('ActualWorkingHrs', this.props.NoOfWorkingHours)
     }
 
     /**
@@ -34,8 +34,7 @@ class EfficiencyDrawer extends Component {
             const { fieldsObj } = this.props
             const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
             const ActualWorkingHrs = fieldsObj && fieldsObj.ActualWorkingHrs !== undefined ? checkForNull(fieldsObj.ActualWorkingHrs) : 0;
-
-            this.setState({ calculatedEfficiency: ActualWorkingHrs / NumberOfWorkingHoursPerYear * 100 })
+            this.setState({ calculatedEfficiency: ActualWorkingHrs / NumberOfWorkingHoursPerYear * 100, NoOfWorkingHours: ActualWorkingHrs })
         }
     }
 
@@ -43,7 +42,7 @@ class EfficiencyDrawer extends Component {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', this.state.calculatedEfficiency)
+        this.props.closeDrawer('', this.state.calculatedEfficiency, this.state.NoOfWorkingHours)
     };
 
     /**
@@ -59,7 +58,11 @@ class EfficiencyDrawer extends Component {
     * @description used to Reset form
     */
     cancel = () => {
-        this.props.change('ActualWorkingHrs', 0)
+
+        if (this.props?.NoOfWorkingHours === 0) {
+            this.props.change('ActualWorkingHrs', 0)
+        }
+
         setTimeout(() => this.toggleDrawer(''), 100)
     }
 
@@ -178,4 +181,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'EfficiencyDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(EfficiencyDrawer));

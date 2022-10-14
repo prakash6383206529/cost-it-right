@@ -46,9 +46,9 @@ export function createProcess(data, callback) {
  * @method getProcessCode
  * @description USED TO GET PROCESS CODE
  */
-export function getProcessCode(value, callback) {
+export function getProcessCode(obj, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessCode}?processName=${value}`, config());
+        const request = axios.get(`${API.getProcessCode}?processName=${obj?.processName}&processCode=${obj?.processCode}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -70,11 +70,13 @@ export function getProcessDataList(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, config());
         request.then((response) => {
-            dispatch({
-                type: GET_PROCESS_LIST_SUCCESS,
-                payload: response.data.DataList,
-            });
-            callback(response)
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PROCESS_LIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                });
+                callback(response)
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
