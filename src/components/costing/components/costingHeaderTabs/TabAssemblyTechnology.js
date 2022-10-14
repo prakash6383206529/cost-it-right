@@ -269,7 +269,7 @@ function TabAssemblyTechnology(props) {
                       </thead>
                       <tbody>
                         {
-                          subAssemblyTechnologyArray && subAssemblyTechnologyArray.map((item, index) => {
+                          tempObject && tempObject.map((item, index) => {
                             return (
                               < >
                                 <AssemblyTechnology

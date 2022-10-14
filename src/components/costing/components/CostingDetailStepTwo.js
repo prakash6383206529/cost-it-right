@@ -46,7 +46,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-  const partType = Number(costingData?.ETechnologyType) === ASSEMBLY
+  const partType = Number(costingData?.TechnologyId) === ASSEMBLY
 
   let data = useSelector(state => state.costing)
 

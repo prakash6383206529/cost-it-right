@@ -4,9 +4,10 @@ import {
   SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
   GET_EDIT_PART_COST_DETAILS,
 } from '../../../config/constants';
+import { tempObject } from '../../../config/masterData';
 
 const initialState = {
-  subAssemblyTechnologyArray: [],
+  subAssemblyTechnologyArray: tempObject,
   getEditPartCostDetails: []
 }
 

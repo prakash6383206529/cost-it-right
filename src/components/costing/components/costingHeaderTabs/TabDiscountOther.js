@@ -62,7 +62,7 @@ function TabDiscountOther(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE

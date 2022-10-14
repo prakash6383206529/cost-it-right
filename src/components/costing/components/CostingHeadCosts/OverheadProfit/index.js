@@ -67,7 +67,7 @@ function OverheadProfit(props) {
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails?.ModelType !== null ? { label: data.CostingPartDetails?.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
 
