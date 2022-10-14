@@ -403,7 +403,7 @@ class AddVendorDrawer extends Component {
                 >
                     {this.state.isLoader && <LoaderCustom customClass={`${isEditFlag ? 'update-vendor-loader' : ''}`} />}
                     <Container >
-                        <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
+                        <div className={`drawer-wrapper drawer-700px`}>
                             <form
                                 noValidate
                                 className="form"
