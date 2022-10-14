@@ -92,9 +92,10 @@ function AddVendorDrawer(props) {
     }
 
     if (label === 'DestinationPlant') {
+      console.log('plantSelectList: ', plantSelectList);
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
         return null
       })
       return temp

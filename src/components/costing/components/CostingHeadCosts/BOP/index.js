@@ -14,7 +14,7 @@ function BoughtOutPart(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {

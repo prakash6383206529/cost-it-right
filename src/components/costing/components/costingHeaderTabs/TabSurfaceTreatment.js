@@ -20,7 +20,7 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
+  const partType = Number(costData?.TechnologyId) === ASSEMBLY
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {

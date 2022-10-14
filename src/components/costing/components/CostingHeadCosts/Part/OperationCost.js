@@ -46,7 +46,7 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
-      if (Number(costData?.ETechnologyType) === ASSEMBLY) {
+      if (Number(costData?.TechnologyId) === ASSEMBLY) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 
