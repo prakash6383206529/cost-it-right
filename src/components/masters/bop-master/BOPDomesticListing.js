@@ -465,7 +465,7 @@ class BOPDomesticListing extends Component {
                 item.Vendor = ' '
             }
 
-            if (item.EffectiveDate.includes('T')) {
+            if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
