@@ -1078,7 +1078,7 @@ class AddRMDomestic extends Component {
       formData.RMSpec = RMSpec.value
       formData.Category = Category.value
       formData.TechnologyId = Technology.value
-      formData.Vendor = costingTypeId === VBCTypeId ? vendorName.value : ''
+      formData.Vendor = costingTypeId === (VBCTypeId && ZBCTypeId) ? vendorName.value : ''
       formData.HasDifferentSource = HasDifferentSource
       formData.Source = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source
       formData.SourceLocation = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value
@@ -1092,7 +1092,7 @@ class AddRMDomestic extends Component {
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
-      formData.VendorCode = costingTypeId === VBCTypeId ? VendorCode : ''
+      formData.VendorCode = costingTypeId === (VBCTypeId && ZBCTypeId) ? VendorCode : ''
       formData.VendorPlant = []
       formData.Attachements = files
       formData.CutOffPrice = values.cutOffPrice
