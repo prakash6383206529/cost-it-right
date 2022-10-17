@@ -387,7 +387,7 @@ button.add-btn {
 }
 
 .multiselect-with-border {
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
   border-radius: 3px;
 }
 
@@ -442,7 +442,7 @@ button.add-btn {
 
 .withBorder .form-control,
 .form-control {
-  border: 1px solid #c2cbe8;
+  border: 1px solid $borderColor;
 
   &::placeholder {
     color: #A4ABC5;
@@ -537,7 +537,7 @@ input.form-control {
 }
 
 .link {
-  color: #256bd1;
+  color: $colorPrimary;
   font-size: 14px;
   cursor: pointer;
 }
@@ -564,7 +564,7 @@ input.form-control {
 .form-group {
   .css-yk16xz-control {
     height: 40px;
-    border-color: #c2cbe8;
+    border-color: $borderColor;
   }
 }
 
@@ -829,7 +829,7 @@ label for[normal-switch] {
 
 .input-range__slider {
   background: #ffffff;
-  border: 3px solid #256BD1;
+  border: 3px solid $colorPrimary;
   border-radius: 50%;
   width: 16px;
   height: 16px;
@@ -870,7 +870,7 @@ input::-webkit-input-placeholder {
         right: 15px;
         bottom: 11px;
         content: "";
-        background-color: #F8FCFF;
+        background-color: $hightlightRowBackground;
         z-index: 0;
       }
 
@@ -905,7 +905,7 @@ input::-webkit-input-placeholder {
         right: 15px;
         bottom: 10px;
         content: "";
-        background-color: #F8FCFF;
+        background-color: $hightlightRowBackground;
         z-index: 0;
       }
     }
@@ -995,11 +995,11 @@ button.user-btn.pull-right {
 
     .css-yk16xz-control,
     .css-1pahdxg-control {
-      border: 1px solid #c2cbe8 !important;
+      border: 1px solid $borderColor !important;
       color: #a4abc5;
       min-height: 32px !important;
       font-size: $font-14;
-      border-color: #c2cbe8;
+      border-color: $borderColor;
       height: 32px;
     }
 
@@ -1098,13 +1098,13 @@ button.user-btn.pull-right {
   padding-left: 15px;
   padding-right: 15px;
   background-color: #fff;
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
 }
 
 .cr-innertool-cost.row {
   background-color: #E7F2FC;
   color: #3D4465;
-  border-bottom: 1px solid #C2CBE8;
+  border-bottom: 1px solid $borderColor;
   margin-bottom: 15px;
 }
 
@@ -1177,7 +1177,7 @@ button.user-btn.pull-right {
 }
 
 .cr-prt-nm {
-  color: #256BD1;
+  color: $colorPrimary;
 }
 
 .save-btn.cr-bk-btn img {
@@ -1373,7 +1373,7 @@ sans-serif;
     .background-light-blue {
       td:nth-child(n+4) {
         background: #E7F2FC;
-        border-color: #c2cbe8;
+        border-color: $borderColor;
         color: #3D4465;
       }
     }
@@ -1528,7 +1528,7 @@ sans-serif;
 }
 
 .text-primary {
-  color: #256BD1 !important;
+  color: $colorPrimary !important;
 }
 
 .text-small {
@@ -1591,7 +1591,7 @@ body {
     width: 25px;
     height: 25px;
     display: inline-block;
-    background-color: #256BD1;
+    background-color: $colorPrimary;
     font-family: $FontAwesome !important;
     color: #fff !important;
     border-radius: 3px;
@@ -1626,7 +1626,7 @@ body {
   padding: 6px 10px;
 
   i {
-    color: #256BD1;
+    color: $colorPrimary;
   }
 }
 
@@ -1690,7 +1690,7 @@ body {
 }
 
 .card-border {
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
   position: relative;
 
   &:after {
@@ -1839,7 +1839,7 @@ body {
   width: 25px;
   height: 25px;
   border-radius: 50px;
-  background-color: #256BD1;
+  background-color: $colorPrimary;
   color: #fff;
   display: inline-block;
   text-align: center;
@@ -2728,11 +2728,11 @@ button:disabled {
 .rrt-confirm-holder {
   .header-bar {
     padding: 16px 20px;
-    border-bottom: 1px solid #C2CBE8;
+    border-bottom: 1px solid $borderColor;
     margin-bottom: 25px;
 
     h4 {
-      color: #256BD1;
+      color: $colorPrimary;
       font-size: 24px;
     }
   }
@@ -2787,7 +2787,7 @@ button:disabled {
       &:focus,
       &:active,
       &:visited {
-        border: 1px solid #256bd1;
+        border: 1px solid $colorPrimary;
       }
     }
 
@@ -2861,8 +2861,8 @@ button:disabled {
       .btn-success {
         margin-top: -1px;
         height: 32px;
-        background-color: #256bd1;
-        border-color: #256bd1;
+        background-color: $colorPrimary;
+        border-color: $colorPrimary;
         text-transform: uppercase;
         font-weight: 500;
 
@@ -2894,12 +2894,12 @@ button:disabled {
 }
 
 .css-1pahdxg-control {
-  border: 1px solid #256bd1 !important;
+  border: 1px solid $colorPrimary !important;
   box-shadow: none !important;
 
   &:hover,
   &:focus {
-    border-color: #256bd1;
+    border-color: $colorPrimary;
     border: none;
   }
 }
@@ -2967,7 +2967,7 @@ button:disabled,
   float: right;
   position: relative;
   z-index: 2;
-  color: #256bd1;
+  color: $colorPrimary;
   opacity: 1;
   cursor: pointer;
 
@@ -3168,7 +3168,7 @@ button:disabled,
 .add-volume-table {
   td {
     .form-control {
-      border: 1px solid #c2cbe8;
+      border: 1px solid $borderColor;
       max-width: 250px;
       line-height: initial;
       font-size: 14px;
@@ -3301,7 +3301,7 @@ button:disabled,
 
 .costing-details-page {
   .costing-highlight-row {
-    background-color: #F8FCFF;
+    background-color: $hightlightRowBackground;
 
     >div {
       >td {
@@ -3338,37 +3338,37 @@ body {
 }
 
 .cr-subtabs-head {
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
 }
 
 .costing-border {
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
 }
 
 .costing-border-left {
-  border-left: 1px solid #C2CBE8;
+  border-left: 1px solid $borderColor;
 }
 
 .costing-border-right {
-  border-right: 1px solid #C2CBE8;
+  border-right: 1px solid $borderColor;
 }
 
 .costing-border-top {
-  border-top: 1px solid #C2CBE8;
+  border-top: 1px solid $borderColor;
 }
 
 .costing-border-bottom {
-  border-bottom: 1px solid #C2CBE8;
+  border-bottom: 1px solid $borderColor;
 }
 
 .costing-border-x {
-  border-left: 1px solid #C2CBE8;
-  border-right: 1px solid #C2CBE8;
+  border-left: 1px solid $borderColor;
+  border-right: 1px solid $borderColor;
 }
 
 .costing-border-y {
-  border-top: 1px solid #C2CBE8;
-  border-top: 1px solid #C2CBE8;
+  border-top: 1px solid $borderColor;
+  border-top: 1px solid $borderColor;
 }
 
 .col-label {
@@ -3376,13 +3376,13 @@ body {
 }
 
 .costing-border-inner-section {
-  border-bottom: 1px solid #C2CBE8;
+  border-bottom: 1px solid $borderColor;
   ;
-  border-left: 1px solid #C2CBE8;
-  border-right: 1px solid #C2CBE8;
+  border-left: 1px solid $borderColor;
+  border-right: 1px solid $borderColor;
 
   .col-md-3 {
-    border-top: 1px solid #C2CBE8;
+    border-top: 1px solid $borderColor;
     padding: 12px 15px;
 
     .form-group.inputbox.withBorder {
@@ -3909,7 +3909,7 @@ body {
 .react-datepicker__year-text--selected,
 .react-datepicker__year-text--in-selecting-range,
 .react-datepicker__year-text--in-range {
-  background-color: #256bd1;
+  background-color: $colorPrimary;
 }
 
 .react-datepicker__day--selected:hover,
@@ -3940,7 +3940,7 @@ body {
 }
 
 .accordian-container {
-  border: 1px solid #c2cbe8;
+  border: 1px solid $borderColor;
   border-radius: 4px;
   margin: 0;
   padding: 15px 0;
@@ -3950,7 +3950,7 @@ body {
   }
 
   .accordian-content {
-    border-top: 1px solid #c2cbe8;
+    border-top: 1px solid $borderColor;
     margin-top: 15px;
     padding-top: 15px;
   }
@@ -3984,22 +3984,22 @@ body {
       left: 0;
       right: 0;
       height: 1px;
-      border-top: 1px solid #C2CBE8;
+      border-top: 1px solid $borderColor;
       content: "";
       bottom: -2px;
     }
 
     tr {
       td {
-        border-top: 1px solid #C2CBE8;
-        border-bottom: 1px solid #C2CBE8;
+        border-top: 1px solid $borderColor;
+        border-bottom: 1px solid $borderColor;
 
         &:first-child {
-          border-left: 1px solid #C2CBE8;
+          border-left: 1px solid $borderColor;
         }
 
         &:last-child {
-          border-right: 1px solid #C2CBE8;
+          border-right: 1px solid $borderColor;
         }
 
         span {
@@ -4051,7 +4051,7 @@ body {
       tr {
         td {
           &:first-child {
-            border-left: 2px solid #C2CBE8;
+            border-left: 2px solid $borderColor;
           }
         }
       }
@@ -4108,11 +4108,11 @@ body {
 
   input:checked~span {
     &:before {
-      border-color: #256bd1;
+      border-color: $colorPrimary;
     }
 
     &:after {
-      background-color: #256bd1;
+      background-color: $colorPrimary;
     }
   }
 
@@ -4274,24 +4274,24 @@ body {
         &:hover,
         &:focus {
           background-color: #fff;
-          color: #256bd1 !important;
+          color: $colorPrimary !important;
         }
       }
 
       .active-nav {
-        color: #256bd1;
+        color: $colorPrimary;
       }
     }
   }
 
   &:hover {
     >.nav-link {
-      color: #256bd1;
+      color: $colorPrimary;
     }
 
     i.dr-icon {
       transform: rotate(180deg);
-      color: #256bd1;
+      color: $colorPrimary;
     }
 
     .dropdown-menu.sub-menu {
@@ -4705,7 +4705,7 @@ body {
 
 .blue-header-box {
   background-color: #E7F2FC;
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
   padding: 16px;
   width: 100%;
 
@@ -4909,7 +4909,7 @@ body {
     }
 
     .costing-highlight-row {
-      background-color: #F8FCFF;
+      background-color: $hightlightRowBackground;
 
       >div {
         >td {
@@ -6271,7 +6271,7 @@ body {
         margin-bottom: calc(25px * 80 / 100);
 
         h4 {
-          color: #256BD1;
+          color: $colorPrimary;
           font-size: calc(24px * 80 / 100);
         }
       }
@@ -6603,7 +6603,7 @@ body {
     }
 
     .costing-highlight-row {
-      background-color: #F8FCFF;
+      background-color: $hightlightRowBackground;
 
       >div {
         >td {
@@ -7256,7 +7256,7 @@ body {
   border: none;
 
   td {
-    border: 1px solid #C2CBE8;
+    border: 1px solid $borderColor;
   }
 }
 
@@ -7520,7 +7520,7 @@ body {
 }
 
 .forging-cal-table {
-  border: 1px solid #C2CBE8;
+  border: 1px solid $borderColor;
 
   th {
     padding: 0.71rem 0.45rem !important;
@@ -7542,7 +7542,7 @@ body {
 
 //START Navbar version css
 .version {
-  color: #256bd1;
+  color: $colorPrimary;
   margin-right: 15px;
   font-size: 14px;
 }
@@ -7759,7 +7759,7 @@ body {
 
   .calculator {
     .operator-keys {
-      background: linear-gradient(180deg, #256bd1 0, #256bd1);
+      background: linear-gradient(180deg, $colorPrimary 0, $colorPrimary);
     }
 
     .calculator-display {
@@ -8272,7 +8272,7 @@ body {
 
 .btn-a {
   background-color: transparent;
-  color: #256bd1;
+  color: $colorPrimary;
 
   &:hover {
     color: #3D4465;
@@ -8316,7 +8316,7 @@ body {
 .see-data-btn {
   background-color: transparent;
   font-size: 12px;
-  color: #256bd1;
+  color: $colorPrimary;
   min-width: 100px;
 
   &:focus {
@@ -8475,7 +8475,7 @@ padding-bottom: 3px;
   input {
     height: 32px !important;
     min-height: 32px;
-    border: 1px solid #256bd1 !important;
+    border: 1px solid $colorPrimary !important;
     @media screen and (max-width:$max1367) {
       height: calc(32px * 80 / 100) !important;
       min-height:calc(32px * 80 / 100) ;
