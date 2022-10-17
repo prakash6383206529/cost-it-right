@@ -17,7 +17,7 @@ function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const dispatch = useDispatch()
-  const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
+  const [BOPHandlingType, setBOPHandlingType] = useState({})
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -45,7 +45,7 @@ function AddBOPHandling(props) {
 
   const handleBOPPercentageChange = (value) => {
     if (!isNaN(value)) {
-      if (BOPHandlingType && value > 100) {
+      if (BOPHandlingType === 'Percentage' && value > 100) {
         setValue('BOPHandlingPercentage', 0)
         setValue('BOPHandlingCharges', 0)
         return false;
