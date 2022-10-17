@@ -315,8 +315,8 @@ a:hover {
   &:focus,
   &:not(.disabled):active:focus {
     background-color: #fff !important;
-    border-color: #256bd1;
-    color: #256bd1;
+    border-color: $colorPrimary;
+    color: $colorPrimary;
 
     .cross-icon {
       img {
@@ -607,7 +607,7 @@ a:hover {
       .btn-secondary {
         background-color: transparent;
         border: none;
-        color: #256bd1;
+        color: $colorPrimary;
         font-size: 14px;
         padding-top: 0;
         padding-bottom: 0;
@@ -622,7 +622,7 @@ a:hover {
         &:not(:disabled):not(.disabled):active:focus {
           background-color: transparent;
           border: none;
-          color: #256bd1;
+          color: $colorPrimary;
           box-shadow: 0 0 0 0rem rgba(130, 138, 145, 0.5);
         }
 
@@ -657,7 +657,7 @@ a:hover {
 
       .ag-header-cell {
         .ag-icon-filter {
-          color: #256bd1;
+          color: $colorPrimary;
         }
       }
 
@@ -777,7 +777,7 @@ a:hover {
           .ag-paging-description {
             span {
               &:nth-child(2) {
-                color: #256bd1;
+                color: $colorPrimary;
               }
             }
           }
@@ -797,7 +797,7 @@ a:hover {
       }
 
       .ag-header-icon {
-        color: #256bd1;
+        color: $colorPrimary;
         display: none;
       }
 
@@ -821,7 +821,7 @@ a:hover {
           border-bottom: 0;
           border-left: 0.3em solid transparent;
           position: absolute;
-          color: #256bd1;
+          color: $colorPrimary;
           right: 0;
           top: 14px;
           pointer-events: none;
@@ -835,7 +835,7 @@ a:hover {
           -moz-appearance: none;
           -webkit-appearance: none;
           appearance: none;
-          color: #256bd1;
+          color: $colorPrimary;
           border: none;
           cursor: pointer;
         }
@@ -901,7 +901,7 @@ a:hover {
   --ag-foreground-color: #8a91ac;
 
   .ag-paging-button:hover {
-    color: #256bd1;
+    color: $colorPrimary;
   }
 
   @include ag-theme-material((font-size: 14px,
@@ -909,9 +909,9 @@ a:hover {
         sans-serif,
       ),
       border-color: #e5eaf9,
-      material-primary-color: #256bd1,
-      // material-active-color: #256bd1,
-      checkbox-checked-color: #256bd1,
+      material-primary-color:$colorPrimary,
+      // material-active-color:$colorPrimary,
+      checkbox-checked-color:$colorPrimary,
       checkbox-unchecked-color: #8a91ac,
       row-border-color: #e5eaf9,
       row-hover-color: null,
@@ -965,7 +965,7 @@ a:hover {
   transition: all linear;
 
   &:first-child:focus {
-    border-left: 1px solid #256bd1 !important;
+    border-left: 1px solid$colorPrimary !important;
   }
 }
 
@@ -1343,13 +1343,13 @@ p {
 .form-control:focus {
   color: #495057;
   background-color: $white;
-  border-color: #256bd1;
+  border-color: $colorPrimary;
   outline: 0;
   box-shadow: none;
 }
 
 .custom-select:focus {
-  border-color: #256bd1;
+  border-color: $colorPrimary;
   outline: 0;
   box-shadow: none;
 }
@@ -2076,13 +2076,13 @@ form .form-control {
 
       &:hover {
         background-color: #fff;
-        border-color: #256bd1;
-        color: #256bd1;
+        border-color: $colorPrimary;
+        color: $colorPrimary;
 
         &:active {
           background-color: #fff;
-          border-color: #256bd1;
-          color: #256bd1;
+          border-color: $colorPrimary;
+          color: $colorPrimary;
         }
       }
     }
@@ -2434,7 +2434,7 @@ ul.bread-list.d-inline-flex {
     position: relative;
     padding: 3px 13px;
     display: inline-block;
-    color: #256bd1;
+    color: $colorPrimary;
   }
 }
 
@@ -2534,15 +2534,15 @@ input:disabled,
 
 .flowconnection {
   stroke-width: 2px;
-  stroke: #256bd1;
+  stroke: $colorPrimary;
 }
 
 .flowpoint {
   margin-top: 10px;
-  border: 2px solid #256bd1 !important;
+  border: 2px solid$colorPrimary !important;
 
   .flowpoint-header {
-    border-bottom: 1px solid #256bd1;
+    border-bottom: 1px solid$colorPrimary;
     position: relative;
     padding-top: 18px;
     display: flex;
@@ -2553,7 +2553,7 @@ input:disabled,
     padding-right: 10px;
 
     h3 {
-      color: #256bd1;
+      color: $colorPrimary;
       font-size: 16px;
       line-height: 21px;
       max-width: 100%;
@@ -2564,7 +2564,7 @@ input:disabled,
 
     .flowpoint-header-level {
       height: 26px;
-      background: #256bd1 0% 0% no-repeat padding-box;
+      background: $colorPrimary 0% 0% no-repeat padding-box;
       border-radius: 3px;
       text-align: center;
       font-size: 13px;
@@ -3052,7 +3052,7 @@ body {
     font-size: calc(15px * 80 / 100);
 
     .ag-paging-button:hover {
-      color: #256bd1;
+      color: $colorPrimary;
     }
 
     .ag-header {
@@ -3261,12 +3261,12 @@ body {
 //<--------------START Input and button focus CSS------->
 @keyframes example {
   from {
-    box-shadow: 0 0 0px #256bd1 !important;
-    border: 1px solid #256bd1;
+    box-shadow: 0 0 0px$colorPrimary !important;
+    border: 1px solid$colorPrimary;
   }
 
   to {
-    box-shadow: 0 0 5px #256bd1 !important;
+    box-shadow: 0 0 5px$colorPrimary !important;
   }
 }
 
@@ -3365,8 +3365,8 @@ input:focus,
     }
 
     &:focus {
-      box-shadow: 0 0 5px $inputBorderFocusColor !important;
-      border: 1px solid $inputBorderFocusColor !important;
+      box-shadow: 0 0 5px $colorPrimary !important;
+      border: 1px solid $colorPrimary !important;
       animation-name: example;
       animation-duration: 0.3s;
     }
