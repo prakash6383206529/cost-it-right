@@ -930,6 +930,7 @@ class AddVolume extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
+                                  isDisabled={isEditFlag}
                                 />
                               </div>
                             </div>
