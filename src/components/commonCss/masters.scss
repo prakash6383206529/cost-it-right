@@ -79,9 +79,11 @@
       &.approval-listing {
         bottom: 103px;
       }
+      &.vendor-listing {
+        bottom: 97px !important;
+      }
     }
   }
   .no-content-image-container {
     min-height: 150px;
-   
   }
