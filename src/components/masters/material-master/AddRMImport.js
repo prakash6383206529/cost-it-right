@@ -1062,7 +1062,7 @@ class AddRMImport extends Component {
         RMSpec: RMSpec.value,
         Category: Category.value,
         TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-        Vendor: vendorName.value,
+        Vendor: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : "",
         HasDifferentSource: HasDifferentSource,
         Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
         SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
@@ -1074,7 +1074,7 @@ class AddRMImport extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        VendorCode: VendorCode,
+        VendorCode: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : '',
         Attachements: files,
         Currency: currency.label,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
