@@ -688,6 +688,7 @@ export function formViewData(costingSummary, header = '') {
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
   obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
   obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
+  console.log(dataFromAPI, "dataFromAPI.PlantCode");
   obj.vendorId = dataFromAPI.VendorId ? dataFromAPI.VendorId : '-'
   obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
   obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
@@ -748,7 +749,7 @@ export function formViewData(costingSummary, header = '') {
   obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
   obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
   obj.PoPriceWithDate = `${obj?.poPrice}(${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
-  obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
+  // obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
   obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
   obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
   obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
