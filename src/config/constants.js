@@ -2075,4 +2075,4 @@ export const IV = 'ozzzguugcusjqmbj'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.583";
+export const VERSION = "V1.2.581";
