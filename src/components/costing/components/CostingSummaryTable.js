@@ -898,6 +898,27 @@ const CostingSummaryTable = (props) => {
     );
   }
 
+  //FOR DISPLAY PLANT VENDOR NAME AS A HEADER FOR 
+  const heading = (value) => {
+    let heading = { mainHeading: '', subHeading: '' };
+    switch (value?.costingTypeId) {
+      case ZBCTypeId:
+        heading = { mainHeading: value?.plantName, subHeading: value?.plantCode }
+        return heading;
+      case VBCTypeId:
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        return heading;
+      case CBCTypeId:
+        heading = { mainHeading: value?.customerName, subHeading: value?.customerCode }
+        return heading;
+      case NCCTypeId:
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        return heading;
+      default:
+        break;
+    }
+    return heading;
+  }
   return (
     <Fragment>
       {
@@ -984,7 +1005,6 @@ const CostingSummaryTable = (props) => {
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            // const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
@@ -1015,7 +1035,7 @@ const CostingSummaryTable = (props) => {
                                       </>
                                     }
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingTypeId === ZBCTypeId ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck)}</span></span> : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === CBCTypeId ? <span>{data.customerName}<span className='sub-heading'>{(data.costingHeadCheck)}</span></span> : ''}</span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
                                   </div>
                                   <div className="action  text-right">
