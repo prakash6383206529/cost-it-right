@@ -1030,7 +1030,6 @@ export function getRMDomesticDataList(data, skip, take, isPagination, obj, callb
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                //
                 if (isPagination === true) {
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
@@ -1146,7 +1145,7 @@ export function getRMImportDataList(data, skip, take, isPagination, obj, callbac
     return (dispatch) => {
         const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
-        const request = axios.get(`${API.getRMImportDataList}?${queryParams}& ${queryParamsSecond} `, config());
+        const request = axios.get(`${API.getRMImportDataList}?${queryParams}&${queryParamsSecond} `, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -1245,6 +1244,24 @@ export function bulkUploadRMDomesticVBC(data, callback) {
 }
 
 /**
+ * @method bulkUploadRMDomesticCBC
+ * @description upload bulk RM Domestic CBC
+ */
+export function bulkUploadRMDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+/**
  * @method bulkfileUploadRM
  * @description upload bulk RM Domestic
  */
@@ -1281,6 +1298,24 @@ export function bulkUploadRMImportZBC(data, callback) {
     };
 }
 
+/**
+ * @method bulkUploadRMImportCBC
+ * @description upload bulk RM Import CBC
+ */
+export function bulkUploadRMImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadRMImportVBC
  * @description upload bulk RM Domestic VBC
