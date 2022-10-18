@@ -586,7 +586,11 @@ class AddOperation extends Component {
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+      return cbcPlantArray
+    }
+    else {
       userDetailsOperation?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
