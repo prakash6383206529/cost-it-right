@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -7,17 +7,26 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, saveSettledCostingDetails, setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
+import _ from 'lodash';
 
 function EditPartCost(props) {
 
-    const [gridData, setGridData] = useState(ListForPartCost)
+    const [gridData, setGridData] = useState([])
     const [weightedCost, setWeightedCost] = useState(0)
+    const [costingNumberData, setCostingNumberData] = useState({})
+
     const dispatch = useDispatch()
 
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+    const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
+    const { settledCostingDetails } = useSelector(state => state.subAssembly)
+    const costData = useContext(costingInfoContext);
+
 
     const { register, handleSubmit, control, setValue, getValues } = useForm({
         mode: 'onChange',
@@ -26,19 +35,44 @@ function EditPartCost(props) {
 
     useEffect(() => {
         gridData && gridData.map((item, index) => {
-            setValue(`${PartCostFields}.${index}.DeltaValue`, item.DeltaValue)
-            setValue(`${PartCostFields}.${index}.DeltaSign`, item.DeltaSign)
-            setValue(`${PartCostFields}.${index}.SOBPercentage`, item.SOBPercentage)
-            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
+            setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
+            setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
+            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration.NoOfDecimalForPrice))
             return null
         })
 
     }, [gridData])
 
     useEffect(() => {
+        let tempArray = []
+        settledCostingDetails && settledCostingDetails.map((item, index) => {
+            let tempObject = {}
+            tempObject.DeltaValue = item?.Delta
+            tempObject.NetCost = item?.NetCost
+            tempObject.SOBPercentage = item?.SOBPercentage
+            tempObject.SettledPrice = item?.SettledPrice
+            tempObject.VendorCode = item?.VendorCode
+            tempObject.VendorName = item?.VendorName
+            tempObject.label = item?.CostingNumber
+            tempObject.value = item?.BaseCostingId
+            tempArray.push(tempObject)
+            setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
+        })
+        setGridData(tempArray)
+    }, [settledCostingDetails])
+
+    useEffect(() => {
         // GET DATA FOR EDIT DRAWER
-        let obj = {}
-        dispatch(getEditPartCostDetails(obj, res => { }))
+        let obj = {
+            partId: props?.tabAssemblyIndividualPartDetail?.PartId,
+            plantId: costData?.DestinationPlantId,
+            costingTypeId: costData?.CostingTypeId
+        }
+
+        dispatch(getCostingForMultiTechnology(obj, res => { }))
+        dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
+        // dispatch(getEditPartCostDetails(obj, res => { }))
     }, [])
 
     /**
@@ -53,15 +87,9 @@ function EditPartCost(props) {
     };
 
     const netCostCalculator = (gridIndex) => {
-        let sum = calcTotalSOBPercent()
-        if (sum > 100) {
-            Toaster.warning('Total SOB Percent should not be greater than 100');
-            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
-        }
 
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
-        let editedObject = ListForPartCost[gridIndex]
+        let editedObject = gridData[gridIndex]
         let weightedCostCalc = 0
         let netCost = 0
 
@@ -70,19 +98,27 @@ function EditPartCost(props) {
         editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
         editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
 
+        let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
+        let sum = calcTotalSOBPercent(arr)
+        if (sum > 100) {
+            Toaster.warning('Total SOB Percent should not be greater than 100');
+            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
+            return false
+        }
+
         // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
         if (editedObject.DeltaSign?.label === '+') {
-            netCost = percentageOfNumber(Number(editedObject.SettledPrice) + Number(editedObject.DeltaValue), editedObject.SOBPercentage)
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
             editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
         } if (editedObject.DeltaSign?.label === '-') {
-            netCost = percentageOfNumber(Number(editedObject.SettledPrice) - Number(editedObject.DeltaValue), editedObject.SOBPercentage)
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
             editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
-        let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: editedObject })
+        let gridTempArr = Object.assign([...gridData], { [gridIndex]: editedObject })
 
         // CALCULATING TOTAL NET COST
         weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -111,21 +147,57 @@ function EditPartCost(props) {
         }, 300);
     }
 
+    const handleChangeCostingNumber = (value) => {
+        setCostingNumberData(value)
+    }
+
     /**
       * @method calcTotalSOBPercent
       * @description TO CALCULATE TOTAL SOB PERCENTAGE 
       */
-    const calcTotalSOBPercent = () => {
+    const calcTotalSOBPercent = (grid) => {
         let ProcessCostTotal = 0
-        ProcessCostTotal = ListForPartCost && ListForPartCost.reduce((accummlator, el, index) => {
+        ProcessCostTotal = grid && grid.reduce((accummlator, el, index) => {
             return checkForNull(accummlator) + checkForNull(el.SOBPercentage)
         }, 0)
         return ProcessCostTotal
     }
 
+    const addGrid = () => {
+        let differenceCosting = _.intersection(_.map(gridData, 'value'), _.map(costingForMultiTechnology, 'BaseCostingIdRef'))
+        if (differenceCosting?.includes(costingNumberData?.value)) {
+            Toaster.warning('Please select another Costing Number')
+            setValue('CostingNumber', {})
+            setCostingNumberData({})
+            return false
+        } else if (Object.keys(costingNumberData).length > 0) {
+            setGridData([...gridData, costingNumberData])
+            setValue('CostingNumber', {})
+            setCostingNumberData({})
+        } else {
+            Toaster.warning('Please select Costing Number')
+            return false
+        }
+    }
+
+    const renderListing = (value) => {
+        if (value === 'CostingNumber') {
+            let temp = []
+            costingForMultiTechnology && costingForMultiTechnology.map(item => {
+                if (item?.Value === '0') return false;
+                temp.push({
+                    label: item?.CostingNumber, value: item?.BaseCostingIdRef,
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
+                })
+                return null;
+            });
+            return temp;
+        }
+    }
+
     const onSubmit = (values) => {
-        let sum = calcTotalSOBPercent()
-        if (sum !== 100) {
+        let sum = calcTotalSOBPercent(gridData)
+        if (checkForNull(sum) !== 100) {
             Toaster.warning('Total SOB percent should be 100');
             return false
         }
@@ -150,7 +222,27 @@ function EditPartCost(props) {
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
+        let tempArray = []
+        gridData && gridData?.map((item) => {
+            let tempObject = {}
+            tempObject.BaseCostingId = item?.value
+            tempObject.SOBPercentage = item?.SOBPercentage
+            tempObject.Delta = item?.DeltaValue
+            tempObject.DeltaSign = item?.DeltaSign?.label
+            tempObject.NetCost = item?.NetCost
+            tempArray.push(tempObject)
+        })
+
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+        let obj = {
+            "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
+            "NetPOPrice": weightedCost,
+            "CostingSettledDetails": tempArray
+        }
+        dispatch(saveSettledCostingDetails(obj, res => { }))
+        let tabData = subAssemblyTechnologyArray[0]
+        let request = formatMultiTechnologyUpdate(tabData, weightedCost)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
 
         props.closeDrawer('')
 
@@ -181,11 +273,32 @@ function EditPartCost(props) {
                             <Table className=''>
                                 <thead>
                                     <tr className="cr-bg-tbl" width='100%'>
-                                        <th>Parent Assembly Number: { }</th>
-                                        <th>Part Number: { }</th>
-                                        <th>Part Name: { }</th>
+                                        <th>Parent Assembly Number: {`${props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
+                                        <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
+                                        <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
                                         <th>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
-                                        <th></th>
+                                        <th>
+                                            <SearchableSelectHookForm
+                                                label={`Costing Number`}
+                                                name={`CostingNumber`}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                options={renderListing("CostingNumber")}
+                                                handleChange={(e) => handleChangeCostingNumber(e)}
+                                            />
+                                        </th>
+                                        <th>
+                                            <button
+                                                type="button"
+                                                className={"user-btn "}
+                                                onClick={() => addGrid()}
+                                                title="Add"
+                                            >
+                                                <div className={"plus "}></div>
+                                            </button>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <br />
@@ -201,8 +314,8 @@ function EditPartCost(props) {
                                         return (
                                             <>
                                                 <tr key={index} >
-                                                    <td>{item.VendorName}</td>
-                                                    <td>{checkForDecimalAndNull(item.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                                    <td>{item?.VendorName}</td>
+                                                    <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                                                     <td width={20}>
                                                         <NumberFieldHookForm
                                                             name={`${PartCostFields}.${index}.SOBPercentage`}
@@ -296,7 +409,7 @@ function EditPartCost(props) {
                                     onClick={handleSubmit(onSubmit)}
                                 >
                                     <div className={"save-icon"}></div>
-                                    {'Save'}
+                                    {'SAVE'}
                                 </button>
                             </Col>
                         </Row >

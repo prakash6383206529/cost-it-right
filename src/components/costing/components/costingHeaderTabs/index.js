@@ -24,6 +24,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TabAssemblyTechnology from './TabAssemblyTechnology';
@@ -50,8 +51,9 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+
   const costingApprovalStatus = useContext(CostingStatusContext);
-  const partType = costData?.TechnologyName === ASSEMBLY
 
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
@@ -400,7 +402,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                {Number(costingData.TechnologyId) === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -431,7 +433,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {Number(costingData?.TechnologyId) === ASSEMBLY ? <TabAssemblyTechnology
+              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

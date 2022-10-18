@@ -12,7 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { ASSEMBLY } from '../../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 let counter = 0;
 function OperationCost(props) {
@@ -46,7 +46,7 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
-      if (Number(costData?.TechnologyId) === ASSEMBLY) {
+      if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 

@@ -32,22 +32,22 @@ function AssemblyTechnology(props) {
             setIsOpen(!IsOpen)
             setCount(Count + 1)
             if (Object.keys(costData).length > 0) {
-                let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-                let costPerPieceTotal = 0
-                let costPerAssemblyTotal = 0
-                let CostPerAssemblyBOPTotal = 0
+                // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+                // let costPerPieceTotal = 0
+                // let costPerAssemblyTotal = 0
+                // let CostPerAssemblyBOPTotal = 0
 
-                tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-                    costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
-                    costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
-                    CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-                    return null
-                })
-                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
-                tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
-                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
-                dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+                // tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+                //     costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
+                //     costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
+                //     CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
+                //     return null
+                // })
+                // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
+                // tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
+                // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue))
+                // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
+                // dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
             }
         }
     }
@@ -128,43 +128,43 @@ function AssemblyTechnology(props) {
     */
     return (
         <>
-            <tr className={`${item.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''} accordian-row`}>
-                <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, item.PartType)}>
+            <tr className={`${item?.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''} accordian-row`}>
+                <div style={{ display: 'contents' }} onClick={() => toggle(item?.BOMLevel, item?.PartNumber, item?.PartType)}>
                     <td>
-                        <span style={{ position: 'relative' }} className={`${item && item.PartType === "Assembly" && "cr-prt-nm1"} cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
-                            <div className={`${IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
+                        <span style={{ position: 'relative' }} className={`${item && item?.PartType === "Assembly" && "cr-prt-nm1"} cr-prt-link1 ${item && item?.PartType !== "Sub Assembly" && item?.PartType !== "Assembly" && "L1"}`}>
+                            <div className={`${IsOpen ? 'Open' : 'Close'}`}></div>{item && item?.PartNumber}
                         </span>
                     </td>
-                    <td>{item && item.PartName}</td>
-                    <td>{item && item.BOMLevel}</td>
-                    <td>{item && item.PartType}</td>
+                    <td>{item && item?.PartName}</td>
+                    <td>{item && item?.BOMLevel}</td>
+                    <td>{item && item?.PartType}</td>
                     <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td>
-                    <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{item?.CostingPartDetails?.CostPerPiece && item?.PartType === 'Assembly' ? '-' : checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice)}</td>
+                    <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.CostingPartDetails?.CostPerPiece && item?.PartType === 'Assembly' ? '-' : checkForDecimalAndNull(item?.CostingPartDetails?.CostPerPiece, initialConfiguration.NoOfDecimalForPrice)}</td>
 
-                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue ? subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue : '-'}</td>
-                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue ? subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue : '-'}</td>
+                    {/* <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue ? subAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue ? subAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue : '-'}</td> */}
                     <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP ? subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP : '-'}</td>
 
                     <td>
-                        {item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                        {(item?.PartType === 'Assembly' && (item.CostingPartDetails.EditPartCost ||
-                            subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue || subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue)) &&
-                            (item?.CostingPartDetails?.CostPerAssembly || item.CostingPartDetails?.CostPerAssembly) ?
+                        {item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item?.CostingPartDetails?.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {(item?.PartType === 'Assembly' && (item?.CostingPartDetails?.EditPartCost ||
+                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue || subAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue)) &&
+                            (item?.CostingPartDetails?.CostPerAssembly || item?.CostingPartDetails?.CostPerAssembly) ?
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
-                                    {`Total Operation's Cost:  ${subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Total Operation's Cost:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.OperationCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
                                     <br></br>
-                                    {`Total Process Cost:  ${subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Total Process Cost:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.ProcessCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
                                     <br></br>
-                                    {`Total Child's Cost:  ${checkForDecimalAndNull(item.CostingPartDetails.EditPartCost, initialConfiguration.NoOfDecimalForPrice)}`}
+                                    {`Total Child's Cost:  ${checkForDecimalAndNull(item?.CostingPartDetails?.EditPartCost, initialConfiguration.NoOfDecimalForPrice)}`}
                                 </span>
                             </div> : ''
                         }
                     </td>
                 </div>
                 <td>
-                    {item.PartType !== 'Assembly' && item.PartType !== 'BOP' &&
+                    {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' &&
                         <button
                             type="button"
                             className={'Edit mr-2 align-middle'}
@@ -220,7 +220,8 @@ function AssemblyTechnology(props) {
                         isEditFlag={false}
                         ID={''}
                         anchor={'right'}
-                        ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
+                        // ccData={subAssemblyTechnologyArray[0]?.CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
+                        ccData={[]}
                     />
                 )
             }

@@ -7,12 +7,14 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
-import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
+import { VbcExistingCosting, SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
+import { LEVEL0 } from '../../../../config/constants';
+import { IdForMultiTechnology } from '../../../../config/masterData';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { ASSEMBLYNAME, LEVEL0 } from '../../../../config/constants';
+import { ASSEMBLYNAME } from '../../../../config/constants';
 import { ASSEMBLY } from '../../../../config/masterData';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function TabSurfaceTreatment(props) {
 
@@ -21,7 +23,7 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const vbcExistingCosting = useContext(VbcExistingCosting);
+  const vbcExistingCosting = useContext(SelectedCostingDetail);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = Number(costData?.TechnologyId) === ASSEMBLY
 

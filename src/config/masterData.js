@@ -4548,10 +4548,10 @@ export const ListForPartCost = [
 export const optionsForDelta = [
     {
         label: '+',
-        value: 'positive'
+        value: '+'
     }, {
         label: '-',
-        value: 'negative'
+        value: '-'
     }
 
 ]

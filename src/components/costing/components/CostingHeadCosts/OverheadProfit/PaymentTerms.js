@@ -9,7 +9,7 @@ import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constant
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
-import { ASSEMBLY } from '../../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
@@ -254,7 +254,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode || (Number(costData?.TechnologyId) === ASSEMBLY) ? true : false}
+                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

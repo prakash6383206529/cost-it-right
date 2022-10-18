@@ -13,9 +13,9 @@ import { useContext } from 'react';
 import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
+import { IdForMultiTechnology } from '../../../config/masterData';
 import { CBCTypeId, NCC, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { ASSEMBLY } from '../../../config/masterData';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -46,7 +46,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-  const partType = Number(costingData?.TechnologyId) === ASSEMBLY
+  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
 
   useEffect(() => {
     if (partNo.isChanged === true) {

@@ -13,8 +13,8 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave } from '../../CostingUtil';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
-import { ASSEMBLY } from '../../../../config/masterData';
 
 function TabPackagingFreight(props) {
 
@@ -28,7 +28,7 @@ function TabPackagingFreight(props) {
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = costData?.TechnologyName === ASSEMBLY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
