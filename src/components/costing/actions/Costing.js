@@ -36,6 +36,7 @@ import {
   SAVE_BOM_LEVEL_STOP_API_CALL,
   SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
   ZBCTypeId,
+  SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -402,6 +403,10 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
         let TabData = response.data.DataList;
         dispatch({
           type: SET_RMCC_TAB_DATA,
+          payload: TabData,
+        });
+        dispatch({
+          type: SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
           payload: TabData,
         });
         callback(response);
@@ -2387,3 +2392,20 @@ export function saveAssemblyNumber(assemblyNumber) {
   }
 }
 
+/**
+ * @method createCosting
+ * @description CREATE ZBC COSTING
+ */
+export function createMultiTechnologyCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createMultiTechnologyCosting, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

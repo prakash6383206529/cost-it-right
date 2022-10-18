@@ -13,7 +13,7 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
@@ -32,7 +32,7 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
-  const vbcExistingCosting = useContext(VbcExistingCosting);
+  const selectedCostingDetail = useContext(SelectedCostingDetail);
 
 
   useEffect(() => {
@@ -40,8 +40,8 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
-        subAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
+        AssemCostingId: selectedCostingDetail.AssemblyCostingId ? selectedCostingDetail.AssemblyCostingId : costData.CostingId,
+        subAsmCostingId: selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId,
         EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null
       }
       dispatch(getRMCCTabData(data, true, (res) => {
@@ -1545,7 +1545,7 @@ function TabRMCC(props) {
                                     setBOPCost={setBOPCost}
                                     setConversionCost={setConversionCost}
                                     setToolCost={setToolCost}
-                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
+                                    subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
                               )
@@ -1564,7 +1564,7 @@ function TabRMCC(props) {
                                     setToolCost={setToolCost}
                                     setAssemblyOperationCost={setAssemblyOperationCost}
                                     setAssemblyToolCost={setAssemblyToolCost}
-                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
+                                    subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId}
                                     setBOPCostWithAsssembly={setBOPCostWithAsssembly}
                                   />
                                 </>

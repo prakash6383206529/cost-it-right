@@ -966,8 +966,13 @@ export const API = {
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
+  createMultiTechnologyCosting: `${BASE_URL}/costing/create-multi-technology-costing`,
   getEditPartCostDetails: `${BASE_URL}/sub-assembly/get-edit-part-cost-details`,
   saveEditPartCostDetails: `${BASE_URL}/sub-assembly/save-edit-part-cost-details`,
+  getCostingForMultiTechnology: `${BASE_URL}/costing/get-costing-for-multi-technology`,
+  saveSettledCostingDetails: `${BASE_URL}/costing/save-settled-costing-details`,
+  getSettledCostingDetails: `${BASE_URL}/costing/get-settled-costing-details`,
+  updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
@@ -1048,6 +1053,7 @@ export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
 export const GET_EDIT_PART_COST_DETAILS = 'GET_EDIT_PART_COST_DETAILS'
+export const GET_COSTING_FOR_MULTI_TECHNOLOGY = 'GET_COSTING_FOR_MULTI_TECHNOLOGY'
 
 //NEW PART MASTER
 export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS'
@@ -1423,6 +1429,9 @@ export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
+
+// ASSEMBLY TECHNOLOGY API
+export const GET_SETTLED_COSTING_DETAILS = 'GET_SETTLED_COSTING_DETAILS'
 
 //COSTING SUMMARY
 export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';

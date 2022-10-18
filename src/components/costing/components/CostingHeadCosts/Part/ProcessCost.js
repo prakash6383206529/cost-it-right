@@ -29,7 +29,7 @@ function ProcessCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse)
+  const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse ? data && data?.CostingProcessCostResponse : [])
   const trimValue = getConfigurationKey()
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
@@ -475,7 +475,8 @@ function ProcessCost(props) {
 
     if (groupNameIndex === '') {
       if (rowData.length > 0) {
-        let rowArr = rowData && rowData.map((item) => {
+        let rowArr = []
+        rowArr = rowData && rowData.map((item) => {
           let processQuantityMain = 1
           if (item.UOMType === MASS) {
             processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
@@ -545,7 +546,8 @@ function ProcessCost(props) {
       if (rowData.length > 0) {
         let parentTempData = processGroupGrid[groupNameIndex]
         let parentProcessList = parentTempData.ProcessList
-        let rowArr = rowData && rowData.map((el) => {
+        let rowArr = []
+        rowArr = rowData && rowData.map((el) => {
           let processQuantityMain = 1
           let productionPerHourMain = ''
           if (item?.UOMType === MASS) {
