@@ -615,7 +615,7 @@ class AddBOPDomestic extends Component {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
       sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
-    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -628,8 +628,12 @@ class AddBOPDomestic extends Component {
       return false;
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetails?.Plants.map((item) => {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
+      return cbcPlantArray
+    }
+    else {
+      userDetailsBop?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
@@ -639,19 +643,6 @@ class AddBOPDomestic extends Component {
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
-
-      // if (DataToCheck.IsVendor) {
-      //   if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-      //     this.cancel()
-      //     return false;
-      //   }
-      // }
-      // else if (Boolean(DataToCheck.IsVendor) === false) {
-      //   if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-      //     this.cancel()
-      //     return false;
-      //   }
-      // }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -739,7 +730,7 @@ class AddBOPDomestic extends Component {
         LoggedInUserId: loggedInUserId(),
         Plant: [plantArray],
         VendorPlant: [],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetails.Plants[0].PlantId,
+        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
         CustomerId: client.value
       }

@@ -700,7 +700,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
-    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -714,23 +714,17 @@ class AddBOPImport extends Component {
       return false;
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetails?.Plants.map((item) => {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
+      return cbcPlantArray
+    }
+    else {
+      userDetailsBop?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
     }
-    // if (this.state.isFinalApprovar && isEditFlag) {
 
-    // if (DataToChange.IsVendor) {
-
-    // }
-    // if (Boolean(DataToChange.IsVendor) === false) {
-    //   if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-    //     Toaster.warning('Please change data to send BOP for approval')
-    //     return false;
-    //   }
-    // }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       this.setState({ setDisable: true })

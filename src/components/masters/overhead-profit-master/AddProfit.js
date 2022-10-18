@@ -683,7 +683,11 @@ class AddProfit extends Component {
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
+      return cbcPlantArray
+    }
+    else {
       userDetailsProfit?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
