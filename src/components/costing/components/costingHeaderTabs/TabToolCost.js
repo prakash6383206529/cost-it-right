@@ -23,7 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave } from '../../CostingUtil';
-import { ASSEMBLY } from '../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 
@@ -47,7 +47,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = costData?.TechnologyName === ASSEMBLY   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
   const [disableSwitch, setDisableSwitch] = useState(false)
 
   const dispense = () => {

@@ -13,7 +13,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
-import { ASSEMBLY } from '../../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 
 function SurfaceTreatment(props) {
@@ -41,7 +41,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
 

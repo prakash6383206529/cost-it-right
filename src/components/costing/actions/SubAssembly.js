@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API, API_FAILURE, API_REQUEST, config, GET_EDIT_PART_COST_DETAILS, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
+import { API, API_FAILURE, API_REQUEST, config, GET_COSTING_FOR_MULTI_TECHNOLOGY, GET_EDIT_PART_COST_DETAILS, GET_SETTLED_COSTING_DETAILS, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
 import { apiErrors } from '../../../helper'
 
 let headers = config
@@ -88,4 +88,104 @@ export function saveEditPartCostDetails(data, callback) {
       })
   }
 }
+
+/**
+ * @method:getCostingForMultiTechnology
+ * @description: getCostingForMultiTechnology
+ * @param {*} data
+ */
+export function getCostingForMultiTechnology(data, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const queryParams = `partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}`
+    const request = axios.get(`${API.getCostingForMultiTechnology}?${queryParams}`, config());
+    request.then((response) => {
+      if (response?.data?.Result) {
+        dispatch({
+          type: GET_COSTING_FOR_MULTI_TECHNOLOGY,
+          payload: response?.data?.DataList,
+        })
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
+}
+
+/**
+ * @method:saveSettledCostingDetails
+ * @description: saveSettledCostingDetails
+ * @param {*} data
+ */
+export function saveSettledCostingDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveSettledCostingDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+/**
+ * @method getSettledCostingDetails
+ * @description getSettledCostingDetails
+ */
+export function getSettledCostingDetails(CostingId, callback) {
+  return (dispatch) => {
+    if (CostingId !== '') {
+      dispatch({
+        type: GET_SETTLED_COSTING_DETAILS,
+        payload: [],
+      })
+      const request = axios.get(`${API.getSettledCostingDetails}?baseCostingId=${CostingId}`, config());
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_SETTLED_COSTING_DETAILS,
+            payload: response.data.DataList,
+          })
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE });
+        callback(error);
+        apiErrors(error);
+      });
+    } else {
+      dispatch({
+        type: GET_SETTLED_COSTING_DETAILS,
+        payload: [],
+      })
+      callback();
+    }
+  };
+}
+
+/**
+ * @method:updateMultiTechnologyTopAndWorkingRowCalculation
+ * @description: updateMultiTechnologyTopAndWorkingRowCalculation
+ * @param {*} data
+ */
+export function updateMultiTechnologyTopAndWorkingRowCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.put(API.updateMultiTechnologyTopAndWorkingRowCalculation, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
 

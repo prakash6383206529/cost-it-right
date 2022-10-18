@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, CheckIsCostingDateSelected } from '../../../../helper';
-import { ViewCostingContext } from '../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import AssemblyTechnology from '../CostingHeadCosts/SubAssembly/AssemblyTechnology';
 import { tempObject } from '../../../../config/masterData';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
+import { getSubAssemblyAPI, setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
+import { getRMCCTabData } from '../../actions/Costing';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabAssemblyTechnology(props) {
 
@@ -26,11 +28,34 @@ function TabAssemblyTechnology(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   useEffect(() => {
-    dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
+    // dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
 
     // API FOR FIRST TIME DATA LOAD
     // dispatch(getSubAssemblyAPI(tempObject, res => { }))
   }, [])
+  const selectedCostingDetail = useContext(SelectedCostingDetail);
+
+
+  useEffect(() => {
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: costData.CostingId,
+        PartId: costData.PartId,
+        AssemCostingId: selectedCostingDetail.AssemblyCostingId ? selectedCostingDetail.AssemblyCostingId : costData.CostingId,
+        subAsmCostingId: selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId,
+        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null
+      }
+      dispatch(getRMCCTabData(data, true, (res) => {
+
+        // dispatch(setAllCostingInArray(res.data.DataList,false))
+        let tempArr = [];
+        tempArr = [res?.data?.DataList[0], ...res?.data?.DataList[0]?.CostingChildPartDetails]
+        reactLocalStorage.setObject('costingArray', tempArr);
+
+      }))
+    }
+  }, [Object.keys(costData).length > 0])
+
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -251,8 +276,8 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Technology`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} </th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Pc`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th>
+                          {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`BOP Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Assembly`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th>
@@ -269,7 +294,7 @@ function TabAssemblyTechnology(props) {
                       </thead>
                       <tbody>
                         {
-                          tempObject && tempObject.map((item, index) => {
+                          subAssemblyTechnologyArray && subAssemblyTechnologyArray.map((item, index) => {
                             return (
                               < >
                                 <AssemblyTechnology

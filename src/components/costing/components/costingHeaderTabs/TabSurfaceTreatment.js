@@ -8,9 +8,9 @@ import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
-import { ASSEMBLY } from '../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
-import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -22,8 +22,8 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)   // ASSEMBLY TECHNOLOGY
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY   // ASSEMBLY TECHNOLOGY
-  const vbcExistingCosting = useContext(VbcExistingCosting);
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const vbcExistingCosting = useContext(SelectedCostingDetail);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {

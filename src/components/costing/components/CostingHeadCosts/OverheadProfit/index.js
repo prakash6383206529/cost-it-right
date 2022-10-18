@@ -8,12 +8,12 @@ import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../..
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
-import { VbcExistingCosting, ViewCostingContext } from '../../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
-import { ASSEMBLY } from '../../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 
 function OverheadProfit(props) {
@@ -68,7 +68,7 @@ function OverheadProfit(props) {
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails.ModelType !== null ? { label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
 
@@ -326,7 +326,7 @@ function OverheadProfit(props) {
       setOverheadValues({}, true)
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
-      if (newValue && newValue !== '' && newValue.value !== undefined && costData.costingTypeId !== undefined) {
+      if (newValue && newValue !== '' && newValue.value !== undefined && costData.CostingTypeId !== undefined) {
         setModelType(newValue)
 
         const reqParams = {

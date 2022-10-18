@@ -7,7 +7,7 @@ import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
-import { ASSEMBLY } from '../../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 
@@ -29,7 +29,7 @@ function Rejection(props) {
     const [percentageLimit, setPercentageLimit] = useState(false)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = Number(costData?.TechnologyId) === ASSEMBLY
+    const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
     const dispatch = useDispatch()
 
