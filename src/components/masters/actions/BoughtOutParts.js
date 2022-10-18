@@ -431,7 +431,24 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
         });
     };
 }
-
+/**
+ * @method bulkUploadBOPDomesticCBC
+ * @description upload bulk BOP Domestic CBC
+ */
+export function bulkUploadBOPDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadBOPImportZBC
  * @description upload bulk BOP Domestic ZBC
@@ -469,7 +486,24 @@ export function bulkUploadBOPImportVBC(data, callback) {
         });
     };
 }
-
+/**
+ * @method bulkUploadBOPImportCBC
+ * @description upload bulk BOP Import CBC
+ */
+export function bulkUploadBOPImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method getManageBOPSOBDataList
  * @description get all BOP SOB Data list.

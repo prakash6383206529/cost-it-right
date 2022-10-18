@@ -190,6 +190,7 @@ export const API = {
   fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
   bulkUploadRMDomesticZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-domestic-json`,
   bulkUploadRMDomesticVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-domestic-json`,
+  bulkUploadRMDomesticCBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-cbc-domestic-json`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
@@ -209,6 +210,7 @@ export const API = {
   getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
   bulkUploadRMImportZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-import-json`,
   bulkUploadRMImportVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-import-json`,
+  bulkUploadRMImportCBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-cbc-import-json`,
 
   //RAW MATERIAL DOMESTIC AND IMPORT FILTER API'S
   getRawMaterialFilterSelectList: `${BASE_URL}/masters-raw-material/get-raw-material-filter-select-list`,
@@ -293,6 +295,7 @@ export const API = {
   fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
   bulkUploadBOPDomesticZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-domestic-json`,
   bulkUploadBOPDomesticVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
+  bulkUploadBOPDomesticCBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-cbc-domestic-json`,
   getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
   //BOP IMPORT
@@ -302,7 +305,7 @@ export const API = {
   updateBOPImport: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-import`,
   bulkUploadBOPImportZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-import-json`,
   bulkUploadBOPImportVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-import-json`,
-
+  bulkUploadBOPImportCBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-cbc-import-json`,
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
@@ -392,6 +395,7 @@ export const API = {
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
   operationZBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-zbc-json`,
   operationVBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-vbc-json`,
+  operationCBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-cbc-json`,
 
   getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
   getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
@@ -480,6 +484,7 @@ export const API = {
   getICCAppliSelectList: `${BASE_URL}/configuration/get-icc-applicability-list`,
   bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
+  bulkUploadInterestRateCBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-cbc-json`,
 
 
   //COSTING API
@@ -812,6 +817,7 @@ export const API = {
   bulkUploadMachineZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-json`,
   bulkUploadMachineVBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-vbc-json`,
   bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-details-json`,
+  bulkUploadMachineCBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-cbc-json`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
@@ -865,8 +871,10 @@ export const API = {
   getFinancialYearSelectList: `${BASE_URL}/masters-volume/get-select-list-for-financial-year`,
   bulkUploadVolumeActualZBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-zbc-json`,
   bulkUploadVolumeActualVBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-vbc-json`,
+  bulkUploadVolumeActualCBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-cbc-json`,
   bulkUploadVolumeBudgetedZBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-zbc-json`,
   bulkUploadVolumeBudgetedVBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-vbc-json`,
+  bulkUploadVolumeBudgetedCBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-cbc-json`,
   createVolumeLimit: `${BASE_URL}/masters-volume/create-add-limit`,
   updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
@@ -2049,6 +2057,7 @@ export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
+export const ZBCADDMORE = 0
 
 // KEY AND IV
 export const KEY = 'ewswymuinfzfskjz';

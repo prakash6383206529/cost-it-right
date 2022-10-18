@@ -1035,7 +1035,6 @@ export function getRMDomesticDataList(data, skip, take, isPagination, obj, callb
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                //
                 if (isPagination === true) {
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
@@ -1250,6 +1249,24 @@ export function bulkUploadRMDomesticVBC(data, callback) {
 }
 
 /**
+ * @method bulkUploadRMDomesticCBC
+ * @description upload bulk RM Domestic CBC
+ */
+export function bulkUploadRMDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+/**
  * @method bulkfileUploadRM
  * @description upload bulk RM Domestic
  */
@@ -1286,6 +1303,24 @@ export function bulkUploadRMImportZBC(data, callback) {
     };
 }
 
+/**
+ * @method bulkUploadRMImportCBC
+ * @description upload bulk RM Import CBC
+ */
+export function bulkUploadRMImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadRMImportVBC
  * @description upload bulk RM Domestic VBC

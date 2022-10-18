@@ -698,7 +698,24 @@ export function operationVBCBulkUpload(data, callback) {
     };
 }
 
-
+/**
+ * @method operationCBCBulkUpload
+ * @description create CBC Opration by Bulk Upload
+ */
+export function operationCBCBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.operationCBCBulkUpload, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 
 /**
  * @method masterApprovalRequestBySenderOperation

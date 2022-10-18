@@ -574,6 +574,24 @@ export function bulkUploadMachineVBC(data, callback) {
 }
 
 /**
+ * @method bulkUploadMachineCBC
+ * @description upload bulk MACHINE CBC
+ */
+export function bulkUploadMachineCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadMachineCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+/**
  * @method bulkUploadMachineMoreZBC
  * @description upload bulk MACHINE MORE ZBC
  */
