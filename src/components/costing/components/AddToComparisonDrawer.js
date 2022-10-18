@@ -8,7 +8,7 @@ import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper'
@@ -54,6 +54,7 @@ function AddToComparisonDrawer(props) {
   const [isVbcSelected, setIsVbcSelected] = useState(true) //TRUE FOR MINDA AS BY DEFAULT TO SHOW VBC
 
   const [isCbcSelected, setisCbcSelected] = useState(false)
+  const [isNccSelected, setisNccSelected] = useState(false)
 
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
@@ -88,9 +89,12 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(true)
       setIsZbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      //    dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      setisNccSelected(false)
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+        dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+        dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+      }),
+      )
     }
 
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
@@ -99,6 +103,7 @@ function AddToComparisonDrawer(props) {
         setIsZbcSelected(true)
         setIsVbcSelected(false)
         setisCbcSelected(false)
+        setisNccSelected(false)
         dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
         // dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
@@ -107,13 +112,23 @@ function AddToComparisonDrawer(props) {
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
+        setisNccSelected(false)
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         // dispatch(getPlantBySupplier(VendorId, (res) => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, destinationPlantId, () => { }))
+      }
+      else if (costingTypeId === NCCTypeId) {
+        setIsZbcSelected(false)
+        setIsVbcSelected(false)
+        setisCbcSelected(false)
+        setisNccSelected(true)
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, destinationPlantId, () => { }))
       } else if (costingTypeId === CBCTypeId) {//CBC COSTING CONDITION
         setIsZbcSelected(false)
         setIsVbcSelected(false)
+        setisNccSelected(false)
         setisCbcSelected(true)
       }
       // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
@@ -174,6 +189,7 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
+      setisNccSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         if (plantId !== undefined && plantId !== '-') {
           dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
@@ -187,7 +203,10 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(false)
       setIsVbcSelected(true)
       setisCbcSelected(false)
+      setisNccSelected(false)
       setValue('costings', '')
+      setValue('vendor', '')
+      setValue('destinationPlant', '')
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', '', () => { }))
@@ -196,6 +215,7 @@ function AddToComparisonDrawer(props) {
       setisCbcSelected(true)
       setIsZbcSelected(false)
       setIsVbcSelected(false)
+      setisNccSelected(false)
       setCostingDropdown([])
       setValue('costings', '')
       dispatch(getClientSelectList((res) => {
@@ -204,6 +224,20 @@ function AddToComparisonDrawer(props) {
 
       }),
       )
+    } else if ((value) === NCCTypeId) {
+
+      setisCbcSelected(false)
+      setIsZbcSelected(false)
+      setIsVbcSelected(false)
+      setisNccSelected(true)
+      setValue('costings', '')
+      setValue('vendor', '')
+      setValue('destinationPlant', '')
+      setCostingDropdown([])
+      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+      // dispatch(getCostingByVendorAndVendorPlant('', '', '', '', () => { }))
     }
   }
 
@@ -225,7 +259,6 @@ function AddToComparisonDrawer(props) {
       handleVendorNameChange('')
     }
   }
-
 
 
   /**
@@ -443,7 +476,7 @@ function AddToComparisonDrawer(props) {
           obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
           obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
           obj.PoPriceWithDate = `${obj?.poPrice}(${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
-          obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
+          // obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
           obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
           obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
           obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
@@ -541,12 +574,37 @@ function AddToComparisonDrawer(props) {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
+
     dispatch(
       getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, '00000000-0000-0000-0000-000000000000', value, (res) => {
+
         setValue('costings', '')
       }),
     )
   }
+  const handleDestinationPlantNameChangeForNCC = ({ value }) => {
+    setVendorId(value)
+    if (value === '') {
+      value = '00000000-0000-0000-0000-000000000000'
+    }
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+
+  }
+  const handleVendorChangeForNCC = ({ value }) => {
+    // setValue('destinationPlant', '')
+
+
+    dispatch(
+      getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, '00000000-0000-0000-0000-000000000000', value, (res) => {
+
+        setValue('costings', '')
+      }),
+    )
+    setValue('costings', '')
+
+
+  }
+
 
   /**
    * @method renderListing
@@ -668,7 +726,7 @@ function AddToComparisonDrawer(props) {
                     handleChange={() => handleComparison(VBCTypeId)}
                   />
                   <RadioHookForm
-                    customClassName="d-inline-flex flex-row-reverse align-items-baseline"
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
                     className={"filter-form-section mr-1"}
                     name={"CBC"}
                     label={"CBC"}
@@ -678,6 +736,21 @@ function AddToComparisonDrawer(props) {
                     register={register}
                     handleChange={() => handleComparison(CBCTypeId)}
                   />
+
+                  {/******************* THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
+                  {/* <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline"
+                    className={"filter-form-section mr-1"}
+                    name={"NCC"}
+                    label={"NCC"}
+                    defaultValue={isNccSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison(NCCTypeId)}
+                  /> */}
+                  {/****************** THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
+
                 </Col>
               </Row>
               <Row className="pl-3">
@@ -774,7 +847,43 @@ function AddToComparisonDrawer(props) {
                       />
                     </Col>
                   </>
-                )} */}
+                )}*/}
+                {isNccSelected && <>
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
+                    <Col md="12">
+                      <SearchableSelectHookForm
+                        label={"Destination Plant"}
+                        name={"destinationPlant"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderListing('DestinationPlant')}
+                        mandatory={true}
+                        handleChange={handleDestinationPlantNameChangeForNCC}
+                        errors={errors.destinationPlant}
+                      />
+                    </Col>
+                  )}
+                  <Col md="12">
+                    <SearchableSelectHookForm
+                      label={"Vendor"}
+                      name={"vendor"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      // defaultValue={plant.length !== 0 ? plant : ''}
+                      options={renderListing('vendor')}
+                      mandatory={true}
+                      handleChange={handleVendorChangeForNCC}
+                      errors={errors.vendor}
+                    />
+                  </Col>
+                </>}
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Costing Version"}
