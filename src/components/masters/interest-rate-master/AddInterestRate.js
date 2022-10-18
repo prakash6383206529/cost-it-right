@@ -357,11 +357,16 @@ class AddInterestRate extends Component {
     }
     let cbcPlantArray = []
     if (costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+      return cbcPlantArray
+    }
+    else {
       userDetailsInterest?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
     }
+
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
 
