@@ -13,9 +13,12 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
+<<<<<<< HEAD
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
+=======
+>>>>>>> 694eae103 (assembly technology UI fixed)
 
 function EditPartCost(props) {
 
