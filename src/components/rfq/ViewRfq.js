@@ -363,11 +363,9 @@ function RfqListing(props) {
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
-                {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
-                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {showActionIcons && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
-                {showReminderIcon && <button title='Reminder' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
-
+                {<button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
+                {<button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
+                {<button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className='history-remark'></div></button>}
             </>
         )
     };
