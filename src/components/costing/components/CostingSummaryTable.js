@@ -942,7 +942,8 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
+
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
                   <>
@@ -990,10 +991,9 @@ const CostingSummaryTable = (props) => {
                     Add To Comparison{' '}
                   </button>
                   {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-                </>
-              }
-            </Col >
-          </Row >
+                </>}
+            </Col>}
+          </Row>
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
