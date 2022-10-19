@@ -282,6 +282,7 @@ export const API = {
   getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
   getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
+  getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
 
   //BOP DOMESTIC
   createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
@@ -962,7 +963,8 @@ export const API = {
   cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
   fileUploadQuotation: `${BASE_URL}/rfq-quotation/quotation-file-upload`,
   fileDeleteQuotation: `${BASE_URL}/rfq-quotation/delete-quotation-attachment-file`,
-  sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`
+  sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`,
+  getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
 }
 
 //Api constants
