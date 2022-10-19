@@ -932,7 +932,7 @@ class AddRMImport extends Component {
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, costingTypeId, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged } = this.state;
 
     const { fieldsObj } = this.props;
-    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -958,8 +958,12 @@ class AddRMImport extends Component {
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetails?.Plants.map((item) => {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+      return cbcPlantArray
+    }
+    else {
+      userDetailsRM?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
