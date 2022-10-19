@@ -715,7 +715,7 @@ class VendorListing extends Component {
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 
-                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found vendor-listing" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}

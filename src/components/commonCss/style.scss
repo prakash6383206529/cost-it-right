@@ -4325,6 +4325,7 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 400;
+  align-items: flex-start !important;
   &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
@@ -4347,7 +4348,7 @@ body {
 .warning-row {
   img {
     width: 12px;
-    height: auto;
+    height: 21px;
     object-fit: contain;
   }
 }
