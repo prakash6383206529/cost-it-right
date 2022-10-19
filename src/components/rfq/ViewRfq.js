@@ -25,6 +25,7 @@ import AddToComparisonDrawer from '../costing/components/AddToComparisonDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { load } from 'dotenv';
 import { Fragment } from 'react';
+import { Link } from 'react-scroll';
 const gridOptions = {};
 
 
@@ -87,7 +88,9 @@ function RfqListing(props) {
         gridOptions?.api?.setFilterModel(null);
     }
 
-
+    // const cancel = () => {
+    //     props.closeDrawer()
+    // }
     /**
     * @method editItemDetails
     * @description edit material type
@@ -347,9 +350,9 @@ function RfqListing(props) {
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
-                {<button title='approve' className="Edit mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)} />}
-                {<button title='reject' className="Delete mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {<button title='remarkHistory' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
+                {<button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
+                {<button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
+                {<button title='Remark History' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
             </>
         )
     };
@@ -526,16 +529,15 @@ function RfqListing(props) {
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
-                                    <button
-                                        type="button"
-                                        className={'user-btn mb-2 comparison-btn ml-2'}
-                                        disabled={addComparisonButton}
-                                        onClick={addComparisonDrawerToggle}
-                                    >
-                                        <div className="compare-arrows"></div>
-                                        Add To Comparison{' '}
-                                    </button>
-
+                                    <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        <button
+                                            type="button"
+                                            className={'user-btn mb-2 comparison-btn ml-2'}
+                                            disabled={addComparisonButton}
+                                            onClick={addComparisonDrawerToggle}
+                                        >
+                                            <div className="compare-arrows"></div>Compare</button>
+                                    </Link>
                                 </>
                             }
                         </Col>
@@ -579,10 +581,7 @@ function RfqListing(props) {
                                         {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                     </AgGridReact>
-                                    <div className='button-wrapper'>
-                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
-
-                                    </div>
+                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
                                 </div>
                             </div>
                         </Col>
@@ -640,23 +639,30 @@ function RfqListing(props) {
 
 
             {
-                addComparisonToggle && (
-                    <CostingSummaryTable viewMode={true}
-                        // costingID={approvalDetails.CostingId}
-                        approvalMode={true}
-                        // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                        simulationMode={false} />
+                <div id='rfq-compare-drawer'>
+                    {addComparisonToggle && (
 
-                )
+                        <CostingSummaryTable viewMode={true}
+                            isRfqCosting={true}
+                            // costingID={approvalDetails.CostingId}
+                            approvalMode={true}
+                            // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                            simulationMode={false} />
+                    )}
+                </div>
             }
 
-
-            {
-                addComparisonToggle &&
-
-                < Row className="sf-btn-footer no-gutters justify-content-between">
-                    <div className="col-sm-12 text-right bluefooter-butn">
-                        <Fragment>
+            <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right bluefooter-butn">
+                    <Fragment>
+                        <button
+                            type={'button'}
+                            className=" mr5 cancel-btn"
+                            onClick={cancel}
+                        >
+                            <div className={'cancel-icon'}></div> {'Cancel'}
+                        </button>
+                        {addComparisonToggle && <>
                             <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                                 <div className={'cancel-icon-white mr5'}></div>
                                 {'Reject'}
@@ -671,11 +677,12 @@ function RfqListing(props) {
                             </button>
 
 
-                        </Fragment>
+                        </>}
 
-                    </div>
-                </Row>
-            }
+                    </Fragment >
+
+                </div >
+            </Row >
 
 
 
