@@ -692,7 +692,6 @@ export function formViewData(costingSummary, header = '') {
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
   obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
   obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
-  console.log(dataFromAPI, "dataFromAPI.PlantCode");
   obj.vendorId = dataFromAPI.VendorId ? dataFromAPI.VendorId : '-'
   obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
   obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'

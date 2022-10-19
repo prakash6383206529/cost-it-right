@@ -321,7 +321,6 @@ const CostingSummaryTable = (props) => {
   *
   */
   const editHandler = (index) => {
-    console.log('viewCostingData: ', viewCostingData);
     const editObject = {
       plantId: viewCostingData[index]?.plantId,
       plantName: viewCostingData[index]?.plantName,
@@ -357,7 +356,6 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    console.log('tempData: ', tempData);
     const type = viewCostingData[index]?.costingTypeId
 
     const Data = {
@@ -1099,7 +1097,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
                                     <span className="d-block">{data?.RevisionNumber}</span>
-                                    <span className="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
+                                    <span className="d-block">{data.costingTypeId === ZBCTypeId || data.costingTypeId === CBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
                                   </td>
                                 )
                               })}
