@@ -1094,7 +1094,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
-    if (checkForNull(NetPowerCostPerUnit) === 0) {
+    if (!IsVendor && checkForNull(NetPowerCostPerUnit) === 0) {
       Toaster.warning('Net Contribution value should not be 0.')
       return false
     }
