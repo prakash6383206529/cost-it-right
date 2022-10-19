@@ -156,6 +156,11 @@
 .save-icon {  @include icons("../../assests/images/check.png", 18px, 12px);
     margin-right: 5px;
 }
+.approve-save-tick {
+    @include icons("../../assests/images/check-green.svg", 16px, 12px);
+    margin: auto;
+
+}
 .filter { @include icons("../../assests/images/filter.png", 12px, 12px);
     margin-right: 5px;
 }
@@ -199,6 +204,10 @@
     cursor: pointer;
     background-position: center;
     display: inline-block;
+}
+.send-for-approval-form-drawer {
+    @include icons("../../assests/images/send-for-approval-with-bg.svg", 16px, 20px );
+    margin:auto;
 }
 .zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
 .zoom-in {@include icons("../../assests/images/zoom-in.svg",  10px, 10px)}
@@ -395,4 +404,25 @@
             opacity: 0.6;
         }
     }
+  }
+  .btn-send-for-approval {
+     background-color: #e4defd;
+     width: 32px;
+     height: 32px;
+     border-radius: 4px;
+     &:focus {
+        box-shadow: 0 0 5px #7959f6!important;
+        border: 1px solid #e4defd !important;;
+    }
+  }
+  .approve-icon {
+    background-color: #DBF4E2;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    margin: auto;
+    &:focus {
+       box-shadow: 0 0 5px #4DC771!important;
+       border: 1px solid #DBF4E2 !important;;
+   }
   }
