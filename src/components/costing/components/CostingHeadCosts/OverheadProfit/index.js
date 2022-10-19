@@ -325,7 +325,7 @@ function OverheadProfit(props) {
       setOverheadValues({}, true)
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
-      if (newValue && newValue !== '' && newValue.value !== undefined && costData.costingTypeId !== undefined) {
+      if (newValue && newValue !== '' && newValue.value !== undefined && costData.CostingTypeId !== undefined) {
         setModelType(newValue)
 
         const reqParams = {

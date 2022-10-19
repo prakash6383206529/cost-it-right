@@ -84,7 +84,6 @@ function CostingDetails(props) {
 
   // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
-  const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
   const [approvalStatus, setApprovalStatus] = useState('')
@@ -892,8 +891,8 @@ function CostingDetails(props) {
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
         CostingTypeId: type,
-        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
-        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
+        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
         CustomerCode: type === CBCTypeId ? tempData.CustomerCode : ''
       }
 
@@ -1103,7 +1102,7 @@ function CostingDetails(props) {
           vbcCosting: '',
           nccCosting: ''
         })
-        setType(type)
+
       }
     }
   }
@@ -2446,7 +2445,7 @@ function CostingDetails(props) {
           vbcVendorGrid={vbcVendorGrid}
           nccGrid={nccGrid}
           partNo={getValues("Part")}
-          type={type}
+          type={costingType}
           selectedCostingId={costingIdForCopy}
           //isEditFlag={false}
           anchor={"right"}
