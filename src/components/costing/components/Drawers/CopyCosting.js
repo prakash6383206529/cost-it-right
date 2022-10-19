@@ -7,7 +7,7 @@ import Switch from 'react-switch';
 import { DatePickerHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { getPlantBySupplier, } from '../../../../actions/Common';
 import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
-import { NCC, VBC, ZBC } from '../../../../config/constants';
+import { NCCTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -21,20 +21,18 @@ function CopyCosting(props) {
 
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, nccGrid } = props
 
-
-
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
-      fromVendorName: type === VBC || type === NCC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      fromPlant: type === ZBCTypeId ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
+      fromVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBC || type === NCC ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
+      fromDestinationPlant: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
       fromNcccostingId: selectedCostingId.nccCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
+      toVendorName: type === VBCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
 
@@ -53,13 +51,13 @@ function CopyCosting(props) {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [minDate, setMinDate] = useState('')
 
-  const [fromtype, setFromType] = useState(type === ZBC ? false : true)
-  const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
-  const [isFromNcc, setIsFromNcc] = useState(type === NCC ? true : false)
-  const [isToZbc, setIsToZbc] = useState(type === ZBC ? true : false)
-  const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
-  const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
-  const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
+  const [fromtype, setFromType] = useState(type === ZBCTypeId ? false : true)
+  const [isFromZbc, setIsFromZbc] = useState(type === ZBCTypeId ? true : false)
+  const [isFromNcc, setIsFromNcc] = useState(type === NCCTypeId ? true : false)
+  const [isToZbc, setIsToZbc] = useState(type === ZBCTypeId ? true : false)
+  const [isFromVbc, setIsFromVbc] = useState(type === VBCTypeId ? true : false)
+  const [isToVbc, setIsToVbc] = useState(type === VBCTypeId ? true : false)
+  const [toSwitch, setToSwitch] = useState(type === VBCTypeId ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
   const [disablePopup, setDisablePopup] = useState(false)
@@ -103,9 +101,9 @@ function CopyCosting(props) {
     let uniqueArray = _.uniqBy(VbcTemp, "value")
     setVendorName(uniqueArray)
 
-    if (type === ZBC) {
-      getCostingDropDown(copyCostingData.PlantId, ZBC)
-    } else if (type === NCC) {
+    if (type === ZBCTypeId) {
+      getCostingDropDown(copyCostingData.PlantId, ZBCTypeId)
+    } else if (type === NCCTypeId) {
       let tempPlant = []
       let tempVendor = []
       nccGrid && nccGrid.map((item) => {
@@ -178,7 +176,7 @@ function CopyCosting(props) {
             return null
           })
 
-        if (costingFor === ZBC) {
+        if (costingFor === ZBCTypeId) {
           setCostingId(temp)
         } else {
           setVendorCostingId(temp)
@@ -253,7 +251,7 @@ function CopyCosting(props) {
    */
   const handlePlantChange = (value) => {
     setValue('fromcostingId', '')
-    getCostingDropDown(value.value, ZBC)
+    getCostingDropDown(value.value, ZBCTypeId)
   }
   /**
    * @method handleFromVendorName
@@ -477,7 +475,7 @@ function CopyCosting(props) {
                   <div className="left-border">{"From:"}</div>
                 </Col>
                 <Col md="6" className="text-right">
-                  {type !== NCC &&
+                  {type !== NCCTypeId &&
                     <div className="switch d-inline-block">
                       <label className="switch-level justify-content-end">
                         <div className={"left-title"}>ZBC</div>
@@ -689,7 +687,7 @@ function CopyCosting(props) {
                   <div className="left-border">{"To:"}</div>
                 </Col>
                 <Col md="6" className="text-right">
-                  {type !== NCC &&
+                  {type !== NCCTypeId &&
                     <div className="switch d-inline-block">
                       <label className="switch-level justify-content-end">
                         <div className={"left-title"}>ZBC</div>
