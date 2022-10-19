@@ -1170,7 +1170,6 @@ function CostingSimulation(props) {
                                                     floatingFilter={true}
                                                     ref={gridRef}
                                                     domLayout='autoHeight'
-                                                    floatingFilter={true}
                                                     // columnDefs={c}
                                                     rowData={tableData}
                                                     pagination={true}
