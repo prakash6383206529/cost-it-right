@@ -1665,6 +1665,7 @@ export const SIMULATION = 'Simulation'
 export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
+export const RFQ = 'RFQ'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
