@@ -213,7 +213,11 @@
 .zoom-in {@include icons("../../assests/images/zoom-in.svg",  10px, 10px)}
 .zoom-out {@include icons("../../assests/images/zoom-out.svg", 14px, 14px)}
 .zoom-out-hover {@include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)}
-
+.history-remark {
+    @include icons("../../assests/images/history-remark.svg", 26px, 26px);
+    margin: auto;
+    background-color: #cef2fb;
+}
 .link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
 
 .broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
@@ -425,4 +429,16 @@
        box-shadow: 0 0 5px #4DC771!important;
        border: 1px solid #DBF4E2 !important;;
    }
+  }
+  .btn-history-remark {
+      background-color: #cef2fb;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 4px;
+
+      &:focus {
+          box-shadow: 0 0 5px #0cbeeb !important;
+          border: 1px solid #bbe8f9 !important;
+      }
   }
