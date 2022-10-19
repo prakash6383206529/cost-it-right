@@ -713,17 +713,6 @@ class AddBOPImport extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-    let cbcPlantArray = []
-    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
-      return cbcPlantArray
-    }
-    else {
-      userDetailsBop?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
@@ -821,7 +810,7 @@ class AddBOPImport extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: [plantArray],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetails.Plants[0].PlantId,
+        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
         VendorPlant: [],
