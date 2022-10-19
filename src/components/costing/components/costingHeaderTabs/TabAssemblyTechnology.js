@@ -273,21 +273,22 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Part Name`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Technology`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '130px' }}>{`Technology`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} </th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Pc`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`BOP Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Assembly`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th>
+                          {/* <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th> */}
                           {
                             costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{
-                              <button
-                                type="button"
-                                className={'user-btn add-oprn-btn'}
-                                onClick={bopHandlingDrawer}>
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>}
+                              // <button
+                              //   type="button"
+                              //   className={'user-btn add-oprn-btn'}
+                              //   onClick={bopHandlingDrawer}>
+                              //   <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                            }
                             </th>
                           }
                         </tr>
@@ -327,7 +328,7 @@ function TabAssemblyTechnology(props) {
                 }
 
                 {!CostingViewMode &&
-                  <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+                  <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}

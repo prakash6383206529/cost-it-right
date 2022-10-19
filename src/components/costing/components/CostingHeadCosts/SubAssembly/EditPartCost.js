@@ -11,6 +11,7 @@ import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCosting
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
+import NoContentFound from '../../../../common/NoContentFound';
 
 function EditPartCost(props) {
 
@@ -241,8 +242,8 @@ function EditPartCost(props) {
         }
         dispatch(saveSettledCostingDetails(obj, res => { }))
         let tabData = subAssemblyTechnologyArray[0]
-        let request = formatMultiTechnologyUpdate(tabData, weightedCost)
-        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        // let request = formatMultiTechnologyUpdate(tabData, weightedCost)
+        // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
 
         props.closeDrawer('')
 
@@ -260,7 +261,7 @@ function EditPartCost(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Part Cost`}</h3>
+                                    <h3>{`Part Cost:`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -268,144 +269,155 @@ function EditPartCost(props) {
                                 </div>
                             </Col>
                         </Row>
-                        <form
-                        >
-                            <Table className=''>
-                                <thead>
-                                    <tr className="cr-bg-tbl" width='100%'>
-                                        <th>Parent Assembly Number: {`${props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
-                                        <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
-                                        <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
-                                        <th>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
-                                        <th>
-                                            <SearchableSelectHookForm
-                                                label={`Costing Number`}
-                                                name={`CostingNumber`}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                options={renderListing("CostingNumber")}
-                                                handleChange={(e) => handleChangeCostingNumber(e)}
-                                            />
-                                        </th>
-                                        <th>
-                                            <button
-                                                type="button"
-                                                className={"user-btn "}
-                                                onClick={() => addGrid()}
-                                                title="Add"
-                                            >
-                                                <div className={"plus "}></div>
-                                            </button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <br />
-                                <tbody>
-                                    <tr >
-                                        <th>Vendor Name</th>
-                                        <th>Settled Price</th>
-                                        <th>SOB%</th>
-                                        <th>Delta</th>
-                                        <th>Net Cost</th>
-                                    </tr>
-                                    {gridData && gridData.map((item, index) => {
-                                        return (
-                                            <>
-                                                <tr key={index} >
-                                                    <td>{item?.VendorName}</td>
-                                                    <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                                    <td width={20}>
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.SOBPercentage`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                                max: {
-                                                                    value: 100,
-                                                                    message: 'Percentage cannot be greater than 100'
-                                                                },
-                                                            }}
-                                                            handleChange={(e) => handleSOBPercentage(e.target.value, index)}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                        />
-                                                    </td>
-                                                    <td >
-                                                        <SearchableSelectHookForm
-                                                            name={`${PartCostFields}.${index}.DeltaSign`}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            // rules={{ required: true }}
-                                                            register={register}
-                                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                                            options={optionsForDelta}
-                                                            mandatory={true}
-                                                            handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                        />
 
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.DeltaValue`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                            }}
-                                                            handleChange={(e) => handleDeltaValue(e.target.value, index)}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                        />
-                                                    </td>
-                                                    <td >
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.NetCost`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                            }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            disabled={true}
-                                                            customClassName={'withBorder'}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            </>
-                                        )
-                                    })
-                                    }
-                                </tbody>
-                            </Table>
+                        <form>
+                            <Col md="12">
+                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                    <thead>
+                                        <tr className="cr-bg-tbl" width='100%'>
+                                            <th>Parent Assembly Number: {`${props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
+                                            <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
+                                            <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
+                                            <th colSpan={2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
+                                        </tr>
+                                    </thead>
+                                </Table>
+                                <div className='add-container'>
+                                    <SearchableSelectHookForm
+                                        label={`Costing Number`}
+                                        name={`CostingNumber`}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        options={renderListing("CostingNumber")}
+                                        handleChange={(e) => handleChangeCostingNumber(e)}
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className={"user-btn "}
+                                        onClick={() => addGrid()}
+                                        title="Add"
+                                    >
+                                        <div className={"plus "}></div>Add
+                                    </button>
+                                </div>
+                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                    <thead>
+                                        <tr >
+                                            <th>Vendor Name</th>
+                                            <th>Settled Price</th>
+                                            <th>SOB%</th>
+                                            <th>Delta</th>
+                                            <th>Net Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="part-cost-table">
+                                        {gridData && gridData.map((item, index) => {
+                                            return (
+                                                <>
+                                                    <tr key={index} >
+                                                        <td>{item?.VendorName}</td>
+                                                        <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                                        <td>
+                                                            <NumberFieldHookForm
+                                                                name={`${PartCostFields}.${index}.SOBPercentage`}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^\d*\.?\d*$/,
+                                                                        message: 'Invalid Number.'
+                                                                    },
+                                                                    max: {
+                                                                        value: 100,
+                                                                        message: 'Percentage cannot be greater than 100'
+                                                                    },
+                                                                }}
+                                                                handleChange={(e) => handleSOBPercentage(e.target.value, index)}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </td>
+                                                        <td >
+                                                            <div className='delta-warpper'>
+                                                                <SearchableSelectHookForm
+                                                                    name={`${PartCostFields}.${index}.DeltaSign`}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    // rules={{ required: true }}
+                                                                    register={register}
+                                                                    customClassName="w-auto"
+                                                                    options={optionsForDelta}
+                                                                    mandatory={true}
+                                                                    handleChange={(e) => handleDeltaSignChange(e, index)}
+                                                                />
+
+                                                                <NumberFieldHookForm
+                                                                    name={`${PartCostFields}.${index}.DeltaValue`}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={false}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+                                                                    }}
+                                                                    handleChange={(e) => handleDeltaValue(e.target.value, index)}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder'}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td >
+                                                            <NumberFieldHookForm
+                                                                name={`${PartCostFields}.${index}.NetCost`}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^\d*\.?\d*$/,
+                                                                        message: 'Invalid Number.'
+                                                                    },
+                                                                }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            )
+                                        })
+                                        }
+                                        {gridData && gridData.length === 0 && <tr>
+                                            <td colSpan={6}>
+                                                <NoContentFound />
+                                            </td>
+                                        </tr>}
+                                    </tbody>
+                                </Table>
+                            </Col>
                         </form>
-                        < Row className="mx-0 mb-3" >
+                        <Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button
                                     type={'submit'}
-                                    className="submit-button mr5 save-btn"
+                                    className="submit-button save-btn"
                                     onClick={handleSubmit(onSubmit)}
                                 >
                                     <div className={"save-icon"}></div>
