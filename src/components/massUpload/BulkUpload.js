@@ -127,7 +127,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC), fileHeads)
                             }
                             break;
@@ -139,7 +139,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC), fileHeads)
                             }
                             break;
@@ -153,7 +153,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(BOP_CBC_DOMESTIC, fileHeads)
                             }
                             break;
@@ -202,7 +202,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperation), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperation), fileHeads)
                             }
                             break;
@@ -235,7 +235,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC), fileHeads)
                             }
                             break;
