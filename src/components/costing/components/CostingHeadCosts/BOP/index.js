@@ -61,7 +61,6 @@ function BoughtOutPart(props) {
         {partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
         {partType ? <td>{'-'}</td> : <td>{''}</td>}
         {partType && <td></td>}
-        {partType && <td></td>}
       </tr>
     </ >
   );

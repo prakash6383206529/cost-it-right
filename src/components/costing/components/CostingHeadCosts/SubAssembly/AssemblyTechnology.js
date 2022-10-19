@@ -128,10 +128,10 @@ function AssemblyTechnology(props) {
     */
     return (
         <>
-            <tr className={`${item?.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''} accordian-row`}>
-                <div style={{ display: 'contents' }} onClick={() => toggle(item?.BOMLevel, item?.PartNumber, item?.PartType)}>
+            <tr className={`${item?.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''}`}>
+                <div style={{ display: 'contents' }}>
                     <td>
-                        <span style={{ position: 'relative' }} className={`${item && item?.PartType === "Assembly" && "cr-prt-nm1"} cr-prt-link1 ${item && item?.PartType !== "Sub Assembly" && item?.PartType !== "Assembly" && "L1"}`}>
+                        <span onClick={() => toggle(item?.BOMLevel, item?.PartNumber, item?.PartType)} className={`${item && item?.PartType === "Assembly" && "part-name"} ${item && item?.PartType !== "Sub Assembly" && item?.PartType !== "Assembly" && "L1"}`}>
                             <div className={`${IsOpen ? 'Open' : 'Close'}`}></div>{item && item?.PartNumber}
                         </span>
                     </td>
@@ -163,34 +163,43 @@ function AssemblyTechnology(props) {
                         }
                     </td>
                 </div>
-                <td>
-                    {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' &&
-                        <button
-                            type="button"
-                            className={'Edit mr-2 align-middle'}
-                            onClick={() => viewOrEditItemDetails(item)}>
-                        </button>}
-                </td>
-
+                {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' && <td className='text-right'>
+                    <button
+                        type="button"
+                        className={'Edit mr-2 align-middle'}
+                        onClick={() => viewOrEditItemDetails(item)}>
+                    </button>
+                </td>}
 
                 {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
-                    <button
-                        type="button"
-                        className={'user-btn '}
-                        onClick={ProcessDrawerToggle}
-                    >
-                        <div className={'plus'}></div>PROCESS
-                    </button>
+                    <div className='assembly-button-container'>
+                        <button
+                            type="button"
+                            className={'user-btn add-oprn-btn'}
+                            title={"Add BOP Handling"}
+                        // onClick={bopHandlingDrawer}
+                        >
+                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                        <button
+                            type="button"
+                            className={'user-btn '}
+                            onClick={ProcessDrawerToggle}
+                            title={'Add Process'}
+                        >
+                            <div className={'plus'}></div>PROC
+                        </button>
 
-                    <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={OperationDrawerToggle}
-                    >
-                        <div className={'plus'}></div>OPERATION
-                    </button>
+                        <button
+                            type="button"
+                            className={'user-btn'}
+                            onClick={OperationDrawerToggle}
+                            title={"Add Operation"}
+                        >
+                            <div className={'plus'}></div>OPER
+                        </button>
+                    </div>
                 </td> :
-                    <td></td>
+                    ''
                 }
 
             </tr >
