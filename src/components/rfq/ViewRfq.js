@@ -48,6 +48,7 @@ function RfqListing(props) {
     const [selectedRows, setSelectedRows] = useState([])
     const [addComparisonToggle, setaddComparisonToggle] = useState(false)
     const [addComparisonButton, setAddComparisonButton] = useState(true)
+    const [technologyId, setTechnologyId] = useState("")
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -76,6 +77,7 @@ function RfqListing(props) {
         dispatch(getQuotationDetailsList(props.data, (res) => {
 
             setRowData(res?.data?.DataList)
+            setTechnologyId(res?.data?.DataList[0].TechnologyId)
         }))
     }
 
@@ -83,7 +85,6 @@ function RfqListing(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        props.closeDrawer()
     }
 
 
@@ -110,12 +111,28 @@ function RfqListing(props) {
 
     const rejectDetails = (Id, rowData = {}) => {
 
-        setRejectDrawer(true)
+
+        if (selectedRows.length === 0) {
+            setSelectedRows([rowData])
+        }
+
+        console.log(rowData, "rowroweo")
+        setTimeout(() => {
+            setRejectDrawer(true)
+        }, 600);
+
     }
 
 
+    const cancel = () => {
+
+        props.closeDrawer()
+
+    }
+
 
     const sendForApprovalData = (rowData) => {
+
 
 
         let temp = []
@@ -128,13 +145,18 @@ function RfqListing(props) {
             quotationGrid = [rowData]
         }
 
+        console.log(quotationGrid, "quotation")
+
         quotationGrid &&
             quotationGrid.map((id, index) => {
+
 
 
                 if (index !== -1) {
                     let obj = {}
                     // add vendor key here
+                    obj.ApprovalProcessSummaryId = quotationGrid[index].ApprovalProcessSummaryId
+                    obj.ApprovalToken = quotationGrid[index].ApprovalToken
                     obj.typeOfCosting = 1
                     obj.partNo = quotationGrid[index]?.PartNumber
                     obj.plantCode = quotationGrid[index]?.DestinationPlantCode
@@ -396,9 +418,6 @@ function RfqListing(props) {
 
 
 
-
-
-
     const addComparisonDrawerToggle = () => {
 
         let temp = []
@@ -448,6 +467,7 @@ function RfqListing(props) {
             setAddComparisonButton(true)
         } else {
             setAddComparisonButton(false)
+            setTechnologyId(selectedRows[0]?.TechnologyId)
         }
     }
 
@@ -515,6 +535,7 @@ function RfqListing(props) {
                                         <div className="compare-arrows"></div>
                                         Add To Comparison{' '}
                                     </button>
+
                                 </>
                             }
                         </Col>
@@ -570,6 +591,7 @@ function RfqListing(props) {
             }
 
 
+
             {
                 sendForApproval && (
                     <SendForApproval
@@ -578,7 +600,7 @@ function RfqListing(props) {
                         anchor={'right'}
                         isApprovalisting={true}
                         isRfq={true}
-                    // technologyId={technologyId}
+                        technologyId={technologyId}
                     />
                 )
             }
@@ -588,7 +610,7 @@ function RfqListing(props) {
                 <ApproveRejectDrawer
                     type={'Reject'}
                     isOpen={rejectDrawer}
-                    // approvalData={[approvalData]}
+                    approvalData={selectedRows}
                     closeDrawer={closeDrawer}
                     //  tokenNo={approvalNumber}
                     anchor={'right'}
@@ -647,6 +669,8 @@ function RfqListing(props) {
                                 <div className={'save-icon'}></div>
                                 {'Approve'}
                             </button>
+
+
                         </Fragment>
 
                     </div>
