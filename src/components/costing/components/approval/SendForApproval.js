@@ -95,11 +95,14 @@ const SendForApproval = (props) => {
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        if (props?.isRfq) {
+          setIsFinalApproverShow(false)
+        }
         // setIsFinalApproverShow(false)
       }
 
       dispatch(getReasonSelectList((res) => { }))
-      if (!res.data.Data.IsFinalApprovar) {
+      if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
 
         dispatch(getAllApprovalDepartment((res) => {
           const Data = res?.data?.SelectList
@@ -306,53 +309,55 @@ const SendForApproval = (props) => {
 
       viewApprovalData.map((data) => {
 
+
         let tempObj = {}
-        tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-        tempObj.ApprovalToken = 0
+        tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
+        tempObj.ApprovalToken = data.ApprovalToken
         tempObj.ApproverDepartmentId = selectedDepartment.value
         tempObj.ApproverDepartmentName = selectedDepartment.label
         tempObj.ApproverLevelId = !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId
         tempObj.ApproverLevel = !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel
-        tempObj.ApproverId = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
+        tempObj.Approver = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
         tempObj.SenderLevelId = userData.LoggedInLevelId
         tempObj.SenderLevel = userData.LoggedInLevel
         tempObj.SenderId = userData.LoggedInUserId
-        tempObj.SenderRemark = data.remarks
+        // tempObj.SenderRemark = data.remarks
         tempObj.LoggedInUserId = userData.LoggedInUserId
-
         tempObj.ReasonId = data.reasonId
         tempObj.Reason = data.reason
-
-
         tempObj.FinancialYear = financialYear
-        tempObj.OldPOPrice = data.oldPrice
-        tempObj.NewPoPrice = data.revisedPrice
-        tempObj.POCurrency = data.nPOPriceWithCurrency
-        tempObj.CurrencyRate = data.currencyRate
-        tempObj.Variance = data.variance
+        tempObj.OldPOPrice = data.oldPrice ? data.oldPrice : 0
+        tempObj.NewPoPrice = data.revisedPrice ? data.revisedPrice : 0
+        tempObj.POCurrency = data.nPOPriceWithCurrency ? data.nPOPriceWithCurrency : 0
+        tempObj.CurrencyRate = data.currencyRate ? data.currencyRate : 0
+        tempObj.Variance = data.variance ? data.variance : 0
         tempObj.ConsumptionQuantity = data.consumptionQty
         tempObj.RemainingQuantity = data.remainingQty
         tempObj.AnnualImpact = data.annualImpact
         tempObj.ImpactOfTheYear = data.yearImpact
+        tempObj.Remark = getValues("remarks")
+        tempObj.IsApproved = true
 
         temp.push(tempObj)
         return null
       })
 
+
+      console.log(temp, "temp")
       // action
 
       dispatch(approvalRequestByApprove(temp, res => {
 
         if (res?.data?.Result) {
-          if (true) {
+          if (isFinalApproverShow) {
             Toaster.success('The costing has been approved')
 
           } else {
-            // Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-            Toaster.success(true ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+            Toaster.success(isFinalApproverShow ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+
             props.closeDrawer('', 'submit')
           }
         }
@@ -632,7 +637,7 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
-            {console.log(viewApprovalData, "viewApprovalData")}
+            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 

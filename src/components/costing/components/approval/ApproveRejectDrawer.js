@@ -334,6 +334,7 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
+      console.log(approvalData, "approvalDataapprovalData")
       approvalData.map(ele => {
         Data.push({
           ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
