@@ -628,18 +628,6 @@ class AddBOPDomestic extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-    let cbcPlantArray = []
-    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
-      return cbcPlantArray
-    }
-    else {
-      userDetailsBop?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
-
     // if (isEditFlag && this.state.isFinalApprovar) {
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
