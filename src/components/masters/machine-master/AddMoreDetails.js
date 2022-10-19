@@ -822,6 +822,7 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
+
     setTimeout(() => {
       this.calculateDepreciation(date)
     }, 300);
@@ -1500,7 +1501,7 @@ class AddMoreDetails extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
         count++;
       }
-      if (!this.state.UOM.label === HOUR && (fieldsObj.MachineRate === 0 || fieldsObj.MachineRate === undefined)) {
+      if (!(this.state.UOM.label === HOUR) && (checkForNull(fieldsObj.MachineRate) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
         count++;
       }
@@ -1528,7 +1529,7 @@ class AddMoreDetails extends Component {
 
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
-        Toaster.warning('Machine Rate can not be zero or negative')
+        Toaster.warning('Machine Rate cannot be zero or negative')
         return false;
       }
 
@@ -1868,8 +1869,6 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
-
-
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
@@ -1958,6 +1957,7 @@ class AddMoreDetails extends Component {
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      selectedPlants: selectedPlants,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2115,7 +2115,6 @@ class AddMoreDetails extends Component {
         MachineVBCRequest: obj,
 
       }
-
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
@@ -3579,23 +3578,19 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
+                                  {this.state.labourGrid?.length === 0 && <tr>
+                                    <td colSpan={"5"}>
+                                      <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                  </tr>}
                                 </tbody>
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-
                                       <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
-                                {this.state.labourGrid?.length === 0 &&
-                                  <tbody>
-                                    <tr>
-                                      <td colSpan={"5"}>
-                                        <NoContentFound title={EMPTY_DATA} />
-                                      </td>
-                                    </tr>
-                                  </tbody>}
                               </Table>
                             </Col>
                           </div>
@@ -3780,14 +3775,12 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
-                                </tbody>
-                                {this.state.processGrid.length === 0 && <tbody>
                                   <tr>
-                                    <td colSpan={"4"}>
+                                    {this.state.processGrid?.length === 0 && <td colSpan={"6"}>
                                       <NoContentFound title={EMPTY_DATA} />
-                                    </td>
+                                    </td>}
                                   </tr>
-                                </tbody>}
+                                </tbody>
                               </Table>
 
                             </Col>

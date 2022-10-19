@@ -235,10 +235,10 @@ class AddMachineRate extends Component {
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     }, 200);
 
   }
@@ -1759,7 +1759,7 @@ class AddMachineRate extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={'attachment images'}>
-                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                    <a href={fileURL} target="_blank" rel="noreferrer">{f.OriginalFileName}</a>
                                     {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
