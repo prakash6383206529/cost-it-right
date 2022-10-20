@@ -951,7 +951,6 @@ class AddRMImport extends Component {
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return plantArray
@@ -960,7 +959,6 @@ class AddRMImport extends Component {
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
-      return cbcPlantArray
     }
     else {
       userDetailsRM?.Plants.map((item) => {
@@ -1383,7 +1381,7 @@ class AddRMImport extends Component {
 
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId || (costingTypeId === ZBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                          {((costingTypeId === ZBCTypeId) && (
                             <Col md="3">
                               <Field
                                 label="Plant"
@@ -1409,10 +1407,10 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}

@@ -684,8 +684,7 @@ class AddProfit extends Component {
     }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
-      return cbcPlantArray
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     }
     else {
       userDetailsProfit?.Plants.map((item) => {
@@ -979,7 +978,7 @@ class AddProfit extends Component {
                           </Col>)
                         )}
                         {
-                          (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                           <Col md="3">
                             <Field
                               label={'Plant'}
@@ -1002,7 +1001,7 @@ class AddProfit extends Component {
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Client Name"}
+                              label={"Customer Name"}
                               component={searchableSelect}
                               placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
