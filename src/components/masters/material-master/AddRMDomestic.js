@@ -989,7 +989,6 @@ class AddRMDomestic extends Component {
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
-      return cbcPlantArray
     }
     else {
       userDetailsRM?.Plants.map((item) => {
@@ -998,7 +997,6 @@ class AddRMDomestic extends Component {
       })
     }
     let sourceLocationValue = (costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value)
-
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
       let updatedFiles = files.map((file) => {
@@ -1029,7 +1027,6 @@ class AddRMDomestic extends Component {
         VendorPlant: [],
       }
       if (IsFinancialDataChanged) {
-
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateRMDomesticAPI(requestData, (res) => {
             this.setState({ setDisable: false })
@@ -1422,7 +1419,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId || (costingTypeId === ZBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                          {((costingTypeId === ZBCTypeId) && (
                             <Col md="3">
                               <Field
                                 label="Plant"
@@ -1448,10 +1445,10 @@ class AddRMDomestic extends Component {
                             </Col>)
                           )}
                           {
-                            (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}
