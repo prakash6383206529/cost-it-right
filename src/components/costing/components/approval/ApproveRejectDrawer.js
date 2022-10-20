@@ -56,15 +56,16 @@ function ApproveRejectDrawer(props) {
     /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
     if (!isSimulation) {
       dispatch(getAllApprovalDepartment((res) => {
-        const Data = res.data.SelectList
+
+        const Data = res?.data?.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+        setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0]?.Value,
-          TechnologyId: approvalData[0]?.TechnologyId,
+          DepartmentId: departObj && departObj[0]?.Value,
+          TechnologyId: approvalData && approvalData[0]?.TechnologyId,
           ReasonId: reasonId
         }
 
@@ -322,6 +323,7 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
+      console.log(approvalData, "approvalDataapprovalData")
       approvalData.map(ele => {
         Data.push({
           ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,

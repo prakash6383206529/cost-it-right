@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -29,6 +29,7 @@ function AddRfq(props) {
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm();
 
+    const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
@@ -56,7 +57,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
+    // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
 
     useEffect(() => {
@@ -83,6 +84,20 @@ function AddRfq(props) {
             setIsEditFlag(true)
             setIsViewFlag(props?.data?.isViewFlag)
             dispatch(getQuotationById(props?.data?.Id, (res) => {
+
+
+                if (res?.data?.Data) {
+                    let data = res?.data?.Data
+                    setValue("technology", {
+                        label: data.TechnologyName, value: data.TechnologyId
+                    })
+                    setValue("plant", {
+                        label: data.PlantName, value: data.PlantId
+                    })
+                    setPartList(data.PartList)
+                    setVendorList(data.VendorList)
+                    setValue("remark", data.Remark)
+                }
 
             })
             )
@@ -275,7 +290,7 @@ function AddRfq(props) {
 
         if (label === 'plant') {
             plantList && plantList.map((item) => {
-                if (item.PlantId === '0') return false
+                if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
                 return null
             })
@@ -394,8 +409,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && < button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -404,8 +419,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -523,6 +538,16 @@ function AddRfq(props) {
         }
     }
 
+
+    const handleVendorChange = (data) => {
+
+        dispatch(getContactPerson(data.value, (res) => {
+            setGetReporterListDropDown(res?.data?.SelectList)
+        }))
+
+
+
+    }
 
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
@@ -712,8 +737,8 @@ function AddRfq(props) {
                                         defaultValue={vendor.length !== 0 ? vendor : ""}
                                         options={renderListing("vendor")}
                                         mandatory={true}
-                                        // handleChange={handleVendorChange}
-                                        handleChange={() => { }}
+                                        handleChange={handleVendorChange}
+                                        // handleChange={() => { }}
                                         errors={errors.Vendor}
                                         isLoading={VendorLoaderObj}
                                         disabled={isViewFlag}
@@ -735,7 +760,7 @@ function AddRfq(props) {
                                         mandatory={true}
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
-                                        errors={errors.DestinationPlant}
+                                        errors={errors.contactPerson}
                                         disabled={isViewFlag}
                                         isLoading={plantLoaderObj}
                                     />

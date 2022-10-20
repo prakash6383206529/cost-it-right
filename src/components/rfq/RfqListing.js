@@ -15,6 +15,7 @@ import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
+import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 const gridOptions = {};
 
@@ -31,6 +32,8 @@ function RfqListing(props) {
     const [rowData, setRowData] = useState([])
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
+    const [viewRfq, setViewRfq] = useState(false)
+    const [viewRfqData, setViewRfqData] = useState("")
 
 
     useEffect(() => {
@@ -44,6 +47,7 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         dispatch(getQuotationList((res) => {
+
             setRowData(res?.data?.DataList)
         }))
     }
@@ -117,7 +121,6 @@ function RfqListing(props) {
                 {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {<button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
-                {<button title='Reminder' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
             </>
         )
     };
@@ -131,6 +134,12 @@ function RfqListing(props) {
     const closeDrawer = () => {
         setAddRfqData({})
         setAddRfq(false)
+        getDataList()
+
+    }
+
+    const closeDrawerViewRfq = () => {
+        setViewRfq(false)
         getDataList()
 
     }
@@ -168,6 +177,34 @@ function RfqListing(props) {
 
     }
 
+    const linkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return (
+            <>
+                <div
+                    onClick={() => viewDetails(row.QuotationId)}
+                    className={'link'}
+                >{cell}</div>
+            </>
+        )
+    }
+
+
+
+    const viewDetails = (UserId) => {
+
+        setViewRfqData(UserId)
+        setViewRfq(true)
+        // this.setState({
+        //     UserId: UserId,
+        //     isOpen: true,
+        // })
+
+    }
+
 
     const defaultColDef = {
         resizable: true,
@@ -175,19 +212,19 @@ function RfqListing(props) {
         sortable: true,
         headerCheckboxSelection: true ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
-        checkboxSelection: isFirstColumn
+        checkboxSelection: isFirstColumn,
     };
 
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-
+        linkableFormatter: linkableFormatter
     }
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                 <>
 
                     <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
@@ -246,9 +283,9 @@ function RfqListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         rowSelection={'multiple'}
-                                        suppressRowClickSelection={true}
+                                    // suppressRowClickSelection={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="QuotationId" headerName='RFQ Id' ></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
                                         <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
@@ -268,7 +305,8 @@ function RfqListing(props) {
                             </div>
                         </Col>
                     </Row>
-                </>
+
+                </>)
             }
 
             {addRfq &&
@@ -286,6 +324,18 @@ function RfqListing(props) {
                 />
 
             }
+
+
+            {viewRfq &&
+
+                <ViewRfq
+                    data={viewRfqData}
+                    isOpen={viewRfq}
+                    closeDrawer={closeDrawerViewRfq}
+                />
+
+            }
+
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

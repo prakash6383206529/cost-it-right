@@ -320,7 +320,6 @@ const CostingSummaryTable = (props) => {
   *
   */
   const editHandler = (index) => {
-    console.log('viewCostingData: ', viewCostingData);
     const editObject = {
       plantId: viewCostingData[index]?.plantId,
       plantName: viewCostingData[index]?.plantName,
@@ -356,7 +355,6 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    console.log('tempData: ', tempData);
     const type = viewCostingData[index]?.costingTypeId
 
     const Data = {
@@ -932,7 +930,7 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
@@ -979,7 +977,7 @@ const CostingSummaryTable = (props) => {
                   </button>
                   {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
                 </>}
-            </Col>
+            </Col>}
           </Row>
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
@@ -1084,7 +1082,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
                                     <span className="d-block">{data?.RevisionNumber}</span>
-                                    <span className="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
+                                    <span className="d-block">{data.costingTypeId === ZBCTypeId || data.costingTypeId === CBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
                                   </td>
                                 )
                               })}

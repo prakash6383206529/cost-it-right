@@ -1010,13 +1010,6 @@ class AddMachineRate extends Component {
         return false
       }
     }
-    let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetailsMachine?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
 
     this.setState({ isVendorNameNotSelected: false })
 
