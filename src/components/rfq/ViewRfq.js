@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
+import { DRAFT, EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -119,7 +119,7 @@ function RfqListing(props) {
             setSelectedRows([rowData])
         }
 
-        console.log(rowData, "rowroweo")
+
         setTimeout(() => {
             setRejectDrawer(true)
         }, 600);
@@ -148,7 +148,7 @@ function RfqListing(props) {
             quotationGrid = [rowData]
         }
 
-        console.log(quotationGrid, "quotation")
+
 
         quotationGrid &&
             quotationGrid.map((id, index) => {
@@ -347,12 +347,27 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
+        let showActionIcons = false
+        let showReminderIcon = false
+
+        if (rowData.Status === DRAFT) {
+
+            if (rowData.CostingNumber !== null) {
+                showActionIcons = true
+
+            } else {
+                showReminderIcon = true
+            }
+        }
+
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
-                {<button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
-                {<button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {<button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className='history-remark'></div></button>}
+                {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
+                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
+                {showActionIcons && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
+                {showReminderIcon && <button title='Reminder: 5' className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className="reminder"><div className="count">5</div></div></button>}
+
             </>
         )
     };
@@ -374,7 +389,7 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -497,7 +512,8 @@ function RfqListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+        <>
+        <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
 
@@ -651,8 +667,9 @@ function RfqListing(props) {
                     )}
                 </div>
             }
-
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+           
+        </div >
+        <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                     <Fragment>
                         <button
@@ -680,17 +697,13 @@ function RfqListing(props) {
                         </>}
 
                     </Fragment >
-
                 </div >
             </Row >
-
-
-
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
 
-        </div >
+        </>
     );
 }
 
