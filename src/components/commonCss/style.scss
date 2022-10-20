@@ -8473,6 +8473,9 @@ padding-bottom: 3px;
 }
 .min-height100vh {
    min-height: calc(100vh - 270px);
+   &.min-height100vh {
+    min-height: calc(100vh - 255px);
+   }
 }
 
  .ag-cell-inline-editing {
