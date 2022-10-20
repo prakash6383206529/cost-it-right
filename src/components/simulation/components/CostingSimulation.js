@@ -1362,6 +1362,10 @@ function CostingSimulation(props) {
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
 
+                                                    <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact for Quarter(INR)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Budgeted Price Impact/Quarter' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Budgeted Price Variance' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>}
