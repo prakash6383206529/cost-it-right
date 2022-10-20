@@ -5,7 +5,7 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
@@ -82,13 +82,11 @@ function PaymentTerms(props) {
             const reqParams = {
                 VendorId: costData?.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
                 costingTypeId: costData.CostingTypeId,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-                customerId: costData.CustomerId,
-                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId)) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-
                 if (res && res.data && res.data.Result) {
                     let Data = res.data.Data;
                     setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
