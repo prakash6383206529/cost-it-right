@@ -6,7 +6,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
@@ -65,6 +65,7 @@ function Icc(props) {
                 vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 isVendor: costData.IsVendor,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
