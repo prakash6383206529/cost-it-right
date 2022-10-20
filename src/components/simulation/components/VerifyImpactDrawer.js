@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col } from 'reactstrap'
+import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
 import { useDispatch, useSelector } from 'react-redux';
@@ -101,38 +101,34 @@ function VerifyImpactDrawer(props) {
 
               {!costingDrawer && <Row >
                 <Col md="12">
-                  <div className="border impact-drawer-header">
-                    <span class=" mr-2">
-                      <span class="grey-text d-block">Vendor :</span>
-                      <span>{amendmentDetails.Vendor}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Technology:</span>
-                      <span>{amendmentDetails.Technology}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Master:</span>
-                      <span>{amendmentDetails.SimulationAppliedOn}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Costing Head:</span>
-                      <span>{amendmentDetails.CostingHead}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Effective Date:</span>
-                      <span>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Impact for Quarter(INR):</span>
-                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</span>
-                    </span>
-
-                  </div>
+                  <Table responsive className="border impact-drawer-table sub-table">
+                    <tbody>
+                      <tr>
+                        <th>Vendor:</th>
+                        <th>Technology:</th>
+                        <th>Master:</th>
+                        <th>Costing Head:</th>
+                        <th>Effective Date:</th>
+                        <th>Impact for Quarter(INR):</th>
+                        <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                        <th>Total Budget Price(INR):</th>
+                        <th>Total Budgeted Price Variance(INR):</th>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr>
+                        <td>{amendmentDetails.Vendor}</td>
+                        <td>{amendmentDetails.Technology}</td>
+                        <td>{amendmentDetails.SimulationAppliedOn}</td>
+                        <td>{amendmentDetails.CostingHead}</td>
+                        <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
+                        <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{amendmentDetails.totalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{amendmentDetails.totalBudgetedPrice === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPrice, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{amendmentDetails.totalBudgetedPriceVariance === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceVariance, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
                 </Col>
               </Row>}
 

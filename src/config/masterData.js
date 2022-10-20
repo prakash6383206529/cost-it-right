@@ -877,6 +877,7 @@ export const VOLUME_BUDGETED_ZBC = [
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
+    { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //*
 ]
 
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
@@ -887,6 +888,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 10,
+        'BudgetedPrice': 200,
     }
 ]
 
@@ -902,6 +904,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
+    { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //*
 ]
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
@@ -914,6 +917,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
+        'BudgetedPrice': 200,
     }
 ]
 
@@ -2442,6 +2446,9 @@ export const CostingSimulationDownloadRM = [
     { label: "RM Variance", value: "RMCVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2500,6 +2507,9 @@ export const CostingSimulationDownloadST = [
     { label: "STVariance", value: "STVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2557,6 +2567,9 @@ export const CostingSimulationDownloadOperation = [
     { label: "OperationCostVariance", value: "OperationCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2614,6 +2627,9 @@ export const CostingSimulationDownloadBOP = [
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2714,6 +2730,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "PO Variance", value: "POVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
 ]
 
@@ -2739,6 +2758,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "PO Variance", value: "POVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
 ]
 
@@ -3031,6 +3053,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Part Name", value: "PartName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
+    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE 
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
@@ -3391,6 +3414,9 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "PO Price", value: "OldPOPrice" },
     { label: "Variance", value: "Variance" },
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
 
 export const CostingSimulationDownloadMR = [
@@ -3416,6 +3442,9 @@ export const CostingSimulationDownloadMR = [
     { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -3473,6 +3502,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "PO Variance", value: "POVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
 ]
 
