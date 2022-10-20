@@ -111,8 +111,6 @@ function VerifyImpactDrawer(props) {
                         <th>Effective Date:</th>
                         <th>Impact for Quarter(INR):</th>
                         <th>Total Budgeted Price Impact/Quarter(INR):</th>
-                        <th>Total Budget Price(INR):</th>
-                        <th>Total Budgeted Price Variance(INR):</th>
                       </tr>
                     </tbody>
                     <tbody>
@@ -124,8 +122,6 @@ function VerifyImpactDrawer(props) {
                         <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
                         <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                         <td>{amendmentDetails.totalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{amendmentDetails.totalBudgetedPrice === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPrice, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{amendmentDetails.totalBudgetedPriceVariance === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceVariance, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       </tr>
                     </tbody>
                   </Table>
