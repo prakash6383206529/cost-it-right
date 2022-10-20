@@ -59,10 +59,15 @@ function Insights(props) {
                 RawMaterialName: item.RawMaterial,
                 TechnologyId: item.TechnologyId
             })
-
+            return arr
         })
+        let data = {
+            FromDate: '',
+            ToDate: '',
+            RMCostBenchMarkingReports: arr
+        }
 
-        dispatch(getCostingBenchMarkRmReport(arr, () => { }))
+        dispatch(getCostingBenchMarkRmReport(data, () => { }))
 
     }, [])
 

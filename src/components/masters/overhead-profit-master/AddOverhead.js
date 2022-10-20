@@ -698,7 +698,6 @@ class AddOverhead extends Component {
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
@@ -706,8 +705,7 @@ class AddOverhead extends Component {
     }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '', })
-      return cbcPlantArray
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     }
     else {
       userDetailsOverhead?.Plants.map((item) => {
@@ -1001,7 +999,7 @@ class AddOverhead extends Component {
                           </Col>)
                         )}
                         {
-                          (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                           <Col md="3">
                             <Field
                               label={'Plant'}
