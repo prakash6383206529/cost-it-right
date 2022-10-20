@@ -1549,6 +1549,7 @@ $roboto: "Roboto",
 }
 
 .MuiDrawer-root.MuiDrawer-modal {
+  z-index: 1000 !important;
   .MuiBackdrop-root {
     max-height: 100vh;
   }
