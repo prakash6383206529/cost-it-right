@@ -2349,7 +2349,7 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.CustomerName ? `${item.CustomerName}` : '-'}</td>
+                                      <td>{item.CustomerName ? `${item.CustomerName}(${item.CustomerCode})` : '-'}</td>
                                       {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
