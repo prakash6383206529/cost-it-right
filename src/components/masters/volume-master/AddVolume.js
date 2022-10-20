@@ -803,7 +803,7 @@ class AddVolume extends Component {
                         </Row>
 
                         <Row>
-                          {((costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                          {(costingTypeId === ZBCTypeId && (
                             <Col md="3">
                               <Field
                                 name="Plant"
@@ -859,10 +859,10 @@ class AddVolume extends Component {
 
                           )}
                           {
-                            costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 // selection={
