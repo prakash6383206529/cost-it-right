@@ -121,6 +121,7 @@ function RfqListing(props) {
                 {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {<button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {<button title='Reminder: 5' className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className="reminder"><div className="count">5</div></div></button>}
             </>
         )
     };
