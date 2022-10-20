@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col, Label } from 'reactstrap'
-import { required } from '../../../helper/validation'
-import { searchableSelect } from '../../layout/FormInputs'
+import { positiveAndDecimalNumber, required } from '../../../helper/validation'
+import { searchableSelect, renderNumberInputField } from '../../layout/FormInputs'
 // import { getVendorListByVendorType } from '../actions/Material'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -408,6 +408,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+          console.log(Data, "Data");
           this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
@@ -945,6 +946,21 @@ class AddVolume extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
+                          {/* <Col md="3">
+                            <Field
+                              label={`Budgeted Price`}
+                              name={" BudgetedPrice"}
+                              type="text"
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              validate={[required, positiveAndDecimalNumber]}
+                              component={renderNumberInputField}
+                              required={true}
+                              disabled={false}
+                              onChange={this.handleRateChange}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>  UNCOMMENT WHEN CODE DEPLYED FROM BACKEND*/}
                         </Row>
 
                         <Row>
