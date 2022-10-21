@@ -142,7 +142,7 @@ function SurfaceTreatmentCost(props) {
       let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
       console.log('operationGridData.SurfaceArea: ', operationGridData);
       if (operationGridData.SurfaceArea === '0') {
-        Toaster.warning('number should not be zero')
+        Toaster.warning('Number should not be zero')
         return false
       }
       if (!isValid) {

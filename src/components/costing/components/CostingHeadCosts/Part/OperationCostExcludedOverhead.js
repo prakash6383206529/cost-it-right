@@ -177,7 +177,7 @@ function OperationCostExcludedOverhead(props) {
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.Quantity));
       if (operationGridData.Quantity === '0') {
-        Toaster.warning('number should not be zero')
+        Toaster.warning('Number should not be zero')
         return false
       }
       if (!isValid) {
