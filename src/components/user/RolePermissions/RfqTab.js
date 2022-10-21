@@ -231,7 +231,7 @@ class AuditTab extends Component {
         return (
 
             <div>
-                {console.log(actionSelectList, "actionSelectList", this.state.Modules)}
+                { }
                 <div className="row form-group grant-user-grid">
                     <div className="col-md-12">
                         <Table className="table table-bordered" size="sm">

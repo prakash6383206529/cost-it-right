@@ -54,9 +54,9 @@ export function createRfqQuotation(data, callback) {
 }
 
 export function cancelRfqQuotation(id, callback) {
-
+    let data = { QuotationId: id }
     return (dispatch) => {
-        const request = axios.post(`${API.cancelRfqQuotation}?quotationId=${id}`, config());
+        const request = axios.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -230,5 +230,22 @@ export function getCommunicationHistory(id, callback) {
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
             });
+    };
+}
+
+
+
+export function checkExistCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkExistCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
     };
 }
