@@ -218,3 +218,17 @@ export function getMultipleCostingDetails(selectedRows, callback) {
             })
     }
 }
+
+
+
+export function getCommunicationHistory(id, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
