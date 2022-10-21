@@ -1754,6 +1754,10 @@ export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
 export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
 export const COMBINED_PROCESS_NAME = 'Combined Process';
+export const ZBC_COSTING = 'Costing - ZBC';
+export const VBC_COSTING = 'Costing - VBC';
+export const CBC_COSTING = 'Costing - CBC';
+export const NCC_COSTING = 'Costing - NBC';
 
 export const USER = 'User'
 export const ROLE = 'Role'
