@@ -51,32 +51,6 @@ function RemarkHistoryDrawer(props) {
 
                     let obj = new Message({
                         id: 1,
-                        message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,
-                    })
-
-                    temp.push(obj)
-                })
-                setMessages(temp)
-            }
-        })
-        )
-
-    }, [])
-
-
-
-    useEffect(() => {
-        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(getReporterList(() => { }))
-        dispatch(getCommunicationHistory(props.data.CostingId, (res) => {
-
-            if (res && res.data) {
-                let temp = []
-                let responseMessageArray = res?.data?.DataList
-                responseMessageArray && responseMessageArray.map((item) => {
-
-                    let obj = new Message({
-                        id: 1,
                         message: `(${item.SenderName}) : ${item.Message}`,
                     })
 
