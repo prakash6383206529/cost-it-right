@@ -235,6 +235,10 @@ function BOPCost(props) {
     if (bopGridData.BoughtOutPartUOM === 'Number') {
 
       let isValid = Number.isInteger(bopGridData.Quantity);
+      if (bopGridData.Quantity === 0) {
+        Toaster.warning('number should not be zero')
+        return false
+      }
       if (!isValid) {
         Toaster.warning('Please enter numeric value')
         setTimeout(() => {
@@ -493,10 +497,6 @@ function BOPCost(props) {
                                         mandatory={false}
                                         rules={{
                                           //required: true,
-                                          pattern: {
-                                            value: /^[1-9]\d*$/,
-                                            message: 'Invalid Number.'
-                                          },
                                         }}
                                         defaultValue={item.Quantity}
                                         className=""

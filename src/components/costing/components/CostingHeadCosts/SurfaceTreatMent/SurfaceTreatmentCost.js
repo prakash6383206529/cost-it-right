@@ -19,7 +19,7 @@ function SurfaceTreatmentCost(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-  const { register, control, formState: { errors } } = useForm({
+  const { register, control, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -55,7 +55,6 @@ function SurfaceTreatmentCost(props) {
     // }, 100)
     selectedIds(gridData)
   }, [gridData]);
-
 
   // useEffect(() => {
   //   if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
@@ -141,6 +140,22 @@ function SurfaceTreatmentCost(props) {
   }
 
   const SaveItem = (index) => {
+    let operationGridData = gridData[index]
+    if (operationGridData.UOM === 'Number') {
+      let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
+      console.log('operationGridData.SurfaceArea: ', operationGridData);
+      if (operationGridData.SurfaceArea === '0') {
+        Toaster.warning('number should not be zero')
+        return false
+      }
+      if (!isValid) {
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${OperationGridFields}[${index}].SurfaceArea`, '')
+        }, 200)
+        return false
+      }
+    }
     setEditIndex('')
   }
 
@@ -246,8 +261,6 @@ function SurfaceTreatmentCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.'
                                     },
                                   }}
                                   defaultValue={item.SurfaceArea}
