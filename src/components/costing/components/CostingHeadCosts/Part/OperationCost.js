@@ -177,6 +177,10 @@ function OperationCost(props) {
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.Quantity));
+      if (operationGridData.Quantity === '0') {
+        Toaster.warning('number should not be zero')
+        return false
+      }
       if (!isValid) {
         Toaster.warning('Please enter numeric value')
         setTimeout(() => {
@@ -325,14 +329,6 @@ function OperationCost(props) {
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.'
-                                    },
-                                  }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder hide-label-inside mb-0'}
@@ -360,14 +356,7 @@ function OperationCost(props) {
                                       control={control}
                                       register={register}
                                       mandatory={false}
-                                      rules={{
-                                        //required: true,
-                                        pattern: {
-                                          //value: /^[0-9]*$/i,
-                                          value: /^\d*\.?\d*$/,
-                                          message: 'Invalid Number.'
-                                        },
-                                      }}
+
                                       defaultValue={item.LabourQuantity}
                                       className=""
                                       customClassName={'withBorder hide-label-inside mb-0'}
