@@ -176,6 +176,10 @@ function OperationCostExcludedOverhead(props) {
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.Quantity));
+      if (operationGridData.Quantity === '0') {
+        Toaster.warning('number should not be zero')
+        return false
+      }
       if (!isValid) {
         Toaster.warning('Please enter numeric value')
         setTimeout(() => {
@@ -335,7 +339,7 @@ function OperationCostExcludedOverhead(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
+                                      value: item.UOM === "Number" ? '' : /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}
@@ -368,11 +372,6 @@ function OperationCostExcludedOverhead(props) {
                                       mandatory={false}
                                       rules={{
                                         //required: true,
-                                        pattern: {
-                                          //value: /^[0-9]*$/i,
-                                          value: /^\d*\.?\d*$/,
-                                          message: 'Invalid Number.'
-                                        },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
