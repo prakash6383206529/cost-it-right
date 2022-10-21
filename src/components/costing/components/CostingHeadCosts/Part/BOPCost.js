@@ -236,7 +236,7 @@ function BOPCost(props) {
 
       let isValid = Number.isInteger(bopGridData.Quantity);
       if (bopGridData.Quantity === 0) {
-        Toaster.warning('number should not be zero')
+        Toaster.warning('Number should not be zero')
         return false
       }
       if (!isValid) {
