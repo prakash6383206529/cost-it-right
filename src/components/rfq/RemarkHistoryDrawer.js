@@ -58,7 +58,7 @@ function RemarkHistoryDrawer(props) {
 
                     let obj = new Message({
                         id: 1,
-                        message: `(${item.SenderName}) : ${item.Message}`,
+                        message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,
                     })
 
                     temp.push(obj)
@@ -69,8 +69,6 @@ function RemarkHistoryDrawer(props) {
         )
 
     }, [])
-
-
 
 
     const closePopUp = () => {
@@ -103,7 +101,7 @@ function RemarkHistoryDrawer(props) {
                 className='rfq-container-drawer'
             >
                 <Container>
-                    <div className={`drawer-wrapper drawer-700px`}>
+                    <div className={`drawer-wrapper drawer-700px min-320`}>
                         <Row className="drawer-heading">
                             <Col className='pl-0'>
                                 <div className={"header-wrapper d-flex justify-content-between right"}>
@@ -116,16 +114,6 @@ function RemarkHistoryDrawer(props) {
 
                             </Col>
                         </Row>
-
-
-
-                        {/* <BubbleGroup
-                            messages={messages}
-                            id={1}
-                            showSenderName={true}
-                        //chatBubble={MyChatBubble}
-                        /> */}
-
                         <ChatFeed
                             messages={messages} // Array: list of message objects
                             // isTyping={true} // Boolean: is the recipient typing
@@ -134,45 +122,7 @@ function RemarkHistoryDrawer(props) {
                             bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
                             chatBubble={false}
                             sendorName={"ashok"}
-                        //JSON: Custom bubble styles
-                        // chatBubble={custom}
-                        // bubbleStyles={
-                        //     {
-                        //         text: {
-                        //             fontSize: 30
-                        //         },
-                        //         chatbubble: {
-                        //             borderRadius: 70,
-                        //             padding: 40
-                        //         }
-                        //     }
-                        // }
                         />
-
-
-
-
-
-
-
-                        < Row className="justify-content-between">
-                            <div className="col-sm-12 text-right">
-                                <button
-                                    type={"button"}
-                                    className="reset mr15 cancel-btn"
-                                    onClick={cancel}
-                                >
-                                    <div className={"cancel-icon"}></div>
-                                    {"Cancel"}
-                                </button>
-
-                                {/* <button type="submit" className="submit-button save-btn"
-                                        disabled={isViewFlag}>
-                                        <div className={"save-icon"}></div>
-                                        {"Send"}
-                                    </button> */}
-                            </div>
-                        </Row>
                     </div>
                 </Container >
             </Drawer >
