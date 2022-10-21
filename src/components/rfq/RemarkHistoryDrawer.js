@@ -45,24 +45,6 @@ function RemarkHistoryDrawer(props) {
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
 
-    useEffect(() => {
-
-
-        setVendorInputLoader(true)
-        const { vbcVendorGrid } = props;
-        dispatch(getVendorWithVendorCodeSelectList(() => {
-            setVendorInputLoader(false)
-        }))
-        dispatch(fetchPlantDataAPI(() => { }))
-        let tempArr = [];
-        vbcVendorGrid && vbcVendorGrid.map(el => {
-            tempArr.push(el.VendorId)
-            return null;
-        })
-        initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
-    }, []);
-
-
 
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
