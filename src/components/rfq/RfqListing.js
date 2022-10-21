@@ -86,11 +86,6 @@ function RfqListing(props) {
     }
 
 
-    const sendReminder = (data) => {
-        dispatch(sendReminderForQuotation(data, (res) => { }))
-
-    }
-
 
     /**
     * @method confirmDelete
@@ -114,14 +109,12 @@ function RfqListing(props) {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
+        let isActive = rowData?.IsActive
         return (
             <>
-                {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {<button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
-                {<button title='Reminder: 5' className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className="reminder"><div className="count">5</div></div></button>}
+                {isActive && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isActive && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isActive && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
