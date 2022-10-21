@@ -1000,6 +1000,7 @@ export const API = {
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`,
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
+  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`
 }
 
 //Api constants

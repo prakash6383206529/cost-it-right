@@ -308,8 +308,18 @@ function RfqListing(props) {
     }
 
 
-    const sendReminder = (data) => {
-        dispatch(sendReminderForQuotation(data, (res) => { }))
+    const sendReminder = (id, rowData) => {
+
+        let data = {
+            quotationId: rowData?.QuotationId,
+            vendorId: rowData?.VendorId
+        }
+        dispatch(sendReminderForQuotation(data, (res) => {
+
+            if (res) {
+                getDataList()
+            }
+        }))
 
     }
 
@@ -350,7 +360,9 @@ function RfqListing(props) {
         let showActionIcons = false
         let showReminderIcon = false
 
-        if (rowData.Status === DRAFT) {
+
+
+        if (rowData.CostingStatus === DRAFT) {
 
             if (rowData.CostingNumber !== null) {
                 showActionIcons = true
@@ -359,14 +371,15 @@ function RfqListing(props) {
                 showReminderIcon = true
             }
         }
+        let reminderCount = rowData?.RemainderCount
 
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
                 {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {true && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }} />}
-                {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className="reminder"><div className="count">`${reminderCount}`</div></div></button>}
+                {showActionIcons && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }} />}
+                {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
 
             </>
         )

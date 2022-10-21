@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -437,36 +437,57 @@ function AddRfq(props) {
 
     const addRowVendorTable = () => {
 
-        let obj = {}
-        obj.VendorId = getValues('vendor')?.value
-        obj.ContactPersonId = getValues('contactPerson')?.value
-        obj.Vendor = getValues('vendor')?.label
-        obj.ContactPerson = getValues('contactPerson')?.label
+        let data = {}
+        let temp = []
+        partList && partList.map((item) => {
+            temp.push(item.PartId)
+        })
 
-        if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
+        data.PartIdList = temp
+        data.PlantId = getValues('plant')?.value
+        data.VendorId = getValues('vendor')?.value
 
-            Toaster.warning("Please fill all the mandatory fields first.")
-            return false;
-        }
+        dispatch(checkExistCosting(data, (res) => {
 
-        let arr = [...vendorList, obj]
+            if (res?.data?.DynamicData?.IsExist) {
+                Toaster.warning("Costing already exists for this vendor.")
+                return false
+            } else {
 
-        if (updateButtonVendorTable) {
-            arr = []
-            vendorList && vendorList.map((item) => {
-                if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
-                    return false
-                } else {
-                    arr.push(item)
+                let obj = {}
+                obj.VendorId = getValues('vendor')?.value
+                obj.ContactPersonId = getValues('contactPerson')?.value
+                obj.Vendor = getValues('vendor')?.label
+                obj.ContactPerson = getValues('contactPerson')?.label
+
+                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
+
+                    Toaster.warning("Please fill all the mandatory fields first.")
+                    return false;
                 }
-            })
-            arr.push(obj)
-        }
 
-        setVendorList(arr)
-        setValue('vendor', "")
-        setValue('contactPerson', "")
-        setUpdateButtonVendorTable(false)
+                let arr = [...vendorList, obj]
+
+                if (updateButtonVendorTable) {
+                    arr = []
+                    vendorList && vendorList.map((item) => {
+                        if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
+                            return false
+                        } else {
+                            arr.push(item)
+                        }
+                    })
+                    arr.push(obj)
+                }
+
+                setVendorList(arr)
+                setValue('vendor', "")
+                setValue('contactPerson', "")
+                setUpdateButtonVendorTable(false)
+
+            }
+
+        }))
 
     }
 
@@ -523,9 +544,9 @@ function AddRfq(props) {
 
 
     /**
- * @method handleTechnologyChange
- * @description  USED TO HANDLE TECHNOLOGY CHANGE
- */
+    * @method handleTechnologyChange
+    * @description  USED TO HANDLE TECHNOLOGY CHANGE
+    */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
             setInputLoader(true)
@@ -741,7 +762,7 @@ function AddRfq(props) {
                                         // handleChange={() => { }}
                                         errors={errors.Vendor}
                                         isLoading={VendorLoaderObj}
-                                        disabled={isViewFlag}
+                                        disabled={isViewFlag || partList.length === 0}
                                     />
                                 </Col>
 
