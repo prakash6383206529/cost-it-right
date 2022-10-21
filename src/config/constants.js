@@ -974,6 +974,7 @@ export const API = {
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`,
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
+  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`
 }
 
 //Api constants
@@ -2029,4 +2030,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.590";
+export const VERSION = "V1.2.591";
