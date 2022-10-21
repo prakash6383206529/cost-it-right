@@ -26,6 +26,7 @@ import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { load } from 'dotenv';
 import { Fragment } from 'react';
 import { Link } from 'react-scroll';
+import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 const gridOptions = {};
 
 
@@ -50,6 +51,9 @@ function RfqListing(props) {
     const [addComparisonToggle, setaddComparisonToggle] = useState(false)
     const [addComparisonButton, setAddComparisonButton] = useState(true)
     const [technologyId, setTechnologyId] = useState("")
+    const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
+    const [reminderCount, setReminderCount] = useState(0)
+    const [remarkRowData, setRemarkRowData] = useState([])
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -294,12 +298,6 @@ function RfqListing(props) {
 
 
 
-
-
-
-
-
-
     const cancelItem = (id) => {
         dispatch(cancelRfqQuotation(id, (res) => {
             if (res.status === 200) {
@@ -312,6 +310,16 @@ function RfqListing(props) {
 
     const sendReminder = (data) => {
         dispatch(sendReminderForQuotation(data, (res) => { }))
+
+    }
+
+
+    const getRemarkHistory = (cell, rowData) => {
+        setRemarkRowData(rowData)
+
+        setTimeout(() => {
+            setRemarkHistoryDrawer(true)
+        }, 500);
 
     }
 
@@ -357,8 +365,8 @@ function RfqListing(props) {
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
                 {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {showActionIcons && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
-                {showReminderIcon && <button title='Reminder' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
+                {true && <button title='Remark History' className="View mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }} />}
+                {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }}><div className="reminder"><div className="count">`${reminderCount}`</div></div></button>}
 
             </>
         )
@@ -376,6 +384,11 @@ function RfqListing(props) {
         setRejectDrawer(false)
         getDataList()
 
+    }
+
+    const closeRemarkDrawer = () => {
+
+        setRemarkHistoryDrawer(false)
     }
 
 
@@ -482,6 +495,9 @@ function RfqListing(props) {
     }
 
 
+    const isRowSelectable = rowNode => rowNode.data ? (rowNode?.data?.CostingId !== null) : false;
+
+
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -504,161 +520,179 @@ function RfqListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
-                <>
+        <>
+            <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+                    <>
 
-                    <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-                        <Col md="3" lg="3" className='mb-2'>
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                            {
-                                // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                (!props.isMasterSummaryDrawer) &&
-                                <>
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <>
+                        <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                            <Col md="3" lg="3" className='mb-2'>
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                            </Col>
+                            <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                                {
+                                    // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                                    (!props.isMasterSummaryDrawer) &&
+                                    <>
+                                        <div className="d-flex justify-content-end bd-highlight w100">
+                                            <>
 
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+
+                                            </>
+                                        </div>
+
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
+                                        <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={formToggle}
-                                                title="Add"
+                                                className={'user-btn mb-2 comparison-btn ml-2'}
+                                                disabled={addComparisonButton}
+                                                onClick={addComparisonDrawerToggle}
                                             >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
+                                                <div className="compare-arrows"></div>Compare</button>
+                                        </Link>
+                                    </>
+                                }
+                            </Col>
 
-                                        </>
-                                    </div>
-
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                    <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
-                                        <button
-                                            type="button"
-                                            className={'user-btn mb-2 comparison-btn ml-2'}
-                                            disabled={addComparisonButton}
-                                            onClick={addComparisonDrawerToggle}
+                        </Row>
+                        <Row>
+                            <Col>
+                                <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                                    <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
+                                    <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                        <AgGridReact
+                                            style={{ height: '100%', width: '100%' }}
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
+                                            rowData={rowData}
+                                            pagination={true}
+                                            paginationPageSize={10}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: 'imagClass'
+                                            }}
+                                            frameworkComponents={frameworkComponents}
+                                            rowSelection={'multiple'}
+                                            onRowSelected={onRowSelect}
+                                            isRowSelectable={isRowSelectable}
+                                        // suppressRowClickSelection={true}
                                         >
-                                            <div className="compare-arrows"></div>Compare</button>
-                                    </Link>
-                                </>
-                            }
-                        </Col>
+                                            <AgGridColumn cellClass="has-checkbox" field="PartNumber" headerName='Part No'  ></AgGridColumn>
+                                            <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
+                                            <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
+                                            {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
+                                            <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                            <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
+                                            <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO"></AgGridColumn>
+                                            {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
-                    </Row>
-                    <Row>
-                        <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
-                                <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                    <AgGridReact
-                                        style={{ height: '100%', width: '100%' }}
-                                        defaultColDef={defaultColDef}
-                                        floatingFilter={true}
-                                        domLayout='autoHeight'
-                                        rowData={rowData}
-                                        pagination={true}
-                                        paginationPageSize={10}
-                                        onGridReady={onGridReady}
-                                        gridOptions={gridOptions}
-                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                        noRowsOverlayComponentParams={{
-                                            title: EMPTY_DATA,
-                                            imagClass: 'imagClass'
-                                        }}
-                                        frameworkComponents={frameworkComponents}
-                                        rowSelection={'multiple'}
-                                        onRowSelected={onRowSelect}
-                                    // suppressRowClickSelection={true}
-                                    >
-                                        <AgGridColumn cellClass="has-checkbox" field="PartNumber" headerName='Part No'  ></AgGridColumn>
-                                        <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
-                                        <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
-                                        {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                        <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                        <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
-                                        <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                        <AgGridColumn field="NetPOPrice" headerName=" Net PO"></AgGridColumn>
-                                        {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-
-                                    </AgGridReact>
-                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
+                                        </AgGridReact>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </>
-            }
+                            </Col>
+                        </Row>
+                    </>
+                }
 
 
 
-            {
-                sendForApproval && (
-                    <SendForApproval
-                        isOpen={sendForApproval}
-                        closeDrawer={closeSendForApproval}
+                {
+                    sendForApproval && (
+                        <SendForApproval
+                            isOpen={sendForApproval}
+                            closeDrawer={closeSendForApproval}
+                            anchor={'right'}
+                            isApprovalisting={true}
+                            isRfq={true}
+                            technologyId={technologyId}
+                        />
+                    )
+                }
+
+
+                {rejectDrawer && (
+                    <ApproveRejectDrawer
+                        type={'Reject'}
+                        isOpen={rejectDrawer}
+                        approvalData={selectedRows}
+                        closeDrawer={closeDrawer}
+                        //  tokenNo={approvalNumber}
                         anchor={'right'}
-                        isApprovalisting={true}
-                        isRfq={true}
-                        technologyId={technologyId}
+                    // IsFinalLevel={!showFinalLevelButtons}
+                    // reasonId={approvalDetails.ReasonId}
+                    // IsPushDrawer={showPushDrawer}
+                    // dataSend={[approvalDetails, partDetail]}
                     />
-                )
-            }
+                )}
 
+                {addRfq &&
 
-            {rejectDrawer && (
-                <ApproveRejectDrawer
-                    type={'Reject'}
-                    isOpen={rejectDrawer}
-                    approvalData={selectedRows}
-                    closeDrawer={closeDrawer}
-                    //  tokenNo={approvalNumber}
-                    anchor={'right'}
-                // IsFinalLevel={!showFinalLevelButtons}
-                // reasonId={approvalDetails.ReasonId}
-                // IsPushDrawer={showPushDrawer}
-                // dataSend={[approvalDetails, partDetail]}
-                />
-            )}
+                    <AddRfq
+                        data={addRfqData}
+                        //hideForm={hideForm}
+                        AddAccessibilityRMANDGRADE={true}
+                        EditAccessibilityRMANDGRADE={true}
+                        isRMAssociated={true}
+                        isOpen={addRfq}
+                        anchor={"right"}
+                        isEditFlag={isEdit}
+                        closeDrawer={closeDrawer}
+                    />
 
-            {addRfq &&
-
-                <AddRfq
-                    data={addRfqData}
-                    //hideForm={hideForm}
-                    AddAccessibilityRMANDGRADE={true}
-                    EditAccessibilityRMANDGRADE={true}
-                    isRMAssociated={true}
-                    isOpen={addRfq}
-                    anchor={"right"}
-                    isEditFlag={isEdit}
-                    closeDrawer={closeDrawer}
-                />
-
-            }
+                }
 
 
 
-            {
-                <div id='rfq-compare-drawer'>
-                    {addComparisonToggle && (
+                {
+                    <div id='rfq-compare-drawer'>
+                        {addComparisonToggle && (
 
-                        <CostingSummaryTable viewMode={true}
-                            isRfqCosting={true}
-                            // costingID={approvalDetails.CostingId}
-                            approvalMode={true}
-                            // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                            simulationMode={false} />
-                    )}
-                </div>
-            }
+                            <CostingSummaryTable viewMode={true}
+                                isRfqCosting={true}
+                                // costingID={approvalDetails.CostingId}
+                                approvalMode={true}
+                                // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                                simulationMode={false} />
+                        )}
+                    </div>
+                }
 
+
+                {remarkHistoryDrawer &&
+                    <RemarkHistoryDrawer
+                        data={remarkRowData}
+                        //hideForm={hideForm}
+                        AddAccessibilityRMANDGRADE={true}
+                        EditAccessibilityRMANDGRADE={true}
+                        isRMAssociated={true}
+                        isOpen={remarkHistoryDrawer}
+                        anchor={"right"}
+                        isEditFlag={isEdit}
+                        closeDrawer={closeRemarkDrawer}
+                    />
+                }
+
+            </div >
             <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                     <Fragment>
@@ -694,8 +728,7 @@ function RfqListing(props) {
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
-
-        </div >
+        </>
     );
 }
 
