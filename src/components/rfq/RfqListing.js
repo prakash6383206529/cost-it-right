@@ -188,27 +188,22 @@ function RfqListing(props) {
 
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
-
         let files = row?.Attachments
 
         return (
             <>
-
-                {files && files.length > 0 &&
-                    files.map((f) => {
-                        const withOutTild = f.FileURL?.replace("~", "");
-                        const fileURL = `${FILE_URL}${withOutTild}`;
-                        return (
-                            <div className={"attachment images"}>
+                <div className={"attachment images"}>
+                    {files && files.length > 0 &&
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                    {f.OriginalFileName}
+                                    {f.OriginalFileName},
                                 </a>
-
-                            </div>
-                        );
-                    })}
+                            )
+                        })}
+                </div>
             </>
         )
 
