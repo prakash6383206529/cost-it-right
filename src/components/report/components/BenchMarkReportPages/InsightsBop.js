@@ -554,7 +554,7 @@ function Insights(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
-        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
+        params.api.sizeColumnsToFit()
 
     };
 
