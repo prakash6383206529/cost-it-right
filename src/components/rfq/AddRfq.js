@@ -927,7 +927,7 @@ function AddRfq(props) {
                                         {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                         {files &&
                                             files.map((f) => {
-                                                const withOutTild = f.FileURL.replace("~", "");
+                                                const withOutTild = f.FileURL?.replace("~", "");
                                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                                 return (
                                                     <div className={"attachment images"}>
