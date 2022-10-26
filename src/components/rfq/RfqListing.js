@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, } from '../.././config/constants'
+import { EMPTY_DATA, FILE_URL, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -186,6 +186,28 @@ function RfqListing(props) {
         )
     }
 
+    const attachmentFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let files = row?.Attachments
+
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length > 0 &&
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName},
+                                </a>
+                            )
+                        })}
+                </div>
+            </>
+        )
+
+    }
 
 
     const viewDetails = (UserId) => {
@@ -212,7 +234,8 @@ function RfqListing(props) {
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-        linkableFormatter: linkableFormatter
+        linkableFormatter: linkableFormatter,
+        attachmentFormatter: attachmentFormatter
     }
 
 
@@ -284,7 +307,7 @@ function RfqListing(props) {
                                         <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                         <AgGridColumn field="PartNumber" headerName="Part Nos"></AgGridColumn>
-                                        <AgGridColumn field="Attachments" headerName='Attachment' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                        <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                         <AgGridColumn field="MaterialType" headerName='No. Of Quotation Received'></AgGridColumn>
                                         <AgGridColumn field="Status" headerName="Status"></AgGridColumn>
