@@ -211,7 +211,7 @@ function RunSimulationDrawer(props) {
         obj.IsAdditionalToolPercentage = toggleSwitchAdditionalTool
         obj.AdditionalToolApplicability = toolCostApplicability.label
         obj.IsAdditionalTool = additionalTool
-        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("ToolPercent")
+        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("Tool")
         obj.IsAdditionalPackagingPercentage = toggleSwitchAdditionalPackaging
         obj.AdditionalPackagingApplicability = packagingCostApplicability.label
         obj.IsAdditionalPackaging = additionalPackaging
