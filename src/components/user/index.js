@@ -26,6 +26,7 @@ class User extends Component {
       isRolePermissionForm: false,
       data: {},
       ViewUserAccessibility: false,
+      ViewRFQUserAccessibility: false,
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
@@ -51,11 +52,13 @@ class User extends Component {
       const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
       const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DEPARTMENT)
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
+      const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === USER)// Need to change constant file
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
       const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
       const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
+      const rfqUserData = RfqUserPermissions && RfqUserPermissions.Actions && checkPermission(RfqUserPermissions.Actions)
 
       if (userData !== undefined) {
 
@@ -63,6 +66,15 @@ class User extends Component {
           if (userData[prop] === true) {
             isFirstTabActive = true
             this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+          }
+        }
+      }
+
+      if (rfqUserData !== undefined) {
+
+        for (var propRfq in rfqUserData) {
+          if (rfqUserData[propRfq] === true) {
+            this.setState({ ViewRFQUserAccessibility: true, activeTab: isFirstTabActive ? '1' : '5' })
           }
         }
       }
@@ -144,7 +156,7 @@ class User extends Component {
   */
   render() {
     const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, } = this.state;
+      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility } = this.state;
 
     if (isUserForm === true) {
       return <UserRegistration
@@ -188,7 +200,7 @@ class User extends Component {
               </NavLink>
             </NavItem>}
 
-            {ViewUserAccessibility && <NavItem>
+            {ViewRFQUserAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                 RFQ User
               </NavLink>
@@ -221,7 +233,7 @@ class User extends Component {
                 <LevelsListing
                   toggle={this.toggle} />
               </TabPane>}
-            {this.state.activeTab === '5' && ViewUserAccessibility &&
+            {this.state.activeTab === '5' && ViewRFQUserAccessibility &&
               <TabPane tabId="5">
                 <UsersListing
                   RFQUser={true}
