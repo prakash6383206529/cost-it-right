@@ -367,18 +367,24 @@ function RfqListing(props) {
 
         let showActionIcons = false
         let showReminderIcon = false
+        let showRemarkHistory = false
 
+        if (rowData?.CostingNumber === null) {
+            showReminderIcon = true
 
+        } else {
 
-        if (rowData.CostingStatus === DRAFT) {
-
-            if (rowData.CostingNumber !== null) {
+            showRemarkHistory = true
+            if (rowData.ShowApprovalButton) {
                 showActionIcons = true
 
             } else {
-                showReminderIcon = true
+
+                showActionIcons = false
             }
         }
+
+
         let reminderCount = rowData?.RemainderCount
 
         return (
@@ -386,7 +392,7 @@ function RfqListing(props) {
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
                 {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => approvemDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
-                {showActionIcons && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
+                {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
                 {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
 
             </>
@@ -484,12 +490,6 @@ function RfqListing(props) {
         },
         ))
 
-
-    }
-
-
-    const closeAddComparisonDrawer = (e = '') => {
-        setaddComparisonToggle(false)
 
     }
 
