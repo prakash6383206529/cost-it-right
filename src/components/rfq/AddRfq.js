@@ -31,6 +31,7 @@ function AddRfq(props) {
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
+    const [initialFiles, setInitialFiles] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
     const [selectedVendors, setSelectedVendors] = useState([]);
@@ -48,6 +49,7 @@ function AddRfq(props) {
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
+    const [data, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
     const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
@@ -94,9 +96,12 @@ function AddRfq(props) {
                     setValue("plant", {
                         label: data.PlantName, value: data.PlantId
                     })
+                    // setInitialFiles(data?.Attachments)
+                    setFiles(data?.Attachments)
                     setPartList(data.PartList)
                     setVendorList(data.VendorList)
                     setValue("remark", data.Remark)
+                    setData(data)
                 }
 
             })
@@ -345,23 +350,29 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = data => {
+    const onSubmit = dataForm => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
         } else if (partList.length === 0) {
             Toaster.warning("Please enter part details")
             return false
+        } else if (files.length === 0) {
+            Toaster.warning("Please add atleast one attachment file")
+            return false
         }
 
         let obj = {}
-        obj.Remark = data?.remark
-        obj.TechnologyId = data?.technology?.value
-        obj.PlantId = data?.plant?.value
+        obj.QuotationId = data.QuotationId ? data.QuotationId : ""
+        obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
+
+        obj.Remark = dataForm?.remark
+        obj.TechnologyId = dataForm?.technology?.value
+        obj.PlantId = dataForm?.plant?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.VendorList = vendorList
         obj.PartList = partList
-        obj.Attachments = []
+        obj.Attachments = files
 
         if (isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
@@ -880,7 +891,7 @@ function AddRfq(props) {
                                             PreviewComponent={Preview}
                                             //onSubmit={this.handleSubmit}
                                             accept="*"
-                                            initialFiles={[]}
+                                            initialFiles={initialFiles}
                                             maxFiles={4}
                                             maxSizeBytes={20000000}
                                             inputContent={(files, extra) =>
@@ -907,7 +918,7 @@ function AddRfq(props) {
                                                     extra.reject ? { color: "red" } : {},
                                             }}
                                             classNames="draper-drop"
-                                            disabled={isEditFlag}
+                                            disabled={isViewFlag}
                                         />
                                     </div>
                                 </Col>
@@ -924,7 +935,7 @@ function AddRfq(props) {
                                                             {f.OriginalFileName}
                                                         </a>
                                                         {
-                                                            true &&
+                                                            !isViewFlag &&
                                                             <img
                                                                 alt={""}
                                                                 className="float-right"
