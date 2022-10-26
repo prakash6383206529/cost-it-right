@@ -8,7 +8,7 @@ import {
     API_REQUEST,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
-import { userDetails } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
@@ -174,7 +174,7 @@ export function getContactPerson(vendorId, callback) {
 export function getQuotationDetailsList(id, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getQuotationDetailsList}?quotationId=${id}`, config());
+        const request = axios.get(`${API.getQuotationDetailsList}?quotationId=${id}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
