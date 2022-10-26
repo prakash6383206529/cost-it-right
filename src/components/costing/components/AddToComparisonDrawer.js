@@ -7,7 +7,7 @@ import { getPlantSelectListByType, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
@@ -49,6 +49,7 @@ function AddToComparisonDrawer(props) {
 
   const [isCbcSelected, setisCbcSelected] = useState(false)
   const [isNccSelected, setisNccSelected] = useState(false)
+  const [showCostingSection, setShowCostingSection] = useState({})
 
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
@@ -58,6 +59,7 @@ function AddToComparisonDrawer(props) {
   const costingSelectList = useSelector((state) => state.costing.costingSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
 
 
   /* For getting part no for costing dropdown */
@@ -114,6 +116,12 @@ function AddToComparisonDrawer(props) {
         setisCbcSelected(true)
       }
     }
+    const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === COSTING);
+    const ZBCAccessData = Data && Data.Pages.find(el => el.PageName === ZBC_COSTING)
+    const VBCAccessData = Data && Data.Pages.find(el => el.PageName === VBC_COSTING)
+    const NCCAccessData = Data && Data.Pages.find(el => el.PageName === NCC_COSTING)
+    const CBCAccessData = Data && Data.Pages.find(el => el.PageName === CBC_COSTING)
+    setShowCostingSection({ ZBC: ZBCAccessData ? ZBCAccessData?.IsChecked : false, VBC: VBCAccessData ? VBCAccessData?.IsChecked : false, NCC: NCCAccessData ? NCCAccessData?.IsChecked : false, CBC: CBCAccessData ? CBCAccessData?.IsChecked : false })
   }, [])
 
   /* for showing vendor name dropdown */
@@ -666,18 +674,19 @@ function AddToComparisonDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3 my-3">
                 <Col>
-                  <RadioHookForm
-                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
-                    className={"filter-form-section mr-1"}
-                    name={"ZBC"}
-                    label={"ZBC"}
-                    defaultValue={isZbcSelected}
-                    control={control}
-                    Controller={Controller}
-                    register={register}
-                    handleChange={() => handleComparison(ZBCTypeId)}
-                  />
-                  <RadioHookForm
+                  {showCostingSection.ZBC &&
+                    <RadioHookForm
+                      customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                      className={"filter-form-section mr-1"}
+                      name={"ZBC"}
+                      label={"ZBC"}
+                      defaultValue={isZbcSelected}
+                      control={control}
+                      Controller={Controller}
+                      register={register}
+                      handleChange={() => handleComparison(ZBCTypeId)}
+                    />}
+                  {showCostingSection.VBC && <RadioHookForm
                     customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
                     className={"filter-form-section mr-1"}
                     name={"VBC"}
@@ -687,8 +696,8 @@ function AddToComparisonDrawer(props) {
                     Controller={Controller}
                     register={register}
                     handleChange={() => handleComparison(VBCTypeId)}
-                  />
-                  <RadioHookForm
+                  />}
+                  {showCostingSection.CBC && <RadioHookForm
                     customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
                     className={"filter-form-section mr-1"}
                     name={"CBC"}
@@ -698,10 +707,10 @@ function AddToComparisonDrawer(props) {
                     Controller={Controller}
                     register={register}
                     handleChange={() => handleComparison(CBCTypeId)}
-                  />
+                  />}
 
                   {/******************* THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
-                  {/* <RadioHookForm
+                  {/*  {showCostingSection.NCC &&  <RadioHookForm
                     customClassName="d-inline-flex flex-row-reverse align-items-baseline"
                     className={"filter-form-section mr-1"}
                     name={"NCC"}
@@ -711,7 +720,7 @@ function AddToComparisonDrawer(props) {
                     Controller={Controller}
                     register={register}
                     handleChange={() => handleComparison(NCCTypeId)}
-                  /> */}
+                  />} */}
                   {/****************** THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
 
                 </Col>
