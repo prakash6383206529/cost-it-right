@@ -1764,6 +1764,8 @@ export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
+export const RFQUSER = 'RFQUser'
+
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'

@@ -922,7 +922,7 @@ function AddRfq(props) {
                                         />
                                     </div>
                                 </Col>
-                                <Col md="4">
+                                <Col md="12">
                                     <div className={"attachment-wrapper"}>
                                         {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                         {files &&
