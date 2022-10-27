@@ -309,7 +309,7 @@ function RfqListing(props) {
                                         <AgGridColumn field="PartNumber" headerName="Part Nos"></AgGridColumn>
                                         <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
-                                        <AgGridColumn field="MaterialType" headerName='No. Of Quotation Received'></AgGridColumn>
+                                        <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
                                         <AgGridColumn field="Status" headerName="Status"></AgGridColumn>
                                         {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
