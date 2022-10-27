@@ -1745,6 +1745,7 @@ class AddMoreDetails extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
+      IsFinancialDataChanged: true
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
@@ -2220,6 +2221,9 @@ class AddMoreDetails extends Component {
     }
 
     this.setState({ isWorkingOpen: !isWorkingOpen })
+  }
+  checksFinancialDataChanged = (data) => {
+    this.setState({ IsFinancialDataChanged: data })
   }
 
   /**
@@ -3828,7 +3832,7 @@ class AddMoreDetails extends Component {
                           </Col>
                           {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md="12">
-                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} />
+                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
                             </Col>
                           </div>}
                         </Row>
