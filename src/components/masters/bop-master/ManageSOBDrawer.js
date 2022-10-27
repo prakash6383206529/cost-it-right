@@ -195,7 +195,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success('BOP Vendors SOB has been updated.')
+        Toaster.success('BOP Vendors SOB updated successfully.')
         props.closeDrawer('a', 'submit')
       }
     }))

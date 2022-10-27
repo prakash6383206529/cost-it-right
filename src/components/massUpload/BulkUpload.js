@@ -298,7 +298,7 @@ class BulkUpload extends Component {
             let DynamicData = res?.data?.DynamicData;
 
             if (Data?.CountSucceeded > 0) {
-                Toaster.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
+                Toaster.success(`${Data.CountSucceeded} ${messageLabel} uploaded successfully.`)
                 if (DynamicData && DynamicData?.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }

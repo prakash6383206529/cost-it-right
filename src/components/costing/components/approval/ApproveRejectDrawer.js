@@ -345,11 +345,11 @@ function ApproveRejectDrawer(props) {
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
-              Toaster.success('The costing has been approved')
+              Toaster.success('The costing approved successfully')
               setOpenPushButton(true)
 
             } else {
-              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -480,7 +480,7 @@ function ApproveRejectDrawer(props) {
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
-              Toaster.success('The simulation token has been approved')
+              Toaster.success('The simulation token approved successfully')
               setOpenPushButton(true)
 
             } else {
@@ -499,10 +499,10 @@ function ApproveRejectDrawer(props) {
                 // pushObj.LoggedInUserId = userLoggedIn
                 // pushObj.AmmendentDataRequests = temp
                 // dispatch(pushAPI(pushObj, () => { }))
-                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit', status)
               } else {
-                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               }
             }
@@ -513,7 +513,7 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('The simulation token has been rejected')
+            Toaster.success('The simulation token rejected successfully')
             props.closeDrawer('', 'submit')
           }
         }))
