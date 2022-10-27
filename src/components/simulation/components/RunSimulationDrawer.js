@@ -171,7 +171,7 @@ function RunSimulationDrawer(props) {
             }
         }
         if (res?.data?.Result) {
-            Toaster.success('Simulation process has been run successfully.')
+            Toaster.success('Simulation process run successfully.')
             runSimulationCosting()
         }
     }
@@ -291,7 +291,7 @@ function RunSimulationDrawer(props) {
         // if (masterId === Number(EXCHNAGERATE)) {
         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {
-        //             Toaster.success('Simulation process has been run successfully.')
+        //             Toaster.success('Simulation process run successfully.')
         //             runSimulationCosting()
         //         }
         //     }))
@@ -299,7 +299,7 @@ function RunSimulationDrawer(props) {
         //     //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
         //     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {
-        //             Toaster.success('Simulation process has been run successfully.')
+        //             Toaster.success('Simulation process run successfully.')
         //             runSimulationCosting()
         //         }
         //     }))

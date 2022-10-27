@@ -265,7 +265,7 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           setLoader(true)
-          Toaster.success('Simulation has been saved successfully.')
+          Toaster.success('Simulation saved successfully.')
           setLoader(false)
         }
       }))
@@ -276,7 +276,7 @@ function ApproveRejectDrawer(props) {
       //   case Number(RMIMPORT):
       //     dispatch(saveSimulationForRawMaterial(simObj, res => {
       //       if (res.data.Result) {
-      //         Toaster.success('Simulation has been saved successfully.')
+      //         Toaster.success('Simulation saved successfully.')
       //       }
       //     }))
       //   case 
@@ -358,7 +358,7 @@ function ApproveRejectDrawer(props) {
           if (res?.data?.Result) {
             setIsDisable(false)
             if (showFinalLevelButtons) {
-              Toaster.success('The costing has been approved')
+              Toaster.success('The costing approved successfully')
               let pushdata = {
                 effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
                 vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
@@ -400,7 +400,7 @@ function ApproveRejectDrawer(props) {
               // setOpenPushButton(true)
 
             } else {
-              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -528,7 +528,7 @@ function ApproveRejectDrawer(props) {
           setIsDisable(false)
           if (res?.data?.Result) {
             if (showFinalLevelButtons) {
-              Toaster.success('The simulation token has been approved')
+              Toaster.success('The simulation token approved successfully.')
               let temp = []
               costingList && costingList.map(item => {
                 const vendor = item.VendorName.split('(')[1]
@@ -561,7 +561,7 @@ function ApproveRejectDrawer(props) {
 
               props.closeDrawer('', 'Push')
             } else {
-              Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+              Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -571,7 +571,7 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('The simulation token has been rejected')
+            Toaster.success('The simulation token rejected successfully')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -1029,7 +1029,7 @@ function ApproveRejectDrawer(props) {
                         <Col md="12" className="p-0">
                           <label>Upload Attachment (upload up to 2 files)</label>
                           <div className={`alert alert-danger mt-2 ${files.length === 2 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
                             <Dropzone
