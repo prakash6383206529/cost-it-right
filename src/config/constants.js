@@ -1737,6 +1737,9 @@ export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
 export const COMPANY = 'Company'
+export const RFQUSER = 'RFQUser'
+
+
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
 export const WDM = 'WDM'

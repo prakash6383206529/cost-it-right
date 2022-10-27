@@ -325,6 +325,7 @@ function RfqListing(props) {
         dispatch(sendReminderForQuotation(data, (res) => {
 
             if (res) {
+                Toaster.success('Reminder sent successfully.')
                 getDataList()
             }
         }))

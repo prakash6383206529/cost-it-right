@@ -5,7 +5,7 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
 import { getConfigurationKey } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY } from '../../config/constants';
+import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
@@ -51,7 +51,7 @@ class User extends Component {
       const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
       const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
-      const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === USER)// Need to change constant file
+      const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === RFQUSER)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
       const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
