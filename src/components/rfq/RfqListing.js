@@ -47,8 +47,14 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         dispatch(getQuotationList((res) => {
-
-            setRowData(res?.data?.DataList)
+            let temp = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+                if (item.IsActive === false) {
+                    item.Status = "Cancelled"
+                }
+                temp.push(item)
+            })
+            setRowData(temp)
         }))
     }
 
