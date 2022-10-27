@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { DRAFT, EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -52,7 +52,7 @@ function RfqListing(props) {
     const [addComparisonButton, setAddComparisonButton] = useState(true)
     const [technologyId, setTechnologyId] = useState("")
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
-    const [reminderCount, setReminderCount] = useState(0)
+    const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -385,7 +385,6 @@ function RfqListing(props) {
             }
         }
 
-
         let reminderCount = rowData?.RemainderCount
 
         return (
@@ -417,6 +416,7 @@ function RfqListing(props) {
     const closeRemarkDrawer = () => {
 
         setRemarkHistoryDrawer(false)
+        getDataList()
     }
 
 
@@ -473,6 +473,13 @@ function RfqListing(props) {
 
         let temp = []
         let tempObj = {}
+
+        selectedRows && selectedRows.map((item) => {
+            if (item?.ShowApprovalButton === false) {
+                setDisableApproveRejectButton(false)
+            }
+
+        })
 
         dispatch(getMultipleCostingDetails(selectedRows, (res) => {
 
@@ -538,6 +545,7 @@ function RfqListing(props) {
     const closeSendForApproval = () => {
 
         setSendForApproval(false)
+        getDataList()
     }
 
 
@@ -728,7 +736,7 @@ function RfqListing(props) {
                         >
                             <div className={'cancel-icon'}></div> {'Cancel'}
                         </button>
-                        {addComparisonToggle && <>
+                        {addComparisonToggle && disableApproveRejectButton && <>
                             <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                                 <div className={'cancel-icon-white mr5'}></div>
                                 {'Reject'}
