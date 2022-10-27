@@ -1718,6 +1718,8 @@ export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
+export const RFQUSER = 'RFQUser'
+
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
@@ -2030,4 +2032,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.593";
+export const VERSION = "V1.2.594";
