@@ -296,7 +296,7 @@ export function bulkUploadVolumeBudgetedCBC(data, callback) {
 export function getVolumeDataByPartAndYear(partNumber, financialYear, plantId, vendorId, customerId, costingTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/${plantId === '-' ? EMPTY_GUID : plantId}/${vendorId === '-' ? EMPTY_GUID : vendorId}/${customerId === '-' ? EMPTY_GUID : customerId}/${costingTypeId}`, config())
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/${plantId === '' ? EMPTY_GUID : plantId}/${vendorId === '' ? EMPTY_GUID : vendorId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId}`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

@@ -107,7 +107,7 @@ class PermissionsTabIndex extends Component {
     * @description get updated tabs data after update success
     */
     updateTabs = (Data) => {
-        console.log(Data, "datata")
+
 
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
