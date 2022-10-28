@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col, Label } from 'reactstrap'
-import { required } from '../../../helper/validation'
-import { searchableSelect } from '../../layout/FormInputs'
+import { positiveAndDecimalNumber, required } from '../../../helper/validation'
+import { searchableSelect, renderNumberInputField } from '../../layout/FormInputs'
 // import { getVendorListByVendorType } from '../actions/Material'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -408,6 +408,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+
           this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
@@ -515,18 +516,7 @@ class AddVolume extends Component {
     const { selectedPlants, vendorName, part, year, client, tableData, costingTypeId, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
     const userDetailsVolume = JSON.parse(localStorage.getItem('userDetail'))
-    // let plantArray = [];
-    // selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-    //     return plantArray;
-    // })
-    let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetailsVolume?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
+
     if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
       return false
@@ -628,12 +618,12 @@ class AddVolume extends Component {
               PlantCode: '',
             },
           ]
-          : cbcPlantArray,
+          : [],
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
-        DestinationPlantId: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
-        DestinationPlant: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : '',
+        DestinationPlantId: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.value : costingTypeId === ZBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantId,
+        DestinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.label : costingTypeId === ZBCTypeId ? selectedPlants.label : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantName,
         CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
@@ -814,7 +804,7 @@ class AddVolume extends Component {
                         </Row>
 
                         <Row>
-                          {((costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                          {(costingTypeId === ZBCTypeId && (
                             <Col md="3">
                               <Field
                                 name="Plant"
@@ -870,10 +860,10 @@ class AddVolume extends Component {
 
                           )}
                           {
-                            costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 // selection={
@@ -930,6 +920,7 @@ class AddVolume extends Component {
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
+                                  isDisabled={isEditFlag}
                                 />
                               </div>
                             </div>
@@ -955,6 +946,21 @@ class AddVolume extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
+                          {/* <Col md="3">
+                            <Field
+                              label={`Budgeted Price`}
+                              name={" BudgetedPrice"}
+                              type="text"
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              validate={[required, positiveAndDecimalNumber]}
+                              component={renderNumberInputField}
+                              required={true}
+                              disabled={false}
+                              onChange={this.handleRateChange}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>  UNCOMMENT WHEN CODE DEPLYED FROM BACKEND*/}
                         </Row>
 
                         <Row>

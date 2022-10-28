@@ -198,11 +198,30 @@ export function bulkUploadInterestRateZBC(data, callback) {
 
 /**
  * @method bulkUploadInterestRateVBC
- * @description BULK UPLOAD FOR INTEREST RATE ZBC
+ * @description BULK UPLOAD FOR INTEREST RATE CBC
  */
 export function bulkUploadInterestRateVBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadInterestRateVBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadInterestRateCBC
+ * @description BULK UPLOAD FOR INTEREST RATE CBC
+ */
+export function bulkUploadInterestRateCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadInterestRateCBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

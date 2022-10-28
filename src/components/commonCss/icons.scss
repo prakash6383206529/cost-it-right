@@ -156,6 +156,11 @@
 .save-icon {  @include icons("../../assests/images/check.png", 18px, 12px);
     margin-right: 5px;
 }
+.approve-save-tick {
+    @include icons("../../assests/images/check-green.svg", 16px, 12px);
+    margin: auto;
+
+}
 .filter { @include icons("../../assests/images/filter.png", 12px, 12px);
     margin-right: 5px;
 }
@@ -200,11 +205,23 @@
     background-position: center;
     display: inline-block;
 }
+.send-for-approval-form-drawer {
+    @include icons("../../assests/images/send-for-approval-with-bg.svg", 16px, 20px );
+    margin:auto;
+}
+.reminder {
+    @include icons("../../assests/images/reminder.svg", 20px, 20px );
+    margin:auto;
+}
 .zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
 .zoom-in {@include icons("../../assests/images/zoom-in.svg",  10px, 10px)}
 .zoom-out {@include icons("../../assests/images/zoom-out.svg", 14px, 14px)}
 .zoom-out-hover {@include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)}
-
+.history-remark {
+    @include icons("../../assests/images/history-remark.svg", 26px, 26px);
+    margin: auto;
+    background-color: #cef2fb;
+}
 .link-icon {@include icons("../../assests/images/link.svg", 20px, 20px)}
 
 .broken-link-icon {@include icons("../../assests/images/broken-link.svg", 18px, 18px)}
@@ -394,5 +411,62 @@
         .cross-light {
             opacity: 0.6;
         }
+    }
+  }
+  .btn-send-for-approval {
+     background-color: #e4defd;
+     width: 32px;
+     height: 32px;
+     border-radius: 4px;
+     &:focus {
+        box-shadow: 0 0 5px #7959f6!important;
+        border: 1px solid #e4defd !important;;
+    }
+  }
+  .approve-icon {
+    background-color: #DBF4E2;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    margin: auto;
+    &:focus {
+       box-shadow: 0 0 5px #4DC771!important;
+       border: 1px solid #DBF4E2 !important;;
+   }
+  }
+  .btn-history-remark {
+      background-color: #cef2fb;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 4px;
+
+      &:focus {
+          box-shadow: 0 0 5px #0cbeeb !important;
+          border: 1px solid #bbe8f9 !important;
+      }
+  }
+  .btn-reminder {
+    background-color: #fdebcb;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    .reminder {
+        position: relative;
+        .count {
+            position: absolute;
+            top: -3px;
+            right: -4px;
+            background: #f8a000;
+            height: 14px;
+            width: 15px;
+            line-height: 1.2;
+            font-size: 12px;
+            border-radius: 40px;
+        }
+    }
+    &:focus {
+        box-shadow: 0 0 5px #f8a000 !important;
+        border: 1px solid #fdebcb !important;
     }
   }

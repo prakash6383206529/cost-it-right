@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT,
+    USERS, AUDIT, RFQ,
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -19,6 +19,7 @@ import UsersTab from "./UsersTab";
 import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
+import RfqTab from "./RfqTab";
 
 class PermissionsTabIndex extends Component {
     constructor(props) {
@@ -107,6 +108,7 @@ class PermissionsTabIndex extends Component {
     */
     updateTabs = (Data) => {
 
+
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -115,6 +117,7 @@ class PermissionsTabIndex extends Component {
         let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName === REPORTS_AND_ANALYTICS)
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
+        let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
 
         this.setState({
             actionData: Data,
@@ -127,6 +130,7 @@ class PermissionsTabIndex extends Component {
             reportAnalytics: reportAnalyticsObj && reportAnalyticsObj.length > 0 ? reportAnalyticsObj[0].Pages : [],
             user: usersObj && usersObj.length > 0 ? usersObj[0].Pages : [],
             audit: auditObj && auditObj.length > 0 ? auditObj[0].Pages : [],
+            rfq: rfqObj && rfqObj.length > 0 ? rfqObj[0].Pages : [],
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -137,6 +141,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.reportAnalytics, REPORTS_AND_ANALYTICS)
             this.permissionHandler(this.state.user, USERS)
             this.permissionHandler(this.state.audit, AUDIT)
+            this.permissionHandler(this.state.rfq, RFQ)
 
         })
     }
@@ -219,7 +224,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.user.length > 0 &&
+                                        this.state.user?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                                 Users
@@ -227,9 +232,17 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.audit.length > 0 &&
+                                        this?.state?.rfq?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                                RFQ
+                                            </NavLink>
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.audit.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '9' })} onClick={() => { this.toggle('9'); }}>
                                                 Audit
                                             </NavLink>
                                         </NavItem>
@@ -302,6 +315,15 @@ class PermissionsTabIndex extends Component {
                                     </TabPane>
 
                                     <TabPane tabId="8">
+                                        <RfqTab
+                                            data={this.state.rfq}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane>
+
+                                    <TabPane tabId="9">
                                         <AuditTab
                                             data={this.state.audit}
                                             actionData={this.state.actionData}

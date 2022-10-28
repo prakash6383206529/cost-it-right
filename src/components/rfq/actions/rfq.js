@@ -7,7 +7,10 @@ import {
     config,
     API_REQUEST,
 } from '../../../config/constants';
+import { MESSAGES } from '../../../config/message';
+import { loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
+import Toaster from '../../common/Toaster';
 
 
 export function getQuotationList(callback) {
@@ -51,9 +54,9 @@ export function createRfqQuotation(data, callback) {
 }
 
 export function cancelRfqQuotation(id, callback) {
-
+    let data = { QuotationId: id }
     return (dispatch) => {
-        const request = axios.post(`${API.cancelRfqQuotation}?quotationId=${id}`, config());
+        const request = axios.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -141,6 +144,100 @@ export function sendReminderForQuotation(data, callback) {
 
     return (dispatch) => {
         const request = axios.post(API.sendReminderForQuotation, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+
+export function getContactPerson(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getContactPerson}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            callback(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+
+export function getQuotationDetailsList(id, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getQuotationDetailsList}?quotationId=${id}&loggedInUserId=${loggedInUserId()}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+
+/**
+ * @method getSingleCostingDetails
+ * @description Used to fetch costing details by costingId
+ */
+export function getMultipleCostingDetails(selectedRows, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+
+        let temp = []
+        selectedRows && selectedRows.map((item) => {
+
+            let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
+            temp.push(request)
+
+        })
+
+        axios.all(temp).then((response) => {
+            if (response) {
+                callback(response)
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR)
+            }
+        })
+            .catch((error) => {
+
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+
+
+export function getCommunicationHistory(id, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+
+
+export function checkExistCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkExistCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);

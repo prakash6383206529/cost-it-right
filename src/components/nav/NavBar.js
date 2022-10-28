@@ -203,6 +203,8 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
+      case "RFQ":
+        return this.renderRFQ(module, LandingPageURL);
       default:
         return null
     }
@@ -760,6 +762,43 @@ class SideBar extends Component {
                 <img
                   className=""
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
+                  alt={module + " icon"}
+                />
+                <span>{el.ModuleName}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null
+      })
+    );
+  };
+
+
+  renderRFQ = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/rfq-listing",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "RFQ",
+                    PageURL: "/rfq-listing",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : masterImage}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>

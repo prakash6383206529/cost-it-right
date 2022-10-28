@@ -339,7 +339,7 @@ class AddMachineRate extends Component {
               }
             })
 
-            if (getConfigurationKey().IsDestinationPlantConfigure && Data.IsVendor) {
+            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId))) {
               plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
@@ -1009,13 +1009,6 @@ class AddMachineRate extends Component {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
-    }
-    let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetailsMachine?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
     }
 
     this.setState({ isVendorNameNotSelected: false })

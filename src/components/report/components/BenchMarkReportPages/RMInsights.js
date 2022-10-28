@@ -59,10 +59,15 @@ function Insights(props) {
                 RawMaterialName: item.RawMaterial,
                 TechnologyId: item.TechnologyId
             })
-
+            return arr
         })
+        let data = {
+            FromDate: '',
+            ToDate: '',
+            RMCostBenchMarkingReports: arr
+        }
 
-        dispatch(getCostingBenchMarkRmReport(arr, () => { }))
+        dispatch(getCostingBenchMarkRmReport(data, () => { }))
 
     }, [])
 
@@ -521,7 +526,7 @@ function Insights(props) {
 
 
         var rowCount = event.api.getSelectedRows();
-        console.log(rowCount[0], "rowcount")
+
         var graphDataNew = rowCount[0].graphData;
         var avgGraphData = rowCount[0].Average;
         var minGraphData = rowCount[0].minimumData;
@@ -594,7 +599,7 @@ function Insights(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        params.api.sizeColumnsToFit()
+        window.screen.width >= 1440 && params.api.sizeColumnsToFit()
 
     };
 
@@ -751,13 +756,10 @@ function Insights(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >
-                                                <AgGridColumn pinned="left" width="140" field="Specification" />
-                                                <AgGridColumn pinned="left" width="115" field="Minimum" />
-                                                <AgGridColumn pinned="left" width="115" field="Maximum" />
-                                                <AgGridColumn pinned="left" width="115" field="Average" />
-                                                { }
-
-
+                                                <AgGridColumn pinned="left" field="Specification" />
+                                                <AgGridColumn pinned="left" width="120" field="Minimum" />
+                                                <AgGridColumn pinned="left" width="120" field="Maximum" />
+                                                <AgGridColumn pinned="left" width="120" field="Average" />
 
                                                 <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />

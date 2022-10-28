@@ -960,7 +960,7 @@ class AddRMDomestic extends Component {
       VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
     const { fieldsObj } = this.props
-    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -982,14 +982,16 @@ class AddRMDomestic extends Component {
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
-      userDetails?.Plants.map((item) => {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    }
+    else {
+      userDetailsRM?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
     }
     let sourceLocationValue = (costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value)
-
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
       let updatedFiles = files.map((file) => {
@@ -1019,7 +1021,6 @@ class AddRMDomestic extends Component {
         VendorPlant: [],
       }
       if (IsFinancialDataChanged) {
-
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateRMDomesticAPI(requestData, (res) => {
             this.setState({ setDisable: false })
@@ -1078,7 +1079,7 @@ class AddRMDomestic extends Component {
       formData.RMSpec = RMSpec.value
       formData.Category = Category.value
       formData.TechnologyId = Technology.value
-      formData.Vendor = costingTypeId === VBCTypeId ? vendorName.value : ''
+      formData.Vendor = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : ''
       formData.HasDifferentSource = HasDifferentSource
       formData.Source = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source
       formData.SourceLocation = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value
@@ -1092,7 +1093,7 @@ class AddRMDomestic extends Component {
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
-      formData.VendorCode = costingTypeId === VBCTypeId ? VendorCode : ''
+      formData.VendorCode = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : ''
       formData.VendorPlant = []
       formData.Attachements = files
       formData.CutOffPrice = values.cutOffPrice
@@ -1109,9 +1110,6 @@ class AddRMDomestic extends Component {
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        // 
-        // 
-        // 
         if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
@@ -1413,7 +1411,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId || (costingTypeId === ZBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                          {((costingTypeId === ZBCTypeId) && (
                             <Col md="3">
                               <Field
                                 label="Plant"
@@ -1437,10 +1435,10 @@ class AddRMDomestic extends Component {
                             </Col>)
                           )}
                           {
-                            (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}

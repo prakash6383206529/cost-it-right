@@ -339,7 +339,6 @@ class AddInterestRate extends Component {
   */
 
   onSubmit = debounce((values) => {
-
     const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
     const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
@@ -347,19 +346,22 @@ class AddInterestRate extends Component {
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
+    if (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    }
+    else {
       userDetailsInterest?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
       })
     }
+
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
 
@@ -550,7 +552,7 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
-                      {(((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) || (costingTypeId === ZBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                      {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                         <Col md="3">
                           <Field
                             label="Plant"
@@ -598,7 +600,7 @@ class AddInterestRate extends Component {
                         </Col>
                       )}
                       {
-                        (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
                           <Field
                             label={'Plant'}

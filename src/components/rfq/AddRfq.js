@@ -15,11 +15,12 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
-import { a } from 'react-dom-factories';
+import NoContentFound from '../common/NoContentFound';
+import HeaderTitle from '../common/HeaderTitle';
 
 const gridOptions = {};
 
@@ -28,7 +29,9 @@ function AddRfq(props) {
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm();
 
+    const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
+    const [initialFiles, setInitialFiles] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
     const [selectedVendors, setSelectedVendors] = useState([]);
@@ -46,6 +49,7 @@ function AddRfq(props) {
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
+    const [data, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
     const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
@@ -55,7 +59,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
+    // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
 
     useEffect(() => {
@@ -82,6 +86,23 @@ function AddRfq(props) {
             setIsEditFlag(true)
             setIsViewFlag(props?.data?.isViewFlag)
             dispatch(getQuotationById(props?.data?.Id, (res) => {
+
+
+                if (res?.data?.Data) {
+                    let data = res?.data?.Data
+                    setValue("technology", {
+                        label: data.TechnologyName, value: data.TechnologyId
+                    })
+                    setValue("plant", {
+                        label: data.PlantName, value: data.PlantId
+                    })
+                    // setInitialFiles(data?.Attachments)
+                    setFiles(data?.Attachments)
+                    setPartList(data.PartList)
+                    setVendorList(data.VendorList)
+                    setValue("remark", data.Remark)
+                    setData(data)
+                }
 
             })
             )
@@ -274,7 +295,7 @@ function AddRfq(props) {
 
         if (label === 'plant') {
             plantList && plantList.map((item) => {
-                if (item.PlantId === '0') return false
+                if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
                 return null
             })
@@ -329,23 +350,29 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = data => {
+    const onSubmit = dataForm => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
         } else if (partList.length === 0) {
             Toaster.warning("Please enter part details")
             return false
+        } else if (files.length === 0) {
+            Toaster.warning("Please add atleast one attachment file")
+            return false
         }
 
         let obj = {}
-        obj.Remark = data?.remark
-        obj.TechnologyId = data?.technology?.value
-        obj.PlantId = data?.plant?.value
+        obj.QuotationId = data.QuotationId ? data.QuotationId : ""
+        obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
+
+        obj.Remark = dataForm?.remark
+        obj.TechnologyId = dataForm?.technology?.value
+        obj.PlantId = dataForm?.plant?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.VendorList = vendorList
         obj.PartList = partList
-        obj.Attachments = []
+        obj.Attachments = files
 
         if (isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
@@ -376,7 +403,6 @@ function AddRfq(props) {
     };
 
     const onGridReady = (params) => {
-
         params.api.sizeColumnsToFit();
         setGridColumnApi(params.columnApi)
         setGridApi(params.api)
@@ -394,8 +420,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && < button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -404,8 +430,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {<button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -414,43 +440,65 @@ function AddRfq(props) {
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         totalValueRenderer: buttonFormatter,
-        buttonFormatter: buttonFormatterVendorTable
+        buttonFormatter: buttonFormatterVendorTable,
+        customNoRowsOverlay: NoContentFound
 
     };
 
 
     const addRowVendorTable = () => {
 
-        let obj = {}
-        obj.VendorId = getValues('vendor')?.value
-        obj.ContactPersonId = getValues('contactPerson')?.value
-        obj.Vendor = getValues('vendor')?.label
-        obj.ContactPerson = getValues('contactPerson')?.label
+        let data = {}
+        let temp = []
+        partList && partList.map((item) => {
+            temp.push(item.PartId)
+        })
 
-        if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
+        data.PartIdList = temp
+        data.PlantId = getValues('plant')?.value
+        data.VendorId = getValues('vendor')?.value
 
-            Toaster.warning("Please fill all the mandatory fields first.")
-            return false;
-        }
+        dispatch(checkExistCosting(data, (res) => {
 
-        let arr = [...vendorList, obj]
+            if (res?.data?.DynamicData?.IsExist) {
+                Toaster.warning("Costing already exists for this vendor.")
+                return false
+            } else {
 
-        if (updateButtonVendorTable) {
-            arr = []
-            vendorList && vendorList.map((item) => {
-                if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
-                    return false
-                } else {
-                    arr.push(item)
+                let obj = {}
+                obj.VendorId = getValues('vendor')?.value
+                obj.ContactPersonId = getValues('contactPerson')?.value
+                obj.Vendor = getValues('vendor')?.label
+                obj.ContactPerson = getValues('contactPerson')?.label
+
+                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
+
+                    Toaster.warning("Please fill all the mandatory fields first.")
+                    return false;
                 }
-            })
-            arr.push(obj)
-        }
 
-        setVendorList(arr)
-        setValue('vendor', "")
-        setValue('contactPerson', "")
-        setUpdateButtonVendorTable(false)
+                let arr = [...vendorList, obj]
+
+                if (updateButtonVendorTable) {
+                    arr = []
+                    vendorList && vendorList.map((item) => {
+                        if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
+                            return false
+                        } else {
+                            arr.push(item)
+                        }
+                    })
+                    arr.push(obj)
+                }
+
+                setVendorList(arr)
+                setValue('vendor', "")
+                setValue('contactPerson', "")
+                setUpdateButtonVendorTable(false)
+
+            }
+
+        }))
 
     }
 
@@ -507,9 +555,9 @@ function AddRfq(props) {
 
 
     /**
- * @method handleTechnologyChange
- * @description  USED TO HANDLE TECHNOLOGY CHANGE
- */
+    * @method handleTechnologyChange
+    * @description  USED TO HANDLE TECHNOLOGY CHANGE
+    */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
             setInputLoader(true)
@@ -520,6 +568,17 @@ function AddRfq(props) {
             }))
 
         }
+    }
+
+
+    const handleVendorChange = (data) => {
+
+        dispatch(getContactPerson(data.value, (res) => {
+            setGetReporterListDropDown(res?.data?.SelectList)
+        }))
+
+
+
     }
 
 
@@ -535,24 +594,26 @@ function AddRfq(props) {
                 anchor={props.anchor}
                 open={props.isOpen}
                 onClose={(e) => cancel}
+                className='rfq-container-drawer'
             >
                 <Container>
-                    <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
+                    <div className={`drawer-wrapper drawer-700px`}>
                         <Row className="drawer-heading">
-                            <Col>
-                                <div className={"header-wrapper right"}>
+                            <Col className='pl-0'>
+                                <div className={"header-wrapper d-flex justify-content-between right"}>
                                     <h3>{"Add RFQ"}</h3>
+                                    <div
+                                        onClick={cancel}
+                                        className={"close-button right"}
+                                    ></div>
                                 </div>
-                                <div
-                                    onClick={cancel}
-                                    className={"close-button right"}
-                                ></div>
+
                             </Col>
                         </Row>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row className="pl-3">
-                                <Col md="12">
+                            <Row className="part-detail-wrapper">
+                                <Col md="4">
                                     <SearchableSelectHookForm
                                         label={"Technology"}
                                         name={"technology"}
@@ -570,8 +631,29 @@ function AddRfq(props) {
                                         isLoading={VendorLoaderObj}
                                     />
                                 </Col>
-
-                                <Col md="12">
+                                <Col md="4">
+                                    <SearchableSelectHookForm
+                                        label={"Plant"}
+                                        name={"plant"}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                        options={renderListing("plant")}
+                                        mandatory={true}
+                                        // handleChange={handleVendorChange}
+                                        handleChange={() => { }}
+                                        errors={errors.plant}
+                                        isLoading={VendorLoaderObj}
+                                        disabled={isEditFlag}
+                                    />
+                                </Col>
+                            </Row>
+                            <HeaderTitle title={'Part:'} />
+                            <Row className="part-detail-wrapper">
+                                <Col md="4">
                                     <SearchableSelectHookForm
                                         label={"Part No"}
                                         name={"partNumber"}
@@ -590,10 +672,9 @@ function AddRfq(props) {
                                         isLoading={plantLoaderObj}
                                     />
                                 </Col>
-
-                                <div className="input-group col-md-3 input-withouticon">
+                                <Col md="4">
                                     <NumberFieldHookForm
-                                        label="Annual Forecast Quantity"
+                                        label="Annual Forecast Q."
                                         name={"annualForecastQuantity"}
                                         errors={errors.ZipCode}
                                         Controller={Controller}
@@ -613,70 +694,70 @@ function AddRfq(props) {
                                         placeholder={'Enter'}
                                         customClassName={'withBorder'}
                                     />
-                                </div>
+                                </Col>
+                                <Col md="4" className='d-flex align-items-center pb-1'>
+                                    <button
+                                        type="button"
+                                        className={'user-btn pull-left ml-2'}
+                                        onClick={() => addRowPartNoTable()}
+                                        disabled={isEditFlag}
+                                    >
+                                        <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
+                                    </button>
+                                    <button
+                                        onClick={onResetPartNoTable} // Need to change this cancel functionality
+                                        type="submit"
+                                        value="CANCEL"
+                                        className="reset ml-10 ml-2"
+                                        disabled={isEditFlag}
+                                    >
+                                        <div className={''}></div>
+                                        RESET
+                                    </button>
+                                </Col>
                             </Row>
-
-                            <button
-                                type="button"
-                                className={'user-btn mt30 pull-left ml-3'}
-                                onClick={() => addRowPartNoTable()}
-                                disabled={isEditFlag}
-                            >
-                                <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
-                            </button>
-
-                            <button
-                                onClick={onResetPartNoTable} // Need to change this cancel functionality
-                                type="submit"
-                                value="CANCEL"
-                                className="reset ml-10 cancel-btn mt-4 ml-2"
-                                disabled={isEditFlag}
-                            >
-                                <div className={''}></div>
-                                RESET
-                            </button>
-
-
                             <div>
-                                {true && <Row>
-                                    <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData.length <= 0 ? "overlay-contain" : ""} `}>
+                                {true && <div className={`ag-grid-react`}>
+                                    <Row>
+                                        <Col>
+                                            <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain" : ""} `}>
 
-                                            <div className={`ag-theme-material  max-loader-height`}>
-                                                <AgGridReact
-                                                    defaultColDef={defaultColDef}
-                                                    //floatingFilter={true}
-                                                    domLayout='autoHeight'
-                                                    // columnDefs={c}
-                                                    rowData={partList}
-                                                    //pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    //noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                >
-                                                    <AgGridColumn field="PartNo" headerName="Part No" ></AgGridColumn>
+                                                <div className={`ag-theme-material  max-loader-height`}>
+                                                    <AgGridReact
+                                                        defaultColDef={defaultColDef}
+                                                        //floatingFilter={true}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={partList}
+                                                        //pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                    >
+                                                        <AgGridColumn width={"230px"} field="PartNo" headerName="Part No" ></AgGridColumn>
 
-                                                    <AgGridColumn minWidth="150" field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                    <AgGridColumn minWidth="150" field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
 
-                                                    <AgGridColumn minWidth="120" field="PartId" headerName="Action" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                                </AgGridReact>
+                                                        <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                                    </AgGridReact>
 
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Col>
-                                </Row>
+                                        </Col>
+                                    </Row>
+                                </div>
                                 }
                             </div>
 
-
-                            <Row className="pl-3">
-                                <Col md="12">
+                            <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                            <Row className="mt-1 part-detail-wrapper">
+                                <Col md="4">
                                     <SearchableSelectHookForm
                                         label={"Vendor"}
                                         name={"vendor"}
@@ -688,16 +769,16 @@ function AddRfq(props) {
                                         defaultValue={vendor.length !== 0 ? vendor : ""}
                                         options={renderListing("vendor")}
                                         mandatory={true}
-                                        // handleChange={handleVendorChange}
-                                        handleChange={() => { }}
+                                        handleChange={handleVendorChange}
+                                        // handleChange={() => { }}
                                         errors={errors.Vendor}
                                         isLoading={VendorLoaderObj}
-                                        disabled={isViewFlag}
+                                        disabled={isViewFlag || partList.length === 0}
                                     />
                                 </Col>
 
 
-                                <Col md="12">
+                                <Col md="4">
                                     <SearchableSelectHookForm
                                         label={"Contact Person"}
                                         name={"contactPerson"}
@@ -711,88 +792,74 @@ function AddRfq(props) {
                                         mandatory={true}
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
-                                        errors={errors.DestinationPlant}
+                                        errors={errors.contactPerson}
                                         disabled={isViewFlag}
                                         isLoading={plantLoaderObj}
                                     />
                                 </Col>
+                                <Col md="4" className='d-flex align-items-center pb-1'>
+                                    <button
+                                        type="button"
+                                        className={'user-btn pull-left ml-2'}
+                                        onClick={() => addRowVendorTable()}
+                                        disabled={isViewFlag}
+                                    >
+                                        <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
+                                    </button>
+
+                                    <button
+                                        onClick={onResetVendorTable} // Need to change this cancel functionality
+                                        type="submit"
+                                        value="CANCEL"
+                                        className="reset ml-10 ml-2"
+                                        disabled={isViewFlag}
+                                    >
+                                        <div className={''}></div>
+                                        RESET
+                                    </button>
+                                </Col>
                             </Row>
 
-                            <button
-                                type="button"
-                                className={'user-btn mt30 pull-left ml-3'}
-                                onClick={() => addRowVendorTable()}
-                                disabled={isViewFlag}
-                            >
-                                <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
-                            </button>
 
-                            <button
-                                onClick={onResetVendorTable} // Need to change this cancel functionality
-                                type="submit"
-                                value="CANCEL"
-                                className="reset ml-10 cancel-btn mt-4 ml-2"
-                                disabled={isViewFlag}
-                            >
-                                <div className={''}></div>
-                                RESET
-                            </button>
                             <div>
-                                {true && <Row>
-                                    <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData.length <= 0 ? "overlay-contain" : ""} `}>
+                                {true && <div className={`ag-grid-react`}>
+                                    <Row>
+                                        <Col>
+                                            <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain" : ""} `}>
 
-                                            <div className={`ag-theme-material  max-loader-height`}>
-                                                <AgGridReact
-                                                    defaultColDef={defaultColDef}
-                                                    //floatingFilter={true}
-                                                    domLayout='autoHeight'
-                                                    // columnDefs={c}
-                                                    rowData={vendorList}
-                                                    //pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    //noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                >
-                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+                                                <div className={`ag-theme-material  max-loader-height`}>
+                                                    <AgGridReact
+                                                        defaultColDef={defaultColDef}
+                                                        //floatingFilter={true}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={vendorList}
+                                                        //pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                    >
+                                                        <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
-                                                    <AgGridColumn minWidth="150" field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
-                                                    <AgGridColumn minWidth="150" field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                    <AgGridColumn minWidth="120" field="partId" headerName="Action" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
-                                                </AgGridReact>
-
+                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                        <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
+                                                    </AgGridReact>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Col>
-                                </Row>
+                                        </Col>
+                                    </Row>
+                                </div>
                                 }
                             </div>
-                            <Row className="pl-3">
-                                <Col md="12">
-                                    <SearchableSelectHookForm
-                                        label={"Plant"}
-                                        name={"plant"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("plant")}
-                                        mandatory={true}
-                                        // handleChange={handleVendorChange}
-                                        handleChange={() => { }}
-                                        errors={errors.plant}
-                                        isLoading={VendorLoaderObj}
-                                        disabled={isEditFlag}
-                                    />
-                                </Col>
-                                <Col md="12">
+                            <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
+                            <Row className='part-detail-wrapper'>
+                                <Col md="6">
                                     <TextAreaHookForm
                                         label={"Remark"}
                                         name={"remark"}
@@ -811,79 +878,77 @@ function AddRfq(props) {
                                     // isLoading={plantLoaderObj}
                                     />
                                 </Col>
+
+                                <Col md="6" className="height152-label pr-2">
+                                    <label>Upload Attachment (upload up to 4 files)</label>
+                                    <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                                        Maximum file upload limit has been reached.
+                                    </div>
+                                    <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                                        <Dropzone
+                                            ref={dropzone}
+                                            onChangeStatus={handleChangeStatus}
+                                            PreviewComponent={Preview}
+                                            //onSubmit={this.handleSubmit}
+                                            accept="*"
+                                            initialFiles={initialFiles}
+                                            maxFiles={4}
+                                            maxSizeBytes={20000000}
+                                            inputContent={(files, extra) =>
+                                                extra.reject ? (
+                                                    "Image, audio and video files only"
+                                                ) : (
+                                                    <div className="text-center">
+                                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                                        <span className="d-block">
+                                                            Drag and Drop or{" "}
+                                                            <span className="text-primary">Browse</span>
+                                                            <br />
+                                                            file to upload
+                                                        </span>
+                                                    </div>
+                                                )
+                                            }
+                                            styles={{
+                                                dropzoneReject: {
+                                                    borderColor: "red",
+                                                    backgroundColor: "#DAA",
+                                                },
+                                                inputLabel: (files, extra) =>
+                                                    extra.reject ? { color: "red" } : {},
+                                            }}
+                                            classNames="draper-drop"
+                                            disabled={isViewFlag}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col md="12">
+                                    <div className={"attachment-wrapper"}>
+                                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                        {files &&
+                                            files.map((f) => {
+                                                const withOutTild = f.FileURL?.replace("~", "");
+                                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                                return (
+                                                    <div className={"attachment images"}>
+                                                        <a href={fileURL} target="_blank" rel="noreferrer">
+                                                            {f.OriginalFileName}
+                                                        </a>
+                                                        {
+                                                            !isViewFlag &&
+                                                            <img
+                                                                alt={""}
+                                                                className="float-right"
+                                                                onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                src={redcrossImg}
+                                                            ></img>
+                                                        }
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </Col>
                             </Row>
-
-
-                            <Col md="3" className="height152-label">
-                                <label>Upload Attachment (upload up to 4 files)</label>
-                                <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                                <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
-                                    <Dropzone
-                                        ref={dropzone}
-                                        onChangeStatus={handleChangeStatus}
-                                        PreviewComponent={Preview}
-                                        //onSubmit={this.handleSubmit}
-                                        accept="*"
-                                        initialFiles={[]}
-                                        maxFiles={4}
-                                        maxSizeBytes={20000000}
-                                        inputContent={(files, extra) =>
-                                            extra.reject ? (
-                                                "Image, audio and video files only"
-                                            ) : (
-                                                <div className="text-center">
-                                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                                    <span className="d-block">
-                                                        Drag and Drop or{" "}
-                                                        <span className="text-primary">Browse</span>
-                                                        <br />
-                                                        file to upload
-                                                    </span>
-                                                </div>
-                                            )
-                                        }
-                                        styles={{
-                                            dropzoneReject: {
-                                                borderColor: "red",
-                                                backgroundColor: "#DAA",
-                                            },
-                                            inputLabel: (files, extra) =>
-                                                extra.reject ? { color: "red" } : {},
-                                        }}
-                                        classNames="draper-drop"
-                                        disabled={isEditFlag}
-                                    />
-                                </div>
-                            </Col>
-                            <Col md="3">
-                                <div className={"attachment-wrapper"}>
-                                    {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                    {files &&
-                                        files.map((f) => {
-                                            const withOutTild = f.FileURL.replace("~", "");
-                                            const fileURL = `${FILE_URL}${withOutTild}`;
-                                            return (
-                                                <div className={"attachment images"}>
-                                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                                        {f.OriginalFileName}
-                                                    </a>
-                                                    {
-                                                        true &&
-                                                        <img
-                                                            alt={""}
-                                                            className="float-right"
-                                                            onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                            src={redcrossImg}
-                                                        ></img>
-                                                    }
-                                                </div>
-                                            );
-                                        })}
-                                </div>
-                            </Col>
-
 
                             <Row className="justify-content-between">
                                 <div className="col-sm-12 text-right">
@@ -898,19 +963,19 @@ function AddRfq(props) {
 
                                     <button type="submit" className="submit-button save-btn"
                                         disabled={isViewFlag}>
-                                        <div class="plus"></div>
+                                        <div className={"save-icon"}></div>
                                         {"Send"}
                                     </button>
                                 </div>
                             </Row>
                         </form>
                     </div>
-                </Container>
-            </Drawer>
+                </Container >
+            </Drawer >
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
-        </div>
+        </div >
     );
 }
 

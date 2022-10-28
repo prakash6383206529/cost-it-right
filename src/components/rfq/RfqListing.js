@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, } from '../.././config/constants'
+import { EMPTY_DATA, FILE_URL, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -15,6 +15,7 @@ import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
+import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 const gridOptions = {};
 
@@ -31,9 +32,12 @@ function RfqListing(props) {
     const [rowData, setRowData] = useState([])
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
+    const [viewRfq, setViewRfq] = useState(false)
+    const [viewRfqData, setViewRfqData] = useState("")
 
 
     useEffect(() => {
+        setloader(true)
         getDataList()
 
     }, [])
@@ -44,7 +48,15 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         dispatch(getQuotationList((res) => {
-            setRowData(res?.data?.DataList)
+            let temp = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+                if (item.IsActive === false) {
+                    item.Status = "Cancelled"
+                }
+                temp.push(item)
+            })
+            setRowData(temp)
+            setloader(false)
         }))
     }
 
@@ -76,17 +88,12 @@ function RfqListing(props) {
         dispatch(cancelRfqQuotation(id, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
+                setTimeout(() => {
+                    getDataList()
+                }, 500);
             }
         }))
-        getDataList()
     }
-
-
-    const sendReminder = (data) => {
-        dispatch(sendReminderForQuotation(data, (res) => { }))
-
-    }
-
 
     /**
     * @method confirmDelete
@@ -108,16 +115,16 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
+        let isActive = rowData?.IsActive
+        let quotationReceived = rowData.CostingReceived === 0
         return (
             <>
-                {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {<button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
-                {<button title='Reminder' className="View mr-1" type={'button'} onClick={() => { sendReminder(cellValue) }} />}
+                {isActive && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isActive && quotationReceived && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isActive && quotationReceived && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -131,6 +138,12 @@ function RfqListing(props) {
     const closeDrawer = () => {
         setAddRfqData({})
         setAddRfq(false)
+        getDataList()
+
+    }
+
+    const closeDrawerViewRfq = () => {
+        setViewRfq(false)
         getDataList()
 
     }
@@ -168,6 +181,62 @@ function RfqListing(props) {
 
     }
 
+    const linkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        if (row?.IsActive) {
+            return (
+                <>
+                    <div
+                        onClick={() => viewDetails(row.QuotationId)}
+                        className={'link'}
+                    >{cell}</div>
+                </>
+            )
+        } else {
+
+            return cell ? cell : "-"
+
+        }
+    }
+
+    const attachmentFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let files = row?.Attachments
+
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length > 0 &&
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName},
+                                </a>
+                            )
+                        })}
+                </div>
+            </>
+        )
+
+    }
+
+
+    const viewDetails = (UserId) => {
+
+        setViewRfqData(UserId)
+        setViewRfq(true)
+        // this.setState({
+        //     UserId: UserId,
+        //     isOpen: true,
+        // })
+
+    }
+
 
     const defaultColDef = {
         resizable: true,
@@ -175,22 +244,24 @@ function RfqListing(props) {
         sortable: true,
         headerCheckboxSelection: true ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
-        checkboxSelection: isFirstColumn
+        checkboxSelection: isFirstColumn,
     };
 
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-
+        linkableFormatter: linkableFormatter,
+        attachmentFormatter: attachmentFormatter
     }
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+            {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                 <>
-
+                    <h1 className='mb-0'>RFQ</h1>
                     <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
@@ -201,7 +272,6 @@ function RfqListing(props) {
                                 <>
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <>
-
                                             <button
                                                 type="button"
                                                 className={"user-btn mr5"}
@@ -227,7 +297,7 @@ function RfqListing(props) {
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
-                                <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
@@ -246,16 +316,16 @@ function RfqListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         rowSelection={'multiple'}
-                                        suppressRowClickSelection={true}
+                                    // suppressRowClickSelection={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="QuotationId" headerName='RFQ Id' ></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
                                         <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                         <AgGridColumn field="PartNumber" headerName="Part Nos"></AgGridColumn>
-                                        <AgGridColumn field="Attachments" headerName='Attachment' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                        <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
-                                        <AgGridColumn field="MaterialType" headerName='No. Of Quotation Received'></AgGridColumn>
+                                        <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
                                         <AgGridColumn field="Status" headerName="Status"></AgGridColumn>
                                         {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
@@ -268,7 +338,8 @@ function RfqListing(props) {
                             </div>
                         </Col>
                     </Row>
-                </>
+
+                </>))
             }
 
             {addRfq &&
@@ -286,6 +357,18 @@ function RfqListing(props) {
                 />
 
             }
+
+
+            {viewRfq &&
+
+                <ViewRfq
+                    data={viewRfqData}
+                    isOpen={viewRfq}
+                    closeDrawer={closeDrawerViewRfq}
+                />
+
+            }
+
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

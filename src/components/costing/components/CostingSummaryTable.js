@@ -320,7 +320,6 @@ const CostingSummaryTable = (props) => {
   *
   */
   const editHandler = (index) => {
-    console.log('viewCostingData: ', viewCostingData);
     const editObject = {
       plantId: viewCostingData[index]?.plantId,
       plantName: viewCostingData[index]?.plantName,
@@ -356,7 +355,6 @@ const CostingSummaryTable = (props) => {
 
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    console.log('tempData: ', tempData);
     const type = viewCostingData[index]?.costingTypeId
 
     const Data = {
@@ -533,7 +531,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalData = (costingIds) => {
-
     let temp = viewApprovalData
     costingIds &&
       costingIds.map((id) => {
@@ -571,7 +568,8 @@ const CostingSummaryTable = (props) => {
             } else {
               year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
             }
-            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, res => {
+
+            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, viewCostingData[index]?.costingTypeId === ZBCTypeId || viewCostingData[index]?.costingTypeId === CBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId, viewCostingData[index]?.vendorId, viewCostingData[index]?.customerId, viewCostingData[index]?.costingTypeId, res => {
               if (res.data?.Result === true || res.status === 202) {
                 let approvedQtyArr = res.data?.Data?.VolumeApprovedDetails
                 let budgetedQtyArr = res.data?.Data?.VolumeBudgetedDetails
@@ -898,6 +896,27 @@ const CostingSummaryTable = (props) => {
     );
   }
 
+  //FOR DISPLAY PLANT VENDOR NAME AS A HEADER FOR 
+  const heading = (value) => {
+    let heading = { mainHeading: '', subHeading: '' };
+    switch (value?.costingTypeId) {
+      case ZBCTypeId:
+        heading = { mainHeading: value?.plantName, subHeading: value?.plantCode }
+        return heading;
+      case VBCTypeId:
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        return heading;
+      case CBCTypeId:
+        heading = { mainHeading: value?.customerName, subHeading: value?.customerCode }
+        return heading;
+      case NCCTypeId:
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        return heading;
+      default:
+        break;
+    }
+    return heading;
+  }
   return (
     <Fragment>
       {
@@ -911,7 +930,7 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
@@ -958,7 +977,7 @@ const CostingSummaryTable = (props) => {
                   </button>
                   {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
                 </>}
-            </Col>
+            </Col>}
           </Row>
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
@@ -984,7 +1003,6 @@ const CostingSummaryTable = (props) => {
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            // const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
@@ -1015,7 +1033,7 @@ const CostingSummaryTable = (props) => {
                                       </>
                                     }
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.costingTypeId === ZBCTypeId ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-{(data.costingHeadCheck)}</span></span> : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-{(data.costingHeadCheck)}</span></span> : data.costingTypeId === CBCTypeId ? <span>{data.customerName}<span className='sub-heading'>{(data.costingHeadCheck)}</span></span> : ''}</span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
                                   </div>
                                   <div className="action  text-right">
@@ -1064,7 +1082,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
                                     <span className="d-block">{data?.RevisionNumber}</span>
-                                    <span className="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
+                                    <span className="d-block">{data.costingTypeId === ZBCTypeId || data.costingTypeId === CBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
                                   </td>
                                 )
                               })}

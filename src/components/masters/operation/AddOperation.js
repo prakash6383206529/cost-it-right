@@ -568,6 +568,8 @@ class AddOperation extends Component {
     }
     this.setState({ isVendorNameNotSelected: false })
 
+
+
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
@@ -577,14 +579,16 @@ class AddOperation extends Component {
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return plantArray
       })
     }
     let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId) {
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    }
+    else {
       userDetailsOperation?.Plants.map((item) => {
         cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
         return cbcPlantArray
@@ -918,7 +922,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      {((costingTypeId === ZBCTypeId) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
+                      {(costingTypeId === ZBCTypeId) && (
                         <Col md="3">
                           <Field
                             label="Plant"
@@ -970,10 +974,10 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
                           <Field
-                            label={'Destination Plant'}
+                            label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                             name="DestinationPlant"
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("singlePlant")}

@@ -91,8 +91,7 @@ function MRSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldMachineRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        Number(row.OldMachineRate) : cell && value ? Number(cell) : Number(row.MachineRate)
                 }
 
             </>
