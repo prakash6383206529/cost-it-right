@@ -69,7 +69,7 @@ function Tool(props) {
   }, [data && data.CostingPartDetails.CostingToolCostResponse])
 
   useEffect(() => {
-    dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+    dispatch(fetchCostingHeadsAPI('multiple technology assembly', (res) => { }))
   }, [])
 
 

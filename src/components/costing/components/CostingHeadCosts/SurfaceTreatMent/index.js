@@ -10,11 +10,12 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
+import { createToprowObjAndSave, findrmCctData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -99,14 +100,17 @@ function SurfaceTreatment(props) {
   const saveData = debounce(handleSubmit(() => {
     if (partType) {   // ASSEMBLY TECHNOLOGY
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
-      props.setSurfaceTreatmentCostAssemblyTechnology(item.CostingPartDetails.SurfaceTreatmentCost, item.CostingPartDetails.TransportationCost, item.CostingPartDetails.NetSurfaceTreatmentCost, surfaceTreatmentData.gridData, transportationObject)
+
+      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportationObject?.tempObj, surfaceTreatmentData.Params)
+      setTimeout(() => {
+        callApi()
+      }, (500));
     }
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
-    if (!IsLocked) {
-
-      if (props.IsAssemblyCalculation && !partType) {
+    if (IsLocked === false && partType === false) {
+      if (props.IsAssemblyCalculation) {
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
         props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
         setTimeout(() => {
@@ -115,6 +119,7 @@ function SurfaceTreatment(props) {
       } else {
         props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
         props.setTransportationCost(transportObj, transportationObject.Params)
+
         setTimeout(() => {
           callApi()
         }, (500));
@@ -126,6 +131,8 @@ function SurfaceTreatment(props) {
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
+      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+      const toolTabData = ToolTabData && ToolTabData[0]
 
       let requestData = {
         "CostingId": item.CostingId,
@@ -158,6 +165,11 @@ function SurfaceTreatment(props) {
 
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCostAPI, getAssemBOPCharge, 2, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        } else if (partType) {
+          setTimeout(() => {
+            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+          }, 500);
         }
 
         dispatch(saveCostingSurfaceTab(requestData, res => {
@@ -180,13 +192,14 @@ function SurfaceTreatment(props) {
       let totalCost = 0
       let totalCostAPI = 0
 
+      surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+
       if (!partType) {
         rmCcData = findrmCctData(item)
         // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
         surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
         rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
         tabData = RMCCTabData && RMCCTabData[0]
-        surfaceTabData = SurfaceTabData && SurfaceTabData[0]
         overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
 
         totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
@@ -202,10 +215,12 @@ function SurfaceTreatment(props) {
           mergedAPI(totalCostAPI, false, false)
         }
       } else if (partType) {
-        totalCostAPI = ((checkForNull(subAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+
+        totalCostAPI = ((checkForNull(subAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
           + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
           + checkForNull(DiscountCostData?.AnyOtherCost)
+
         mergedAPI(totalCostAPI, false, false)
 
       }

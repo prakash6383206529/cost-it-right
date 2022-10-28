@@ -294,7 +294,6 @@ function TabRMCC(props) {
 
         let isAllFalse = false
         // if (partObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
-        // console.log(partObj?.CostingPartDetails?.IsRMCutOffApplicable, "IsRMCutOffApplicable");
         isAllFalse = _.map(gridData, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
         // }
 

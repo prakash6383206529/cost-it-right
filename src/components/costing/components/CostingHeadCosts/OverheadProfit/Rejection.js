@@ -47,7 +47,7 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+        dispatch(fetchCostingHeadsAPI('multiple technology assembly', (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionCost)
     }, [])
 

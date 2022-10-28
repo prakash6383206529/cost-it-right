@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { checkForDecimalAndNull, checkForNull, percentageOfNumber } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, percentageOfNumber } from '../../../../../helper';
 import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,12 +12,16 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
+import { getSingleCostingDetails, setCostingViewData } from '../../../actions/Costing';
+import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
+    const { settledCostingDetails } = useSelector(state => state.subAssembly)
     const [weightedCost, setWeightedCost] = useState(0)
     const [costingNumberData, setCostingNumberData] = useState({})
+    const [isOpen, setIsOpen] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -25,8 +29,8 @@ function EditPartCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
-    const { settledCostingDetails } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
+    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
 
 
     const { register, handleSubmit, control, setValue, getValues } = useForm({
@@ -47,9 +51,10 @@ function EditPartCost(props) {
 
     useEffect(() => {
         let tempArray = []
-        settledCostingDetails && settledCostingDetails.map((item, index) => {
+        settledCostingDetails?.CostingWeightedAverageSettledDetails && settledCostingDetails?.CostingWeightedAverageSettledDetails.map((item, index) => {
             let tempObject = {}
             tempObject.DeltaValue = item?.Delta
+            tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
             tempObject.NetCost = item?.NetCost
             tempObject.SOBPercentage = item?.SOBPercentage
             tempObject.SettledPrice = item?.SettledPrice
@@ -60,6 +65,7 @@ function EditPartCost(props) {
             tempArray.push(tempObject)
             setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
         })
+        setWeightedCost(settledCostingDetails?.NetPOPrice)
         setGridData(tempArray)
     }, [settledCostingDetails])
 
@@ -152,6 +158,28 @@ function EditPartCost(props) {
         setCostingNumberData(value)
     }
 
+    const closeUserDetails = () => {
+        // setIsViewRM(false)
+        setIsOpen(false)
+        // setUserId("")
+
+    }
+
+    const viewDetails = (item) => {
+        if (item.value && Object.keys(item.value).length > 0) {
+            dispatch(getSingleCostingDetails(item.value, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
+        setIsOpen(true)
+    }
+
     /**
       * @method calcTotalSOBPercent
       * @description TO CALCULATE TOTAL SOB PERCENTAGE 
@@ -197,13 +225,18 @@ function EditPartCost(props) {
     }
 
     const onSubmit = (values) => {
+        const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
+        const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+        const toolTabData = ToolTabData && ToolTabData[0]
+
         let sum = calcTotalSOBPercent(gridData)
         if (checkForNull(sum) !== 100) {
             Toaster.warning('Total SOB percent should be 100');
             return false
         }
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let costPerAssemblyTotal = 0
+        let costPerAssemblyTotalWithQuantity = 0
 
         const index = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.findIndex(object => {
             return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
@@ -211,18 +244,26 @@ function EditPartCost(props) {
 
         let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
 
-        editedChildPart.CostingPartDetails.CostPerPiece = weightedCost
-        editedChildPart.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
+        editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
+        editedChildPart.CostingPartDetails.TotalCalculatedRMBOPCCCost = weightedCost
+        editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
 
         Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
 
         // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
-        costPerAssemblyTotal = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
-            return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.CostPerAssembly)
+        costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
         }, 0)
-
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
+        // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
+            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(costPerAssemblyTotalWithQuantity) +
+            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
         let tempArray = []
         gridData && gridData?.map((item) => {
             let tempObject = {}
@@ -241,9 +282,17 @@ function EditPartCost(props) {
             "CostingSettledDetails": tempArray
         }
         dispatch(saveSettledCostingDetails(obj, res => { }))
-        let tabData = subAssemblyTechnologyArray[0]
-        // let request = formatMultiTechnologyUpdate(tabData, weightedCost)
-        // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+            checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+            checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
+            checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+            checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+            checkForNull(DiscountCostData?.AnyOtherCost)) -
+            checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
 
         props.closeDrawer('')
 
@@ -311,6 +360,7 @@ function EditPartCost(props) {
                                             <th>SOB%</th>
                                             <th>Delta</th>
                                             <th>Net Cost</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="part-cost-table">
@@ -399,6 +449,14 @@ function EditPartCost(props) {
                                                                 customClassName={'withBorder'}
                                                             />
                                                         </td>
+                                                        <td >
+                                                            <button
+                                                                type="button"
+                                                                className={'View mr-2 align-middle'}
+                                                                onClick={() => viewDetails(item)}
+                                                            >
+                                                            </button>
+                                                        </td>
                                                     </tr>
                                                 </>
                                             )
@@ -428,6 +486,18 @@ function EditPartCost(props) {
                     </div >
                 </div >
             </Drawer >
+            {
+                isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeUserDetails}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    //   selectedRowData={selectedRowData}
+                    isSimulation={false}
+                    simulationDrawer={false}
+                />
+            }
         </div >
     );
 }

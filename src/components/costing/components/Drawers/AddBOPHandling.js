@@ -35,20 +35,23 @@ function AddBOPHandling(props) {
     if (isAssemblyTechnology) {
       // THIS BLOCK WILL GET EXECUTED WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
 
-      let totalBOP = 0
       // CALCULATE TOTAL BOP COST
-      totalBOP = subAssemblyTechnologyArray[0]?.CostingChildPartDetails && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
-        if (el.PartType === 'BOP') {
-          return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.CostPerAssemblyBOP)
-        } else {
-          return accummlator
-        }
-      }, 0)
+      let BOPTotalCost = 0
 
-      setValue('BOPCost', checkForDecimalAndNull(totalBOP, getConfigurationKey().NoOfDecimalForPrice))
+      subAssemblyTechnologyArray[0]?.CostingChildPartDetails && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+        if (item.PartType === 'BOP') {
+          BOPTotalCost = checkForNull(BOPTotalCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+          return null
+        }
+      })
+
+      setValue('BOPCost', checkForDecimalAndNull(BOPTotalCost, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingPercentage, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges, getConfigurationKey().NoOfDecimalForPrice))
-      setBOPCost(totalBOP)
+      setValue('BOPHandlingFixed', subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType === "Fixed" ? checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges) : 0)
+      setValue('BOPHandlingType', subAssemblyTechnologyArray && { label: subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType, value: subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType })
+      setBOPCost(BOPTotalCost)
+      setBOPHandlingType(subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType)
     } else {
       const childPartDetail = reactLocalStorage.getObject('costingArray')
       let BOPSum = 0
@@ -244,7 +247,6 @@ function AddBOPHandling(props) {
                           defaultValue={""}
                           className=""
                           customClassName={"withBorder"}
-                          // errors={errors.BOPHandlingPercentage}
                           disabled={(CostingViewMode || IsLocked) ? true : false}
                         /> :
                         <TextFieldHookForm

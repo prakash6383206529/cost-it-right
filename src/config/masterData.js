@@ -2754,7 +2754,7 @@ export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9']
-export const IdForMultiTechnology = ['13', '16', '10', '9']
+export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
 
 
 export const CostingSimulationDownloadRM = [
@@ -3920,7 +3920,7 @@ export const tempObject = [
         "IsPartLocked": false,
         "IsCostingLocked": false,
         "CostPerPiece": 43,
-        "CostPerAssembly": undefined,
+        "NetChildPartsCost": undefined,
         "Quantity": 1,
 
 
@@ -3956,7 +3956,7 @@ export const tempObject = [
             "TotalCalculatedRMBOPCCCostPerAssembly": 0,
             "TotalConversionCostWithQuantity": 0,
             "CostPerPiece": undefined,
-            "CostPerAssembly": undefined,
+            "NetChildPartsCost": undefined,
             "Quantity": 1,
             "GrandTotalCost": 0,
             "IsOpen": false,
@@ -4055,7 +4055,7 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostPerAssembly": null,
                     "TotalConversionCostWithQuantity": null,
                     "CostPerPiece": 50,
-                    // "CostPerAssembly": 1000,
+                    // "NetChildPartsCost": 1000,
                     "CostPerAssemblyBOP": 1000,
                     "Quantity": 20,
                     "GrandTotalCost": null,
@@ -4141,7 +4141,7 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostPerAssembly": 0,
                     "TotalConversionCostWithQuantity": 303.1,
                     "CostPerPiece": undefined,
-                    "CostPerAssembly": undefined,
+                    "NetChildPartsCost": undefined,
                     "Quantity": 68,
                     "GrandTotalCost": null,
                     "IsOpen": false,
@@ -4226,7 +4226,7 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostPerAssembly": 0,
                     "TotalConversionCostWithQuantity": 0,
                     "CostPerPiece": undefined,
-                    "CostPerAssembly": undefined,
+                    "NetChildPartsCost": undefined,
                     "Quantity": 68,
                     "GrandTotalCost": null,
                     "IsOpen": false,
@@ -4311,7 +4311,7 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostPerAssembly": 0,
                     "TotalConversionCostWithQuantity": 0,
                     "CostPerPiece": undefined,
-                    "CostPerAssembly": undefined,
+                    "NetChildPartsCost": undefined,
                     "Quantity": 68,
                     "GrandTotalCost": null,
                     "IsOpen": false,
@@ -4396,7 +4396,7 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostPerAssembly": null,
                     "TotalConversionCostWithQuantity": null,
                     "CostPerPiece": 50,
-                    // "CostPerAssembly": 1000,
+                    // "NetChildPartsCost": 1000,
                     "CostPerAssemblyBOP": 1000,
                     "Quantity": 20,
                     "GrandTotalCost": null,

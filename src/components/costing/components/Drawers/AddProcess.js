@@ -287,7 +287,7 @@ function AddProcess(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Process:'}</h3>
+                    <h3>{'ADD PROCESS:'}</h3>
                   </div>
                   <div
                     onClick={cancel}
