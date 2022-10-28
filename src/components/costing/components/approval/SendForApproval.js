@@ -346,7 +346,7 @@ const SendForApproval = (props) => {
       })
 
 
-      console.log(temp, "temp")
+
       // action
 
       dispatch(approvalRequestByApprove(temp, res => {
