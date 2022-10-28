@@ -22,8 +22,10 @@ import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '..
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
+import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -47,6 +49,8 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+
   const costingApprovalStatus = useContext(CostingStatusContext);
   useEffect(() => {
 
@@ -208,8 +212,7 @@ function CostingHeaderTabs(props) {
       dispatch(isDataChange(false))
     }
 
-
-    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
+    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false && !partType) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -238,7 +241,7 @@ function CostingHeaderTabs(props) {
 
 
   const callAssemblyAPi = (tabId) => {
-    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
+    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {   // ASSEMBLY TECHNOLOGY
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
@@ -393,7 +396,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                RM + CC
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -424,12 +427,16 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              <TabRMCC
+              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}
-
-              />
+              /> :
+                <TabRMCC
+                  setHeaderCost={props.setHeaderCost}
+                  backBtn={props.backBtn}
+                  activeTab={activeTab}
+                />}
             </TabPane>
             <TabPane tabId="2">
               <TabSurfaceTreatment

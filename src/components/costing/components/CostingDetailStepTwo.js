@@ -1,4 +1,4 @@
-import React, { useEffect, } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -13,6 +13,7 @@ import { useContext } from 'react';
 import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
+import { IdForMultiTechnology } from '../../../config/masterData';
 import { CBCTypeId, NCC, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -45,6 +46,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
+  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
 
   let data = useSelector(state => state.costing)
 
@@ -125,9 +127,10 @@ function CostingDetailStepTwo(props) {
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
-      dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
-      }))
+      setTimeout(() => {
+        dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
+        }))
+      }, 500);
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
     }
@@ -368,7 +371,7 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
+    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
       let tempArrForCosting = reactLocalStorage.getObject('costingArray')
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -430,11 +433,11 @@ function CostingDetailStepTwo(props) {
 
                       {costingType !== NCC && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
-                    </tbody>
-                  </Table>
+                    </tbody >
+                  </Table >
 
                   {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
-                  <div class="table-responsive costing-header-table">
+                  < div class="table-responsive costing-header-table" >
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
@@ -477,9 +480,9 @@ function CostingDetailStepTwo(props) {
                         </tr>
                       </tbody>
                     </Table>
-                  </div>
-                </Col>
-              </Row>
+                  </div >
+                </Col >
+              </Row >
               <Row>
                 <Col md="3">
                   <button
@@ -520,10 +523,10 @@ function CostingDetailStepTwo(props) {
                   </costingInfoContext.Provider>
                 </Col>
               </Row>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            </div >
+          </Col >
+        </Row >
+      </div >
     </>
   );
 };
