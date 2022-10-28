@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { CBCTypeId, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
@@ -242,7 +242,7 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, viewApprovalData[index]?.costingTypeId === ZBCTypeId || viewApprovalData[index]?.costingTypeId === CBCTypeId ? viewApprovalData[index]?.plantId : viewApprovalData[index]?.destinationPlantId, viewApprovalData[index]?.vendorId, viewApprovalData[index]?.CustomerId, viewApprovalData[index]?.CostingTypeId, (res) => {
       if (res.data.Result === true || res.status === 202) {
         let approvedQtyArr = res.data.Data.VolumeApprovedDetails
         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails

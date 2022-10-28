@@ -911,7 +911,6 @@ class SideBar extends Component {
               {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
               <nav className="navbar navbar-expand-lg pl-0">
                 <ul className="navbar-nav mr-auto">
-                  { }
                   {topAndLeftMenuData &&
                     topAndLeftMenuData.map((item, index) => {
 
