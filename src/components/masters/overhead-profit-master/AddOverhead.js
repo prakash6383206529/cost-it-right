@@ -1060,86 +1060,78 @@ class AddOverhead extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                        {
-                          !isHideOverhead && (
-                            <Col md="3">
-                              <Field
-                                label={`Overhead (%)`}
-                                name={"OverheadPercentage"}
-                                type="text"
-                                placeholder={isOverheadPercent || isViewMode ? "-" : "Enter"}
-                                validate={
-                                  !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
-                                }
-                                component={renderNumberInputField}
-                                onBlur={this.handlePercent}
-                                required={!isOverheadPercent ? true : false}
-                                onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
-                                className=""
-                                customClassName=" withBorder"
-                                maxLength={15}
-                                disabled={isOverheadPercent || isViewMode ? true : false}
-                              />
-                            </Col>
-                          )
-                        }
-                        {
-                          !isHideRM && (
-                            <Col md="3">
-                              <Field
-                                label={`Overhead on RM (%)`}
-                                name={"OverheadRMPercentage"}
-                                type="text"
-                                placeholder={isRM || isViewMode ? "-" : "Enter"}
-                                validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                                component={renderNumberInputField}
-                                required={!isRM ? true : false}
-                                onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isRM || isViewMode ? true : false}
-                              />
-                            </Col>
-                          )
-                        }
-                        {
-                          !isHideCC && (
-                            <Col md="3">
-                              <Field
-                                label={`Overhead on CC (%)`}
-                                name={"OverheadMachiningCCPercentage"}
-                                type="text"
-                                placeholder={isCC || isViewMode ? "-" : "Enter"}
-                                validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                                component={renderNumberInputField}
-                                required={!isCC ? true : false}
-                                onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isCC || isViewMode ? true : false}
-                              />
-                            </Col>
-                          )
-                        }
-                        {
-                          !isHideBOP && (
-                            <Col md="3">
-                              <Field
-                                label={`Overhead on BOP (%)`}
-                                name={"OverheadBOPPercentage"}
-                                type="text"
-                                placeholder={isBOP || isViewMode ? "-" : "Enter"}
-                                validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                                component={renderNumberInputField}
-                                required={!isBOP ? true : false}
-                                onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isBOP || isViewMode ? true : false}
-                              />
-                            </Col>
-                          )
-                        }
+                        {!isHideOverhead && (
+                          <Col md="3">
+                            <Field
+                              label={`Overhead (%)`}
+                              name={"OverheadPercentage"}
+                              type="text"
+                              placeholder={isOverheadPercent || isViewMode ? "-" : "Enter"}
+                              validate={
+                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
+                              }
+                              component={renderNumberInputField}
+                              onBlur={this.handlePercent}
+                              required={!isOverheadPercent ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
+                              className=""
+                              customClassName=" withBorder"
+                              maxLength={15}
+                              disabled={isOverheadPercent || isViewMode ? true : false}
+                            />
+                          </Col>
+                        )}
+                        {!isHideRM && (
+                          <Col md="3">
+                            <Field
+                              label={`Overhead on RM (%)`}
+                              name={"OverheadRMPercentage"}
+                              type="text"
+                              placeholder={isRM || isViewMode ? "-" : "Enter"}
+                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              component={renderNumberInputField}
+                              required={!isRM ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isRM || isViewMode ? true : false}
+                            />
+                          </Col>
+                        )}
+                        {!isHideCC && (
+                          <Col md="3">
+                            <Field
+                              label={`Overhead on CC (%)`}
+                              name={"OverheadMachiningCCPercentage"}
+                              type="text"
+                              placeholder={isCC || isViewMode ? "-" : "Enter"}
+                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              component={renderNumberInputField}
+                              required={!isCC ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isCC || isViewMode ? true : false}
+                            />
+                          </Col>
+                        )}
+                        {!isHideBOP && (
+                          <Col md="3">
+                            <Field
+                              label={`Overhead on BOP (%)`}
+                              name={"OverheadBOPPercentage"}
+                              type="text"
+                              placeholder={isBOP || isViewMode ? "-" : "Enter"}
+                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              component={renderNumberInputField}
+                              required={!isBOP ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isBOP || isViewMode ? true : false}
+                            />
+                          </Col>
+                        )}
                         <Col md="3">
 
                           <div className="inputbox date-section form-group">
