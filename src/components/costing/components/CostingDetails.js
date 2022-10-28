@@ -1945,7 +1945,7 @@ function CostingDetails(props) {
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
 
-                                    let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
+                                    let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -2083,7 +2083,7 @@ function CostingDetails(props) {
                               <tbody>
                                 {nccGrid && nccGrid.map((item, index) => {
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (
@@ -2186,7 +2186,7 @@ function CostingDetails(props) {
                                 {isVBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (

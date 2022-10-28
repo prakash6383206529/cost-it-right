@@ -8,6 +8,7 @@ import Switch from "react-switch";
 import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
@@ -17,7 +18,7 @@ function PaymentTerms(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     const dispatch = useDispatch()
-
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
@@ -82,6 +83,7 @@ function PaymentTerms(props) {
                 costingTypeId: costData.CostingTypeId,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId)) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {

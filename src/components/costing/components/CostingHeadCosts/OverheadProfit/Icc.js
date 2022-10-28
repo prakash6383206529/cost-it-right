@@ -8,6 +8,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function Icc(props) {
 
@@ -28,6 +29,7 @@ function Icc(props) {
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
 
@@ -63,6 +65,7 @@ function Icc(props) {
                 costingTypeId: costData.CostingTypeId,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
