@@ -115,14 +115,16 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isActive = rowData?.IsActive
+        let quotationReceived = rowData.CostingReceived === 0
         return (
             <>
                 {isActive && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isActive && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isActive && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {isActive && quotationReceived && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isActive && quotationReceived && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -184,14 +186,20 @@ function RfqListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        return (
-            <>
-                <div
-                    onClick={() => viewDetails(row.QuotationId)}
-                    className={'link'}
-                >{cell}</div>
-            </>
-        )
+        if (row?.IsActive) {
+            return (
+                <>
+                    <div
+                        onClick={() => viewDetails(row.QuotationId)}
+                        className={'link'}
+                    >{cell}</div>
+                </>
+            )
+        } else {
+
+            return cell ? cell : "-"
+
+        }
     }
 
     const attachmentFormatter = (props) => {
