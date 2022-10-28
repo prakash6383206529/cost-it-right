@@ -531,7 +531,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalData = (costingIds) => {
-
     let temp = viewApprovalData
     costingIds &&
       costingIds.map((id) => {
@@ -569,7 +568,8 @@ const CostingSummaryTable = (props) => {
             } else {
               year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
             }
-            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, res => {
+
+            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, viewCostingData[index]?.costingTypeId === ZBCTypeId || viewCostingData[index]?.costingTypeId === CBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId, viewCostingData[index]?.vendorId, viewCostingData[index]?.customerId, viewCostingData[index]?.costingTypeId, res => {
               if (res.data?.Result === true || res.status === 202) {
                 let approvedQtyArr = res.data?.Data?.VolumeApprovedDetails
                 let budgetedQtyArr = res.data?.Data?.VolumeBudgetedDetails

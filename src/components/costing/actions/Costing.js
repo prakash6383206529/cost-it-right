@@ -891,7 +891,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config())
+    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.customerId}/${data.plantId}/${data.costingTypeId}`, config())
     request
       .then((response) => {
         callback(response)
@@ -1750,18 +1750,19 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   })
 }
 
-export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, destinationPlantId, callback) {
+export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
   return (dispatch) => {
-    if (partNo !== '' && VendorId !== '' && VendorPlantId !== '') {
-      const query = `${partNo}/${VendorId}/${VendorPlantId === '-' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '-' ? EMPTY_GUID : destinationPlantId}`
+    if (partId !== '') {
+      const query = `${partId}/${VendorId === '' ? EMPTY_GUID : VendorId}/${VendorPlantId === '' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '' ? EMPTY_GUID : destinationPlantId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId === '' ? EMPTY_GUID : costingTypeId}`
       const request = axios.get(`${API.getCostingByVendorVendorPlant}/${query}`, config(),)
       request.then((response) => {
-        callback(response)
+
         if (response.data.Result || response.status === 204) {
           dispatch({
             type: GET_COST_SUMMARY_BY_PART_PLANT,
             payload: response.status === 204 ? [] : response.data.DataList,
           })
+          callback(response)
         }
       }).catch((error) => {
         dispatch({ type: API_FAILURE })

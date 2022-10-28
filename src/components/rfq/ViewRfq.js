@@ -115,32 +115,22 @@ function RfqListing(props) {
         setSendForApproval(true)
     }
 
-
     const rejectDetails = (Id, rowData = {}) => {
-
 
         if (selectedRows.length === 0) {
             setSelectedRows([rowData])
         }
 
-
         setTimeout(() => {
             setRejectDrawer(true)
         }, 600);
-
     }
-
 
     const cancel = () => {
-
         props.closeDrawer()
-
     }
 
-
     const sendForApprovalData = (rowData) => {
-
-
 
         let temp = []
         let index = 0
@@ -151,8 +141,6 @@ function RfqListing(props) {
         } else {
             quotationGrid = [rowData]
         }
-
-
 
         quotationGrid &&
             quotationGrid.map((id, index) => {
@@ -201,7 +189,7 @@ function RfqListing(props) {
                         } else {
                             year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
                         }
-                        dispatch(getVolumeDataByPartAndYear(quotationGrid[index].PartId, year, res => {
+                        dispatch(getVolumeDataByPartAndYear(quotationGrid[index].PartId, year, quotationGrid[index].PlantId, quotationGrid[index].VendorId, '', VBCTypeId, res => {
                             if (res.data?.Result === true || res.status === 202) {
                                 let approvedQtyArr = res.data?.Data?.VolumeApprovedDetails
                                 let budgetedQtyArr = res.data?.Data?.VolumeBudgetedDetails
