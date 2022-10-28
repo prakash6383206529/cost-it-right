@@ -1758,7 +1758,7 @@ export const COMBINED_PROCESS_NAME = 'Combined Process';
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
-export const NCC_COSTING = 'Costing - NBC';
+export const NCC_COSTING = 'Costing - NCC';
 
 export const USER = 'User'
 export const ROLE = 'Role'
