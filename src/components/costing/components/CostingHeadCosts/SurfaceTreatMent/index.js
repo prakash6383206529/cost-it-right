@@ -17,6 +17,7 @@ import { ASSEMBLY, IdForMultiTechnology } from '../../../../../config/masterData
 import { debounce } from 'lodash';
 // import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -167,9 +168,8 @@ function SurfaceTreatment(props) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         } else if (partType) {
           setTimeout(() => {
-            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
-            // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-            dispatch(gridDataAdded(true))
+            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
           }, 500);
         }
 

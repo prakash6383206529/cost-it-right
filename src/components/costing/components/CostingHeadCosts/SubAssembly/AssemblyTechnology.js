@@ -89,6 +89,27 @@ function AssemblyTechnology(props) {
             } else {
                 props.toggleAssembly(BOMLevel, PartNumber)
             }
+
+
+
+
+
+
+
+            // if (Object.keys(costData).length > 0) {
+            //     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+            //     let costPerPieceTotal = 0
+            //     let CostPerAssemblyBOPTotal = 0
+
+            //     tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+            //         costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+            //         CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) * checkForNull(item?.Quantity))
+            //         return null
+            //     })
+            //     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
+            //     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerPieceTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
+            //     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+            // }
         }
     }
 

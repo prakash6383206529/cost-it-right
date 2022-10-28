@@ -41,7 +41,7 @@ function MultiDropdownFloatingFilter(props) {
 
     useEffect(() => {
 
-        dispatch(fetchCostingHeadsAPI('--Costing Heads--', res => {
+        dispatch(fetchCostingHeadsAPI('master', res => {
             if (res) {
                 let temp = []
                 res?.data?.SelectList && res?.data?.SelectList.map((item) => {

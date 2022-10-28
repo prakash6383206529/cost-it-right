@@ -7,8 +7,11 @@ import { gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCa
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
-import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { ASSEMBLY } from '../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../config/masterData';
+import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
+import { useEffect } from 'react';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -16,15 +19,23 @@ function AddAssemblyOperation(props) {
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const [operationGridData, setOperationGridData] = useState([]);
-  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0);
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost);
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
   const dispatch = useDispatch()
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const netPOPrice = useContext(NetPOPriceContext);
+
+  useEffect(() => {
+    let operationCost = operationGridData && operationGridData.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.OperationCost)
+    }, 0)
+    setOperationCostAssemblyTechnology(operationCost)
+  }, [operationGridData])
 
   /**
   * @method toggleDrawer
@@ -48,6 +59,33 @@ function AddAssemblyOperation(props) {
   const getOperationGrid = (grid, operationCostAssemblyTechnology) => {
     setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
     setOperationGridData(grid)
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+
+    let costPerPieceTotal = 0
+    tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+      costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+      return null
+    })
+
+    let totalOperationCost = grid && grid.length > 0 && grid.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el?.OperationCost)
+    }, 0)
+
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
+      checkForNull(costPerPieceTotal) +
+      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+      checkForNull(totalOperationCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
+      checkForNull(costPerPieceTotal) +
+      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+      checkForNull(totalOperationCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost;
+
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+
   }
 
   /**

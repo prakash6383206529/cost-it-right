@@ -76,7 +76,7 @@ class AddOverhead extends Component {
    */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
+    this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }

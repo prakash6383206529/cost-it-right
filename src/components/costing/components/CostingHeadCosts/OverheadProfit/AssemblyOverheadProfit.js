@@ -6,9 +6,10 @@ import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTw
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
-import { createToprowObjAndSave } from '../../../CostingUtil';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 
 function AssemblyOverheadProfit(props) {
   const { item } = props;
@@ -21,7 +22,10 @@ function AssemblyOverheadProfit(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   const dispatch = useDispatch()
 
@@ -79,6 +83,8 @@ function AssemblyOverheadProfit(props) {
     const tabData = RMCCTabData && RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
+    const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+    const toolTabData = ToolTabData && ToolTabData[0]
 
     const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
     let reqData = {
@@ -106,6 +112,21 @@ function AssemblyOverheadProfit(props) {
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
+
+      let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+      tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost)
+
+      let totalCost = ((checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+        checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
+        + checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost)) -
+        checkForNull(DiscountCostData?.HundiOrDiscountValue))
+        + checkForNull(DiscountCostData?.AnyOtherCost)
+
+      let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+      dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
