@@ -86,12 +86,12 @@ function RfqListing(props) {
         dispatch(cancelRfqQuotation(id, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
+                setTimeout(() => {
+                    getDataList()
+                }, 500);
             }
         }))
-        getDataList()
     }
-
-
 
     /**
     * @method confirmDelete
