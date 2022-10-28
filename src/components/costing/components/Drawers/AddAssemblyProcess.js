@@ -10,9 +10,10 @@ import { saveAssemblyCostingRMCCTab } from '../../actions/Costing';
 import { useContext } from 'react';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
+import { ViewCostingContext } from '../CostingDetails';
 
 function AddAssemblyProcess(props) {
-  const { item, CostingViewMode } = props;
+  const { item } = props;
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const [processGrid, setProcessGrid] = useState(subAssemblyTechnologyArray ? { CostingProcessCostResponse: subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse, ProcessCostTotal: subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost } : []);
   const [totalProcessCost, setTotalProcessCost] = useState(0);
@@ -20,6 +21,7 @@ function AddAssemblyProcess(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext)
   const { ToolTabData, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
+  const CostingViewMode = useContext(ViewCostingContext);
 
   // useEffect(() => {
   //   let obj = {
@@ -233,7 +235,7 @@ function AddAssemblyProcess(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  disabled={CostingViewMode}
+                  disabled={CostingViewMode ? true : false}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >
