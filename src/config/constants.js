@@ -1730,7 +1730,7 @@ export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
-export const NCC_COSTING = 'Costing - NBC';
+export const NCC_COSTING = 'Costing - NCC';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -2050,4 +2050,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.598";
+export const VERSION = "V1.2.599";
