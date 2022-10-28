@@ -19,6 +19,7 @@ import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { hyphenFormatter } from '../../../masters/masterUtil';
+import { ViewCostingContext } from '../CostingDetails';
 
 const gridOptions = {};
 
@@ -38,6 +39,7 @@ function AddProcess(props) {
   const costData = useContext(costingInfoContext)
   const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup, selectedProcessId, selectedProcessGroupId } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
+  const CostingViewMode = useContext(ViewCostingContext);
 
   /**
   * @method toggleDrawer
@@ -397,7 +399,9 @@ function AddProcess(props) {
                   <button
                     type={'button'}
                     className="submit-button save-btn"
-                    onClick={addRow} >
+                    onClick={addRow}
+                    disabled={CostingViewMode}
+                  >
                     <div className={'save-icon'}></div>
                     {'SELECT'}
                   </button>

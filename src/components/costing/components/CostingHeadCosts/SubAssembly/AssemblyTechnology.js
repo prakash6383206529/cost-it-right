@@ -49,7 +49,7 @@ function AssemblyTechnology(props) {
                 }
 
                 dispatch(getRMCCTabData(data, false, (res) => {
-                    if (res && res.data && res.data.Result) {
+                    if (res && res.data && res.data.Result && CostingViewMode === false) {
                         let Data = res.data.DataList;
                         let tempsubAssemblyTechnologyArray = Data
                         let costPerPieceTotal = 0
@@ -86,27 +86,6 @@ function AssemblyTechnology(props) {
             } else {
                 props.toggleAssembly(BOMLevel, PartNumber)
             }
-
-
-
-
-
-
-
-            // if (Object.keys(costData).length > 0) {
-            //     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-            //     let costPerPieceTotal = 0
-            //     let CostPerAssemblyBOPTotal = 0
-
-            //     tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-            //         costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
-            //         CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) * checkForNull(item?.Quantity))
-            //         return null
-            //     })
-            //     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
-            //     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerPieceTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
-            //     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
-            // }
         }
     }
 
@@ -297,7 +276,7 @@ function AssemblyTechnology(props) {
                             onClick={ProcessDrawerToggle}
                             title={'Add Process'}
                         >
-                            <div className={'plus'}></div>PROC
+                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
                         </button>
 
                         <button
@@ -306,7 +285,7 @@ function AssemblyTechnology(props) {
                             onClick={OperationDrawerToggle}
                             title={"Add Operation"}
                         >
-                            <div className={'plus'}></div>OPER
+                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`OPER`}
                         </button>
                     </div>
                 </td> :
