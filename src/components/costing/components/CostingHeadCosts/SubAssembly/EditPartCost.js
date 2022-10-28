@@ -14,6 +14,7 @@ import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function EditPartCost(props) {
 
@@ -22,6 +23,7 @@ function EditPartCost(props) {
     const [weightedCost, setWeightedCost] = useState(0)
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const dispatch = useDispatch()
 
@@ -341,6 +343,7 @@ function EditPartCost(props) {
                                         register={register}
                                         options={renderListing("CostingNumber")}
                                         handleChange={(e) => handleChangeCostingNumber(e)}
+                                        disabled={CostingViewMode ? true : false}
                                     />
 
                                     <button
@@ -348,6 +351,7 @@ function EditPartCost(props) {
                                         className={"user-btn "}
                                         onClick={() => addGrid()}
                                         title="Add"
+                                        disabled={CostingViewMode ? true : false}
                                     >
                                         <div className={"plus "}></div>Add
                                     </button>
@@ -392,6 +396,7 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
+                                                                disabled={CostingViewMode ? true : false}
                                                             />
                                                         </td>
                                                         <td >
@@ -407,6 +412,7 @@ function EditPartCost(props) {
                                                                     options={optionsForDelta}
                                                                     mandatory={true}
                                                                     handleChange={(e) => handleDeltaSignChange(e, index)}
+                                                                    disabled={CostingViewMode ? true : false}
                                                                 />
 
                                                                 <NumberFieldHookForm
@@ -426,6 +432,7 @@ function EditPartCost(props) {
                                                                     defaultValue={''}
                                                                     className=""
                                                                     customClassName={'withBorder'}
+                                                                    disabled={CostingViewMode ? true : false}
                                                                 />
                                                             </div>
                                                         </td>
@@ -477,6 +484,7 @@ function EditPartCost(props) {
                                     type={'submit'}
                                     className="submit-button save-btn"
                                     onClick={handleSubmit(onSubmit)}
+                                    disabled={CostingViewMode ? true : false}
                                 >
                                     <div className={"save-icon"}></div>
                                     {'SAVE'}

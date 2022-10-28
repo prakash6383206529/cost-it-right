@@ -13,7 +13,7 @@ import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -58,6 +58,7 @@ function OverheadProfit(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
+  const costingHead = useSelector(state => state.comman.costingHead)
 
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, RMCCutOffObj } = useSelector(state => state.costing)
 
@@ -65,6 +66,7 @@ function OverheadProfit(props) {
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
+  const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
@@ -238,6 +240,7 @@ function OverheadProfit(props) {
     if (!CostingViewMode) {
       dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
       dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
+      setApplicabilityList(_.map(costingHead, 'Text'))
     }
   }, []);
 
@@ -334,24 +337,27 @@ function OverheadProfit(props) {
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
-            setOverheadObj(Data.CostingOverheadDetail)
-            setProfitObj(Data.CostingProfitDetail)
-
-            if (Data.CostingOverheadDetail) {
-              setTimeout(() => {
-                setOverheadValues(Data.CostingOverheadDetail, true)
-              }, 200)
+            if (applicabilityList.includes(Data?.CostingOverheadDetail?.OverheadApplicability)) {
+              setOverheadObj(Data?.CostingOverheadDetail)
+              if (Data.CostingOverheadDetail) {
+                setTimeout(() => {
+                  setOverheadValues(Data.CostingOverheadDetail, true)
+                }, 200)
+              }
+              dispatch(gridDataAdded(true))
             }
 
-            if (Data.CostingProfitDetail) {
-              setTimeout(() => {
-                setProfitValues(Data.CostingProfitDetail, true)
-              }, 200)
+            if (applicabilityList.includes(Data?.CostingOverheadDetail?.CostingProfitDetail)) {
+              setProfitObj(Data.CostingProfitDetail)
+              if (Data.CostingProfitDetail) {
+                setTimeout(() => {
+                  setProfitValues(Data.CostingProfitDetail, true)
+                }, 200)
+              }
+              dispatch(gridDataAdded(true))
             }
-
             //setRejectionObj(Data.CostingRejectionDetail)
             // setIsSurfaceTreatmentAdded(false)
-            dispatch(gridDataAdded(true))
           }
         }))
       } else {
@@ -424,7 +430,9 @@ function OverheadProfit(props) {
           OverheadCombinedTotalCost: checkForNull(CutOffRMBOPCCTotal) * calculatePercentage(checkForNull(dataObj?.OverheadPercentage)),
         })
       }
+
       if (dataObj?.IsOverheadRMApplicable && dataObj?.IsOverheadBOPApplicable && dataObj?.IsOverheadCCApplicable) {
+        //RM
         setValue('OverheadRMPercentage', checkForDecimalAndNull(OverheadRMPercentage, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -448,8 +456,10 @@ function OverheadProfit(props) {
           OverheadCCTotalCost: OverheadCCTotalCost
         })
       }
+
       if (dataObj?.IsOverheadRMApplicable && !dataObj?.IsOverheadBOPApplicable && !dataObj?.IsOverheadCCApplicable) {
-        setValue('OverheadRMPercentage', checkForDecimalAndNull(OverheadRMPercentage, initialConfiguration.NoOfDecimalForPrice))
+
+        setValue('OverheadRMPercentage', OverheadRMPercentage)
         setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice))
         setTempOverheadObj({

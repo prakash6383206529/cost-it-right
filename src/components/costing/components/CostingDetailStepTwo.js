@@ -268,12 +268,14 @@ function CostingDetailStepTwo(props) {
       let totalCost = ''
       switch (Text) {
         case 'RM':
+        case 'Part Cost':
           totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
           break;
         case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
           break;
         case 'RM + CC':
+        case 'Part Cost + CC':
           totalCost = (RMCC) * calculatePercentage(percent)
           break;
         case 'BOP + CC':
@@ -283,9 +285,11 @@ function CostingDetailStepTwo(props) {
           totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
           break;
         case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
           totalCost = (RMBOPCC) * calculatePercentage(percent)
           break;
         case 'RM + BOP':
+        case 'Part Cost + BOP':
           totalCost = (RMBOP) * calculatePercentage(percent)
           break;
         case 'Net Cost':
