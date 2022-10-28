@@ -150,7 +150,7 @@ export function getSettledCostingDetails(CostingId, callback) {
         if (response.data.Result) {
           dispatch({
             type: GET_SETTLED_COSTING_DETAILS,
-            payload: response.data.DataList,
+            payload: response.data.Data,
           })
           callback(response);
         }

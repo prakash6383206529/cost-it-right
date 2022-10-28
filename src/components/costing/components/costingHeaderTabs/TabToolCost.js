@@ -23,10 +23,11 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 
 function TabToolCost(props) {
 
@@ -50,6 +51,7 @@ function TabToolCost(props) {
   const [gridData, setGridData] = useState([])
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
   const [disableSwitch, setDisableSwitch] = useState(false)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -254,6 +256,9 @@ function TabToolCost(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
+      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+      const toolTabData = ToolTabData && ToolTabData[0]
+
       const data = {
         "IsToolCostProcessWise": IsApplicableProcessWise,
         "CostingId": costData.CostingId,
@@ -272,7 +277,23 @@ function TabToolCost(props) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
+      if (partType) {
 
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetToolCost = ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+      }
 
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
@@ -351,9 +372,9 @@ function TabToolCost(props) {
 
 
   /**
-* @method DrawerToggle
-* @description TOGGLE DRAWER
-*/
+  * @method DrawerToggle
+  * @description TOGGLE DRAWER
+  */
   const DrawerToggle = () => {
     setEditIndex('')
     setRowObjData(gridData)

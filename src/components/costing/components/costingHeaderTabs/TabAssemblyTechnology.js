@@ -64,14 +64,14 @@ function TabAssemblyTechnology(props) {
       let TopHeaderValues = subAssemblyTechnologyArray && subAssemblyTechnologyArray.length > 0 && subAssemblyTechnologyArray[0].CostingPartDetails !== undefined ? subAssemblyTechnologyArray[0].CostingPartDetails : null;
       let topHeaderData = {};
       topHeaderData = {
-        NetRawMaterialsCost: TopHeaderValues?.EditPartCost ? TopHeaderValues.EditPartCost : 0,
-        NetBoughtOutPartCost: TopHeaderValues?.CostPerAssemblyBOP ? TopHeaderValues.CostPerAssemblyBOP : 0,
-        NetConversionCost: (TopHeaderValues?.OperationCostValue || TopHeaderValues?.ProcessCostValue) ? (checkForNull(TopHeaderValues?.ProcessCostValue) + checkForNull(TopHeaderValues?.OperationCostValue)) : 0,
+        NetRawMaterialsCost: TopHeaderValues?.NetChildPartsCost ? TopHeaderValues.NetChildPartsCost : 0,
+        NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCost ? TopHeaderValues.TotalBoughtOutPartCost : 0,
+        NetConversionCost: (TopHeaderValues?.TotalOperationCost || TopHeaderValues?.TotalProcessCost) ? (checkForNull(TopHeaderValues?.TotalProcessCost) + checkForNull(TopHeaderValues?.TotalOperationCost)) : 0,
         NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
-        NetTotalRMBOPCC: TopHeaderValues?.CostPerAssembly ? TopHeaderValues.CostPerAssembly : 0,
+        NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
         OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,   //HELP
-        ProcessCostTotal: TopHeaderValues?.ProcessCostValue ? TopHeaderValues?.ProcessCostValue : 0,
-        OperationCostTotal: TopHeaderValues?.OperationCostValue ? TopHeaderValues?.OperationCostValue : 0,
+        ProcessCostTotal: TopHeaderValues?.TotalProcessCost ? TopHeaderValues?.TotalProcessCost : 0,
+        OperationCostTotal: TopHeaderValues?.TotalOperationCost ? TopHeaderValues?.TotalOperationCost : 0,
         TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
         TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
         TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
@@ -82,12 +82,12 @@ function TabAssemblyTechnology(props) {
 
   const setOperationCostFunction = (value, gridData) => {
 
-    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue = value
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostGrid = gridData
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
-    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+    // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+    // // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
+    // tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = value
+    // tempsubAssemblyTechnologyArray[0].CostingPartDetails.AssemblyCostingOperationCostRequest = gridData
+    // tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost)) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+    // dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
 
   /**
@@ -239,8 +239,8 @@ function TabAssemblyTechnology(props) {
   const setBOPCostWithAsssembly = (obj, item) => {
     let totalBOPCost = checkForNull(obj?.BOPHandlingChargeApplicability) + checkForNull(obj?.BOPHandlingCharges)
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(totalBOPCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost = checkForNull(totalBOPCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges = checkForNull(obj?.BOPHandlingCharges)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingPercentage = checkForNull(obj?.BOPHandlingPercentage)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges
@@ -275,11 +275,11 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '130px' }}>{`Technology`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} </th>
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Pc`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Pc`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`BOP Cost`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Assembly`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Assembly`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th> */}
                           {
                             costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{
@@ -314,7 +314,7 @@ function TabAssemblyTechnology(props) {
                     </Table>
                   </Col>
                 </Row>
-                {
+                {/* {
                   isOpenBOPDrawer &&
                   <AddBOPHandling
                     isOpen={isOpenBOPDrawer}
@@ -325,7 +325,7 @@ function TabAssemblyTechnology(props) {
                     isAssemblyTechnology={true}
                     setBOPCostWithAsssembly={setBOPCostWithAsssembly}
                   />
-                }
+                } */}
 
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">

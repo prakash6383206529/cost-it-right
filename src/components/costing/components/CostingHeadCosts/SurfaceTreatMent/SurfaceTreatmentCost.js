@@ -26,7 +26,7 @@ function SurfaceTreatmentCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails)
+  const [gridData, setGridData] = useState(surfaceData && surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])

@@ -31,7 +31,7 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0)
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -177,6 +177,12 @@ function OperationCost(props) {
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
+    let totalFinishWeight = 0
+    totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.OperationCost)
+    }, 0)
+    props.getOperationGrid(tempArr, totalFinishWeight)
+
   }
 
   const editItem = (index) => {
@@ -226,6 +232,10 @@ function OperationCost(props) {
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el?.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
     } else {

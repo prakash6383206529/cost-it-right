@@ -12,9 +12,10 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 
 function TabPackagingFreight(props) {
 
@@ -29,6 +30,7 @@ function TabPackagingFreight(props) {
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -158,6 +160,9 @@ function TabPackagingFreight(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
+      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+      const toolTabData = ToolTabData && ToolTabData[0]
+
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -176,6 +181,24 @@ function TabPackagingFreight(props) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
+
+      if (partType) {
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost = PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost) +
+          checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+      }
+
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);

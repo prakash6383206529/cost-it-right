@@ -924,7 +924,7 @@ function CostingDetails(props) {
         CustomerCode: type === CBCTypeId ? tempData.CustomerCode : ''
       }
       if (IdForMultiTechnology.includes(technology?.value)) {
-        data.Technology = "string"//______
+        data.Technology = technology.label//______
         data.CostingHead = "string"//______
         data.IsVendor = true//______
         data.GroupCode = "string"//______

@@ -1180,15 +1180,38 @@ function TabSurfaceTreatment(props) {
   */
   const onSubmit = (values) => { }
 
-  const setSurfaceTreatmentCostAssemblyTechnology = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost, surfaceTreatmentGrid, transportationGrid) => {
+  const setSurfaceTreatmentCostAssemblyTechnology = (surfaceTreatmentGrid, transportationGrid, params) => {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost
+    let surfacetreatmentSum = 0
+    surfacetreatmentSum = surfaceTreatmentGrid && surfaceTreatmentGrid.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.SurfaceTreatmentCost)
+    }, 0)
+
+    let totalCost = checkForNull(surfacetreatmentSum) + checkForNull(transportationGrid?.TransportationCost)
+
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = surfacetreatmentSum
+
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentGrid = surfaceTreatmentGrid
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = TransportationCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentDetails = surfaceTreatmentGrid
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = transportationGrid?.TransportationCost
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationGrid = transportationGrid.tempObj
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationDetails = transportationGrid
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = totalCost
+
+
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+
+    setSurfaceCost(surfaceTreatmentGrid, params)
+    setTransportationCost(transportationGrid, params)
+    // props.setTransportationCost(transportObj, transportationObject.Params)
+
+
+    // dispatch(setSurfaceData(tempsubAssemblyTechnologyArray, () => { }))
+    // // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
+    // reactLocalStorage.setObject('surfaceCostingArray', [])
+    // reactLocalStorage.setObject('surfaceCostingArray', tempsubAssemblyTechnologyArray)
+
   }
 
   return (
