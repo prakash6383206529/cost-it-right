@@ -1707,6 +1707,8 @@ export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
 export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
+export const COMBINED_PROCESS_NAME = 'Combined Process';
+
 export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
