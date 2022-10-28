@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
+import { DRAFT, EMPTY_DATA, EMPTY_GUID, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -115,24 +115,18 @@ function RfqListing(props) {
         setSendForApproval(true)
     }
 
-
     const rejectDetails = (Id, rowData = {}) => {
-
 
         if (selectedRows.length === 0) {
             setSelectedRows([rowData])
         }
 
-
         setTimeout(() => {
             setRejectDrawer(true)
         }, 600);
-
     }
 
     const sendForApprovalData = (rowData) => {
-
-
 
         let temp = []
         let index = 0
@@ -143,8 +137,6 @@ function RfqListing(props) {
         } else {
             quotationGrid = [rowData]
         }
-
-
 
         quotationGrid &&
             quotationGrid.map((id, index) => {
@@ -193,7 +185,7 @@ function RfqListing(props) {
                         } else {
                             year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
                         }
-                        dispatch(getVolumeDataByPartAndYear(quotationGrid[index].PartId, year, res => {
+                        dispatch(getVolumeDataByPartAndYear(quotationGrid[index].PartId, year, quotationGrid[index].PlantId, quotationGrid[index].VendorId, '', VBCTypeId, res => {
                             if (res.data?.Result === true || res.status === 202) {
                                 let approvedQtyArr = res.data?.Data?.VolumeApprovedDetails
                                 let budgetedQtyArr = res.data?.Data?.VolumeBudgetedDetails

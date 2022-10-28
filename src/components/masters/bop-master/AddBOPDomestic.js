@@ -719,7 +719,7 @@ class AddBOPDomestic extends Component {
         LoggedInUserId: loggedInUserId(),
         Plant: [plantArray],
         VendorPlant: [],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
         CustomerId: client.value
       }
