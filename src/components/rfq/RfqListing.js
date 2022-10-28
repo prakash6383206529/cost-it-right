@@ -37,6 +37,7 @@ function RfqListing(props) {
 
 
     useEffect(() => {
+        setloader(true)
         getDataList()
 
     }, [])
@@ -55,6 +56,7 @@ function RfqListing(props) {
                 temp.push(item)
             })
             setRowData(temp)
+            setloader(false)
         }))
     }
 
@@ -113,14 +115,16 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isActive = rowData?.IsActive
+        let quotationReceived = rowData.CostingReceived === 0
         return (
             <>
                 {isActive && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isActive && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isActive && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {isActive && quotationReceived && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isActive && quotationReceived && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -182,14 +186,20 @@ function RfqListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        return (
-            <>
-                <div
-                    onClick={() => viewDetails(row.QuotationId)}
-                    className={'link'}
-                >{cell}</div>
-            </>
-        )
+        if (row?.IsActive) {
+            return (
+                <>
+                    <div
+                        onClick={() => viewDetails(row.QuotationId)}
+                        className={'link'}
+                    >{cell}</div>
+                </>
+            )
+        } else {
+
+            return cell ? cell : "-"
+
+        }
     }
 
     const attachmentFormatter = (props) => {
@@ -247,10 +257,11 @@ function RfqListing(props) {
 
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
+            {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                 <>
-
+                    <h1 className='mb-0'>RFQ</h1>
                     <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
@@ -261,7 +272,6 @@ function RfqListing(props) {
                                 <>
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <>
-
                                             <button
                                                 type="button"
                                                 className={"user-btn mr5"}
@@ -287,7 +297,7 @@ function RfqListing(props) {
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
-                                <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
@@ -329,7 +339,7 @@ function RfqListing(props) {
                         </Col>
                     </Row>
 
-                </>)
+                </>))
             }
 
             {addRfq &&

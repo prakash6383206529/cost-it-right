@@ -568,8 +568,8 @@ class AddOperation extends Component {
     }
     this.setState({ isVendorNameNotSelected: false })
 
-    console.log('destinationPlant.value: ', destinationPlant.value);
-    console.log('destinationPlant.label: ', destinationPlant.label);
+
+
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
