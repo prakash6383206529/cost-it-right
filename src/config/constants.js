@@ -1707,6 +1707,8 @@ export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
 export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
+export const COMBINED_PROCESS_NAME = 'Combined Process';
+
 export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
@@ -2019,4 +2021,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.585";
+export const VERSION = "V1.2.585.1";

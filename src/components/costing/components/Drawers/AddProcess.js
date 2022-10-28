@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { COMBINED_PROCESS_NAME, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -74,9 +74,10 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (groupMachineId === '') {
-      setTableDataList(processDrawerList)
+      const filteredData = processDrawerList && processDrawerList.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME);
+      setTableDataList(filteredData)
     } else {
-      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
+      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId && item.ProcessName !== COMBINED_PROCESS_NAME)
       setTableDataList(filteredData)
     }
   }, [processDrawerList])
@@ -103,7 +104,8 @@ function AddProcess(props) {
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          setTableDataList(Data)
+          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
+          setTableDataList(filteredData)
         } else if (res && res.response && res.response.status === 412) {
           setTableDataList([])
         } else {
@@ -136,7 +138,8 @@ function AddProcess(props) {
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          setTableDataList(Data)
+          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
+          setTableDataList(filteredData)
         } else if (res && res.response && res.response.status === 412) {
           setTableDataList([])
         } else {
