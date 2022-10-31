@@ -252,7 +252,7 @@ function Rejection(props) {
                     break;
             }
         }
-        dispatch(isOverheadProfitDataChange(true))   // ASSEMBLY TECHNOLOGY
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     const handleChangeRejectionPercentage = (event) => {

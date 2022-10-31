@@ -49,7 +49,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const costingApprovalStatus = useContext(CostingStatusContext);
   useEffect(() => {
@@ -241,7 +241,7 @@ function CostingHeaderTabs(props) {
 
 
   const callAssemblyAPi = (tabId) => {
-    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {   // ASSEMBLY TECHNOLOGY
+    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
