@@ -42,9 +42,9 @@ function SurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
-  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails?.SurfaceTreatmentDetails)
-  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails?.TransportationDetails)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
 

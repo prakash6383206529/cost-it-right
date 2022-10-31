@@ -23,9 +23,9 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const vbcExistingCosting = useContext(SelectedCostingDetail);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = Number(costData?.TechnologyId) === ASSEMBLY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const vbcExistingCosting = useContext(SelectedCostingDetail);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
