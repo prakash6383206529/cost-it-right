@@ -40,6 +40,7 @@ function CostingBenchmarkReport(props) {
     const [cancelButton, setcancelButton] = useState(false)
     const [dropDown, setDropDown] = useState(true)
     const [blueDivison, setblueDivison] = useState(false)
+    const [dateArray, setDateArray] = useState([])
 
     const dispatch = useDispatch()
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -80,7 +81,8 @@ function CostingBenchmarkReport(props) {
 
     const handleRM = (data) => {
 
-
+        let unique = data.filter((item, i, ar) => ar.indexOf(item) === i);
+        setDateArray(unique)
     }
 
 
@@ -112,15 +114,15 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<Insights data={selectedRowForPagination} />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case RMIMPORT:
-                return (<Insights data={selectedRowForPagination} />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case MACHINERATE:
                 return (<MachineInsights />)
             case BOPDOMESTIC:
-                return (<InsightsBop data={selectedRowForPagination} />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPIMPORT:
-                return (<InsightsBop data={selectedRowForPagination} />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:

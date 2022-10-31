@@ -65,13 +65,21 @@ function RMDomesticListing(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
+    const [inRangeDate, setinRangeDate] = useState([])
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
+
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
             var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            let temp = inRangeDate
+            temp.push(newDate)
+            setinRangeDate(temp)
+            if (props?.benchMark) {
+                props?.handleRM(inRangeDate)
+            }
             setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
@@ -92,6 +100,11 @@ function RMDomesticListing(props) {
         },
         browserDatePicker: true,
         minValidYear: 2000,
+        // filterOptions: [
+
+        //     'inRange'
+
+        // ]
     };
 
     useEffect(() => {
