@@ -72,7 +72,7 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && approvalDetails.TypeOfCosting === VBC) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.TypeOfCosting === VBC)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
