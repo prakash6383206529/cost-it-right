@@ -19,8 +19,8 @@ function AddBOPHandling(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const dispatch = useDispatch()
-  const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);     // ASSEMBLY TECHNOLOGY
-  // const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);     // ASSEMBLY TECHNOLOGY
+  const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);
+  // const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);    
   const [BOPHandlingType, setBOPHandlingType] = useState({})
   const [BOPCost, setBOPCost] = useState(0);
   const { costingData } = useSelector(state => state.costing)
@@ -82,8 +82,8 @@ function AddBOPHandling(props) {
       if (BOPHandlingType === 'Percentage') {
         setValue('BOPHandlingCharges', checkForDecimalAndNull(getValues('BOPCost') * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
         if (partType) {
-          setBOPHandling(BOPCost * calculatePercentage(value))   // ASSEMBLY TECHNOLOGY
-          setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPCost * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))   // ASSEMBLY TECHNOLOGY
+          setBOPHandling(BOPCost * calculatePercentage(value))
+          setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPCost * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
         }
       } else {
         setValue('BOPHandlingCharges', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
@@ -152,9 +152,9 @@ function AddBOPHandling(props) {
     let percentage = getValues('BOPHandlingPercentage')
     let obj = {
       IsApplyBOPHandlingCharges: true,
-      // BOPHandlingChargeApplicability: BOPCost,   // ASSEMBLY TECHNOLOGY
-      // BOPHandlingPercentage: percentage,   // ASSEMBLY TECHNOLOGY
-      // BOPHandlingCharges: BOPHandling   // ASSEMBLY TECHNOLOGY
+      // BOPHandlingChargeApplicability: BOPCost,  
+      // BOPHandlingPercentage: percentage,  
+      // BOPHandlingCharges: BOPHandling  
 
       BOPHandlingChargeApplicability: getValues('BOPCost'),
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),

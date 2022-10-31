@@ -888,50 +888,48 @@ function CostingDetails(props) {
       }
       const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
       const data = {
-        PartId: part.value,//______
-        PartTypeId: partInfo.PartTypeId,//______
-        PartType: partInfo.PartType,//______
-        TechnologyId: technology.value,//______
-        VendorId: tempData.VendorId,//______
-        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',//______
-        VendorPlantName: tempData.VendorPlantName,//______
-        VendorPlantCode: tempData.VendorPlantCode,//______
-        VendorName: tempData.VendorName,//______
-        VendorCode: tempData.VendorCode,//______
-        PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,//______
-        PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',//______
-        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,//______
-        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,//______
-        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,//______
-        UserId: loggedInUserId(),//______
-        LoggedInUserId: loggedInUserId(),//______
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,//______
-        IsAssemblyPart: partInfo.IsAssemblyPart,//______
-        PartNumber: partInfo.PartNumber,//______
-        PartName: partInfo.PartName,//______
-        Description: partInfo.Description,//______
-        ECNNumber: partInfo.ECNNumber,//______
-        RevisionNumber: partInfo.RevisionNumber,//______
-        DrawingNumber: partInfo.DrawingNumber,//______
-        Price: partInfo.Price,//______
-        EffectiveDate: effectiveDate,//______
-        CostingTypeId: type,//______
-        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,//______
-        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',//______
+        PartId: part.value,
+        PartTypeId: partInfo.PartTypeId,
+        PartType: partInfo.PartType,
+        TechnologyId: technology.value,
+        VendorId: tempData.VendorId,
+        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
+        VendorPlantName: tempData.VendorPlantName,
+        VendorPlantCode: tempData.VendorPlantCode,
+        VendorName: tempData.VendorName,
+        VendorCode: tempData.VendorCode,
+        PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,
+        PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',
+        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
+        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
+        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
+        UserId: loggedInUserId(),
+        LoggedInUserId: loggedInUserId(),
+        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
+        IsAssemblyPart: partInfo.IsAssemblyPart,
+        PartNumber: partInfo.PartNumber,
+        PartName: partInfo.PartName,
+        Description: partInfo.Description,
+        ECNNumber: partInfo.ECNNumber,
+        RevisionNumber: partInfo.RevisionNumber,
+        DrawingNumber: partInfo.DrawingNumber,
+        Price: partInfo.Price,
+        EffectiveDate: effectiveDate,
+        CostingTypeId: type,
+        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
       }
       if (IdForMultiTechnology.includes(technology?.value)) {
-        data.Technology = technology.label//______
-        data.CostingHead = "string"//______
-        data.IsVendor = true//______
-        data.GroupCode = "string"//______
-        data.WeightedSOB = 0//______
-        data.ASSEMBLYYY = 0//______
+        data.Technology = technology.label
+        data.CostingHead = "string"
+        data.IsVendor = true
+        data.GroupCode = "string"
+        data.WeightedSOB = 0
 
       } else {
         data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
         data.PlantCode = (type === ZBCTypeId) ? tempData.PlantCode : ''
         data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
-        data.NORMALLLLLLL = 0//______
       }
 
       if (IdForMultiTechnology.includes(technology?.value)) {
