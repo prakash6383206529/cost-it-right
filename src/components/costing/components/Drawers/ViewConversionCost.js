@@ -630,16 +630,16 @@ function ViewConversionCost(props) {
               </Nav>}
               <TabContent activeTab={activeTab} className={`${IsAssemblyCosting && partNumberList[0] !== null && partNumberList.length > 0 ? 'col-md-11' : 'col-md-12'}  view-conversion-container`}>
                 <TabPane tabId={index}>
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&   // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.processHide &&   // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                     <>
                       {processTableData()}
                     </>
                   }
 
 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.processHide && <br />}
 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.operationHide &&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
 
                     <div>
                       {operationTableData()}
@@ -648,7 +648,7 @@ function ViewConversionCost(props) {
 
                   {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.operationHide && !props.viewConversionCostData.processHide &&  // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                     <div>
                       {otherOperTableData()}
                     </div>

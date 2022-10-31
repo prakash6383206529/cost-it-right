@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
-  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
@@ -119,7 +119,7 @@ function ViewBOP(props) {
       </Row>
 
       {
-        IsAssemblyCosting &&
+        IsAssemblyCosting && !partType &&
         <Row className="mx-0">
           <Col md="12" className='px-0'>
             <br />
