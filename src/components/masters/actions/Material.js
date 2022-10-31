@@ -979,43 +979,17 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @method getVendorListByVendorType
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
-export function getVendorListByVendorType(isVendor, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByVendorType}/${isVendor}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+export function getVendorListByVendorType(isVendor, vendorName, callback) {
+    return axios.get(`${API.getVendorListByVendorType}?isVendor=${isVendor}&vendorName=${vendorName}`, config());
 }
 
 /**
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(callback) {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+    console.log('vendorName: ', vendorName);
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**

@@ -16,8 +16,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { SPACEBAR, ZBC } from '../../../config/constants';
+import { searchCount, SPACEBAR, ZBC } from '../../../config/constants';
 import { onFocus, showDataOnHover } from '../../../helper';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -54,10 +56,12 @@ class AddInterestRate extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.state.isViewMode))
-      this.props.getVendorListByVendorType(true, () => { })
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
+      //   console.log(res, 'res');
+      // })
+    }
   }
-
   /**
    * @method componentDidMount
    * @description called after render the component
@@ -82,22 +86,16 @@ class AddInterestRate extends Component {
 
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
+    const { plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
     const temp = [];
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      });
-      return temp;
-    }
     if (label === 'ICC') {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
@@ -138,8 +136,6 @@ class AddInterestRate extends Component {
   */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor, });
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -434,26 +430,39 @@ class AddInterestRate extends Component {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isViewMode, setDisable, isDataChanged } = this.state;
 
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -532,7 +541,7 @@ class AddInterestRate extends Component {
                               name="vendorName"
                               ref={this.myRef}
                               key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
+                              loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                               value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}

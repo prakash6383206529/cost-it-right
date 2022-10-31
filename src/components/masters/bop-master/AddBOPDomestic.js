@@ -18,7 +18,7 @@ import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, searchCount } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -30,6 +30,8 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -108,8 +110,8 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-        this.setState({ inputLoader: true })
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        // this.setState({ inputLoader: true })
+        // this.props.getVendorTypeBOPSelectList(this.state.vendorName,() => { this.setState({ inputLoader: false }) })
       }
       if (!this.state.isViewMode) {
         let obj = {
@@ -135,7 +137,9 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -147,13 +151,6 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
       selectedPlants: [],
     }, () => {
-      const { IsVendor } = this.state;
-      this.setState({ inputLoader: true })
-      if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-      } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-      }
     });
   }
 
@@ -258,7 +255,7 @@ class AddBOPDomestic extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, cityList,
+    const { bopCategorySelectList, plantSelectList, cityList,
       UOMSelectList, partSelectList, } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
@@ -281,14 +278,6 @@ class AddBOPDomestic extends Component {
       plantSelectList && plantSelectList.map(item => {
         if (item.PlantId === '0') return false;
         temp.push({ label: item.PlantNameCode, value: item.PlantId })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -373,9 +362,10 @@ class AddBOPDomestic extends Component {
       const { IsVendor } = this.state;
       this.setState({ inputLoader: true })
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+        this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { this.setState({ inputLoader: false }) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        console.log(this.state.vendorName, 'this.state.vendorNam');
+        this.props.getVendorTypeBOPSelectList(this.state.vendorName ? this.state.vendorName : '', () => { this.setState({ inputLoader: false }) })
       }
     })
   }
@@ -798,17 +788,41 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (this.state.IsVendor) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorTypeBOPSelectList(inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
     const promiseOptions = inputValue =>
@@ -1011,7 +1025,7 @@ class AddBOPDomestic extends Component {
                                   name="vendorName"
                                   ref={this.myRef}
                                   key={this.state.updateAsyncDropdown}
-                                  loadOptions={promiseOptions}
+                                  loadOptions={filterList}
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}

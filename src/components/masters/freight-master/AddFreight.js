@@ -19,11 +19,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, SPACEBAR } from "../../../config/constants";
+import { EMPTY_DATA, searchCount, SPACEBAR } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
 import { onFocus } from "../../../helper";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { autoCompleteDropdown } from "../../common/CommonFunctios";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -80,6 +82,9 @@ class AddFreight extends Component {
     this.props.getFreightModeSelectList((res) => { });
     this.getDetails();
   }
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
    * @method onPressVendor
    * @description Used for Vendor checked
@@ -89,8 +94,7 @@ class AddFreight extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
     });
-    this.setState({ inputLoader: true })
-    this.props.getVendorListByVendorType(true, () => { this.setState({ inputLoader: false }) });
+
   };
   /**
    * @method handleTransportMoodChange
@@ -165,17 +169,8 @@ class AddFreight extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { vendorListByVendorType, cityList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, } = this.props;
+    const { cityList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, } = this.props;
     const temp = [];
-    if (label === "VendorNameList") {
-      vendorListByVendorType &&
-        vendorListByVendorType.map((item) => {
-          if (item.Value === "0") return false;
-          temp.push({ label: item.Text, value: item.Value });
-          return null
-        });
-      return temp;
-    }
     if (label === "SourceLocation") {
       cityList &&
         cityList.map((item) => {
@@ -238,7 +233,7 @@ class AddFreight extends Component {
   };
   closeVendorDrawer = (e = "") => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorListByVendorType(true, () => { });
+      this.props.getVendorListByVendorType(true, this.state.vendorName, () => { });
     });
   };
   /**
@@ -578,27 +573,38 @@ class AddFreight extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isOpenVendor, isEditFlag, isViewMode, setDisable } = this.state;
-
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorListByVendorType(this.state.IsVendor, inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
 
     return (
       <>
@@ -688,7 +694,7 @@ class AddFreight extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={filterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
