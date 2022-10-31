@@ -897,7 +897,6 @@ function CostingDetails(props) {
         PartTypeId: partInfo.PartTypeId,
         PartType: partInfo.PartType,
         TechnologyId: technology.value,
-        ZBCId: userDetail.ZBCSupplierInfo.VendorId,
         VendorId: tempData.VendorId,
         VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
         VendorPlantName: tempData.VendorPlantName,
@@ -906,7 +905,6 @@ function CostingDetails(props) {
         VendorCode: tempData.VendorCode,
         PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,
         PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',
-        PlantCode: (type === ZBCTypeId) ? tempData.PlantCode : '',
         DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
         DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
         DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
@@ -923,23 +921,20 @@ function CostingDetails(props) {
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
         CostingTypeId: type,
-        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
-        CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
-        CustomerCode: type === CBCTypeId ? tempData.CustomerCode : ''
+        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
       }
       if (IdForMultiTechnology.includes(technology?.value)) {
-        data.Technology = technology.label//______
-        data.CostingHead = "string"//______
-        data.IsVendor = true//______
-        data.GroupCode = "string"//______
-        data.WeightedSOB = 0//______
-        data.ASSEMBLYYY = 0//______
+        data.Technology = technology.label
+        data.CostingHead = "string"
+        data.IsVendor = true
+        data.GroupCode = "string"
+        data.WeightedSOB = 0
 
       } else {
         data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
         data.PlantCode = (type === ZBCTypeId) ? tempData.PlantCode : ''
         data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
-        data.NORMALLLLLLL = 0//______
       }
 
       if (IdForMultiTechnology.includes(technology?.value)) {

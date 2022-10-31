@@ -49,7 +49,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 

@@ -50,7 +50,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [disableSwitch, setDisableSwitch] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
