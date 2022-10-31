@@ -128,7 +128,7 @@ export function getCostingBenchMarkRmReport(data, callback) {
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_RM_LIST,
-                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
             })
             callback(response);
         }).catch((error) => {
