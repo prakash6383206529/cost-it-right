@@ -176,7 +176,7 @@ function TabPackagingFreight(props) {
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
-      if (costData.IsAssemblyPart === true && !partType) {   // ASSEMBLY TECHNOLOGY
+      if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))

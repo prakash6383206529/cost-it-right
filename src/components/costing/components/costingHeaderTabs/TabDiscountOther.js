@@ -60,7 +60,7 @@ function TabDiscountOther(props) {
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)

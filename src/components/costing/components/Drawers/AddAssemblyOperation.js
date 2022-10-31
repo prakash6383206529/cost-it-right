@@ -58,7 +58,7 @@ function AddAssemblyOperation(props) {
     props.closeDrawer()
   }
 
-  const getOperationGrid = (grid, operationCostAssemblyTechnology) => {   // ASSEMBLY TECHNOLOGY
+  const getOperationGrid = (grid, operationCostAssemblyTechnology) => {
     setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
     setOperationGridData(grid)
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
