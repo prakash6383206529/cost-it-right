@@ -1982,6 +1982,8 @@ export const statusOptions = [
   { label: "RejectedBySystem", value: "18" },
 
 ]
+//AUTOCOMPLETE IN PART
+export const searchCount = 3
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
