@@ -21,9 +21,7 @@ import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, st
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
 import { checkForNull, formViewData } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
-import AddToComparisonDrawer from '../costing/components/AddToComparisonDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
-import { load } from 'dotenv';
 import { Fragment } from 'react';
 import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
@@ -384,11 +382,6 @@ function RfqListing(props) {
     };
 
 
-
-    const formToggle = () => {
-        setAddRfq(true)
-    }
-
     const closeDrawer = () => {
         setAddRfqData({})
         setAddRfq(false)
@@ -548,21 +541,6 @@ function RfqListing(props) {
                                     // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                     (!props.isMasterSummaryDrawer) &&
                                     <>
-                                        <div className="d-flex justify-content-end bd-highlight w100">
-                                            <>
-
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-
-                                            </>
-                                        </div>
 
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
