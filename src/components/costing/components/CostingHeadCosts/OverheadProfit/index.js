@@ -347,7 +347,7 @@ function OverheadProfit(props) {
               dispatch(gridDataAdded(true))
             }
 
-            if (applicabilityList.includes(Data?.CostingOverheadDetail?.CostingProfitDetail)) {
+            if (applicabilityList.includes(Data?.CostingProfitDetail?.ProfitApplicability)) {
               setProfitObj(Data.CostingProfitDetail)
               if (Data.CostingProfitDetail) {
                 setTimeout(() => {
