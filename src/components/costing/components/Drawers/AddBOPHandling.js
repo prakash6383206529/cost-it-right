@@ -220,7 +220,7 @@ function AddBOPHandling(props) {
                         mandatory={false}
                         handleChange={handleBOPHandlingType}
                         errors={errors.BOPHandlingType}
-                        disabled={CostingViewMode ? true : false}
+                        disabled={(CostingViewMode || IsLocked) ? true : false}
                       />
                     </Col>
 

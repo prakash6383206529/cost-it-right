@@ -1629,7 +1629,7 @@ function OverheadProfit(props) {
               {/* new section from below with heasing */}
               <Col md="12" className="pt-3">
                 <div className="left-border">
-                  {`Profits ${profitObj && profitObj.OverheadApplicability ? '(' + profitObj.OverheadApplicability + ')' : ''}`}
+                  {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
                 </div>
               </Col>
               <Col md="12">

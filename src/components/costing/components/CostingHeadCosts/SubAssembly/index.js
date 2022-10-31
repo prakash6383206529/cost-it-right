@@ -6,7 +6,7 @@ import PartCompoment from '../Part';
 import { getRMCCTabData, saveAssemblyBOPHandlingCharge } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { ViewCostingContext } from '../../CostingDetails';
+import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
@@ -21,6 +21,7 @@ function AssemblyPart(props) {
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
+  const costingApprovalStatus = useContext(CostingStatusContext);
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -199,12 +200,14 @@ function AssemblyPart(props) {
                 </div> : ''
             }
           </td>
-          <td>{item?.CostingPartDetails?.Quantity ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
+          <td>{(item?.PartType === 'Assembly') ? 1 : (item.CostingPartDetails.Quantity ? checkForNull(item.CostingPartDetails.Quantity) : 1)}</td>
           {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
-          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>}
+          <td>{(item?.PartType === 'Assembly' && (costingApprovalStatus === 'ApprovedByAssembly' || costingApprovalStatus === 'ApprovedByASMSimulation'))
+            ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
+            checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
 
         </div>
         {/* 

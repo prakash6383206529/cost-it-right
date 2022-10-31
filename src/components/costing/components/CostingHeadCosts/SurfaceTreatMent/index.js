@@ -109,7 +109,7 @@ function SurfaceTreatment(props) {
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
-    if (IsLocked === false && partType === false) {
+    if ((IsLocked === false || !CostingViewMode) && partType === false) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
         props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)

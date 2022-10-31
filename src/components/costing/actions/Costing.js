@@ -897,7 +897,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.customerId}/${data.plantId}/${data.costingTypeId}`, config())
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
     request
       .then((response) => {
         callback(response)
@@ -918,7 +918,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
 
     request.then((response) => {
       callback(response)

@@ -216,7 +216,7 @@ function RunSimulationDrawer(props) {
         obj.IsAdditionalToolPercentage = toggleSwitchAdditionalTool
         obj.AdditionalToolApplicability = toolCostApplicability.label
         obj.IsAdditionalTool = additionalTool
-        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("ToolPercent")
+        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("Tool")
         obj.IsAdditionalPackagingPercentage = toggleSwitchAdditionalPackaging
         obj.AdditionalPackagingApplicability = packagingCostApplicability.label
         obj.IsAdditionalPackaging = additionalPackaging
@@ -880,7 +880,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className="mb-3 p-0">
+                                                <Col md="12" className={`mb-3 p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">

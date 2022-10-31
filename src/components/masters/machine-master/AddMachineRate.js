@@ -759,7 +759,7 @@ class AddMachineRate extends Component {
     }
     const MachineRate = fieldsObj.MachineRate
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-    if (MachineRate < 0 || isNaN(MachineRate)) {
+    if (MachineRate <= 0 || isNaN(MachineRate)) {
       return false;
     }
 
