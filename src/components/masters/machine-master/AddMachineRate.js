@@ -16,7 +16,7 @@ import {
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -38,6 +38,9 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { reactLocalStorage } from 'reactjs-localstorage';
+
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -220,6 +223,7 @@ class AddMachineRate extends Component {
     } else {
       this.props.setData()
     }
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   /**
@@ -389,6 +393,9 @@ class AddMachineRate extends Component {
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
+      vendorLocation: [],
+      selectedPlants: [],
+    }, () => {
     });
     if (costingHeadFlag === VBCTypeId) {
       this.setState({ inputLoader: true })
@@ -449,19 +456,10 @@ class AddMachineRate extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList,
-      UOMSelectList, machineTypeSelectList, clientSelectList, processSelectList, costingSpecifiTechnology } = this.props;
+    const { plantSelectList, UOMSelectList, machineTypeSelectList, processSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -1217,10 +1215,6 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    this.props.getVendorWithVendorCodeSelectList(() => { })
-    if (data.IsVendor) {
-      this.props.getPlantBySupplier(data.VendorId, () => { })
-    }
     let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
       const { vendorWithVendorCodeSelectList, machineTypeSelectList, plantSelectList, } = this.props;
@@ -1301,25 +1295,41 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, costingHead, costingTypeId, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -1424,7 +1434,7 @@ class AddMachineRate extends Component {
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                 value={this.state.vendorName}
