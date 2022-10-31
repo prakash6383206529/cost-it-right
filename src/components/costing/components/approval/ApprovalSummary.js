@@ -67,7 +67,7 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && approvalDetails.TypeOfCosting === VBC) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.TypeOfCosting === VBC)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
@@ -116,6 +116,7 @@ function ApprovalSummary(props) {
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
+
 
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
