@@ -15,6 +15,8 @@ import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { searchCount } from '../../../config/constants'
+import { autoCompleteDropdown } from '../../common/CommonFunctios'
 
 function CostingSummary(props) {
 
@@ -43,6 +45,7 @@ function CostingSummary(props) {
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const [titleObj, setTitleObj] = useState({})
+  const [partName, setpartName] = useState('')
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
@@ -70,7 +73,9 @@ function CostingSummary(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
       dispatch(getPartInfo('', () => { }))
-      dispatch(getPartSelectListByTechnology('', () => { }))
+    }
+    return () => {
+      reactLocalStorage.setObject('PartData', [])
     }
   }, [])
 
@@ -83,7 +88,6 @@ function CostingSummary(props) {
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setDisabled(true)
-        dispatch(getPartSelectListByTechnology(costingData.TechnologyId, () => { }))
         dispatch(getPartInfo(costingData.PartId, (res) => {
           let newValue = {}
           let Data = res.data.Data
@@ -136,16 +140,17 @@ function CostingSummary(props) {
       return tempDropdownList
     }
 
-    if (label === 'PartList') {
-      partSelectListByTechnology &&
-        partSelectListByTechnology.map((item) => {
-          if (item.Value === '0') return false
-          tempDropdownList.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      setPartDropdown(tempDropdownList)
-      return tempDropdownList
-    }
+    // if (label === 'PartList') {
+    //   partSelectListByTechnology &&
+    //     partSelectListByTechnology.map((item) => {
+    //       if (item.Value === '0') return false
+    //       tempDropdownList.push({ label: item.Text, value: item.Value })
+    //       return null
+    //     })
+    //   setPartDropdown(tempDropdownList)
+
+    //   return tempDropdownList
+    // }
   }
 
   /**
@@ -155,10 +160,6 @@ function CostingSummary(props) {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
-      setInputLoader(true)
-      dispatch(getPartSelectListByTechnology(newValue.value, () => {
-        setInputLoader(false)
-      }))
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
@@ -172,6 +173,7 @@ function CostingSummary(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    reactLocalStorage.setObject('PartData', [])
   }
   useEffect(() => {
 
@@ -291,7 +293,6 @@ function CostingSummary(props) {
     dispatch(storePartNumber(''))
     dispatch(setCostingViewData([]))
     setShowWarningMsg(false)
-    dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
@@ -322,26 +323,36 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
-  const filterList = (inputValue) => {
-    if (inputValue) {
-      let tempArr = []
-      tempArr = partDropdown && partDropdown.filter(i => {
-        return i.label.toLowerCase().includes(inputValue.toLowerCase())
-      }
-      );
-      if (tempArr.length <= 100) {
-        return tempArr
+  const filterList = async (inputValue) => {
+
+    if (inputValue?.length === searchCount && partName !== inputValue) {
+      const res = await getPartSelectListByTechnology(technology.value, inputValue);
+      setpartName(inputValue)
+      let partDataAPI = res?.data?.SelectList
+      reactLocalStorage.setObject('PartData', partDataAPI)
+      let partData = []
+      if (inputValue) {
+        partData = reactLocalStorage.getObject('PartData')
+        return autoCompleteDropdown(inputValue, partData)
+
       } else {
-        return tempArr.slice(0, 100)
+        return partData
       }
-    } else {
-      return partDropdown
     }
-  };
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
-      resolve(filterList(inputValue));
-    });
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let partData = reactLocalStorage.getObject('PartData')
+        if (inputValue) {
+          partData = reactLocalStorage.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+    }
+
+  }
 
   useEffect(() => {
     renderDropdownListing('PartList')
@@ -419,15 +430,14 @@ function CostingSummary(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          asyncOptions={promiseOptions}
+                          asyncOptions={filterList}
                           mandatory={true}
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                           disabled={(technology.length === 0 || inputLoader) ? true : false}
+                          NoOptionMessage={"Enter 3 characters to show data"}
                         />
-
 
                         {/* <SearchableSelectHookForm
                           label={'Assembly No./Part No.'}
