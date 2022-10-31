@@ -749,25 +749,6 @@ function TabDiscountOther(props) {
       }
     }
 
-    if (partType) {
-
-      let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
-      tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
-      tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
-
-      let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
-        checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-        checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
-        checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
-        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-        checkForNull(DiscountCostData?.AnyOtherCost)) -
-        checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-      let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
-      dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-
-    }
-
     if (!CostingViewMode) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         if (res.data.Result) {
@@ -781,6 +762,28 @@ function TabDiscountOther(props) {
         }
       }))
     }
+
+    setTimeout(() => {
+      if (partType) {
+
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+      }
+    }, 500);
+
   }, 500)
 
   const handleOherCostApplicabilityChange = (value) => {
