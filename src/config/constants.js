@@ -2069,6 +2069,8 @@ export const statusOptions = [
   { label: "RejectedBySystem", value: "18" },
 
 ]
+//AUTOCOMPLETE IN PART
+export const searchCount = 3
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])

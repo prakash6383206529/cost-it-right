@@ -5,11 +5,13 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART, LEVEL1, SPACEBAR } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1, searchCount, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import { onFocus } from '../../../helper';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class AddComponentForm extends Component {
   static contextType = PartEffectiveDate
@@ -24,7 +26,8 @@ class AddComponentForm extends Component {
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
       isLoader: false,
-      showErrorOnFocus: false
+      showErrorOnFocus: false,
+      partName: ''
     }
   }
 
@@ -33,13 +36,7 @@ class AddComponentForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    this.setState({ isLoader: true })
     const { BOMViewerData } = this.props;
-    let obj = {
-      technologyId: this.props?.TechnologySelected.value,
-      date: this.context
-    }
-    this.props.getComponentPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -53,7 +50,7 @@ class AddComponentForm extends Component {
   }
 
   componentWillUnmount() {
-    this.props.getDrawerComponentPartData('', res => { })
+    reactLocalStorage?.setObject('PartData', [])
   }
 
   checkRadio = (radioType) => {
@@ -93,7 +90,6 @@ class AddComponentForm extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { componentPartSelectList, partAssembly } = this.props;
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -103,16 +99,6 @@ class AddComponentForm extends Component {
       return null;
     })
 
-    const temp = [];
-    if (label === 'part') {
-      componentPartSelectList && componentPartSelectList.map(item => {
-        if (item.Value === '0' || tempArr.includes(item.Value) || (partAssembly && (item.Value === partAssembly.value))) return false;
-        // 
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
 
   }
 
@@ -124,7 +110,6 @@ class AddComponentForm extends Component {
     const { reset } = this.props;
     reset();
     this.props.toggleDrawer('')
-    this.props.getDrawerComponentPartData('', res => { })
   }
 
   /**
@@ -190,25 +175,42 @@ class AddComponentForm extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-    const filterList = (inputValue) => {
-      let tempArr = []
-      tempArr = this.renderListing("part").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
 
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { partName } = this.state
+      if (inputValue?.length === searchCount && partName !== inputValue) {
+        let obj = {
+          technologyId: this.props?.TechnologySelected.value,
+          date: this.context,
+          partNumber: inputValue
+        }
+        this.setState({ isLoader: true })
+        const res = await getComponentPartSelectList(obj)
+        this.setState({ isLoader: false })
+        this.setState({ partName: inputValue })
+        let partDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('PartData', partDataAPI)
+        let partData = []
+        if (inputValue) {
+          partData = reactLocalStorage?.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let partData = reactLocalStorage?.getObject('PartData')
+          if (inputValue) {
+            partData = reactLocalStorage?.getObject('PartData')
+            return autoCompleteDropdown(inputValue, partData)
+          } else {
+            return partData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-      });
-
 
     return (
       <>
@@ -228,9 +230,9 @@ class AddComponentForm extends Component {
                   ref={this.myRef}
                   key={this.state.updateAsyncDropdown}
                   cacheOptions
-                  loadOptions={promiseOptions}
+                  loadOptions={filterList}
                   onChange={(e) => this.handlePartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the part numbers' : "No results found"}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Enter 3 characters to show data' : "No results found"}
                   onFocus={() => onFocus(this)}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

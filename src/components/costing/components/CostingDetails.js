@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, NCC, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, searchCount } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -33,6 +33,7 @@ import { debounce } from 'lodash';
 import { MACHINING } from '../../../config/masterData';
 import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -125,6 +126,7 @@ function CostingDetails(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
+  const [partName, setpartName] = useState('')
 
   const dispatch = useDispatch()
 
@@ -145,10 +147,13 @@ function CostingDetails(props) {
       applyPermission(topAndLeftMenuData, technology.label)
       dispatch(storePartNumber(''))
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-      dispatch(getPartSelectListByTechnology('', () => { }))
+      // dispatch(getPartSelectListByTechnology('', '', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
 
+    }
+    return () => {
+      reactLocalStorage.setObject('PartData', [])
     }
   }, [])
 
@@ -222,7 +227,7 @@ function CostingDetails(props) {
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
-        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => { }))
+        // dispatch(getPartSelectListByTechnology(partNumber.technologyId, partNumber.partNumber, res => { }))
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
@@ -267,16 +272,16 @@ function CostingDetails(props) {
       return temp
     }
 
-    if (label === 'PartList') {
-      partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      setPartDropdown(temp)
+    // if (label === 'PartList') {
+    //   partSelectListByTechnology && partSelectListByTechnology.map((item) => {
+    //     if (item.Value === '0') return false
+    //     temp.push({ label: item.Text, value: item.Value })
+    //     return null
+    //   })
+    //   setPartDropdown(temp)
 
-      return temp
-    }
+    //   return temp
+    // }
 
 
   }
@@ -304,10 +309,6 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
-      setInputLoader(true)
-      dispatch(getPartSelectListByTechnology(newValue.value, () => {
-        setInputLoader(false)
-      }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -332,6 +333,7 @@ function CostingDetails(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    reactLocalStorage.setObject('PartData', [])
   }
 
   /**
@@ -1691,26 +1693,38 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterList = (inputValue) => {
-    if (inputValue) {
-      let tempArr = []
-      tempArr = partDropdown && partDropdown.filter(i => {
-        return i.label.toLowerCase().includes(inputValue.toLowerCase())
-      }
-      );
-      if (tempArr.length <= 100) {
-        return tempArr
+  const filterList = async (inputValue) => {
+
+    if (inputValue?.length === searchCount && partName !== inputValue) {
+      setInputLoader(true)
+      const res = await getPartSelectListByTechnology(technology.value, inputValue);
+      setInputLoader(false)
+      setpartName(inputValue)
+      let partDataAPI = res?.data?.SelectList
+      reactLocalStorage.setObject('PartData', partDataAPI)
+      let partData = []
+      if (inputValue) {
+        partData = reactLocalStorage.getObject('PartData')
+        return autoCompleteDropdown(inputValue, partData)
+
       } else {
-        return tempArr.slice(0, 100)
+        return partData
       }
-    } else {
-      return partDropdown
     }
-  };
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
-      resolve(filterList(inputValue));
-    });
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let partData = reactLocalStorage.getObject('PartData')
+        if (inputValue) {
+          partData = reactLocalStorage.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+    }
+
+  }
 
   const loaderObj = { isLoader: inputLoader, }
   return (
@@ -1768,7 +1782,9 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
+
                       <Col className="col-md-15">
+
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -1778,14 +1794,15 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          asyncOptions={promiseOptions}
+                          asyncOptions={filterList}
                           mandatory={true}
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0 || inputLoader) ? true : false}
-                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
+                          disabled={(technology.length === 0) ? true : false}
+                          NoOptionMessage={"Enter 3 characters to show data"}
                         />
+
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
