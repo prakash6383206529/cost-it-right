@@ -249,6 +249,7 @@ function PartCompoment(props) {
                 rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
                 setConversionCost={props.setConversionCost}
                 item={item}
+                isAssemblyTechnology={false}
               />
             </div>
           </div >

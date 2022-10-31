@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+// import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
@@ -9,6 +10,7 @@ import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../conf
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
@@ -253,7 +255,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

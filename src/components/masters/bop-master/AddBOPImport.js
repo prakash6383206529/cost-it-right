@@ -810,7 +810,7 @@ class AddBOPImport extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: [plantArray],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
         VendorPlant: [],

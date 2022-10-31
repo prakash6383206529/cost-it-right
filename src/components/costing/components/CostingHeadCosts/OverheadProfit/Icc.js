@@ -9,6 +9,7 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function Icc(props) {
 
@@ -146,7 +147,6 @@ function Icc(props) {
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
@@ -266,7 +266,7 @@ function Icc(props) {
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

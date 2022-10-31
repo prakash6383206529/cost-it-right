@@ -276,6 +276,7 @@ function AssemblyPart(props) {
           ID={''}
           anchor={'right'}
           setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
+          isAssemblyTechnology={false}
         />
       }
     </ >

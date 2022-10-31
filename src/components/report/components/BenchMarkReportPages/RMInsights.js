@@ -526,7 +526,7 @@ function Insights(props) {
 
 
         var rowCount = event.api.getSelectedRows();
-        console.log(rowCount[0], "rowcount")
+
         var graphDataNew = rowCount[0].graphData;
         var avgGraphData = rowCount[0].Average;
         var minGraphData = rowCount[0].minimumData;

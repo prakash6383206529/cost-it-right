@@ -739,7 +739,7 @@ export function fetchSupplierCityDataAPI(callback) {
 export function fetchCostingHeadsAPI(costingHeads, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, config());
+    const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

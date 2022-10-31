@@ -410,7 +410,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-          console.log(Data, "Data");
+
           this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
@@ -631,8 +631,8 @@ class AddVolume extends Component {
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
-        DestinationPlantId: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantId,
-        DestinationPlant: costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantName,
+        DestinationPlantId: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.value : costingTypeId === ZBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantId,
+        DestinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.label : costingTypeId === ZBCTypeId ? selectedPlants.label : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantName,
         CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
