@@ -354,7 +354,7 @@ class VendorListing extends Component {
         if (newValue && newValue !== '') {
             this.setState({ vendorType: newValue, }, () => {
                 const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => { })
+                this.props.getVendorsByVendorTypeID(vendorType.value, this.state.vendorName, (res) => { })
             });
         } else {
             this.setState({ vendorType: [], }, () => {

@@ -158,6 +158,7 @@ class AddVolume extends Component {
     })
     this.setState({ tableData: data })
     reactLocalStorage?.setObject('PartData', [])
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   /**
@@ -180,15 +181,6 @@ class AddVolume extends Component {
         temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
-      return temp
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList &&
-        vendorWithVendorCodeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
       return temp
     }
     if (label === 'yearList') {
@@ -219,21 +211,11 @@ class AddVolume extends Component {
     }
   }
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = (costingHeadFlag) => {
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
-    });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else {
-      this.props.getClientSelectList(() => { })
-    }
+   * @method onPressVendor
+   * @description Used for Vendor checked
+   */
+  onPressVendor = () => {
+    this.setState({ IsVendor: !this.state.IsVendor })
   }
 
   /**
@@ -282,7 +264,6 @@ class AddVolume extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-
       this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
     })
   }
@@ -667,17 +648,36 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
-    const vendorFilterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const vendorFilterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
     const partFilterList = async (inputValue) => {
@@ -710,20 +710,6 @@ class AddVolume extends Component {
         }
       }
     };
-
-    const promiseOptions = (inputValue, fieldName) =>
-      new Promise(resolve => {
-        switch (fieldName) {
-          case 'vendor':
-            resolve(vendorFilterList(inputValue));
-            break;
-          // case 'part':
-          //   resolve(partFilterList(inputValue))
-          //   break;
-          default:
-            break;
-        }
-      });
 
     const defaultColDef = {
       resizable: true,
@@ -849,7 +835,7 @@ class AddVolume extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={e => promiseOptions(e, 'vendor')}
+                                    loadOptions={vendorFilterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -1103,7 +1089,6 @@ function mapStateToProps({ comman, volume, material, part, client }) {
  */
 export default connect(mapStateToProps, {
   getPlantSelectListByType,
-  // getVendorListByVendorType,
   getPlantBySupplier,
   createVolume,
   updateVolume,

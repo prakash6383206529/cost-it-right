@@ -8,7 +8,6 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
-import { getVendorListByVendorType, } from '../actions/Material';
 import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -564,7 +563,6 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
 export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
-  getVendorListByVendorType,
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {

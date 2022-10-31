@@ -19,7 +19,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -33,6 +33,8 @@ import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../hel
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -113,8 +115,6 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-        this.setState({ inputLoader: true })
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
         this.props.getClientSelectList(() => { })
       }
       if (!this.state.isViewMode) {
@@ -141,7 +141,9 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
    * @method onPressVendor
    * @description Used for Vendor checked
@@ -149,7 +151,10 @@ class AddBOPDomestic extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      vendorLocation: [],
+      selectedPlants: [],
+    }, () => {
     });
     if (costingHeadFlag === VBCTypeId) {
       this.setState({ inputLoader: true })
@@ -302,14 +307,6 @@ class AddBOPDomestic extends Component {
       });
       return temp;
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
@@ -400,7 +397,8 @@ class AddBOPDomestic extends Component {
       if (costingTypeId === VBCTypeId) {
         this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        console.log(this.state.vendorName, 'this.state.vendorNam');
+        this.props.getVendorTypeBOPSelectList(this.state.vendorName ? this.state.vendorName : '', () => { this.setState({ inputLoader: false }) })
       }
     })
   }
@@ -810,18 +808,42 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, costingTypeId, isEditFlag, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (this.state.IsVendor) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorTypeBOPSelectList(inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
     const promiseOptions = inputValue =>
@@ -1058,83 +1080,87 @@ class AddBOPDomestic extends Component {
                         </Row>
 
                         <Row>
-                          {costingTypeId !== CBCTypeId && (
-                            <>
-                              <Col md="12">
-                                <div className="left-border">{"Vendor:"}</div>
-                              </Col>
-                              <Col md="3" className='mb-4'>
-                                <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                                <div className="d-flex justify-space-between align-items-center async-select">
-                                  <div className="fullinput-icon p-relative">
-                                    {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                    <AsyncSelect
-                                      name="vendorName"
-                                      ref={this.myRef}
-                                      key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
-                                      onChange={(e) => this.handleVendorName(e)}
-                                      value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                      isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
-                                      onFocus={() => onFocus(this)}
-                                      onKeyDown={(onKeyDown) => {
-                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                      }}
-                                    />
+                          {
+                            costingTypeId !== CBCTypeId && (
+                              <>
+                                <Col md="12">
+                                  <div className="left-border">{"Vendor:"}</div>
+                                </Col>
+                                <Col md="3" className='mb-4'>
+                                  <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                                  <div className="d-flex justify-space-between align-items-center async-select">
+                                    <div className="fullinput-icon p-relative">
+                                      {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                      <AsyncSelect
+                                        name="vendorName"
+                                        ref={this.myRef}
+                                        key={this.state.updateAsyncDropdown}
+                                        loadOptions={promiseOptions}
+                                        onChange={(e) => this.handleVendorName(e)}
+                                        value={this.state.vendorName}
+                                        noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                        isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                        onFocus={() => onFocus(this)}
+                                        onKeyDown={(onKeyDown) => {
+                                          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                        }}
+                                      />
+                                    </div>
+                                    {!isEditFlag && (
+                                      <div
+                                        onClick={this.vendorToggler}
+                                        className={"plus-icon-square  right"}
+                                      ></div>
+                                    )}
                                   </div>
-                                  {!isEditFlag && (
-                                    <div
-                                      onClick={this.vendorToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
-                                  )}
-                                </div>
-                                {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                              </Col>
-                            </>
-                          )}
-                          {costingTypeId === VBCTypeId && (
-                            <>
-                              <Col md="3">
-                                <Field
-                                  label={`Source`}
-                                  name={"Source"}
-                                  type="text"
-                                  placeholder={isViewMode ? "-" : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
-                                  component={renderText}
-                                  valueDescription={this.state.source}
-                                  onChange={this.handleSource}
-                                  disabled={isViewMode}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  name="SourceLocation"
-                                  type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={isViewMode ? "-" : "Select"}
-                                  options={this.renderListing(
-                                    "SourceLocation"
-                                  )}
-                                  disabled={isViewMode}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  // validate={
-                                  //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                  // required={true}
-                                  handleChangeDescription={
-                                    this.handleSourceSupplierCity
-                                  }
-                                  valueDescription={this.state.sourceLocation}
-                                />
-                              </Col>
-                            </>
-                          )}
-                        </Row>
+                                  {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                </Col>
+                              </>
+                            )
+                          }
+                          {
+                            costingTypeId === VBCTypeId && (
+                              <>
+                                <Col md="3">
+                                  <Field
+                                    label={`Source`}
+                                    name={"Source"}
+                                    type="text"
+                                    placeholder={isViewMode ? "-" : "Enter"}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                    component={renderText}
+                                    valueDescription={this.state.source}
+                                    onChange={this.handleSource}
+                                    disabled={isViewMode}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
+                                <Col md="3">
+                                  <Field
+                                    name="SourceLocation"
+                                    type="text"
+                                    label="Source Location"
+                                    component={searchableSelect}
+                                    placeholder={isViewMode ? "-" : "Select"}
+                                    options={this.renderListing(
+                                      "SourceLocation"
+                                    )}
+                                    disabled={isViewMode}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    // validate={
+                                    //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
+                                    // required={true}
+                                    handleChangeDescription={
+                                      this.handleSourceSupplierCity
+                                    }
+                                    valueDescription={this.state.sourceLocation}
+                                  />
+                                </Col>
+                              </>
+                            )
+                          }
+                        </Row >
 
 
 
@@ -1306,7 +1332,7 @@ class AddBOPDomestic extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </div>
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
@@ -1342,12 +1368,12 @@ class AddBOPDomestic extends Component {
 
                         </div>
                       </Row>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                    </form >
+                  </div >
+                </div >
+              </div >
+            </div >
+          </div >
           {isCategoryDrawerOpen && (
             <AddBOPCategory
               isOpen={isCategoryDrawerOpen}
@@ -1355,25 +1381,30 @@ class AddBOPDomestic extends Component {
               isEditFlag={false}
               anchor={"right"}
             />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
 
           {
             this.state.approveDrawer && (
@@ -1391,7 +1422,7 @@ class AddBOPDomestic extends Component {
               />
             )
           }
-        </div>
+        </div >
       </>
     );
   }

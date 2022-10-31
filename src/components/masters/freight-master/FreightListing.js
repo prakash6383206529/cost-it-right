@@ -4,7 +4,6 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
-import { getVendorListByVendorType, } from '../actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -411,7 +410,6 @@ function mapStateToProps({ freight, material, comman }) {
 export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
-  getVendorListByVendorType,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,

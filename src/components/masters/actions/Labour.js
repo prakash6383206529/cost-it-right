@@ -139,9 +139,9 @@ export function updateLabour(requestData, callback) {
  * @method labourTypeVendorSelectList
  * @description LABOUR TYPE VENDOR SELECT LIST
  */
-export function labourTypeVendorSelectList(callback) {
+export function labourTypeVendorSelectList(vendorName, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.labourTypeVendorSelectList}`, config());
+        const request = axios.get(`${API.labourTypeVendorSelectList}?vendorName=${vendorName}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
