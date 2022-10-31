@@ -319,7 +319,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
       "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
-      "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly,
+      "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost,
       "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
       "NetToolCost": toolTabData?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": DiscountCostData?.AnyOtherCost,
