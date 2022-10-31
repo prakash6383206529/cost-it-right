@@ -21,7 +21,7 @@ import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR } from '../../../config/constants';
+import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, searchCount } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -35,6 +35,8 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { CheckApprovalApplicableMaster, onFocus } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -121,8 +123,6 @@ class AddBOPImport extends Component {
     }
     this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getCurrencySelectList(() => { })
     }
     if (!this.state.isViewMode) {
@@ -149,7 +149,9 @@ class AddBOPImport extends Component {
       }
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -159,15 +161,7 @@ class AddBOPImport extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
       selectedPlants: [],
-    }, () => {
-      const { IsVendor } = this.state;
-      this.setState({ inputLoader: true })
-      if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-      } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-      }
-    });
+    }, () => { });
   }
 
   /**
@@ -278,7 +272,7 @@ class AddBOPImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, bopCategorySelectList, partSelectList, plantSelectList, cityList,
+    const { bopCategorySelectList, partSelectList, plantSelectList, cityList,
       UOMSelectList, currencySelectList, } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
@@ -305,15 +299,6 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
@@ -413,9 +398,9 @@ class AddBOPImport extends Component {
       const { IsVendor } = this.state;
       this.setState({ inputLoader: true })
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+        this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { this.setState({ inputLoader: false }) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        this.props.getVendorTypeBOPSelectList(this.state.vendorName, () => { this.setState({ inputLoader: false }) })
       }
     })
   }
@@ -883,24 +868,44 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (this.state.IsVendor) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorTypeBOPSelectList(this.state.vendorName)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -1081,7 +1086,7 @@ class AddBOPImport extends Component {
                                   name="vendorName"
                                   ref={this.myRef}
                                   key={this.state.updateAsyncDropdown}
-                                  loadOptions={promiseOptions}
+                                  loadOptions={filterList}
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -1127,7 +1132,6 @@ class AddBOPImport extends Component {
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("SourceLocation")}
                                   disabled={isViewMode}
-
                                   handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
