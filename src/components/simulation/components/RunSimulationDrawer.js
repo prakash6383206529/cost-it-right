@@ -171,7 +171,7 @@ function RunSimulationDrawer(props) {
             }
         }
         if (res?.data?.Result) {
-            Toaster.success('Simulation process has been run successfully.')
+            Toaster.success('Simulation process run successfully.')
             runSimulationCosting()
         }
     }
@@ -216,7 +216,7 @@ function RunSimulationDrawer(props) {
         obj.IsAdditionalToolPercentage = toggleSwitchAdditionalTool
         obj.AdditionalToolApplicability = toolCostApplicability.label
         obj.IsAdditionalTool = additionalTool
-        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("ToolPercent")
+        obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("Tool")
         obj.IsAdditionalPackagingPercentage = toggleSwitchAdditionalPackaging
         obj.AdditionalPackagingApplicability = packagingCostApplicability.label
         obj.IsAdditionalPackaging = additionalPackaging
@@ -290,7 +290,7 @@ function RunSimulationDrawer(props) {
         // if (masterId === Number(EXCHNAGERATE)) {
         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {
-        //             Toaster.success('Simulation process has been run successfully.')
+        //             Toaster.success('Simulation process run successfully.')
         //             runSimulationCosting()
         //         }
         //     }))
@@ -298,7 +298,7 @@ function RunSimulationDrawer(props) {
         //     //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
         //     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {
-        //             Toaster.success('Simulation process has been run successfully.')
+        //             Toaster.success('Simulation process run successfully.')
         //             runSimulationCosting()
         //         }
         //     }))
