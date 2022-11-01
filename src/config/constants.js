@@ -2043,6 +2043,9 @@ export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
+//AUTOCOMPLETE IN PART
+export const searchCount = 3
+
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'

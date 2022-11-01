@@ -613,7 +613,7 @@ function TabDiscountOther(props) {
         DeletedBy: loggedInUserId(),
       }
       dispatch(fileDeleteCosting(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = files && files.filter(item => item.FileId !== FileId)
         setFiles(tempArr)
         setIsOpen(!IsOpen)
@@ -1121,7 +1121,7 @@ function TabDiscountOther(props) {
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
                       <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
-                        Maximum file upload limit has been reached.
+                        Maximum file upload limit reached.
                       </div>
                       <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone

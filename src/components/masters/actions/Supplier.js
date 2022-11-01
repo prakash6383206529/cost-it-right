@@ -262,23 +262,8 @@ export function getAllVendorSelectList() {
  * @method getVendorsByVendorTypeID
  * @description GET VENDOR SELECTLIST BY VENDOR TYPE
  */
-export function getVendorsByVendorTypeID(VendorID, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, config())
-            .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                }
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
+export function getVendorsByVendorTypeID(vendorTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorsByVendorTypeID}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config());
 }
 
 /**
@@ -304,41 +289,14 @@ export function getVendorTypeByVendorSelectList(VendorId) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(callback) {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**
  * @method getVendorTypeBOPSelectList
  * @description GET BOP TYPE VENDOR'S SELECTLIST
  */
-export function getVendorTypeBOPSelectList(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getVendorTypeBOPSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_VENDOR_TYPE_BOP_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
+export function getVendorTypeBOPSelectList(vendorName, callback) {
+    return axios.get(`${API.getVendorTypeBOPSelectList}?vendorName=${vendorName}`, config());
 }
