@@ -101,7 +101,7 @@ export const resetState = (gridOptions, thisReference, master) => {
 
     switch (master) {
         case "BOP":
-            thisReference.getDataList("", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData, true)
             break;
         case "Machine":
             thisReference.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
