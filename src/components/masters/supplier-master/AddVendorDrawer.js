@@ -265,11 +265,11 @@ class AddVendorDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event, type) => {
+    toggleDrawer = (event, formData, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', type)
+        this.props.closeDrawer('', formData, type)
     };
 
     /**
@@ -289,7 +289,7 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('', type)
+        this.toggleDrawer('', formData, type)
     }
 
     /**
@@ -329,7 +329,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
                 DataToCheck.AddressLine2 === values.AddressLine2) {
 
-                this.toggleDrawer('', 'cancel')
+                this.toggleDrawer('', '', 'cancel')
                 return false
             }
             this.setState({ setDisable: true })
@@ -372,12 +372,14 @@ class AddVendorDrawer extends Component {
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
                 CityId: city.value,
+                VendorId: VendorId,
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
+                    formData.VendorId = res.data.Identity
                     this.cancel(formData, 'submit');
                 }
             })
@@ -416,7 +418,7 @@ class AddVendorDrawer extends Component {
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
+                                            onClick={(e) => this.toggleDrawer(e, '', 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>

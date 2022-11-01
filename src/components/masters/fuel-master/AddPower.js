@@ -12,7 +12,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { GENERATOR_DIESEL, SPACEBAR, } from '../../../config/constants';
+import { GENERATOR_DIESEL, searchCount, SPACEBAR, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -26,6 +26,8 @@ import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddPower');
 
@@ -125,6 +127,9 @@ class AddPower extends Component {
       this.minMonthlyChargeCalculation()
 
     }
+  }
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
   }
   /**
    * @method minMonthlyChargeCalculation
@@ -393,8 +398,6 @@ class AddPower extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
     });
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -418,13 +421,20 @@ class AddPower extends Component {
   vendorToggler = () => {
     this.setState({ isOpenVendor: true })
   }
-
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
-
   /**
   * @method handleState
   * @description called
@@ -1008,18 +1018,8 @@ class AddPower extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, vendorWithVendorCodeSelectList,
-      UOMSelectList, plantSelectList, stateList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList } = this.props;
     const temp = [];
-
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      });
-      return temp;
-    }
 
     if (label === 'state') {
       stateList && stateList.map(item => {
@@ -1283,26 +1283,38 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1361,7 +1373,7 @@ class AddPower extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={filterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -2013,7 +2025,7 @@ class AddPower extends Component {
         </div>
         {isOpenVendor && <AddVendorDrawer
           isOpen={isOpenVendor}
-          closeDrawer={this.closeVendorDrawer}
+          closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
           isEditFlag={false}
           ID={''}
           anchor={'right'}

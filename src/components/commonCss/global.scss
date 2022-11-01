@@ -3074,3 +3074,17 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
   }
 
 }
+
+.btn-hyper-link {
+  background-color: transparent;
+  color: $colorPrimary;
+  padding: 0;
+  line-height: 1;
+  &:hover {
+    color: $text-hover;
+  }
+  &:focus {
+    border-color: transparent !important;
+    box-shadow: none!important;
+  }
+}

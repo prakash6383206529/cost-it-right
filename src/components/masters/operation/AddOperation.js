@@ -14,7 +14,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -26,6 +26,8 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../.
 import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddOperation');
 
@@ -127,14 +129,15 @@ class AddOperation extends Component {
       }
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { costingSpecifiTechnology, clientSelectList, plantSelectList, vendorWithVendorCodeSelectList,
-      UOMSelectList, } = this.props;
+    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList } = this.props;
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
@@ -159,14 +162,6 @@ class AddOperation extends Component {
         return null
       })
       return temp
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
@@ -196,12 +191,11 @@ class AddOperation extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getClientSelectList(() => { })
+
     }
   }
 
@@ -240,10 +234,19 @@ class AddOperation extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
 
@@ -490,7 +493,7 @@ class AddOperation extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteOperation(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -764,27 +767,39 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, costingTypeId, isDisableCode, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
 
     return (
       <div className="container-fluid">
@@ -951,10 +966,10 @@ class AddOperation extends Component {
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -1132,7 +1147,7 @@ class AddOperation extends Component {
                       <Col md="3">
                         <label>Upload Files (upload up to 3 files)</label>
                         <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                          Maximum file upload limit has been reached.
+                          Maximum file upload limit reached.
                         </div>
                         <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                           <Dropzone
@@ -1232,7 +1247,7 @@ class AddOperation extends Component {
         {isOpenVendor && (
           <AddVendorDrawer
             isOpen={isOpenVendor}
-            closeDrawer={this.closeVendorDrawer}
+            closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
             isEditFlag={false}
             ID={""}
             anchor={"right"}

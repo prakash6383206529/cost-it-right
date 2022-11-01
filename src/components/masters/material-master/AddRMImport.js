@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -40,6 +40,8 @@ import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -122,7 +124,7 @@ class AddRMImport extends Component {
   */
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
-      this.props.getSupplierList(() => { })
+      this.props.getSupplierList(this.state.vendorName, () => { })
       this.props.getCurrencySelectList(() => { })
       this.props.getUOMSelectList(() => { })
       this.props.fetchPlantDataAPI(() => { })
@@ -145,8 +147,6 @@ class AddRMImport extends Component {
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
       this.props.getRawMaterialNameChild('', () => { })
-      this.setState({ inputLoader: true })
-      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -176,7 +176,9 @@ class AddRMImport extends Component {
       }
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method handleRMChange
   * @description  used to handle row material selection
@@ -523,16 +525,17 @@ class AddRMImport extends Component {
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
+      vendorLocation: [],
+    }, () => {
+      this.props.getPlantBySupplier('', () => { })
+      this.props.getCityBySupplier(0, () => { })
+
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
       this.props.getPlantBySupplier('', () => { })
       this.props.getCityBySupplier(0, () => { })
     }
@@ -611,27 +614,32 @@ class AddRMImport extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData) => {
-    this.setState({ isOpenVendor: false }, () => {
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
       const { costingTypeId } = this.state
       if (costingTypeId !== VBCTypeId) {
-        this.props.getVendorListByVendorType(ZBCTypeId, () => {
-          const { vendorListByVendorType } = this.props
-          if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-          }
-        })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorListByVendorType(ZBCTypeId, this, this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       } else {
-        this.props.getVendorWithVendorCodeSelectList(() => {
-          const { vendorListByVendorType } = this.props
-          if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-          }
-        })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       }
-    })
+    } else {
+      this.setState({ isOpenVendor: false })
+    }
   }
   uomToggler = () => {
     this.setState({ isOpenUOM: true })
@@ -657,8 +665,8 @@ class AddRMImport extends Component {
   */
   renderListing = (label) => {
     const { gradeSelectList, rmSpecification,
-      cityList, categoryList, filterCityListBySupplier, clientSelectList, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology } = this.props;
+      cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
+      UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -716,14 +724,6 @@ class AddRMImport extends Component {
         return null
       })
       return temp
-    }
-    if (label === 'VendorNameList') {
-      vendorListByVendorType && vendorListByVendorType.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
     }
     if (label === 'VendorLocation') {
       filterCityListBySupplier && filterCityListBySupplier.map(item => {
@@ -1167,28 +1167,44 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, costingHead, setDisable, costingTypeId } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId } = this.state;
 
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorListByVendorType(costingTypeId, inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let vendorData = []
+        if (inputValue) {
+          vendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, vendorData)
+        } else {
+          return vendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let vendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            vendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, vendorData)
+          } else {
+            return vendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
 
     return (
       <>
@@ -1484,11 +1500,11 @@ class AddRMImport extends Component {
                                       name="DestinationSupplierId"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
+                                      loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                       isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {
@@ -1745,7 +1761,7 @@ class AddRMImport extends Component {
                               Upload Files (Upload up to 3 files)
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                              Maximum file upload limit has been reached.
+                              Maximum file upload limit reached.
                             </div>
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
@@ -1913,7 +1929,7 @@ class AddRMImport extends Component {
           {isOpenVendor && (
             <AddVendorDrawer
               isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
               isEditFlag={false}
               isRM={true}
               IsVendor={this.state.IsVendor}

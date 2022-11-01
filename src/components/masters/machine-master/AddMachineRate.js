@@ -16,7 +16,7 @@ import {
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -37,6 +37,9 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { reactLocalStorage } from 'reactjs-localstorage';
+
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -166,7 +169,6 @@ class AddMachineRate extends Component {
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
@@ -221,6 +223,7 @@ class AddMachineRate extends Component {
     } else {
       this.props.setData()
     }
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   /**
@@ -397,12 +400,11 @@ class AddMachineRate extends Component {
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
+      vendorLocation: [],
+      selectedPlants: [],
+    }, () => {
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
@@ -457,19 +459,10 @@ class AddMachineRate extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList,
-      UOMSelectList, machineTypeSelectList, clientSelectList, processSelectList, costingSpecifiTechnology } = this.props;
+    const { plantSelectList, UOMSelectList, machineTypeSelectList, processSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -968,7 +961,7 @@ class AddMachineRate extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteMachine(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -1225,8 +1218,8 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    this.props.getVendorWithVendorCodeSelectList(() => { })
-    if (data.IsVendor) {
+    this.props.getVendorWithVendorCodeSelectList(data.IsVendor, this.state.vendorName, () => { })
+    if (data?.CostingTypeId) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
     let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
@@ -1300,32 +1293,49 @@ class AddMachineRate extends Component {
     return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
 
-
+  checksFinancialDataChanged = (data) => {
+    this.setState({ IsFinancialDataChanged: data })
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, costingHead, costingTypeId, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -1430,9 +1440,9 @@ class AddMachineRate extends Component {
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
@@ -1768,7 +1778,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
                           </Col>
                         </Row>
                       }
@@ -1799,7 +1809,7 @@ class AddMachineRate extends Component {
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
@@ -2014,6 +2024,7 @@ export default connect(mapStateToProps, {
   setProcessList,
   getCostingSpecificTechnology,
   getClientSelectList,
+
   getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'AddMachineRate',

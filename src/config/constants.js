@@ -962,6 +962,8 @@ export const API = {
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
+  getCostingBenchMarkBopReport: `${BASE_URL}/reports/get-bop-cost-benchmarking-report`,
+
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1611,7 +1613,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
-export const GET_BENCHMARK_RM_LIST = 'GET_BENCHMARK_RM_LIST'
+export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -2043,6 +2045,9 @@ export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
+//AUTOCOMPLETE IN PART
+export const searchCount = 3
+
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
@@ -2050,4 +2055,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.601";
+export const VERSION = "V1.2.608";

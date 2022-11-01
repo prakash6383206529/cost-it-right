@@ -2,9 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col, Label } from 'reactstrap'
-import { positiveAndDecimalNumber, required } from '../../../helper/validation'
-import { searchableSelect, renderNumberInputField } from '../../layout/FormInputs'
-// import { getVendorListByVendorType } from '../actions/Material'
+import { required } from '../../../helper/validation'
+import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
@@ -13,7 +12,7 @@ import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -23,6 +22,9 @@ import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { autoCompleteDropdown } from '../../common/CommonFunctios'
+
 const gridOptions = {};
 
 // const initialTableData = [
@@ -122,7 +124,8 @@ class AddVolume extends Component {
       costingTypeId: ZBCTypeId,
       client: [],
       isPartNumberNotSelected: false,
-      showErrorOnFocusPart: false
+      showErrorOnFocusPart: false,
+      partName: ''
     }
   }
 
@@ -141,8 +144,6 @@ class AddVolume extends Component {
       this.props.getFinancialYearSelectList(() => { })
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
         this.props.getPlantSelectListByType(ZBC, () => { })
-        this.props.getPartSelectList(() => { })
-        this.props.getClientSelectList(() => { })
       }
     }, 300);
     this.getDetail()
@@ -155,6 +156,8 @@ class AddVolume extends Component {
       return item
     })
     this.setState({ tableData: data })
+    reactLocalStorage?.setObject('PartData', [])
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   /**
@@ -162,14 +165,7 @@ class AddVolume extends Component {
    * @description Used show listing of unit of measurement
    */
   renderListing = (label) => {
-    const {
-      plantSelectList,
-      vendorWithVendorCodeSelectList,
-      filterPlantList,
-      financialYearSelectList,
-      partSelectList,
-      clientSelectList
-    } = this.props
+    const { plantSelectList, filterPlantList, financialYearSelectList, clientSelectList } = this.props
     const temp = []
 
     if (label === 'plant') {
@@ -180,27 +176,9 @@ class AddVolume extends Component {
       })
       return temp
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList &&
-        vendorWithVendorCodeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
     if (label === 'yearList') {
       financialYearSelectList &&
         financialYearSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'PartList') {
-      partSelectList &&
-        partSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -235,10 +213,9 @@ class AddVolume extends Component {
       costingTypeId: costingHeadFlag
     });
     if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+      this.setState({ IsVendor: !this.state.IsVendor })
     }
-    else {
+    else if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
@@ -287,11 +264,19 @@ class AddVolume extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -681,46 +666,68 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
-    const vendorFilterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
-      }
-    };
-    const partFilterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("PartList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
-      }
-    };
-
-    const promiseOptions = (inputValue, fieldName) =>
-      new Promise(resolve => {
-        switch (fieldName) {
-          case 'vendor':
-            resolve(vendorFilterList(inputValue));
-            break;
-          case 'part':
-            resolve(partFilterList(inputValue))
-            break;
-          default:
-            break;
+    const vendorFilterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
         }
-      });
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
+      }
+    };
+    const partFilterList = async (inputValue) => {
+      const { partName } = this.state
+      if (inputValue?.length >= searchCount && partName !== inputValue) {
+        this.setState({ isLoader: true })
+        const res = await getPartSelectList()
+        this.setState({ isLoader: false })
+        this.setState({ partName: inputValue })
+        let partDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('PartData', partDataAPI)
+        let partData = []
+        if (inputValue) {
+          partData = reactLocalStorage?.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let partData = reactLocalStorage?.getObject('PartData')
+          if (inputValue) {
+            partData = reactLocalStorage?.getObject('PartData')
+            return autoCompleteDropdown(inputValue, partData)
+          } else {
+            return partData
+          }
+        }
+      }
+    };
 
     const defaultColDef = {
       resizable: true,
@@ -846,7 +853,7 @@ class AddVolume extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={e => promiseOptions(e, 'vendor')}
+                                    loadOptions={vendorFilterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -922,7 +929,7 @@ class AddVolume extends Component {
                                   name="PartNumber"
                                   ref={this.myRef}
                                   key={this.state.updateAsyncDropdown}
-                                  loadOptions={e => promiseOptions(e, 'part')}
+                                  loadOptions={partFilterList}
                                   onChange={(e) => this.handlePartName(e)}
                                   value={this.state.part}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no." : "No results found"}
@@ -1046,7 +1053,7 @@ class AddVolume extends Component {
             {isOpenVendor && (
               <AddVendorDrawer
                 isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}
@@ -1100,7 +1107,6 @@ function mapStateToProps({ comman, volume, material, part, client }) {
  */
 export default connect(mapStateToProps, {
   getPlantSelectListByType,
-  // getVendorListByVendorType,
   getPlantBySupplier,
   createVolume,
   updateVolume,

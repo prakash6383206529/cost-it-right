@@ -979,43 +979,16 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @method getVendorListByVendorType
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
-export function getVendorListByVendorType(isVendor, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByVendorType}/${isVendor}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config());
 }
 
 /**
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(callback) {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**
@@ -1025,7 +998,7 @@ export function getVendorWithVendorCodeSelectList(callback) {
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
 
-        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -1143,7 +1116,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}&${queryParamsSecond} `, config());
         request.then((response) => {

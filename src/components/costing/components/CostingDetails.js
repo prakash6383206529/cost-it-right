@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -32,6 +32,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
 import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -124,6 +125,7 @@ function CostingDetails(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
+  const [partName, setpartName] = useState('')
 
   const dispatch = useDispatch()
 
@@ -144,10 +146,13 @@ function CostingDetails(props) {
       applyPermission(topAndLeftMenuData, technology.label)
       dispatch(storePartNumber(''))
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-      dispatch(getPartSelectListByTechnology('', () => { }))
+      // dispatch(getPartSelectListByTechnology('', '', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
 
+    }
+    return () => {
+      reactLocalStorage.setObject('PartData', [])
     }
   }, [])
 
@@ -221,7 +226,7 @@ function CostingDetails(props) {
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
-        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => { }))
+        // dispatch(getPartSelectListByTechnology(partNumber.technologyId, partNumber.partNumber, res => { }))
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
@@ -266,16 +271,16 @@ function CostingDetails(props) {
       return temp
     }
 
-    if (label === 'PartList') {
-      partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      setPartDropdown(temp)
+    // if (label === 'PartList') {
+    //   partSelectListByTechnology && partSelectListByTechnology.map((item) => {
+    //     if (item.Value === '0') return false
+    //     temp.push({ label: item.Text, value: item.Value })
+    //     return null
+    //   })
+    //   setPartDropdown(temp)
 
-      return temp
-    }
+    //   return temp
+    // }
 
 
   }
@@ -303,10 +308,6 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
-      setInputLoader(true)
-      dispatch(getPartSelectListByTechnology(newValue.value, () => {
-        setInputLoader(false)
-      }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -331,6 +332,7 @@ function CostingDetails(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    reactLocalStorage.setObject('PartData', [])
   }
 
   /**
@@ -888,50 +890,48 @@ function CostingDetails(props) {
       }
       const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
       const data = {
-        PartId: part.value,//______
-        PartTypeId: partInfo.PartTypeId,//______
-        PartType: partInfo.PartType,//______
-        TechnologyId: technology.value,//______
-        VendorId: tempData.VendorId,//______
-        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',//______
-        VendorPlantName: tempData.VendorPlantName,//______
-        VendorPlantCode: tempData.VendorPlantCode,//______
-        VendorName: tempData.VendorName,//______
-        VendorCode: tempData.VendorCode,//______
-        PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,//______
-        PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',//______
-        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,//______
-        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,//______
-        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,//______
-        UserId: loggedInUserId(),//______
-        LoggedInUserId: loggedInUserId(),//______
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,//______
-        IsAssemblyPart: partInfo.IsAssemblyPart,//______
-        PartNumber: partInfo.PartNumber,//______
-        PartName: partInfo.PartName,//______
-        Description: partInfo.Description,//______
-        ECNNumber: partInfo.ECNNumber,//______
-        RevisionNumber: partInfo.RevisionNumber,//______
-        DrawingNumber: partInfo.DrawingNumber,//______
-        Price: partInfo.Price,//______
-        EffectiveDate: effectiveDate,//______
-        CostingTypeId: type,//______
-        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,//______
-        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',//______
+        PartId: part.value,
+        PartTypeId: partInfo.PartTypeId,
+        PartType: partInfo.PartType,
+        TechnologyId: technology.value,
+        VendorId: tempData.VendorId,
+        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
+        VendorPlantName: tempData.VendorPlantName,
+        VendorPlantCode: tempData.VendorPlantCode,
+        VendorName: tempData.VendorName,
+        VendorCode: tempData.VendorCode,
+        PlantId: (type === ZBCTypeId) ? tempData.PlantId : EMPTY_GUID,
+        PlantName: (type === ZBCTypeId) ? tempData.PlantName : '',
+        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
+        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
+        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
+        UserId: loggedInUserId(),
+        LoggedInUserId: loggedInUserId(),
+        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
+        IsAssemblyPart: partInfo.IsAssemblyPart,
+        PartNumber: partInfo.PartNumber,
+        PartName: partInfo.PartName,
+        Description: partInfo.Description,
+        ECNNumber: partInfo.ECNNumber,
+        RevisionNumber: partInfo.RevisionNumber,
+        DrawingNumber: partInfo.DrawingNumber,
+        Price: partInfo.Price,
+        EffectiveDate: effectiveDate,
+        CostingTypeId: type,
+        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
       }
       if (IdForMultiTechnology.includes(technology?.value)) {
-        data.Technology = technology.label//______
-        data.CostingHead = "string"//______
-        data.IsVendor = true//______
-        data.GroupCode = "string"//______
-        data.WeightedSOB = 0//______
-        data.ASSEMBLYYY = 0//______
+        data.Technology = technology.label
+        data.CostingHead = "string"
+        data.IsVendor = true
+        data.GroupCode = "string"
+        data.WeightedSOB = 0
 
       } else {
         data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
         data.PlantCode = (type === ZBCTypeId) ? tempData.PlantCode : ''
         data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
-        data.NORMALLLLLLL = 0//______
       }
 
       if (IdForMultiTechnology.includes(technology?.value)) {
@@ -947,7 +947,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
           }
-        }),)
+        }))
       } else {
         dispatch(createCosting(data, (res) => {
           if (res.data.Result) {
@@ -961,7 +961,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
           }
-        }),)
+        }))
       }
     }
     else {
@@ -1687,26 +1687,38 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterList = (inputValue) => {
-    if (inputValue) {
-      let tempArr = []
-      tempArr = partDropdown && partDropdown.filter(i => {
-        return i.label.toLowerCase().includes(inputValue.toLowerCase())
-      }
-      );
-      if (tempArr.length <= 100) {
-        return tempArr
+  const filterList = async (inputValue) => {
+
+    if (inputValue?.length >= searchCount && partName !== inputValue) {
+      setInputLoader(true)
+      const res = await getPartSelectListByTechnology(technology.value, inputValue);
+      setInputLoader(false)
+      setpartName(inputValue)
+      let partDataAPI = res?.data?.SelectList
+      reactLocalStorage.setObject('PartData', partDataAPI)
+      let partData = []
+      if (inputValue) {
+        partData = reactLocalStorage.getObject('PartData')
+        return autoCompleteDropdown(inputValue, partData)
+
       } else {
-        return tempArr.slice(0, 100)
+        return partData
       }
-    } else {
-      return partDropdown
     }
-  };
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
-      resolve(filterList(inputValue));
-    });
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let partData = reactLocalStorage.getObject('PartData')
+        if (inputValue) {
+          partData = reactLocalStorage.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+    }
+
+  }
 
   const loaderObj = { isLoader: inputLoader, }
   return (
@@ -1764,7 +1776,9 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
+
                       <Col className="col-md-15">
+
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -1774,14 +1788,15 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          asyncOptions={promiseOptions}
+                          asyncOptions={filterList}
                           mandatory={true}
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0 || inputLoader) ? true : false}
-                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
+                          disabled={(technology.length === 0) ? true : false}
+                          NoOptionMessage={"Enter 3 characters to show data"}
                         />
+
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm

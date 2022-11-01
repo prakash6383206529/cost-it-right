@@ -760,6 +760,13 @@ export function formViewData(costingSummary, header = '') {
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
   obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
+
+  // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
+  obj.netChildPartsCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetChildPartsCost ? dataFromAPI.CostingPartDetails?.NetChildPartsCost : 0
+  obj.netOperationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOperationCost ? dataFromAPI.CostingPartDetails?.NetOperationCost : 0
+  obj.netProcessCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProcessCost ? dataFromAPI.CostingPartDetails?.NetProcessCost : 0
+  obj.netBoughtOutPartCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost : 0
+  obj.multiTechnologyCostingDetails = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI.CostingPartDetails?.MultiTechnologyCostingDetails : ''
   temp.push(obj)
   return temp
 }

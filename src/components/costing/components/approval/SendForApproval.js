@@ -572,7 +572,7 @@ const SendForApproval = (props) => {
 
       // dispatch(
       //   fileDeleteCosting(deleteData, (res) => {
-      //     Toaster.success("File has been deleted successfully.");
+      //     Toaster.success("File deleted successfully.");
       //     let tempArr = files && files.filter((item) => item.FileId !== FileId);
       //     setFiles(tempArr);
       //     setIsOpen(!IsOpen);
@@ -951,7 +951,7 @@ const SendForApproval = (props) => {
                       <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
+                          Maximum file upload limit reached.
                         </div>
                       ) : (
                         <Dropzone

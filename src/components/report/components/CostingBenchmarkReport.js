@@ -90,15 +90,15 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleRM={handleRM} benchMark={true} />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
             case MACHINERATE:
                 return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:

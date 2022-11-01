@@ -21,7 +21,7 @@ import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants';
+import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -36,6 +36,8 @@ import { CheckApprovalApplicableMaster, onFocus } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -122,8 +124,6 @@ class AddBOPImport extends Component {
     }
     this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
 
@@ -152,7 +152,9 @@ class AddBOPImport extends Component {
       }
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
    * @method onPressVendor
    * @description Used for Vendor checked
@@ -160,17 +162,11 @@ class AddBOPImport extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      selectedPlants: [],
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
-    }
-    else {
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
   }
 
@@ -293,8 +289,8 @@ class AddBOPImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, clientSelectList, bopCategorySelectList, partSelectList, plantSelectList, cityList,
-      UOMSelectList, currencySelectList, } = this.props;
+    const { bopCategorySelectList, partSelectList, plantSelectList, cityList,
+      UOMSelectList, currencySelectList, clientSelectList } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -320,15 +316,6 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
@@ -430,16 +417,32 @@ class AddBOPImport extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
       const { costingTypeId } = this.state;
-      this.setState({ inputLoader: true })
       if (costingTypeId === VBCTypeId) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       }
-    })
+    } else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -650,7 +653,7 @@ class AddBOPImport extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -894,25 +897,45 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingHead, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorTypeBOPSelectList(inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -1141,10 +1164,10 @@ class AddBOPImport extends Component {
                                       name="vendorName"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
+                                      loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                       isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {
@@ -1189,7 +1212,6 @@ class AddBOPImport extends Component {
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("SourceLocation")}
                                   disabled={isViewMode}
-
                                   handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
@@ -1323,7 +1345,7 @@ class AddBOPImport extends Component {
                               Upload Files (upload up to 3 files)
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                              Maximum file upload limit has been reached.
+                              Maximum file upload limit reached.
                             </div>
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
@@ -1449,7 +1471,7 @@ class AddBOPImport extends Component {
           {isOpenVendor && (
             <AddVendorDrawer
               isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
               isEditFlag={false}
               ID={""}
               anchor={"right"}

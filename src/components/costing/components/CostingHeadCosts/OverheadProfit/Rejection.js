@@ -47,7 +47,8 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('multiple technology assembly', (res) => { }))
+        let request = partType ? 'multiple technology assembly' : ''
+        dispatch(fetchCostingHeadsAPI(request, (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
     }, [])
 
@@ -252,7 +253,7 @@ function Rejection(props) {
                     break;
             }
         }
-        dispatch(isOverheadProfitDataChange(true))   // ASSEMBLY TECHNOLOGY
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     const handleChangeRejectionPercentage = (event) => {

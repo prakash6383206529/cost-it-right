@@ -3,11 +3,13 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { getConfigurationKey } from '../../../helper';
-import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 function AddVendorDrawer(props) {
 
@@ -20,7 +22,7 @@ function AddVendorDrawer(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [VendorInputLoader, setVendorInputLoader] = useState(false)
-
+  const [vendorName, setVendorName] = useState('')
   const dispatch = useDispatch()
 
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -28,11 +30,7 @@ function AddVendorDrawer(props) {
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
-    setVendorInputLoader(true)
     const { vbcVendorGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => {
-      setVendorInputLoader(false)
-    }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -41,6 +39,9 @@ function AddVendorDrawer(props) {
       return null;
     })
     initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
+    return () => {
+      reactLocalStorage?.setObject('vendorData', [])
+    }
   }, []);
 
   /**
@@ -69,15 +70,6 @@ function AddVendorDrawer(props) {
   const renderListing = (label) => {
 
     const temp = [];
-
-    if (label === 'Vendor') {
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
 
     if (label === 'DestinationPlant') {
       console.log('plantSelectList: ', plantSelectList);
@@ -148,10 +140,42 @@ function AddVendorDrawer(props) {
   }
   const VendorLoaderObj = { isLoader: VendorInputLoader }
   const plantLoaderObj = { isLoader: inputLoader }
+  const filterList = async (inputValue) => {
+    if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+      // this.setState({ inputLoader: true })
+      let res
+      res = await getVendorWithVendorCodeSelectList(inputValue)
+      setVendorName(inputValue)
+      // this.setState({ inputLoader: false })
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      let VendorData = []
+      if (inputValue) {
+        VendorData = reactLocalStorage?.getObject('vendorData')
+        // this.setState({ inputLoader: false })
+        return autoCompleteDropdown(inputValue, VendorData)
+      } else {
+        return VendorData
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('vendorData')
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+    }
+  };
   /**
   * @method render
   * @description Renders the component
   */
+
   return (
     <div>
       <Drawer
@@ -176,7 +200,7 @@ function AddVendorDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
                 <Col md="12">
-                  <SearchableSelectHookForm
+                  <AsyncSearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
                     placeholder={"Select"}
@@ -190,6 +214,8 @@ function AddVendorDrawer(props) {
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
                     isLoading={VendorLoaderObj}
+                    asyncOptions={filterList}
+                    NoOptionMessage={"Enter 3 characters to show data"}
                   />
                 </Col>
 

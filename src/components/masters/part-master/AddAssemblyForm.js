@@ -5,12 +5,14 @@ import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
+import { searchCount, SPACEBAR } from '../../../config/constants';
 import { getRandomSixDigit, onFocus } from '../../../helper/util';
-import { ASSEMBLY, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ASSEMBLYNAME } from '../../../config/constants';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 class AddAssemblyForm extends Component {
 
@@ -26,7 +28,8 @@ class AddAssemblyForm extends Component {
             isLoader: false,
             updateAsyncDropdown: false,
             issubAssembyNoNotSelected: false,
-            showErrorOnFocus: false
+            showErrorOnFocus: false,
+            partName: ''
         }
     }
 
@@ -35,17 +38,12 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        let obj = {
-            technologyId: this.props?.TechnologySelected.value,
-            date: this.context
-        }
-        this.setState({ isLoader: true })
-        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
+
 
     }
 
     componentWillUnmount() {
-        this.props.getDrawerAssemblyPartDetail('', res => { })
+        reactLocalStorage?.setObject('PartData', [])
     }
 
     /**
@@ -83,8 +81,6 @@ class AddAssemblyForm extends Component {
     renderListing = (label) => {
         const { BOMViewerData } = this.props;
 
-        const { assemblyPartSelectList } = this.props;
-
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
             if (el.PartType === ASSEMBLYNAME) {
@@ -92,16 +88,6 @@ class AddAssemblyForm extends Component {
             }
             return null;
         })
-
-        const temp = [];
-        if (label === 'assemblyPart') {
-            assemblyPartSelectList && assemblyPartSelectList.map(item => {
-                if (item.Value === '0' || tempArr.includes(item.Value)) return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
 
     }
 
@@ -171,23 +157,43 @@ class AddAssemblyForm extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
-        const filterList = (inputValue) => {
-            let tempArr = []
-            tempArr = this.renderListing("assemblyPart").filter(i =>
-                i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-            );
-            if (tempArr.length <= 100) {
-                return tempArr
-            } else {
-                return tempArr.slice(0, 100)
+
+        const filterList = async (inputValue) => {
+            const { partName } = this.state
+            if (inputValue?.length >= searchCount && partName !== inputValue) {
+                let obj = {
+                    technologyId: this.props?.TechnologySelected.value,
+                    date: this.context,
+                    partNumber: inputValue
+                }
+                this.setState({ isLoader: true })
+                const res = await getAssemblyPartSelectList(obj)
+                this.setState({ isLoader: false })
+                this.setState({ partName: inputValue })
+                let partDataAPI = res?.data?.SelectList
+                reactLocalStorage?.setObject('PartData', partDataAPI)
+                let partData = []
+                if (inputValue) {
+                    partData = reactLocalStorage?.getObject('PartData')
+                    return autoCompleteDropdown(inputValue, partData)
+                } else {
+                    return partData
+                }
+            }
+            else {
+                if (inputValue?.length < searchCount) return false
+                else {
+                    let partData = reactLocalStorage?.getObject('PartData')
+                    if (inputValue) {
+                        partData = reactLocalStorage?.getObject('PartData')
+                        return autoCompleteDropdown(inputValue, partData)
+                    } else {
+                        return partData
+                    }
+                }
             }
         };
 
-        const promiseOptions = inputValue =>
-            new Promise(resolve => {
-                resolve(filterList(inputValue));
-
-            });
         return (
             <>
 
@@ -209,9 +215,9 @@ class AddAssemblyForm extends Component {
                                     key={this.state.updateAsyncDropdown}
                                     cacheOptions defaultOptions
                                     options={this.renderListing('assemblyPart')}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={filterList}
                                     onChange={(e) => this.handleAssemblyPartChange(e)}
-                                    noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the assembly numbers' : "No results found"}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? 'Enter 3 characters to show data' : "No results found"}
                                     onFocus={() => onFocus(this)}
                                     onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
