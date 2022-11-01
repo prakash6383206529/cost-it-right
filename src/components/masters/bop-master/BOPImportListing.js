@@ -591,13 +591,23 @@ class BOPImportListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
+
         }
 
 
         return (
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">
