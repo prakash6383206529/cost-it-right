@@ -110,7 +110,20 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
+
+
+        if (this.state.filterModel?.EffectiveDateNew && !isReset) {
+            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+                let temp = []
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+
+        }
+
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
 
@@ -605,6 +618,12 @@ class BOPDomesticListing extends Component {
             if (this.props?.benchMark) {
                 this.props?.handleDate(this.state.inRangeDate)
             }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
         }
 
         const isFirstColumn = (params) => {
