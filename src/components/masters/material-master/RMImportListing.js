@@ -720,6 +720,16 @@ function RMImportListing(props) {
     if (isSimulation) {
       apply(uniqueArray, length)
     }
+
+    if (props?.benchMark) {
+      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      if (uniqueArrayNew.length > 1) {
+        dispatch(setSelectedRowForPagination([]))
+        gridApi.deselectAll()
+        Toaster.warning("Technology & Raw material should be same")
+      }
+    }
+
   }
 
 
