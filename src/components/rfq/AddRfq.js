@@ -3,11 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { EMPTY_DATA, FILE_URL } from '../.././config/constants';
+import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -21,6 +21,8 @@ import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
 import NoContentFound from '../common/NoContentFound';
 import HeaderTitle from '../common/HeaderTitle';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../common/CommonFunctios';
 
 const gridOptions = {};
 
@@ -54,20 +56,16 @@ function AddRfq(props) {
     const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
+    const [partName, setPartName] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
     const dispatch = useDispatch()
-    const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
 
     useEffect(() => {
-        setVendorInputLoader(true)
         const { vbcVendorGrid } = props;
-        dispatch(getVendorWithVendorCodeSelectList(() => {
-            setVendorInputLoader(false)
-        }))
         dispatch(fetchPlantDataAPI(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
@@ -75,6 +73,10 @@ function AddRfq(props) {
             return null;
         })
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
+        return () => {
+            reactLocalStorage?.setObject('vendorData', [])
+            reactLocalStorage.setObject('PartData', [])
+        }
     }, []);
 
 
@@ -273,26 +275,6 @@ function AddRfq(props) {
 
         const temp = [];
 
-        if (label === 'vendor') {
-
-            vendorSelectList && vendorSelectList.map(item => {
-                let isExist = false
-                if (item.Value === '0') { return false }
-                if (vendorList.length > 0) {            // EXISTING VENDOR IN TABLE SHOULD NOT APPEAR IN DROPDOWN
-                    vendorList.map((element) => {
-                        if (element.VendorId === item.Value) {
-                            isExist = true
-                        }
-                    })
-                }
-                if (!isExist) {
-                    temp.push({ label: item.Text, value: item.Value })
-                }
-                return null;
-            });
-            return temp;
-        }
-
         if (label === 'plant') {
             plantList && plantList.map((item) => {
                 if (item.Value === '0') return false
@@ -312,24 +294,24 @@ function AddRfq(props) {
         }
 
 
-        if (label === 'partNo') {
-            partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-                let isExist = false
-                if (item.Value === '0') { return false }
-                if (partList.length > 0) {            // EXISTING PART IN TABLE SHOULD NOT APPEAR IN DROPDOWN
-                    partList.map((element) => {
-                        if (element.PartId === item.Value) {
-                            isExist = true
-                        }
-                    })
-                }
-                if (!isExist) {
-                    temp.push({ label: item.Text, value: item.Value })
-                }
-                return null
-            })
-            return temp
-        }
+        // if (label === 'partNo') {
+        //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
+        //         let isExist = false
+        //         if (item.Value === '0') { return false }
+        //         if (partList.length > 0) {            // EXISTING PART IN TABLE SHOULD NOT APPEAR IN DROPDOWN
+        //             partList.map((element) => {
+        //                 if (element.PartId === item.Value) {
+        //                     isExist = true
+        //                 }
+        //             })
+        //         }
+        //         if (!isExist) {
+        //             temp.push({ label: item.Text, value: item.Value })
+        //         }
+        //         return null
+        //     })
+        //     return temp
+        // }
 
         if (label === 'reporter') {
 
@@ -560,12 +542,12 @@ function AddRfq(props) {
     */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
-            setInputLoader(true)
-            dispatch(getPartSelectListByTechnology(newValue.value, () => {
-                setInputLoader(false)
-                setPartNoDisable(false)
-                setValue('partNo', "")
-            }))
+            // setInputLoader(true)
+            // dispatch(getPartSelectListByTechnology(newValue.value, () => {
+            //     setInputLoader(false)
+            setPartNoDisable(false)
+            setValue('partNo', "")
+            // }))
 
         }
     }
@@ -580,8 +562,69 @@ function AddRfq(props) {
 
 
     }
+    const vendorFilterList = async (inputValue) => {
+        if (inputValue?.length === searchCount && vendor !== inputValue) {
+            // this.setState({ inputLoader: true })
+            let res
+            res = await getVendorWithVendorCodeSelectList(inputValue)
+            setVendor(inputValue)
+            // this.setState({ inputLoader: false })
+            let vendorDataAPI = res?.data?.SelectList
+            reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+            let VendorData = []
+            if (inputValue) {
+                VendorData = reactLocalStorage?.getObject('vendorData')
+                // this.setState({ inputLoader: false })
+                return autoCompleteDropdown(inputValue, VendorData)
+            } else {
+                return VendorData
+            }
+        }
+        else {
+            if (inputValue?.length < searchCount) return false
+            else {
+                let VendorData = reactLocalStorage?.getObject('vendorData')
+                if (inputValue) {
+                    VendorData = reactLocalStorage?.getObject('vendorData')
+                    return autoCompleteDropdown(inputValue, VendorData)
+                } else {
+                    return VendorData
+                }
+            }
+        }
+    };
+    const partFilterList = async (inputValue) => {
 
+        if (inputValue?.length === searchCount && partName !== inputValue) {
+            // setInputLoader(true)
+            const res = await getPartSelectListByTechnology(getValues('technology').value, inputValue);
+            // setInputLoader(false)
+            setPartName(inputValue)
+            let partDataAPI = res?.data?.SelectList
+            reactLocalStorage.setObject('PartData', partDataAPI)
+            let partData = []
+            if (inputValue) {
+                partData = reactLocalStorage.getObject('PartData')
+                return autoCompleteDropdown(inputValue, partData)
 
+            } else {
+                return partData
+            }
+        }
+        else {
+            if (inputValue?.length < searchCount) return false
+            else {
+                let partData = reactLocalStorage.getObject('PartData')
+                if (inputValue) {
+                    partData = reactLocalStorage.getObject('PartData')
+                    return autoCompleteDropdown(inputValue, partData)
+                } else {
+                    return partData
+                }
+            }
+        }
+
+    }
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
     /**
@@ -654,7 +697,7 @@ function AddRfq(props) {
                             <HeaderTitle title={'Part:'} />
                             <Row className="part-detail-wrapper">
                                 <Col md="4">
-                                    <SearchableSelectHookForm
+                                    <AsyncSearchableSelectHookForm
                                         label={"Part No"}
                                         name={"partNumber"}
                                         placeholder={"Select"}
@@ -670,6 +713,8 @@ function AddRfq(props) {
                                         errors={errors.partNo}
                                         disabled={partNoDisable || isEditFlag}
                                         isLoading={plantLoaderObj}
+                                        asyncOptions={partFilterList}
+                                        NoOptionMessage={"Enter 3 characters to show data"}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -758,7 +803,7 @@ function AddRfq(props) {
                             <HeaderTitle title={'Vendor:'} customClass="mt-4" />
                             <Row className="mt-1 part-detail-wrapper">
                                 <Col md="4">
-                                    <SearchableSelectHookForm
+                                    <AsyncSearchableSelectHookForm
                                         label={"Vendor"}
                                         name={"vendor"}
                                         placeholder={"Select"}
@@ -773,7 +818,9 @@ function AddRfq(props) {
                                         // handleChange={() => { }}
                                         errors={errors.Vendor}
                                         isLoading={VendorLoaderObj}
+                                        asyncOptions={vendorFilterList}
                                         disabled={isViewFlag || partList.length === 0}
+                                        NoOptionMessage={"Enter 3 characters to show data"}
                                     />
                                 </Col>
 
