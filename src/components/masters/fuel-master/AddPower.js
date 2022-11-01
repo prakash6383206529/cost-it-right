@@ -421,13 +421,20 @@ class AddPower extends Component {
   vendorToggler = () => {
     this.setState({ isOpenVendor: true })
   }
-
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
-
   /**
   * @method handleState
   * @description called
@@ -1278,7 +1285,7 @@ class AddPower extends Component {
       checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -2018,7 +2025,7 @@ class AddPower extends Component {
         </div>
         {isOpenVendor && <AddVendorDrawer
           isOpen={isOpenVendor}
-          closeDrawer={this.closeVendorDrawer}
+          closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
           isEditFlag={false}
           ID={''}
           anchor={'right'}

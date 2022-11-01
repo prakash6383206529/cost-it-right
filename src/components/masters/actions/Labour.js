@@ -140,22 +140,7 @@ export function updateLabour(requestData, callback) {
  * @description LABOUR TYPE VENDOR SELECT LIST
  */
 export function labourTypeVendorSelectList(vendorName, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.labourTypeVendorSelectList}?vendorName=${vendorName}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: LABOUR_TYPE_VENDOR_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+    return axios.get(`${API.labourTypeVendorSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**
