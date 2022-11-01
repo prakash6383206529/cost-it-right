@@ -404,11 +404,7 @@ class AddMachineRate extends Component {
       selectedPlants: [],
     }, () => {
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
@@ -1309,10 +1305,10 @@ class AddMachineRate extends Component {
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(costingTypeId, inputValue)
+        res = await getVendorWithVendorCodeSelectList(inputValue)
         // this.setState({ inputLoader: false })
         this.setState({ vendorName: inputValue })
         let vendorDataAPI = res?.data?.SelectList
@@ -1446,7 +1442,7 @@ class AddMachineRate extends Component {
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {

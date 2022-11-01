@@ -1171,7 +1171,7 @@ class AddRMImport extends Component {
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
@@ -1504,7 +1504,7 @@ class AddRMImport extends Component {
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                       isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {

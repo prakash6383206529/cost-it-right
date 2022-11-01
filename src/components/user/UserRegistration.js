@@ -1455,7 +1455,7 @@ function UserRegistration(props) {
   };
 
   const vendorFilterList = async (inputValue) => {
-    if (inputValue?.length === searchCount && vendor !== inputValue) {
+    if (inputValue?.length >= searchCount && vendor !== inputValue) {
       // this.setState({ inputLoader: true })
       let res
       res = await getVendorWithVendorCodeSelectList(inputValue)
