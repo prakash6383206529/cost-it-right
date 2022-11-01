@@ -608,33 +608,29 @@ class AddRMDomestic extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData = {}, type) => {
-    console.log('formData: ', formData);
+  async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
-
-      this.setState({ isOpenVendor: false }, async () => {
-        const { costingTypeId } = this.state
-        if (costingTypeId !== VBCTypeId) {
+      this.setState({ isOpenVendor: false })
+      const { costingTypeId } = this.state
+      if (costingTypeId !== VBCTypeId) {
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
           const res = await getVendorListByVendorType(costingTypeId, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-          console.log('vendorDataAPI: ', vendorDataAPI);
-          console.log('formData: ', formData);
-
-          if (Object.keys(formData).length > 0) {
-            console.log('formData: ', formData);
-            this.setState({ vendorName: vendorDataAPI !== undefined ? { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId } : [], })
-          }
         }
-        else {
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
+      } else {
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
           const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-          if (Object.keys(formData).length > 0) {
-            this.setState({ vendorName: vendorDataAPI !== undefined ? { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId } : [], })
-          }
         }
-      })
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
+      }
     } else {
       this.setState({ isOpenVendor: false })
     }
@@ -1990,7 +1986,7 @@ class AddRMDomestic extends Component {
                 isOpen={isOpenVendor}
                 isRM={true}
                 IsVendor={this.state.IsVendor}
-                closeDrawer={this.closeVendorDrawer}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}

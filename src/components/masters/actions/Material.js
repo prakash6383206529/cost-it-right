@@ -979,8 +979,8 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @method getVendorListByVendorType
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
-export function getVendorListByVendorType(isVendor, vendorName, callback) {
-    return axios.get(`${API.getVendorListByVendorType}?isVendor=${isVendor}&vendorName=${vendorName}`, config());
+export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config());
 }
 
 /**
@@ -988,7 +988,6 @@ export function getVendorListByVendorType(isVendor, vendorName, callback) {
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    console.log('vendorName: ', vendorName);
     return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 

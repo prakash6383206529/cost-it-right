@@ -163,9 +163,6 @@ class AddBOPDomestic extends Component {
     else if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
-    else {
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-    }
   }
 
   /**
@@ -390,17 +387,32 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
       const { costingTypeId } = this.state;
-      this.setState({ inputLoader: true })
       if (costingTypeId === VBCTypeId) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       } else {
-        console.log(this.state.vendorName, 'this.state.vendorNam');
-        this.props.getVendorTypeBOPSelectList(this.state.vendorName ? this.state.vendorName : '', () => { this.setState({ inputLoader: false }) })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       }
-    })
+    } else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -1381,30 +1393,25 @@ class AddBOPDomestic extends Component {
               isEditFlag={false}
               anchor={"right"}
             />
-          )
-          }
-          {
-            isOpenVendor && (
-              <AddVendorDrawer
-                isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
-                isEditFlag={false}
-                ID={""}
-                anchor={"right"}
-              />
-            )
-          }
-          {
-            isOpenUOM && (
-              <AddUOM
-                isOpen={isOpenUOM}
-                closeDrawer={this.closeUOMDrawer}
-                isEditFlag={false}
-                ID={""}
-                anchor={"right"}
-              />
-            )
-          }
+          )}
+          {isOpenVendor && (
+            <AddVendorDrawer
+              isOpen={isOpenVendor}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
+          {isOpenUOM && (
+            <AddUOM
+              isOpen={isOpenUOM}
+              closeDrawer={this.closeUOMDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
 
           {
             this.state.approveDrawer && (
