@@ -13,7 +13,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkRmReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkBopReport, getCostingBenchMarkRmReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -47,349 +47,147 @@ function InsightsBop(props) {
 
     // const [technology, setTechnology] = useState({})
     const dispatch = useDispatch()
-    let rmBenchmarkList = useSelector((state) => state.report.rmBenchmarkList)
+    let bopBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
 
 
-    let obj5 = {
+
+    let obj4 = {
         Identity: null,
         Result: true,
         Message: "Success",
-        Data: {
-            RawMaterialChildId: "6e267266-d42d-41ed-bfba-03a349648e47",
-            Specification: [
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000119",
-                    RawMaterialSpecificationId: "33f3d772-b736-4842-9883-b88b430a9e8e",
-                    RawMaterialSpecificationName: "RMS-20-10-22-1",
-                    RawMaterialGradeId: "21fbb80c-a3dd-4cc9-bf3b-2ce3d1bd2440",
-                    RawMaterialGradeName: "RMG-20-10-22-1",
-                    RawMaterialCategory: "STD",
-                    EffectiveDate: "2022-09-02T00:00:00",
-                    Minimum: 10,
-                    Maximum: 10,
-                    Average: 10,
-                    WeightedAverage: 432,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "BU Vendor SIPL",
-                            Plant: [
-                                {
-                                    PlantName: "Bhandari Plant",
-                                    Price: 10,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 432,
-                                    TotalGrossWeight: 5,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 2.16
-                                },
-                                {
-                                    PlantName: "second Plant",
-                                    Price: 20,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 432,
-                                    TotalGrossWeight: 5,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 2.16
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000120",
-                    RawMaterialSpecificationId: "dea86c1f-b2d0-4109-ad32-550968a6003b",
-                    RawMaterialSpecificationName: "RMS-20-10-22-2",
-                    RawMaterialGradeId: "da4a0c18-03e0-4a5b-8c26-708be7d89f38",
-                    RawMaterialGradeName: "RMG-20-10-22-2",
-                    RawMaterialCategory: "STD",
-                    EffectiveDate: "2022-09-04T00:00:00",
-                    Minimum: 20,
-                    Maximum: 20,
-                    Average: 20,
-                    WeightedAverage: 297,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "Flottweg SE",
-                            Plant: [
-                                {
-                                    PlantName: "Bhu Plant",
-                                    Price: 20,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 297,
-                                    TotalGrossWeight: 10,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 2.97
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000121",
-                    RawMaterialSpecificationId: "50c34546-9dcd-4d66-8f68-6b04086fdf73",
-                    RawMaterialSpecificationName: "RMS-20-10-22-3",
-                    RawMaterialGradeId: "42a7400f-a5a6-4bf6-be11-58048abf3c59",
-                    RawMaterialGradeName: "RMG-20-10-22-3",
-                    RawMaterialCategory: "CTS",
-                    EffectiveDate: "2022-09-14T00:00:00",
-                    Minimum: 60,
-                    Maximum: 60,
-                    Average: 60,
-                    WeightedAverage: 149,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "wallmax",
-                            Plant: [
-                                {
-                                    PlantName: "P1",
-                                    Price: 60,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 149,
-                                    TotalGrossWeight: 123,
-                                    TotalScrapWeight: 110,
-                                    TotalConsumptionInTon: 18.327
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000121",
-                    RawMaterialSpecificationId: "50c34546-9dcd-4d66-8f68-6b04086fdf73",
-                    RawMaterialSpecificationName: "RMS-20-10-22-3",
-                    RawMaterialGradeId: "42a7400f-a5a6-4bf6-be11-58048abf3c59",
-                    RawMaterialGradeName: "RMG-20-10-22-3",
-                    RawMaterialCategory: "STD",
-                    EffectiveDate: "2022-09-26T00:00:00",
-                    Minimum: 488,
-                    Maximum: 488,
-                    Average: 488,
-                    WeightedAverage: 135,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "wallmax",
-                            Plant: [
-                                {
-                                    PlantName: "P1",
-                                    Price: 488,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 135,
-                                    TotalGrossWeight: 72,
-                                    TotalScrapWeight: 2,
-                                    TotalConsumptionInTon: 9.72
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000121",
-                    RawMaterialSpecificationId: "50c34546-9dcd-4d66-8f68-6b04086fdf73",
-                    RawMaterialSpecificationName: "RMS-20-10-22-3",
-                    RawMaterialGradeId: "42a7400f-a5a6-4bf6-be11-58048abf3c59",
-                    RawMaterialGradeName: "RMG-20-10-22-3",
-                    RawMaterialCategory: "STD",
-                    EffectiveDate: "2022-09-26T00:00:00",
-                    Minimum: 30,
-                    Maximum: 30,
-                    Average: 30,
-                    WeightedAverage: 148,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "Green Planet PVT LTD",
-                            Plant: [
-                                {
-                                    PlantName: "Flottweg SEP",
-                                    Price: 30,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 148,
-                                    TotalGrossWeight: 123,
-                                    TotalScrapWeight: 100,
-                                    TotalConsumptionInTon: 18.204
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000122",
-                    RawMaterialSpecificationId: "3764ef2f-35b7-4ea2-a338-45da7a4cece1",
-                    RawMaterialSpecificationName: "RMS-20-10-22-4",
-                    RawMaterialGradeId: "9d373f23-b30c-4565-b782-6b62789c470f",
-                    RawMaterialGradeName: "RMG-20-10-22-4",
-                    RawMaterialCategory: "STD",
-                    EffectiveDate: "2022-09-10T00:00:00",
-                    Minimum: 40,
-                    Maximum: 40,
-                    Average: 40,
-                    WeightedAverage: 149,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "LMN PVT LTD",
-                            Plant: [
-                                {
-                                    PlantName: "Honda P",
-                                    Price: 40,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 149,
-                                    TotalGrossWeight: 33,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 4.917
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000123",
-                    RawMaterialSpecificationId: "1d8a0f44-f9ff-412c-8c49-95943d6f1163",
-                    RawMaterialSpecificationName: "RMS-20-10-22-5",
-                    RawMaterialGradeId: "18b5ae46-2f73-40ab-9c80-89498cd2298b",
-                    RawMaterialGradeName: "RMG-20-10-22-5",
-                    RawMaterialCategory: "COIL",
-                    EffectiveDate: "2022-09-12T00:00:00",
-                    Minimum: 50,
-                    Maximum: 345,
-                    Average: 197.5,
-                    WeightedAverage: 297.746835443038,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "Honda V",
-                            Plant: [
-                                {
-                                    PlantName: "Flottweg SEP",
-                                    Price: 345,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 149,
-                                    TotalGrossWeight: 122,
-                                    TotalScrapWeight: 2,
-                                    TotalConsumptionInTon: 18.178
-                                }
-                            ]
-                        },
-                        {
-                            Vendor: "SIPL",
-                            Plant: [
-                                {
-                                    PlantName: "MindaPlant",
-                                    Price: 50,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 148,
-                                    TotalGrossWeight: 35,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 5.18
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000124",
-                    RawMaterialSpecificationId: "9cca12e6-ffd1-44b7-a0f4-0edcc7873307",
-                    RawMaterialSpecificationName: "RMS-20-10-22-2",
-                    RawMaterialGradeId: "9d373f23-b30c-4565-b782-6b62789c470f",
-                    RawMaterialGradeName: "RMG-20-10-22-4",
-                    RawMaterialCategory: "CTL",
-                    EffectiveDate: "2022-09-15T00:00:00",
-                    Minimum: 45,
-                    Maximum: 45,
-                    Average: 45,
-                    WeightedAverage: 135,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "Aone1",
-                            Plant: [
-                                {
-                                    PlantName: "SECBP",
-                                    Price: 45,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 135,
-                                    TotalGrossWeight: 44,
-                                    TotalScrapWeight: 1,
-                                    TotalConsumptionInTon: 5.94
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    TechnologyId: 1,
-                    TechnologyName: "Sheet Metal",
-                    RawMaterialName: "RM-20-10-22-18:20",
-                    RawMaterialCode: "RM-1000125",
-                    RawMaterialSpecificationId: "622ed071-e8c9-4bdf-b67b-6066a7610e56",
-                    RawMaterialSpecificationName: "RMS-20-10-22-2",
-                    RawMaterialGradeId: "21fbb80c-a3dd-4cc9-bf3b-2ce3d1bd2440",
-                    RawMaterialGradeName: "RMG-20-10-22-1",
-                    RawMaterialCategory: "CTS",
-                    EffectiveDate: "2022-09-17T00:00:00",
-                    Minimum: 23,
-                    Maximum: 44,
-                    Average: 33.5,
-                    WeightedAverage: 278.92537313432837,
-                    RMVendorPrice: [
-                        {
-                            Vendor: "Stark",
-                            Plant: [
-                                {
-                                    PlantName: "SECBP",
-                                    Price: 23,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 148,
-                                    TotalGrossWeight: 76,
-                                    TotalScrapWeight: 2,
-                                    TotalConsumptionInTon: 11.248
-                                }
-                            ]
-                        },
-                        {
-                            Vendor: "RajKumar",
-                            Plant: [
-                                {
-                                    PlantName: "RajManiP",
-                                    Price: 44,
-                                    CostingTypeId: 2,
-                                    TotalVolume: 135,
-                                    TotalGrossWeight: 65,
-                                    TotalScrapWeight: 10,
-                                    TotalConsumptionInTon: 8.775
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        DataList: [],
+        Data: {},
+        DataList: [
+            {
+                BoughtOutPartId: "c16c308f-a862-41ed-a64a-e643fd378d45",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "Pin Nail1",
+                        BoughtOutPartName: "Bolt",
+                        BoughtOutPartCategory: "Blub123",
+                        Minimum: 99,
+                        Maximum: 99,
+                        Average: 99,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "Ashokv",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "Flottweg SEP",
+                                        Rate: 99,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-11-05T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                BoughtOutPartId: "3ccf1eb6-0b60-4dbd-9a92-3d8f3fcaa75b",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "bop-test123",
+                        BoughtOutPartName: "bop-test123",
+                        BoughtOutPartCategory: "1234",
+                        Minimum: 120,
+                        Maximum: 120,
+                        Average: 120,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "Flottweg SE",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "Flottweg SEP",
+                                        Rate: 120,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-10-11T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                BoughtOutPartId: "fe2cafbc-0da9-4764-aa06-13029191e32c",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "BOP1",
+                        BoughtOutPartName: "BOP1",
+                        BoughtOutPartCategory: "BOP1",
+                        Minimum: 10,
+                        Maximum: 40,
+                        Average: 25,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "V4",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 40,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V3",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 30,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V1",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 10,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V2",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 20,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
         SelectList: [],
         DynamicData: null
     }
-
 
 
     useEffect(() => {
@@ -399,20 +197,22 @@ function InsightsBop(props) {
 
         props.data && props.data.map((item) => {
 
+
             arr.push({
-                RawMaterialId: item.RawMaterialId,
-                RawMaterialName: item.RawMaterial,
-                TechnologyId: item.TechnologyId
+                BoughtOutPartId: item.BoughtOutPartId
+                ,
+                CategoryId: item.CategoryId ? item.CategoryId : "",
+
             })
             return arr
         })
         let data = {
             FromDate: props.dateArray[0] ? props.dateArray[0] : null,
             ToDate: props.dateArray[1] ? props.dateArray[1] : null,
-            RMCostBenchMarkingReports: arr
+            bOPCostBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkRmReport(data, () => { }))
+        dispatch(getCostingBenchMarkBopReport(data, () => { }))
 
     }, [])
 
@@ -429,11 +229,22 @@ function InsightsBop(props) {
         let uniqueVendors = []
 
         //////////////////////////////////////////////////////////////////////////////////////
+        let specification = []
 
-        true && obj5.Data.Specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+
+        bopBenchmarkList?.map((item) => {
+
+            specification.push(item.BOPSpecifications[0])
+
+        })
+
+
+
+
+        true && specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.RawMaterialSpecificationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+                Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -443,11 +254,11 @@ function InsightsBop(props) {
             }
 
 
-            item.RMVendorPrice.map((data, indx) => {
+            item.BOPVendorPrice?.map((data, indx) => {
 
-                data.Plant.map((ele, ind) => {
+                data.BOPPlant.map((ele, ind) => {
                     let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val] = ele.Price
+                    obj[Val] = ele.Rate
 
                 })
 
@@ -460,12 +271,12 @@ function InsightsBop(props) {
 
             let obj2 = {}
             let arrSample = []
-            item.RMVendorPrice.map((ele, ind) => {
+            item.BOPVendorPrice?.map((ele, ind) => {
 
                 obj2 = {}
                 obj2.vendor = ele.Vendor                    // OBJ2 
 
-                ele.Plant.map((el) => {
+                ele.BOPPlant.map((el) => {
                     plantTemp.push(el.PlantName)
 
                 })
@@ -568,7 +379,8 @@ function InsightsBop(props) {
                 let plantObj = {
                     headerName: ele,
                     field: `plant${item.vendor}${ind}`,
-                    width: "115"
+                    width: "115",
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
                 }
                 childPlants.push(plantObj)
 
@@ -580,7 +392,8 @@ function InsightsBop(props) {
                 headerName: `${item.vendor}`,
                 headerClass: "justify-content-center",
                 marryChildren: true,
-                children: childPlants
+                children: childPlants,
+                cellRendererFramework: (params) => params.value ? params.value : '-',
             }
 
             array55.push(obj)
@@ -593,7 +406,7 @@ function InsightsBop(props) {
 
             setShowListing(true)
         }, 500);
-    }, [rmBenchmarkList]);
+    }, [bopBenchmarkList]);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
@@ -686,9 +499,7 @@ function InsightsBop(props) {
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
                 })
-
             }
-
         })
 
 
@@ -703,24 +514,33 @@ function InsightsBop(props) {
         var maxGraphData = rowCount[0].maximumData;
 
         var array = []
+        var plantLabel = []
         var obj = rowCount[0]
         for (var prop in obj) {
             if (prop.includes('plant')) {
-
                 array.push(obj[prop])
-            }
+                plantLabel.push(prop)
 
+            }
         }
 
 
-        graphDataNew = array
+        let newArr = []
+        labelArr.map((item, index) => {
+            plantLabel.map((element, ind) => {
+                let ele = element.slice(5, -1)
+                if (item.includes(ele)) {
+                    newArr[index] = array[ind]
+                }
+            })
+        })
 
+        graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-
         setAverageGrpahData(avgGraphData);
-
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
+
         // 
     }
 

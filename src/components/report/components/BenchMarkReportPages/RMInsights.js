@@ -47,7 +47,7 @@ function Insights(props) {
 
     // const [technology, setTechnology] = useState({})
     const dispatch = useDispatch()
-    let rmBenchmarkList = useSelector((state) => state.report.rmBenchmarkList)
+    let rmBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
 
 
@@ -430,7 +430,7 @@ function Insights(props) {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
-        rmBenchmarkList && rmBenchmarkList.Specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        rmBenchmarkList && rmBenchmarkList.Specification?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
                 Specification: item.RawMaterialSpecificationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
@@ -704,25 +704,61 @@ function Insights(props) {
         var maxGraphData = rowCount[0].maximumData;
 
         var array = []
+        var plantLabel = []
         var obj = rowCount[0]
         for (var prop in obj) {
             if (prop.includes('plant')) {
-
                 array.push(obj[prop])
-            }
+                plantLabel.push(prop)
 
+            }
         }
 
 
-        graphDataNew = array
+        let newArr = []
+        labelArr.map((item, index) => {
+            plantLabel.map((element, ind) => {
+                let ele = element.slice(5, -1)
+                if (item.includes(ele)) {
+                    newArr[index] = array[ind]
+                }
+            })
+        })
 
+        graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-
         setAverageGrpahData(avgGraphData);
-
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // 
+
+
+        // var rowCount = event.api.getSelectedRows();
+
+        // var graphDataNew = rowCount[0].graphData;
+        // var avgGraphData = rowCount[0].Average;
+        // var minGraphData = rowCount[0].minimumData;
+        // var maxGraphData = rowCount[0].maximumData;
+
+        // var array = []
+        // var obj = rowCount[0]
+        // for (var prop in obj) {
+        //     if (prop.includes('plant')) {
+
+        //         array.push(obj[prop])
+        //     }
+
+        // }
+
+
+        // graphDataNew = array
+
+        // setDynamicGrpahData(graphDataNew);
+
+        // setAverageGrpahData(avgGraphData);
+
+        // setMinimumGrpahData(minGraphData);
+        // setMaximumGrpahData(maxGraphData);
+        // // 
     }
 
     const renderListing = (label) => {

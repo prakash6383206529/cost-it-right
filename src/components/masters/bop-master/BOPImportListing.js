@@ -57,7 +57,7 @@ class BOPImportListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            inRangeDate: [],
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
@@ -492,6 +492,7 @@ class BOPImportListing extends Component {
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
@@ -517,6 +518,16 @@ class BOPImportListing extends Component {
 
         var setDate = (date) => {
             this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+        }
+
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
         }
 
         const isFirstColumn = (params) => {
@@ -579,13 +590,23 @@ class BOPImportListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
+
         }
 
 
         return (
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">

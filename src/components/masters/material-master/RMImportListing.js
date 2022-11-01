@@ -70,10 +70,18 @@ function RMImportListing(props) {
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(false)
+  const [inRangeDate, setinRangeDate] = useState([])
+
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      let temp = inRangeDate
+      temp.push(newDate)
+      setinRangeDate(temp)
+      if (props?.benchMark) {
+        props?.handleDate(inRangeDate)
+      }
       setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
       if (dateAsString == null) return -1;
       var dateParts = dateAsString.split('/');
@@ -712,6 +720,16 @@ function RMImportListing(props) {
     if (isSimulation) {
       apply(uniqueArray, length)
     }
+
+    if (props?.benchMark) {
+      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      if (uniqueArrayNew.length > 1) {
+        dispatch(setSelectedRowForPagination([]))
+        gridApi.deselectAll()
+        Toaster.warning("Technology & Raw material should be same")
+      }
+    }
+
   }
 
 
