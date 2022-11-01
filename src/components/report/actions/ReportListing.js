@@ -4,7 +4,8 @@ import {
     API_FAILURE,
     GET_REPORT_LIST, config, EMPTY_GUID,
     GET_ALL_REPORT_LIST,
-    GET_BENCHMARK_RM_LIST
+    GET_BENCHMARK_RM_LIST,
+    GET_BENCHMARK_MASTER_LIST
 } from '../../../config/constants';
 
 import { userDepartmetList } from '../../../helper';
@@ -127,7 +128,7 @@ export function getCostingBenchMarkRmReport(data, callback) {
         const request = axios.post(`${API.getCostingBenchMarkRmReport}`, data, config());
         request.then((response) => {
             dispatch({
-                type: GET_BENCHMARK_RM_LIST,
+                type: GET_BENCHMARK_MASTER_LIST,
                 payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
             })
             callback(response);
@@ -139,3 +140,25 @@ export function getCostingBenchMarkRmReport(data, callback) {
 
     };
 }
+
+
+export function getCostingBenchMarkBopReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostingBenchMarkBopReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_BENCHMARK_MASTER_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
+
+

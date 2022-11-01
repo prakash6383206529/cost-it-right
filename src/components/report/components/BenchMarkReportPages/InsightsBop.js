@@ -13,7 +13,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkRmReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkBopReport, getCostingBenchMarkRmReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -47,7 +47,149 @@ function InsightsBop(props) {
 
     // const [technology, setTechnology] = useState({})
     const dispatch = useDispatch()
-    let rmBenchmarkList = useSelector((state) => state.report.rmBenchmarkList)
+    let bopBenchmarkList = useSelector((state) => state.report.BenchmarkList)
+
+
+
+
+    let obj4 = {
+        Identity: null,
+        Result: true,
+        Message: "Success",
+        Data: {},
+        DataList: [
+            {
+                BoughtOutPartId: "c16c308f-a862-41ed-a64a-e643fd378d45",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "Pin Nail1",
+                        BoughtOutPartName: "Bolt",
+                        BoughtOutPartCategory: "Blub123",
+                        Minimum: 99,
+                        Maximum: 99,
+                        Average: 99,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "Ashokv",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "Flottweg SEP",
+                                        Rate: 99,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-11-05T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                BoughtOutPartId: "3ccf1eb6-0b60-4dbd-9a92-3d8f3fcaa75b",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "bop-test123",
+                        BoughtOutPartName: "bop-test123",
+                        BoughtOutPartCategory: "1234",
+                        Minimum: 120,
+                        Maximum: 120,
+                        Average: 120,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "Flottweg SE",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "Flottweg SEP",
+                                        Rate: 120,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-10-11T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                BoughtOutPartId: "fe2cafbc-0da9-4764-aa06-13029191e32c",
+                BOPSpecifications: [
+                    {
+                        BoughtOutPartCode: "BOP1",
+                        BoughtOutPartName: "BOP1",
+                        BoughtOutPartCategory: "BOP1",
+                        Minimum: 10,
+                        Maximum: 40,
+                        Average: 25,
+                        WeightedAverage: 0,
+                        BOPVendorPrice: [
+                            {
+                                Vendor: "V4",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 40,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V3",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 30,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V1",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 10,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                Vendor: "V2",
+                                BOPPlant: [
+                                    {
+                                        PlantName: "P1",
+                                        Rate: 20,
+                                        IsVendor: false,
+                                        TotalQuantity: 0,
+                                        TotalValue: 0,
+                                        EffectiveDate: "2022-09-22T00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        SelectList: [],
+        DynamicData: null
+    }
+
+
 
 
 
@@ -400,19 +542,20 @@ function InsightsBop(props) {
         props.data && props.data.map((item) => {
 
             arr.push({
-                RawMaterialId: item.RawMaterialId,
-                RawMaterialName: item.RawMaterial,
-                TechnologyId: item.TechnologyId
+                BoughtOutPartId: item.BoughtOutPartId
+                ,
+                CategoryId: "",
+
             })
             return arr
         })
         let data = {
             FromDate: props.dateArray[0] ? props.dateArray[0] : null,
             ToDate: props.dateArray[1] ? props.dateArray[1] : null,
-            RMCostBenchMarkingReports: arr
+            bOPCostBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkRmReport(data, () => { }))
+        dispatch(getCostingBenchMarkBopReport(data, () => { }))
 
     }, [])
 
@@ -429,11 +572,22 @@ function InsightsBop(props) {
         let uniqueVendors = []
 
         //////////////////////////////////////////////////////////////////////////////////////
+        let specification = []
 
-        true && obj5.Data.Specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+
+        bopBenchmarkList?.map((item) => {
+
+            specification.push(item.BOPSpecifications[0])
+
+        })
+
+
+
+
+        true && specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.RawMaterialSpecificationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+                Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -443,11 +597,11 @@ function InsightsBop(props) {
             }
 
 
-            item.RMVendorPrice.map((data, indx) => {
+            item.BOPVendorPrice?.map((data, indx) => {
 
-                data.Plant.map((ele, ind) => {
+                data.BOPPlant.map((ele, ind) => {
                     let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val] = ele.Price
+                    obj[Val] = ele.Rate
 
                 })
 
@@ -460,12 +614,12 @@ function InsightsBop(props) {
 
             let obj2 = {}
             let arrSample = []
-            item.RMVendorPrice.map((ele, ind) => {
+            item.BOPVendorPrice?.map((ele, ind) => {
 
                 obj2 = {}
                 obj2.vendor = ele.Vendor                    // OBJ2 
 
-                ele.Plant.map((el) => {
+                ele.BOPPlant.map((el) => {
                     plantTemp.push(el.PlantName)
 
                 })
@@ -568,7 +722,8 @@ function InsightsBop(props) {
                 let plantObj = {
                     headerName: ele,
                     field: `plant${item.vendor}${ind}`,
-                    width: "115"
+                    width: "115",
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
                 }
                 childPlants.push(plantObj)
 
@@ -580,7 +735,8 @@ function InsightsBop(props) {
                 headerName: `${item.vendor}`,
                 headerClass: "justify-content-center",
                 marryChildren: true,
-                children: childPlants
+                children: childPlants,
+                cellRendererFramework: (params) => params.value ? params.value : '-',
             }
 
             array55.push(obj)
@@ -593,7 +749,7 @@ function InsightsBop(props) {
 
             setShowListing(true)
         }, 500);
-    }, [rmBenchmarkList]);
+    }, [bopBenchmarkList]);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
@@ -686,9 +842,7 @@ function InsightsBop(props) {
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
                 })
-
             }
-
         })
 
 
@@ -703,24 +857,33 @@ function InsightsBop(props) {
         var maxGraphData = rowCount[0].maximumData;
 
         var array = []
+        var plantLabel = []
         var obj = rowCount[0]
         for (var prop in obj) {
             if (prop.includes('plant')) {
-
                 array.push(obj[prop])
-            }
+                plantLabel.push(prop)
 
+            }
         }
 
 
-        graphDataNew = array
+        let newArr = []
+        labelArr.map((item, index) => {
+            plantLabel.map((element, ind) => {
+                let ele = element.slice(5, -1)
+                if (item.includes(ele)) {
+                    newArr[index] = array[ind]
+                }
+            })
+        })
 
+        graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-
         setAverageGrpahData(avgGraphData);
-
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
+
         // 
     }
 
