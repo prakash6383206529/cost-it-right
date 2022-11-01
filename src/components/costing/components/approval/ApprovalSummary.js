@@ -15,7 +15,7 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
-import { CBCTypeId, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId } from '../../../../config/constants'
+import { CBCTypeId, EMPTY_GUID, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
@@ -72,7 +72,7 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && (approvalDetails.TypeOfCosting === VBC)) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
@@ -402,7 +402,7 @@ function ApprovalSummary(props) {
                         <th>{`ZBC/Vendor Name:`}</th>
                       )}
                       {approvalDetails.CostingTypeId === CBCTypeId && (
-                        <th>{`Customer Name`}</th>
+                        <th>{`Customer (Code)`}</th>
                       )}
                       {
                         checkVendorPlantConfigurable() &&
@@ -410,12 +410,9 @@ function ApprovalSummary(props) {
                           {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
-                      {
-                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === VBC) &&
-                        <th>
-                          {`Plant(Code):`}
-                        </th>
-                      }
+                      {(getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) && <th>{`Plant (Code):`}</th>}
+
+                      {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
                       <th>{`SOB(%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Old/Current Price:`}</th>
@@ -450,14 +447,17 @@ function ApprovalSummary(props) {
                           {
                             approvalDetails.CostingTypeId === VBCTypeId ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
+
                         </td>
                       }
-                      {
-                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId) &&
+                      {/* {
+                        ((getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId)) &&
                         <td>
-                          {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
+                          {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode)}? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`:'-'
                         </td>
-                      }
+                      } */}
+                      {(approvalDetails.CostingTypeId === CBCTypeId || approvalDetails.CostingTypeId === NCCTypeId || approvalDetails.CostingTypeId === VBCTypeId) && <td> {(approvalDetails.DestinationPlantName) ? `${approvalDetails.DestinationPlantName}` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName) ? `${approvalDetails.PlantName}` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
@@ -501,6 +501,7 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
+                      {console.log('approvalDetails: ', approvalDetails)}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
