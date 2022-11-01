@@ -289,7 +289,7 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('', type)
+        this.toggleDrawer('', formData, type)
     }
 
     /**
@@ -372,6 +372,7 @@ class AddVendorDrawer extends Component {
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
                 CityId: city.value,
+                VendorId: VendorId,
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {

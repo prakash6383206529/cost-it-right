@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -38,7 +38,8 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -90,7 +91,7 @@ class AddRMDomestic extends Component {
 
       isVisible: false,
       imageURL: '',
-
+      isLoader: false,
       netLandedCost: '',
       freightCost: '',
       singlePlantSelected: [],
@@ -120,7 +121,7 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
-      this.props.getSupplierList(() => { })
+      this.props.getSupplierList(this.state.vendorName, (res) => { })
       this.props.fetchPlantDataAPI(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
     }
@@ -143,7 +144,6 @@ class AddRMDomestic extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
-      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
@@ -168,7 +168,9 @@ class AddRMDomestic extends Component {
       this.calculateNetCost()
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
    * @method handleRMChange
    * @description  used to handle row material selection
@@ -513,15 +515,11 @@ class AddRMDomestic extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
       this.props.getPlantBySupplier('', () => { })
       this.props.getCityBySupplier(0, () => { })
     }
@@ -605,27 +603,36 @@ class AddRMDomestic extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData = {}) => {
-    this.setState({ isOpenVendor: false }, () => {
-      const { costingTypeId } = this.state
-      if (costingTypeId !== VBCTypeId) {
-        this.props.getVendorListByVendorType(ZBCTypeId, () => {
-          const { vendorListByVendorType } = this.props
+  closeVendorDrawer = (e = '', formData = {}, type) => {
+    console.log('formData: ', formData);
+    if (type === 'submit') {
+
+      this.setState({ isOpenVendor: false }, async () => {
+        const { costingTypeId } = this.state
+        if (costingTypeId !== VBCTypeId) {
+          const res = await getVendorListByVendorType(costingTypeId, this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+          console.log('vendorDataAPI: ', vendorDataAPI);
+          console.log('formData: ', formData);
+
           if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+            console.log('formData: ', formData);
+            this.setState({ vendorName: vendorDataAPI !== undefined ? { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId } : [], })
           }
-        })
-      } else {
-        this.props.getVendorWithVendorCodeSelectList(() => {
-          const { vendorListByVendorType } = this.props
+        }
+        else {
+          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
           if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+            this.setState({ vendorName: vendorDataAPI !== undefined ? { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId } : [], })
           }
-        })
-      }
-    })
+        }
+      })
+    } else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   uomToggler = () => {
@@ -669,7 +676,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, cityList, clientSelectList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology } = this.props
+    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -736,15 +743,6 @@ class AddRMDomestic extends Component {
       return temp
     }
 
-
-    if (label === 'VendorNameList') {
-      vendorListByVendorType && vendorListByVendorType.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
 
     if (label === 'VendorLocation') {
       filterCityListBySupplier && filterCityListBySupplier.map((item) => {
@@ -1196,31 +1194,43 @@ class AddRMDomestic extends Component {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable } = this.state
 
-
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorListByVendorType(costingTypeId, inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
-
-    // 
-
-
 
     return (
       <>
@@ -1514,7 +1524,7 @@ class AddRMDomestic extends Component {
                                       name="DestinationSupplierId"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
+                                      loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
