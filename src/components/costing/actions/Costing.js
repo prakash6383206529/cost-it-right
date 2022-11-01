@@ -1858,31 +1858,8 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
   }
 }
 
-export function getPartSelectListByTechnology(technologyId, callback) {
-  return (dispatch) => {
-    if (technologyId !== '') {
-      dispatch({ type: API_REQUEST })
-      const request = axios.get(`${API.getPartByTechnologyId}/${technologyId}`, config())
-      request.then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
-            payload: response.data.SelectList
-          })
-          callback(response)
-        }
-      }).catch(error => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
-    } else {
-      dispatch({
-        type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
-        payload: []
-      })
-    }
-  }
+export function getPartSelectListByTechnology(technologyId, partNumber, callback) {
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config())
 }
 
 /**

@@ -760,10 +760,10 @@ export function fetchCostingHeadsAPI(costingHeads, callback) {
 * @method getSupplierList
 * @description Used to get select list of Vendor's
 */
-export function getSupplierList(callback) {
+export function getSupplierList(vendorName, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSupplierLists}`, config());
+    const request = axios.get(`${API.getSupplierLists}?vendorName=${vendorName}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1371,20 +1371,8 @@ export function getPlantSelectListByType(TYPE, callback) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(callback) {
-  return (dispatch) => {
-    const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-    request.then((response) => {
-      dispatch({
-        type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-        payload: response.data.SelectList,
-      });
-      callback(response)
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
 

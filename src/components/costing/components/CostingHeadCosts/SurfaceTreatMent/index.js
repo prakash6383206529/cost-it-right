@@ -42,7 +42,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
 
@@ -98,7 +98,7 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = debounce(handleSubmit(() => {
-    if (partType) {   // ASSEMBLY TECHNOLOGY
+    if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
 
       props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportationObject?.tempObj, surfaceTreatmentData.Params)

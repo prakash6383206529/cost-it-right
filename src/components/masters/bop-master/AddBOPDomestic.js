@@ -17,7 +17,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helpe
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -30,6 +30,8 @@ import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../hel
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -111,7 +113,6 @@ class AddBOPDomestic extends Component {
       this.getDetails()
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
         this.setState({ inputLoader: true })
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
         this.props.getClientSelectList(() => { })
       }
       if (!this.state.isViewMode) {
@@ -138,7 +139,9 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
    * @method onPressVendor
    * @description Used for Vendor checked
@@ -146,13 +149,11 @@ class AddBOPDomestic extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      vendorLocation: [],
+      selectedPlants: [],
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
     else {
@@ -272,7 +273,7 @@ class AddBOPDomestic extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, cityList,
+    const { bopCategorySelectList, plantSelectList, cityList,
       UOMSelectList, partSelectList, clientSelectList } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
@@ -295,14 +296,6 @@ class AddBOPDomestic extends Component {
       plantSelectList && plantSelectList.map(item => {
         if (item.PlantId === '0') return false;
         temp.push({ label: item.PlantNameCode, value: item.PlantId })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -395,9 +388,10 @@ class AddBOPDomestic extends Component {
       const { costingTypeId } = this.state;
       this.setState({ inputLoader: true })
       if (costingTypeId === VBCTypeId) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+        this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { this.setState({ inputLoader: false }) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+        console.log(this.state.vendorName, 'this.state.vendorNam');
+        this.props.getVendorTypeBOPSelectList(this.state.vendorName ? this.state.vendorName : '', () => { this.setState({ inputLoader: false }) })
       }
     })
   }
@@ -559,7 +553,7 @@ class AddBOPDomestic extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -806,18 +800,42 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, costingTypeId, isEditFlag, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorWithVendorCodeSelectList(inputValue)
+        }
+        else {
+          res = await getVendorTypeBOPSelectList(inputValue)
+        }
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
     const promiseOptions = inputValue =>
@@ -1068,7 +1086,7 @@ class AddBOPDomestic extends Component {
                                       name="vendorName"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
+                                      loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -1220,7 +1238,7 @@ class AddBOPDomestic extends Component {
                               Upload Files (upload up to 3 files)
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                              Maximum file upload limit has been reached.
+                              Maximum file upload limit reached.
                             </div>
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
