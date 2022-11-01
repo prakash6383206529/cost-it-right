@@ -243,9 +243,9 @@ function AssemblyTechnology(props) {
 
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
-                                    {`Operation Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Operation Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost, initialConfiguration.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
-                                    {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost, initialConfiguration.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
                                     {`Total Child's Part Cost:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost, initialConfiguration.NoOfDecimalForPrice)}`}
                                 </span>
