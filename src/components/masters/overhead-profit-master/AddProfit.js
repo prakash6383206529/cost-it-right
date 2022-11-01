@@ -85,9 +85,6 @@ class AddProfit extends Component {
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getClientSelectList(() => { })
-    }
     this.getDetails();
   }
 
@@ -814,7 +811,7 @@ class AddProfit extends Component {
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -949,7 +946,7 @@ class AddProfit extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

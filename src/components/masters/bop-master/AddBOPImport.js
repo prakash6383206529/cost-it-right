@@ -900,7 +900,7 @@ class AddBOPImport extends Component {
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         if (this.state.IsVendor) {
@@ -1167,7 +1167,7 @@ class AddBOPImport extends Component {
                                       loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                       isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {

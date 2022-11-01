@@ -141,7 +141,7 @@ function AddVendorDrawer(props) {
   const VendorLoaderObj = { isLoader: VendorInputLoader }
   const plantLoaderObj = { isLoader: inputLoader }
   const filterList = async (inputValue) => {
-    if (inputValue?.length === searchCount && vendorName !== inputValue) {
+    if (inputValue?.length >= searchCount && vendorName !== inputValue) {
       // this.setState({ inputLoader: true })
       let res
       res = await getVendorWithVendorCodeSelectList(inputValue)

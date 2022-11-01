@@ -144,8 +144,6 @@ class AddVolume extends Component {
       this.props.getFinancialYearSelectList(() => { })
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
         this.props.getPlantSelectListByType(ZBC, () => { })
-        this.props.getPartSelectList(() => { })
-        this.props.getClientSelectList(() => { })
       }
     }, 300);
     this.getDetail()
@@ -267,10 +265,19 @@ class AddVolume extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -694,7 +701,7 @@ class AddVolume extends Component {
     };
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
-      if (inputValue?.length === searchCount && partName !== inputValue) {
+      if (inputValue?.length >= searchCount && partName !== inputValue) {
         this.setState({ isLoader: true })
         const res = await getPartSelectList()
         this.setState({ isLoader: false })
@@ -1047,7 +1054,7 @@ class AddVolume extends Component {
             {isOpenVendor && (
               <AddVendorDrawer
                 isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}

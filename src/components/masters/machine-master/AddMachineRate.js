@@ -397,11 +397,7 @@ class AddMachineRate extends Component {
       selectedPlants: [],
     }, () => {
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
@@ -1436,7 +1432,7 @@ class AddMachineRate extends Component {
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {

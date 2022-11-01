@@ -672,7 +672,7 @@ class AddLabour extends Component {
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         res = await labourTypeVendorSelectList(inputValue)
@@ -767,7 +767,7 @@ class AddLabour extends Component {
                               loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                               isDisabled={(isEditFlag || this.state.inputLoader) || gridTable.length !== 0 ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

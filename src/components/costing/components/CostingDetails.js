@@ -1690,7 +1690,7 @@ function CostingDetails(props) {
 
   const filterList = async (inputValue) => {
 
-    if (inputValue?.length === searchCount && partName !== inputValue) {
+    if (inputValue?.length >= searchCount && partName !== inputValue) {
       setInputLoader(true)
       const res = await getPartSelectListByTechnology(technology.value, inputValue);
       setInputLoader(false)
