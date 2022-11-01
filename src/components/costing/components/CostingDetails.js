@@ -919,8 +919,8 @@ function CostingDetails(props) {
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
         CostingTypeId: type,
-        CustomerId: type == CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
-        CustomerName: type == CBCTypeId ? tempData.CustomerName : '',
+        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+        CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
       }
       if (IdForMultiTechnology.includes(technology?.value)) {
         data.Technology = technology.label
