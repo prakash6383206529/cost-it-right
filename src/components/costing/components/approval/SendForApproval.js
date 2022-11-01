@@ -438,9 +438,9 @@ const SendForApproval = (props) => {
         tempObj.VendorPlantName =
           (data.costingTypeId === VBCTypeId) ? data.vendorPlantName : ''
         tempObj.IsFinalApproved = isFinalApproverShow ? true : false
-        tempObj.DestinationPlantCode = data.destinationPlantCode
-        tempObj.DestinationPlantName = data.destinationPlantName
-        tempObj.DestinationPlantId = data.destinationPlantId
+        tempObj.DestinationPlantCode = data.costingTypeId === CBCTypeId ? data.plantCode : data.destinationPlantCode
+        tempObj.DestinationPlantName = data.costingTypeId === CBCTypeId ? data.plantName : data.destinationPlantName
+        tempObj.DestinationPlantId = data.costingTypeId === CBCTypeId ? data.plantId : data.destinationPlantId
         tempObj.NCCPartQuantity = getValues('Quantity')
         tempObj.Attachment = files
         tempObj.IsRegularized = isRegularize

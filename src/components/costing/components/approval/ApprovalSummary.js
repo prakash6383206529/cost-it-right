@@ -381,11 +381,13 @@ function ApprovalSummary(props) {
                         </td>
                       }
                       {
-                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId) &&
+                        ((getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId)) &&
                         <td>
-                          {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
+                          {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode)}? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`:'-'
                         </td>
                       }
+                      {(approvalDetails.CostingTypeId === CBCTypeId || approvalDetails.CostingTypeId === NCCTypeId) && <td> {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode) ? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName || approvalDetails.PlantCode) ? `${approvalDetails.PlantName}(${approvalDetails.PlantCode})` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
