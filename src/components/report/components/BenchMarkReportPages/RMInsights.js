@@ -432,10 +432,10 @@ function Insights(props) {
 
         rmBenchmarkList && rmBenchmarkList.Specification?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
-            let obj = {
-                Specification: item.RawMaterialSpecificationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+            let obj = {           //OBJ IS CUSTOM OBJECT THAT WILL BE PASSED AS ROWDATA TO AG-GRID
+                Specification: item.RawMaterialSpecificationName,
                 Minimum: item.Minimum,
-                Maximum: item.Maximum,
+                Maximum: item.Maximum,                //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Average: item.Average,
                 WeightedAverage: item.WeightedAverage,
                 EffectiveDate: item.EffectiveDate
@@ -473,18 +473,18 @@ function Insights(props) {
                 plantTemp = []
 
                 arrSample.push(obj2)
-                uniqueVendors.push(ele.Vendor)
+                uniqueVendors.push(ele.Vendor)        //UNIQUEVENDORS HAS ALL THE TOTAL VENDORS IN DATA (WITH DUPLICATE ENTRY)
 
             })
 
-            vendorTemp.push(arrSample)
+            vendorTemp.push(arrSample)           //VENDOR TEMP HAS VENDOR & ITS ASSOCIATED PLANTS
 
         })
 
 
         ////////////////////////////////////////////////////////////////////////////
 
-        let uniqueV = uniqueVendors.filter((item, i, ar) => ar.indexOf(item) === i);
+        let uniqueV = uniqueVendors.filter((item, i, ar) => ar.indexOf(item) === i);   //UNIQUEV= ALL VENDORS WITHOUT DUPLICATE ENTRY
 
 
         let finalArray = []
