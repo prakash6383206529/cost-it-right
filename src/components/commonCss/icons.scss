@@ -1,5 +1,5 @@
  
-@mixin icons($path, $width:32px, $height:32px, $background-size:contain, $shadowColor: transparent, $borderColor: transparent) {
+@mixin icons($path, $width:26px, $height:26px, $background-size:contain, $shadowColor: transparent, $borderColor: transparent) {
     background: transparent url($path) 0% 0% no-repeat padding-box;
     width: $width;
     height:$height;
@@ -66,6 +66,7 @@
 .CalculatorIcon { @include icons("../../assests/images/tool.svg", $shadowColor:#256bd1, $borderColor:#256bd1 );
     background-color: #ffffff;
     @include extra-icon-styles;
+    display: none;    //THIS WILL UNCOMMENT ONCE CREATE THE QUICK LINK 
 }
 .edit-icon { @include icons("../../assests/images/Union 1.svg", 14px, 14px);
     float: left;

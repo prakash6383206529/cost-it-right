@@ -779,7 +779,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 30px 30px;
+  padding: 0 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1714,13 +1714,13 @@ body {
     .left {
       background: #4DC771;
       color: #fff;
-      padding: 10px;
-      width: 75px;
+      padding: 2px 10px;
+      width: 70px;
     }
 
     .right {
-      padding: 10px;
-      width: calc(100% - 75px);
+      padding: 2px 10px;
+      width: calc(100% - 70px);
     }
   }
 
@@ -1743,12 +1743,12 @@ body {
     padding: 10px;
 
     .left {
-      width: 75px;
+      width: 70px;
       display: inline-block;
     }
 
     .right {
-      width: calc(100% - 75px);
+      width: calc(100% - 70px);
       display: inline-block;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -4228,80 +4228,6 @@ body {
     }
   }
 }
-
-// top menu bar drop down css starts here
-.nav-item.dropdown {
-  position: unset;
-
-  .dr-icon {
-    font-size: 14px;
-  }
-
-  .dropdown-menu.sub-menu {
-    display: none;
-    position: absolute;
-    right: 29px;
-    top: 30px;
-    left: 29px;
-    z-index: 10;
-    text-align: left;
-    list-style: none;
-    padding-top: 19px;
-    background-clip: padding-box;
-    background-color: transparent;
-    border: none;
-
-    ul {
-      background-color: #fff;
-      box-shadow: 0px 5px 10px #00000033;
-      border-radius: 4px;
-      min-width: 8.4375rem;
-      padding: 25px;
-
-      li {
-        padding: 5px 10px;
-        padding: 5px 10px;
-        display: inline-block;
-        vertical-align: top;
-        width: 19.8%;
-        text-align: left;
-      }
-
-      a {
-        color: #8A91AC;
-        font-size: 15px;
-        padding: 0;
-
-        &:hover,
-        &:focus {
-          background-color: #fff;
-          color: $colorPrimary !important;
-        }
-      }
-
-      .active-nav {
-        color: $colorPrimary;
-      }
-    }
-  }
-
-  &:hover {
-    >.nav-link {
-      color: $colorPrimary;
-    }
-
-    i.dr-icon {
-      transform: rotate(180deg);
-      color: $colorPrimary;
-    }
-
-    .dropdown-menu.sub-menu {
-      display: block;
-    }
-  }
-}
-
-// top menu bar drop down css starts end
 
 // approval-workflow-drawer start
 .MuiDrawer-root.MuiDrawer-modal.approval-workflow-drawer {
