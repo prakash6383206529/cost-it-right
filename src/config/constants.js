@@ -977,6 +977,8 @@ export const API = {
   getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`,
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
+  getCostingBenchMarkBopReport: `${BASE_URL}/reports/get-bop-cost-benchmarking-report`,
+
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
@@ -1638,7 +1640,7 @@ export const GET_SIMULATION_INSIGHT_REPORT = 'GET_SIMULATION_INSIGHT_REPORT'
 
 export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
-export const GET_BENCHMARK_RM_LIST = 'GET_BENCHMARK_RM_LIST'
+export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
