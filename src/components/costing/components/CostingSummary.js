@@ -325,7 +325,7 @@ function CostingSummary(props) {
 
   const filterList = async (inputValue) => {
 
-    if (inputValue?.length === searchCount && partName !== inputValue) {
+    if (inputValue?.length >= searchCount && partName !== inputValue) {
       const res = await getPartSelectListByTechnology(technology.value, inputValue);
       setpartName(inputValue)
       let partDataAPI = res?.data?.SelectList

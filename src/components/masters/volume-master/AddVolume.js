@@ -211,11 +211,20 @@ class AddVolume extends Component {
     }
   }
   /**
-   * @method onPressVendor
-   * @description Used for Vendor checked
-   */
-  onPressVendor = () => {
-    this.setState({ IsVendor: !this.state.IsVendor })
+  * @method onPressVendor
+  * @description Used for Vendor checked
+  */
+  onPressVendor = (costingHeadFlag) => {
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === VBCTypeId) {
+      this.setState({ IsVendor: !this.state.IsVendor })
+    }
+    else if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
   }
 
   /**
@@ -262,10 +271,19 @@ class AddVolume extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -650,7 +668,7 @@ class AddVolume extends Component {
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
     const vendorFilterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -682,7 +700,7 @@ class AddVolume extends Component {
     };
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
-      if (inputValue?.length === searchCount && partName !== inputValue) {
+      if (inputValue?.length >= searchCount && partName !== inputValue) {
         this.setState({ isLoader: true })
         const res = await getPartSelectList()
         this.setState({ isLoader: false })
@@ -1035,7 +1053,7 @@ class AddVolume extends Component {
             {isOpenVendor && (
               <AddVendorDrawer
                 isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}

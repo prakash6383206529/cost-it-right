@@ -563,7 +563,7 @@ function AddRfq(props) {
 
     }
     const vendorFilterList = async (inputValue) => {
-        if (inputValue?.length === searchCount && vendor !== inputValue) {
+        if (inputValue?.length >= searchCount && vendor !== inputValue) {
             // this.setState({ inputLoader: true })
             let res
             res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -595,7 +595,7 @@ function AddRfq(props) {
     };
     const partFilterList = async (inputValue) => {
 
-        if (inputValue?.length === searchCount && partName !== inputValue) {
+        if (inputValue?.length >= searchCount && partName !== inputValue) {
             // setInputLoader(true)
             const res = await getPartSelectListByTechnology(getValues('technology').value, inputValue);
             // setInputLoader(false)

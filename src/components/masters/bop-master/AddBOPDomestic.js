@@ -823,7 +823,7 @@ class AddBOPDomestic extends Component {
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         if (this.state.IsVendor) {
@@ -1099,19 +1099,19 @@ class AddBOPDomestic extends Component {
                                   <div className="left-border">{"Vendor:"}</div>
                                 </Col>
                                 <Col md="3" className='mb-4'>
-                                  <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                                  <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                                   <div className="d-flex justify-space-between align-items-center async-select">
                                     <div className="fullinput-icon p-relative">
-                                      {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                      {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                       <AsyncSelect
                                         name="vendorName"
                                         ref={this.myRef}
                                         key={this.state.updateAsyncDropdown}
-                                        loadOptions={promiseOptions}
+                                        loadOptions={filterList}
                                         onChange={(e) => this.handleVendorName(e)}
                                         value={this.state.vendorName}
-                                        noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                        isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                        noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                        isDisabled={(isEditFlag) ? true : false}
                                         onFocus={() => onFocus(this)}
                                         onKeyDown={(onKeyDown) => {
                                           if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

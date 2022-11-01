@@ -82,9 +82,6 @@ class AddOverhead extends Component {
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getClientSelectList(() => { })
-    }
     this.getDetails();
   }
   componentWillUnmount() {
@@ -99,7 +96,8 @@ class AddOverhead extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === "vendor") {
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
     }
   }
   /**
@@ -828,11 +826,10 @@ class AddOverhead extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
+    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length === searchCount && vendorName !== inputValue) {
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -965,7 +962,7 @@ class AddOverhead extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                 onFocus={() => onFocus(this)}
                                 onKeyDown={(onKeyDown) => {
