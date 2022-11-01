@@ -198,6 +198,9 @@ function ApprovalListing(props) {
     skip = 0, take = 10, isPagination = true, dataObj
 
   ) => {
+    if (isDashboard) {
+      dataObj.DisplayStatus = props.status
+    }
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -897,7 +900,7 @@ function ApprovalListing(props) {
                         <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>
                         </button>
-                        <button
+                        {!props.hidesendBtn && <button
                           title="Send For Approval"
                           class="user-btn approval-btn"
                           type='button'
@@ -905,7 +908,7 @@ function ApprovalListing(props) {
                           disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
                         >
                           <div className="send-for-approval mr-0" ></div>
-                        </button>
+                        </button>}
                       </div>
                     </div>
                   </Col>
@@ -949,7 +952,7 @@ function ApprovalListing(props) {
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                          {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>

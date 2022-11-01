@@ -766,7 +766,7 @@ function RMDomesticListing(props) {
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
 
-                    <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
@@ -855,7 +855,7 @@ function RMDomesticListing(props) {
                     <Row>
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
+                                {!props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />}
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
