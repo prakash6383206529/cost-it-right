@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
+
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState([])
@@ -162,7 +163,9 @@ function SimulationApprovalListing(props) {
      */
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
-
+        if (isDashboard) {
+            dataObj.DisplayStatus = props.status
+        }
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -677,7 +680,7 @@ function SimulationApprovalListing(props) {
                                         <button type="button" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        <button
+                                        {!props.hidesendBtn && <button
                                             class="user-btn approval-btn"
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
@@ -685,7 +688,7 @@ function SimulationApprovalListing(props) {
                                             disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
-                                        </button>
+                                        </button>}
                                     </div>
                                 </Col>
 
@@ -723,7 +726,6 @@ function SimulationApprovalListing(props) {
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}

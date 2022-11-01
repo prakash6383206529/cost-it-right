@@ -260,7 +260,7 @@ class SideBar extends Component {
                     src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? activeDashBoard : dashboardImg}`}
                     alt={module + " icon"}
                   />
-                  <span>{module}</span>
+                  <span className="module">{module}</span>
                 </Link>
               </li>
             </>
@@ -322,7 +322,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? masterActive : masterImage}
                     alt={module + " icon"}
                   />
-                  <span>Masters</span>
+                  <span className="masters">Masters</span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -417,7 +417,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? addMasterActive : additionalMaster}
                     alt={module + " icon"}
                   />
-                  <span>Additional Masters</span>
+                  <span className="additional-masters">Additional Masters</span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -491,7 +491,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
-                <span>Report</span>
+                <span className="report">Report</span>
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
@@ -551,7 +551,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeCosting : costingImg}
                     alt={module + " icon"}
                   />
-                  <span>Costing </span>
+                  <span className="costing">Costing </span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -627,7 +627,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSimulation : simulationImg}
                   alt={module + " icon"}
                 />
-                <span>Simulation</span>
+                <span className="simulation">Simulation</span>
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
@@ -717,7 +717,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeUser : userImg}
                   alt={module + " icon"}
                 />
-                <span>{el.ModuleName}</span>
+                <span className="users">{el.ModuleName}</span>
               </Link>
             </li>
           );
@@ -757,7 +757,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
-                <span>{el.ModuleName}</span>
+                <span className="audit">{el.ModuleName}</span>
               </Link>
             </li>
           );
@@ -794,7 +794,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : masterImage}
                   alt={module + " icon"}
                 />
-                <span>{el.ModuleName}</span>
+                <span className="rfq">{el.ModuleName}</span>
               </Link>
             </li>
           );

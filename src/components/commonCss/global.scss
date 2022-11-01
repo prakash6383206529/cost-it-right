@@ -856,6 +856,13 @@ a:hover {
       font-weight: 500;
     }
   }
+  .ag-row, .ag-cell {
+    line-height: 22px;
+    height: 35px !important;
+    @media screen and (min-width: $middleDesktop) {
+      height: 38px !important;
+    }
+   }
 .ag-ltr .ag-floating-filter-button {
   margin-left: 4px !important;
 }
@@ -2463,13 +2470,13 @@ td,
   .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
-    height: 30px;
+    height: 26px;
     border-radius: 30px;
     text-align: center;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
     display: inline-block;
-    line-height: 30px;
+    line-height: 26px;
     padding: 0 0.5rem;
     vertical-align: middle;
   }
@@ -2838,7 +2845,7 @@ body {
   }
 }
 .ag-theme-material .ag-layout-auto-height .ag-center-cols-clipper {
-  min-height: 45px;
+  min-height: 35px;
 }
 .delete-btn {
   background-color: #fc5774;

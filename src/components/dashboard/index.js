@@ -13,6 +13,9 @@ import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTE
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import CommonApproval from "../masters/material-master/CommonApproval";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
+import Tabs from "./Tabs";
+import './dashboard.scss';
+import MasterApprovalTabs from "./MasterApprovalTabs";
 
 
 function Dashboard(props) {
@@ -106,11 +109,11 @@ function Dashboard(props) {
         <>
           <div className="dashboard-page w-100">
             <CalculatorWrapper />
-            <Row>
+            {/* <Row>
               <Col md="12">
                 <h1>Dashboard</h1>
               </Col>
-            </Row>
+            </Row> */}
             <form onSubmit={handleSubmit}>
 
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
@@ -129,7 +132,7 @@ function Dashboard(props) {
                   </Row>
 
                   <Row>
-                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
+                    <Col md="12" className="mt-3">{acc2 && <Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} />}</Col>
                   </Row>
                 </div>
               </Row>}
@@ -149,7 +152,7 @@ function Dashboard(props) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} isPageNoChange={isPageNoChange} />}</Col>
+                    <Col md="12" className="mt-3">{acc1 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} />}</Col>
                   </Row>
                 </div>
               </Row>}
@@ -169,11 +172,11 @@ function Dashboard(props) {
                         </button>
                       </Col>
                     </Row>
-                    {acc3 && <>
-                      <Nav tabs className="subtabs mt-4">
+                    {acc3 && <Row className="master-tabs-row mt-3">
+                      <Col md="1" className="master-tabs px-0"> <Nav tabs className="subtabs">
                         {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                            RM Approval Status
+                            RM
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
@@ -183,35 +186,34 @@ function Dashboard(props) {
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                            Operation Approval Status
+                            Operation
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && viewMastersObj.machine) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                            Machine Approval Status
+                            Machine
                           </NavLink>
                         </NavItem>}
-
-                      </Nav>
-                      <TabContent activeTab={activeTab}>
+                      </Nav></Col>
+                      <Col md="11"><TabContent activeTab={activeTab}>
                         {(Number(activeTab) === 1 && viewMastersObj.RM) &&
                           <TabPane tabId="1">
-                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} isPageNoChange={isPageNoChange} />
+                            <MasterApprovalTabs isApproval={true} MasterId={RM_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 2 && viewMastersObj.BOP) &&
                           <TabPane tabId="2">
-                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} isPageNoChange={isPageNoChange} />
+                            <MasterApprovalTabs isApproval={true} MasterId={BOP_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 3 && viewMastersObj.operation) &&
                           <TabPane tabId="3">
-                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
+                            <MasterApprovalTabs isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
                         {(Number(activeTab) === 4 && viewMastersObj.machine) &&
                           <TabPane tabId="4">
-                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
+                            <MasterApprovalTabs isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
                           </TabPane>}
-                      </TabContent>
-                    </>}
+                      </TabContent></Col>
+                    </Row>}
                   </div>
                 </Row>
               }
