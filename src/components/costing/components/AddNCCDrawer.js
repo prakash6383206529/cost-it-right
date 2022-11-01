@@ -220,6 +220,7 @@ function AddNCCDrawer(props) {
                     handleChange={handleVendorChange}
                     asyncOptions={filterList}
                     errors={errors.Vendor}
+                    NoOptionMessage={"Enter 3 characters to show data"}
                   />
                 </Col>
               </Row>

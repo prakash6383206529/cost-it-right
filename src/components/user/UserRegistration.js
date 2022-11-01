@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useRef, useState } from "react";
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, TextFieldHookForm, PasswordFieldHookForm } from '../../components/layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm } from '../../components/layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
@@ -21,7 +21,7 @@ import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -29,6 +29,8 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
+import { reactLocalStorage } from "reactjs-localstorage";
+import { autoCompleteDropdown } from "../common/CommonFunctios";
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
 
@@ -100,7 +102,6 @@ function UserRegistration(props) {
   const simulationLevelSelectList = useSelector(state => state.auth.simulationLevelSelectList)
   const masterLevelSelectList = useSelector(state => state.auth.masterLevelSelectList)
   const registerUserData = useSelector(state => state.auth.registerUserData)
-  const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
 
   const defaultValues = {
@@ -190,8 +191,10 @@ function UserRegistration(props) {
     }))
     dispatch(getSimulationTechnologySelectList(() => { }))
     dispatch(getMastersSelectList(() => { }))
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getReporterList(() => { }))
+    return () => {
+      reactLocalStorage?.setObject('vendorData', [])
+    }
   }, [])
 
 
@@ -378,16 +381,6 @@ function UserRegistration(props) {
       })
       return temp;
     }
-
-    if (label === 'vendor') {
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp;
-    }
-
     if (label === 'reporter') {
 
       getReporterListDropDown && getReporterListDropDown.map(item => {
@@ -1461,7 +1454,36 @@ function UserRegistration(props) {
     }
   };
 
-
+  const vendorFilterList = async (inputValue) => {
+    if (inputValue?.length === searchCount && vendor !== inputValue) {
+      // this.setState({ inputLoader: true })
+      let res
+      res = await getVendorWithVendorCodeSelectList(inputValue)
+      setVendor(inputValue)
+      // this.setState({ inputLoader: false })
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      let VendorData = []
+      if (inputValue) {
+        VendorData = reactLocalStorage?.getObject('vendorData')
+        return autoCompleteDropdown(inputValue, VendorData)
+      } else {
+        return VendorData
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('vendorData')
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+    }
+  };
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -1612,7 +1634,7 @@ function UserRegistration(props) {
                           </Col>
                           <Col md="3">
                             <div className="Phone phoneNumber">
-                              <SearchableSelectHookForm
+                              <AsyncSearchableSelectHookForm
                                 name="Vendor"
                                 type="text"
                                 label="Vendor"
@@ -1627,12 +1649,12 @@ function UserRegistration(props) {
                                 disabled={isEditFlag ? true : false}
                                 //component={searchableSelect}
                                 placeholder={'Select Vendor'}
-                                options={searchableSelectType('vendor')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(role == null || role.length === 0) ? [required] : []}
                                 required={true}
                                 handleChange={vendorHandler}
-                              //valueDescription={role}
+                                asyncOptions={vendorFilterList}
+                                NoOptionMessage={"Enter 3 characters to show data"}
                               />
                             </div>
                           </Col>
@@ -1651,7 +1673,6 @@ function UserRegistration(props) {
                                 rules={{
                                   required: true,
                                 }}
-
                                 component={searchableSelect}
                                 placeholder={'Select Reporter'}
                                 options={searchableSelectType('reporter')}

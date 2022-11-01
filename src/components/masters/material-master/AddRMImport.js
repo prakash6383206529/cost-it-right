@@ -531,15 +531,11 @@ class AddRMImport extends Component {
       this.props.getCityBySupplier(0, () => { })
 
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getVendorListByVendorType(ZBCTypeId, () => { this.setState({ inputLoader: false }) })
       this.props.getPlantBySupplier('', () => { })
       this.props.getCityBySupplier(0, () => { })
     }
@@ -618,27 +614,32 @@ class AddRMImport extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData) => {
-    this.setState({ isOpenVendor: false }, () => {
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
       const { costingTypeId } = this.state
       if (costingTypeId !== VBCTypeId) {
-        this.props.getVendorListByVendorType(ZBCTypeId, () => {
-          const { vendorListByVendorType } = this.props
-          if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-          }
-        })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorListByVendorType(ZBCTypeId, this, this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       } else {
-        this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => {
-          const { vendorListByVendorType } = this.props
-          if (Object.keys(formData).length > 0) {
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-          }
-        })
+        if (this.state.vendorName && this.state.vendorName.length > 0) {
+          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          let vendorDataAPI = res?.data?.SelectList
+          reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        }
+        if (Object.keys(formData).length > 0) {
+          this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        }
       }
-    })
+    } else {
+      this.setState({ isOpenVendor: false })
+    }
   }
   uomToggler = () => {
     this.setState({ isOpenUOM: true })
@@ -1166,18 +1167,18 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, costingHead, setDisable, costingTypeId } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       if (inputValue?.length === searchCount && vendorName !== inputValue) {
         // this.setState({ inputLoader: true })
         let res
-        if (this.state.IsVendor) {
+        if (costingTypeId === VBCTypeId) {
           res = await getVendorWithVendorCodeSelectList(inputValue)
         }
         else {
-          res = await getVendorListByVendorType(this.state.IsVendor, inputValue)
+          res = await getVendorListByVendorType(costingTypeId, inputValue)
         }
         // this.setState({ inputLoader: false })
         this.setState({ vendorName: inputValue })
@@ -1929,7 +1930,7 @@ class AddRMImport extends Component {
           {isOpenVendor && (
             <AddVendorDrawer
               isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
               isEditFlag={false}
               isRM={true}
               IsVendor={this.state.IsVendor}

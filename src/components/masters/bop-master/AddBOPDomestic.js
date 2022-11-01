@@ -161,9 +161,6 @@ class AddBOPDomestic extends Component {
     else if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
-    else {
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-    }
   }
 
   /**
@@ -1390,30 +1387,25 @@ class AddBOPDomestic extends Component {
               isEditFlag={false}
               anchor={"right"}
             />
-          )
-          }
-          {
-            isOpenVendor && (
-              <AddVendorDrawer
-                isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
-                isEditFlag={false}
-                ID={""}
-                anchor={"right"}
-              />
-            )
-          }
-          {
-            isOpenUOM && (
-              <AddUOM
-                isOpen={isOpenUOM}
-                closeDrawer={this.closeUOMDrawer}
-                isEditFlag={false}
-                ID={""}
-                anchor={"right"}
-              />
-            )
-          }
+          )}
+          {isOpenVendor && (
+            <AddVendorDrawer
+              isOpen={isOpenVendor}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
+          {isOpenUOM && (
+            <AddUOM
+              isOpen={isOpenUOM}
+              closeDrawer={this.closeUOMDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
 
           {
             this.state.approveDrawer && (
