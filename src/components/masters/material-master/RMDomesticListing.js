@@ -55,6 +55,7 @@ function RMDomesticListing(props) {
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
+    const [dateArray, setDateArray] = useState([])
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -79,9 +80,13 @@ function RMDomesticListing(props) {
             temp.push(newDate)
             setinRangeDate(temp)
             if (props?.benchMark) {
-                props?.handleRM(inRangeDate)
+                props?.handleDate(inRangeDate)
             }
-            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+
+            let unique = temp.filter((item, i, ar) => ar.indexOf(item) === i);
+            setDateArray(unique)
+
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate, dateArray: unique })
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
             var cellDate = new Date(
@@ -165,6 +170,7 @@ function RMDomesticListing(props) {
         const { isSimulation } = props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
+
 
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
@@ -315,6 +321,7 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
+        setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
