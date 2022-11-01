@@ -614,6 +614,15 @@ class BOPDomesticListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
         }
 
         return (
