@@ -58,7 +58,7 @@ class BOPDomesticListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            inRangeDate: [],
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
@@ -500,6 +500,8 @@ class BOPDomesticListing extends Component {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
 
+                handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
+
                 let date = document.getElementsByClassName('ag-input-field-input')
                 for (let i = 0; i < date.length; i++) {
                     if (date[i].type == 'radio') {
@@ -535,6 +537,15 @@ class BOPDomesticListing extends Component {
 
         }
 
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+        }
 
         const isFirstColumn = (params) => {
 

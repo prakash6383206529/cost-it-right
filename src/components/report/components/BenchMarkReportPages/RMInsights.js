@@ -430,7 +430,7 @@ function Insights(props) {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
-        rmBenchmarkList && rmBenchmarkList.Specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        rmBenchmarkList && rmBenchmarkList.Specification?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
                 Specification: item.RawMaterialSpecificationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
