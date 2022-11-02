@@ -382,10 +382,10 @@ function VerifySimulation(props) {
     }, [verifyList])
 
     const runSimulation = debounce(() => {
-        // if (selectedRowData.length === 0) {
-        //     Toaster.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -654,7 +654,7 @@ function VerifySimulation(props) {
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
                                 <div className={"cancel-icon"}></div>
-                                {"CANCELdddd"}
+                                {"CANCEL"}
                             </button>
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}
