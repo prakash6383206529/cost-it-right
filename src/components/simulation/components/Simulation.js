@@ -284,7 +284,7 @@ function Simulation(props) {
         setIsHide(false)
     }
 
-    const cancelViewPage111 = () => {
+    const cancelSimulationListingPage = () => {
         setShowMasterList(false)
 
         setValue('Vendor', { label: '', value: '' })
@@ -314,7 +314,7 @@ function Simulation(props) {
         }
         if (partType) {
             // return <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} assemblyTechnology={true} technology={technology} closeSimulation={closeSimulation} />
-            return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelViewPage111={cancelViewPage111} />
+            return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} />
         } else {
             switch (value.value) {
                 case RMDOMESTIC:
