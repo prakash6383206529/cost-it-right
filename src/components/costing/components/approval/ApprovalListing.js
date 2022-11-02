@@ -5,7 +5,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants'
+import { CBCTypeId, defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
@@ -198,6 +198,9 @@ function ApprovalListing(props) {
     skip = 0, take = 10, isPagination = true, dataObj
 
   ) => {
+    if (isDashboard) {
+      dataObj.DisplayStatus = props.status
+    }
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -501,6 +504,10 @@ function ApprovalListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
+  const renderCustomer = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
+  }
 
   const renderVendor = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -674,7 +681,11 @@ function ApprovalListing(props) {
       costingObj.destinationPlantId = item.DestinationPlantId
       costingObj.technologyId = item?.TechnologyId
       costingObj.CostingHead = item?.CostingHead
-
+      costingObj.costingTypeId = item.CostingTypeId
+      costingObj.customerId = item.CustomerId
+      costingObj.customerName = item.CustomerName
+      costingObj.customerCode = item.CustomerCode
+      costingObj.customer = item.Customer
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -687,7 +698,7 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
+        dispatch(getVolumeDataByPartAndYear(item.PartId, year, item.CostingTypeId === ZBCTypeId || item.CostingTypeId === CBCTypeId ? item.PlantId : item.DestinationPlantId, item.VendorId, item.CustomerId, item.CostingTypeId, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
             let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -834,6 +845,7 @@ function ApprovalListing(props) {
 
   const frameworkComponents = {
     renderPlant: renderPlant,
+    renderCustomer: renderCustomer,
     renderVendor: renderVendor,
     priceFormatter: priceFormatter,
     oldpriceFormatter: oldpriceFormatter,
@@ -884,7 +896,7 @@ function ApprovalListing(props) {
                         <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>
                         </button>
-                        <button
+                        {!props.hidesendBtn && <button
                           title="Send For Approval"
                           class="user-btn approval-btn"
                           type='button'
@@ -892,7 +904,7 @@ function ApprovalListing(props) {
                           disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
                         >
                           <div className="send-for-approval mr-0" ></div>
-                        </button>
+                        </button>}
                       </div>
                     </div>
                   </Col>
@@ -936,13 +948,14 @@ function ApprovalListing(props) {
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                          {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor(Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant(Code)"></AgGridColumn>
+                          <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>

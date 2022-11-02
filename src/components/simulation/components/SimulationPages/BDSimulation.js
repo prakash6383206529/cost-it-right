@@ -102,7 +102,7 @@ function BDSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = ((isbulkUpload ? list[0].CostingHead : list[0].IsVendor) === 'Vendor Based') ? VBC : ZBC
+        obj.SimulationTypeId = list[0].CostingTypeId
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label

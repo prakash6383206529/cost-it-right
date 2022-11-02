@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, Label } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
-// import { getVendorListByVendorType } from '../actions/Material'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
@@ -13,7 +12,7 @@ import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { SPACEBAR, ZBC } from '../../../config/constants'
+import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -22,6 +21,9 @@ import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
+import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { autoCompleteDropdown } from '../../common/CommonFunctios'
 
 const gridOptions = {};
 
@@ -100,11 +102,9 @@ class AddVolume extends Component {
     super(props)
     this.child = React.createRef()
     this.state = {
-      IsVendor: false,
       selectedPlants: [],
       vendorName: [],
       part: [],
-
       year: [],
       tableData: this.props.initialTableData,
       duplicateTableData: [],
@@ -121,8 +121,11 @@ class AddVolume extends Component {
       setDisable: false,
       inputLoader: false,
       showErrorOnFocus: false,
+      costingTypeId: ZBCTypeId,
+      client: [],
       isPartNumberNotSelected: false,
-      showErrorOnFocusPart: false
+      showErrorOnFocusPart: false,
+      partName: ''
     }
   }
 
@@ -141,7 +144,6 @@ class AddVolume extends Component {
       this.props.getFinancialYearSelectList(() => { })
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
         this.props.getPlantSelectListByType(ZBC, () => { })
-        this.props.getPartSelectList(() => { })
       }
     }, 300);
     this.getDetail()
@@ -154,6 +156,8 @@ class AddVolume extends Component {
       return item
     })
     this.setState({ tableData: data })
+    reactLocalStorage?.setObject('PartData', [])
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   /**
@@ -161,13 +165,7 @@ class AddVolume extends Component {
    * @description Used show listing of unit of measurement
    */
   renderListing = (label) => {
-    const {
-      plantSelectList,
-      vendorWithVendorCodeSelectList,
-      filterPlantList,
-      financialYearSelectList,
-      partSelectList,
-    } = this.props
+    const { plantSelectList, filterPlantList, financialYearSelectList, clientSelectList } = this.props
     const temp = []
 
     if (label === 'plant') {
@@ -178,27 +176,9 @@ class AddVolume extends Component {
       })
       return temp
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList &&
-        vendorWithVendorCodeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
     if (label === 'yearList') {
       financialYearSelectList &&
         financialYearSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'PartList') {
-      partSelectList &&
-        partSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -214,16 +194,30 @@ class AddVolume extends Component {
         })
       return temp
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
-
   /**
-   * @method onPressVendor
-   * @description Used for Vendor checked
-   */
-  onPressVendor = () => {
-    this.setState({ IsVendor: !this.state.IsVendor })
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+  * @method onPressVendor
+  * @description Used for Vendor checked
+  */
+  onPressVendor = (costingHeadFlag) => {
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === VBCTypeId) {
+      this.setState({ IsVendor: !this.state.IsVendor })
+    }
+    else if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
   }
 
   /**
@@ -270,11 +264,19 @@ class AddVolume extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
   /**
@@ -288,7 +290,17 @@ class AddVolume extends Component {
       this.setState({ year: [] })
     }
   }
-
+  /**
+* @method handleClient
+* @description called
+*/
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
   setStartDate = (date) => {
     this.setState({ year: date })
   }
@@ -383,6 +395,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+
           this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
@@ -421,13 +434,14 @@ class AddVolume extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsVendor,
+              costingTypeId: Data.CostingTypeId,
               selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
               part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -486,17 +500,11 @@ class AddVolume extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const {
-      IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId, destinationPlant } = this.state
+    const { selectedPlants, vendorName, part, year, client, tableData, costingTypeId, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
-
-    // let plantArray = [];
-    // selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-    //     return plantArray;
-    // })
+    const userDetailsVolume = JSON.parse(localStorage.getItem('userDetail'))
     let returnFalse = 0
-    if (IsVendor && vendorName.length <= 0) {
+    if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       returnFalse = returnFalse + 1
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
     }
@@ -588,15 +596,15 @@ class AddVolume extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
-        IsVendor: IsVendor,
-        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+        CostingTypeId: costingTypeId,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         PartId: part.value,
         PartNumber: part.label,
         OldPartNumber: '',
         Year: year.label,
         VolumeApprovedDetails: approvedArray,
         VolumeBudgetedDetails: budgetArray,
-        Plant: !IsVendor
+        Plant: costingTypeId === ZBCTypeId
           ? [
             {
               PlantName: selectedPlants.label,
@@ -608,8 +616,9 @@ class AddVolume extends Component {
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
-        DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
-        DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
+        DestinationPlantId: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.value : costingTypeId === ZBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantId,
+        DestinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) ? destinationPlant.label : costingTypeId === ZBCTypeId ? selectedPlants.label : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? destinationPlant.value : userDetailsVolume.Plants[0].PlantName,
+        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
       this.props.createVolume(formData, (res) => {
@@ -656,47 +665,69 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isOpenVendor, setDisable } = this.state;
-    const vendorFilterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
-      }
-    };
-    const partFilterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("PartList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
-      }
-    };
-
-    const promiseOptions = (inputValue, fieldName) =>
-      new Promise(resolve => {
-        switch (fieldName) {
-          case 'vendor':
-            resolve(vendorFilterList(inputValue));
-            break;
-          case 'part':
-            resolve(partFilterList(inputValue))
-            break;
-          default:
-            break;
+    const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
+    const vendorFilterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
         }
-      });
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
+      }
+    };
+    const partFilterList = async (inputValue) => {
+      const { partName } = this.state
+      if (inputValue?.length >= searchCount && partName !== inputValue) {
+        this.setState({ isLoader: true })
+        const res = await getPartSelectList()
+        this.setState({ isLoader: false })
+        this.setState({ partName: inputValue })
+        let partDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('PartData', partDataAPI)
+        let partData = []
+        if (inputValue) {
+          partData = reactLocalStorage?.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let partData = reactLocalStorage?.getObject('PartData')
+          if (inputValue) {
+            partData = reactLocalStorage?.getObject('PartData')
+            return autoCompleteDropdown(inputValue, partData)
+          } else {
+            return partData
+          }
+        }
+      }
+    };
 
     const defaultColDef = {
       resizable: true,
@@ -742,30 +773,54 @@ class AddVolume extends Component {
                     >
                       <div className="add-min-height">
                         <Row>
-                          <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                              <div className={"left-title"}>Zero Based</div>
-                              <Switch
-                                onChange={this.onPressVendor}
-                                checked={this.state.IsVendor}
-                                id="normal-switch"
+                          <Col md="12">
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === ZBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(ZBCTypeId)
+                                }
                                 disabled={isEditFlag ? true : false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={"right-title"}>Vendor Based</div>
-                            </label>
+                              />{" "}
+                              <span>Zero Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === VBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(VBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Vendor Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === CBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(CBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Customer Based</span>
+                            </Label>
                           </Col>
                         </Row>
 
                         <Row>
-                          {!this.state.IsVendor && (
+                          {(costingTypeId === ZBCTypeId && (
                             <Col md="3">
                               <Field
                                 name="Plant"
@@ -786,9 +841,9 @@ class AddVolume extends Component {
                                 valueDescription={this.state.selectedPlants}
                                 disabled={isEditFlag ? true : false}
                               />
-                            </Col>
+                            </Col>)
                           )}
-                          {this.state.IsVendor && (
+                          {costingTypeId === VBCTypeId && (
                             <Col md="3">
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center p-relative async-select">
@@ -798,7 +853,7 @@ class AddVolume extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={e => promiseOptions(e, 'vendor')}
+                                    loadOptions={vendorFilterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
@@ -821,10 +876,10 @@ class AddVolume extends Component {
 
                           )}
                           {
-                            this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={'Destination Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                                 name="DestinationPlant"
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 // selection={
@@ -843,6 +898,29 @@ class AddVolume extends Component {
                               />
                             </Col>
                           }
+                          {costingTypeId === CBCTypeId && (
+                            <Col md="3">
+                              <Field
+                                name="clientName"
+                                type="text"
+                                label={"Customer Name"}
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("ClientList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.client == null ||
+                                    this.state.client.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handleClient}
+                                valueDescription={this.state.client}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
                           <Col md="3">
                             <label>{"Part No."}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center async-select">
@@ -851,7 +929,7 @@ class AddVolume extends Component {
                                   name="PartNumber"
                                   ref={this.myRef}
                                   key={this.state.updateAsyncDropdown}
-                                  loadOptions={e => promiseOptions(e, 'part')}
+                                  loadOptions={partFilterList}
                                   onChange={(e) => this.handlePartName(e)}
                                   value={this.state.part}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no." : "No results found"}
@@ -886,6 +964,21 @@ class AddVolume extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
+                          {/* <Col md="3">
+                            <Field
+                              label={`Budgeted Price`}
+                              name={" BudgetedPrice"}
+                              type="text"
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              validate={[required, positiveAndDecimalNumber]}
+                              component={renderNumberInputField}
+                              required={true}
+                              disabled={false}
+                              onChange={this.handleRateChange}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>  UNCOMMENT WHEN CODE DEPLYED FROM BACKEND*/}
                         </Row>
 
                         <Row>
@@ -960,7 +1053,7 @@ class AddVolume extends Component {
             {isOpenVendor && (
               <AddVendorDrawer
                 isOpen={isOpenVendor}
-                closeDrawer={this.closeVendorDrawer}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}
@@ -978,11 +1071,12 @@ class AddVolume extends Component {
  * @description return state to component as props
  * @param {*} state
  */
-function mapStateToProps({ comman, volume, material, part }) {
+function mapStateToProps({ comman, volume, material, part, client }) {
   const { plantSelectList, filterPlantList, vendorWithVendorCodeSelectList } = comman
   const { volumeData, financialYearSelectList } = volume
   const { vendorListByVendorType } = material
   const { partSelectList } = part
+  const { clientSelectList } = client;
 
   let initialValues = {}
   if (volumeData && volumeData !== undefined) {
@@ -1000,7 +1094,8 @@ function mapStateToProps({ comman, volume, material, part }) {
     financialYearSelectList,
     partSelectList,
     initialValues,
-    vendorWithVendorCodeSelectList
+    vendorWithVendorCodeSelectList,
+    clientSelectList
   }
 }
 
@@ -1012,14 +1107,14 @@ function mapStateToProps({ comman, volume, material, part }) {
  */
 export default connect(mapStateToProps, {
   getPlantSelectListByType,
-  // getVendorListByVendorType,
   getPlantBySupplier,
   createVolume,
   updateVolume,
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  getClientSelectList
 })(
   reduxForm({
     form: 'AddVolume',

@@ -132,7 +132,7 @@ function VolumeListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '' })
   const [disableDownload, setDisableDownload] = useState(false)
   const [noData, setNoData] = useState(false)
 
@@ -756,10 +756,12 @@ function VolumeListing(props) {
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
+                  {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                   <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity"></AgGridColumn>
                   <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>

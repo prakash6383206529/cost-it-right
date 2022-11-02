@@ -15,7 +15,7 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
-import { EMPTY_GUID, NCC, VBC } from '../../../../config/constants'
+import { CBCTypeId, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
@@ -65,13 +65,14 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && approvalDetails.TypeOfCosting === VBC) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
-          BoughtOutPartImpactedMasterDataList: []
+          BoughtOutPartImpactedMasterDataList: [],
+          MachineProcessImpactedMasterDataList: []
         }
         let masterId
         let Data = []
@@ -96,7 +97,8 @@ function ApprovalSummary(props) {
     let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -112,6 +114,8 @@ function ApprovalSummary(props) {
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, LastCostingId, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
+      console.log('res?.data?.Data?.Costings[0]: ', res?.data?.Data?.Costings[0]);
+      console.log('ApprovalDetails: ', ApprovalDetails);
 
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -322,13 +326,16 @@ function ApprovalSummary(props) {
                   <thead>
                     <tr>
                       <th>{`Costing ID:`}</th>
-                      {approvalDetails.TypeOfCosting === VBC && (
+                      {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor Name:`}</th>
+                      )}
+                      {approvalDetails.CostingTypeId === CBCTypeId && (
+                        <th>{`Customer (Code)`}</th>
                       )}
                       {
                         checkVendorPlantConfigurable() &&
                         <th>
-                          {approvalDetails.TypeOfCosting === VBC ? 'Vendor Plant' : 'Plant'}{` Code:`}
+                          {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
                       {
@@ -342,17 +349,17 @@ function ApprovalSummary(props) {
                       <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
                       <th>{`Variance:`}</th>
-                      {costingHead !== NCC && <th>{`Consumption Quantity:`}</th>}
-                      {costingHead !== NCC && <th>{`Remaining Quantity:`}</th>}
-                      {costingHead === NCC && (
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
+                      {approvalDetails.CostingTypeId === NCCTypeId && (
                         <th>{`Quantity:`}</th>
                       )}
-                      {costingHead === NCC && (
+                      {approvalDetails.CostingTypeId === NCCTypeId && (
                         <th>{`Is Regularized:`}</th>
                       )}
                       <th>{`Effective Date:`}</th>
-                      {costingHead !== NCC && <th>{`Annual Impact:`}</th>}
-                      {costingHead !== NCC && <th>{`Impact of The Year:`}</th>}
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Annual Impact:`}</th>}
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Impact of The Year:`}</th>}
 
                     </tr>
                   </thead>
@@ -362,22 +369,25 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.TypeOfCosting === VBC && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === VBCTypeId && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === CBCTypeId && <td> {(approvalDetails.CustomerName || approvalDetails.CustomerCode) ? `${approvalDetails.CustomerName}(${approvalDetails.CustomerCode})` : '-'}</td>}
                       {/* </td> */}
                       {
                         checkVendorPlantConfigurable() &&
                         <td>
                           {
-                            approvalDetails.TypeOfCosting === VBC ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            approvalDetails.CostingTypeId === VBCTypeId ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
                         </td>
                       }
                       {
-                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === VBC) &&
+                        ((getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId)) &&
                         <td>
-                          {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
+                          {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode)}? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`:'-'
                         </td>
                       }
+                      {(approvalDetails.CostingTypeId === CBCTypeId || approvalDetails.CostingTypeId === NCCTypeId) && <td> {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode) ? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName || approvalDetails.PlantCode) ? `${approvalDetails.PlantName}(${approvalDetails.PlantCode})` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
@@ -393,19 +403,19 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
-                      {costingHead !== NCC && <td>
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
                       </td>}
-                      {costingHead !== NCC && <td>
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
                       </td>}
 
-                      {costingHead === NCC &&
+                      {approvalDetails.CostingTypeId === NCCTypeId &&
                         <td>
                           {nccPartQuantity !== null ? nccPartQuantity : '-'}
                         </td>
                       }
-                      {costingHead === NCC &&
+                      {approvalDetails.CostingTypeId === NCCTypeId &&
                         <td>
                           {IsRegularized !== null ? (IsRegularized ? "Yes" : "No") : '-'}
                         </td>
@@ -414,10 +424,11 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
-                      {costingHead !== NCC && <td>
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
-                      {costingHead !== NCC && <td>
+                      {console.log('approvalDetails: ', approvalDetails)}
+                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
                     </tr>

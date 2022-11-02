@@ -3,6 +3,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function BoughtOutPart(props) {
   const { item } = props;
@@ -11,6 +12,9 @@ function BoughtOutPart(props) {
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
+  // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -42,15 +46,17 @@ function BoughtOutPart(props) {
             {item && item.PartNumber}
           </span>
         </td>
+        {partType && <td>{item && item.PartName}</td>}
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{'-'}</td>
-        <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{'-'}</td>
-        <td>{item?.CostingPartDetails?.Quantity ? item.CostingPartDetails.Quantity : 1}</td>
-        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
-        <td>{''}</td>
+        {partType ? <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td> : <td>{'-'}</td>}
+        {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {!partType && <td>{'-'}</td>}
+        <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : 1}</td>
+        {partType && <td>{item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item.CostingPartDetails.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+        {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {partType && <td></td>}
       </tr>
     </ >
   );

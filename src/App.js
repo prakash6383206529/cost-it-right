@@ -19,6 +19,20 @@ class App extends Component {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         reactLocalStorage.setObject('InitialConfiguration', Data)
+        let CostingHeadsList = Data.CostingHeadsList
+        let costingHeadsListArray = CostingHeadsList.split(",")
+        let objShort = {};
+        costingHeadsListArray && costingHeadsListArray.map(item => {
+          let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[0]
+          return shortFormList
+        })
+        let objFull = {}
+        costingHeadsListArray && costingHeadsListArray.map(item => {
+          let fullFormList = objFull[item.split("=")[1]] = item.match(/\d+/g)[0]
+          return fullFormList
+        })
+        reactLocalStorage.setObject('CostingHeadsListShortForm', objShort)
+        reactLocalStorage.setObject('CostingHeadsListFullForm', objFull)
       }
     })
   }

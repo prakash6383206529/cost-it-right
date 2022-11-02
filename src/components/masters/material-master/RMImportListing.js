@@ -67,14 +67,32 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(false)
+  const [inRangeDate, setinRangeDate] = useState([])
+  const [dateArray, setDateArray] = useState([])
+
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+      let temp = inRangeDate
+      temp.push(newDate)
+      setinRangeDate(temp)
+      if (props?.benchMark) {
+        props?.handleDate(inRangeDate)
+      }
+      let unique = temp.filter((item, i, ar) => ar.indexOf(item) === i);
+      setDateArray(unique)
+      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate, dateArray: unique })
+      setTimeout(() => {
+
+        var y = document.getElementsByClassName('ag-radio-button-input');
+        var radioBtn = y[0];
+        radioBtn?.click()
+
+      }, 300);
       if (dateAsString == null) return -1;
       var dateParts = dateAsString.split('/');
       var cellDate = new Date(
@@ -173,8 +191,20 @@ function RMImportListing(props) {
   * @method hideForm
   * @description HIDE DOMESTIC, IMPORT FORMS
   */
-  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
+  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
     const { isSimulation } = props
+
+    if (filterModel?.EffectiveDate && !isReset) {
+      if (filterModel.EffectiveDate.dateTo) {
+        let temp = []
+        temp.push(DayTime(filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+        temp.push(DayTime(filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+
+        dataObj.dateArray = temp
+      }
+
+    }
+
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [APPROVED_STATUS].join(",")
 
@@ -363,6 +393,7 @@ function RMImportListing(props) {
       isEditFlag: true,
       isViewFlag: isViewMode,
       Id: Id,
+      costingTypeId: rowData.CostingTypeId,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     props.getDetails(data, rowData?.IsRMAssociated);
@@ -643,6 +674,8 @@ function RMImportListing(props) {
 
 
   const resetState = () => {
+    setFilterModel({})
+    setinRangeDate([])
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -661,7 +694,7 @@ function RMImportListing(props) {
     setPageNo(1)
     setPageNoNew(1)
     setCurrentRowIndex(0)
-    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -711,6 +744,16 @@ function RMImportListing(props) {
     if (isSimulation) {
       apply(uniqueArray, length)
     }
+
+    if (props?.benchMark) {
+      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      if (uniqueArrayNew.length > 1) {
+        dispatch(setSelectedRowForPagination([]))
+        gridApi.deselectAll()
+        Toaster.warning("Technology & Raw material should be same")
+      }
+    }
+
   }
 
 
@@ -863,6 +906,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>

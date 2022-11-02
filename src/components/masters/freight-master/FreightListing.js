@@ -4,7 +4,6 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
-import { getVendorListByVendorType, } from '../actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -368,9 +367,10 @@ class FreightListing extends Component {
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn width='200px' field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
@@ -406,7 +406,6 @@ function mapStateToProps({ freight, material, comman }) {
 export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
-  getVendorListByVendorType,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,
