@@ -92,6 +92,9 @@ function AssemblySimulationListing(props) {
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
             return false
+        } if (selectedRowData?.length === 0) {
+            Toaster.warning("Please select atleast one costing.")
+            return false
         }
         let tempArray = []
         selectedRowData && selectedRowData?.map((item) => {
@@ -231,7 +234,7 @@ function AssemblySimulationListing(props) {
     }
 
     const cancel = () => {
-        props.cancelViewPage111()
+        props.cancelSimulationListingPage()
     }
 
     const closeDrawer = (e = '') => {
