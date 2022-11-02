@@ -11,6 +11,8 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 let counter = 0;
 function OperationCost(props) {
@@ -24,13 +26,16 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
+  const OldGridData = props.data
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const costData = useContext(costingInfoContext);
 
   useEffect(() => {
     const Params = {
@@ -40,10 +45,19 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+      // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
+      if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+        // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
+        // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
+
+        // PROP IS USED TO SET OPERATION GRID AND TOTAL OPERATION COST IN ADDASSEMBLYOPERATION
+        props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
+        if (props.IsAssemblyCalculation) {
+          props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+        } else {
+          props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
+        }
       }
 
       if (JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : [])) {
@@ -96,10 +110,13 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      let netCostTotal = 0
       tempArr && tempArr.map((el, index) => {
+        netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
+      setOperationCostAssemblyTechnology(netCostTotal)
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -160,6 +177,12 @@ function OperationCost(props) {
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
+    let totalFinishWeight = 0
+    totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.OperationCost)
+    }, 0)
+    props.getOperationGrid(tempArr, totalFinishWeight)
+
   }
 
   const editItem = (index) => {
@@ -209,6 +232,10 @@ function OperationCost(props) {
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el?.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
     } else {

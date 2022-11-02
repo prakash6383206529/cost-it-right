@@ -10,7 +10,8 @@ import {
   config,
   GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
   GET_VOLUME_LIMIT,
-  CHECK_REGULARIZATION_LIMIT
+  CHECK_REGULARIZATION_LIMIT,
+  EMPTY_GUID
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 import { apiErrors } from '../../../helper/util'
@@ -99,7 +100,7 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
-    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
+    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
     axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -211,7 +212,26 @@ export function bulkUploadVolumeActualVBC(data, callback) {
       })
   }
 }
-
+/**
+ * @method bulkUploadVolumeActualCBC
+ * @description BULK UPLOAD FOR ACTUAL VOLUME CBC
+ */
+export function bulkUploadVolumeActualCBC(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.bulkUploadVolumeActualCBC, data, config())
+    request
+      .then((response) => {
+        if (response.status === 200) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+        callback(error);
+      })
+  }
+}
 /**
  * @method bulkUploadVolumeBudgetedZBC
  * @description BULK UPLOAD FOR BUDGETED VOLUME ZBC
@@ -251,15 +271,32 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
     });
   };
 }
-
+/**
+ * @method bulkUploadVolumeBudgetedCBC
+ * @description BULK UPLOAD FOR BUDGETED VOLUME CBC
+ */
+export function bulkUploadVolumeBudgetedCBC(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.bulkUploadVolumeBudgetedCBC, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
 /**
  * @method getVolumeDataByPartAndYear
  * @description Get Volume Data by part and year
  */
-export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
+export function getVolumeDataByPartAndYear(partNumber, financialYear, plantId, vendorId, customerId, costingTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, config())
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/${plantId === '' ? EMPTY_GUID : plantId}/${vendorId === '' ? EMPTY_GUID : vendorId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId}`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

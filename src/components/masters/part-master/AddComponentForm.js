@@ -178,7 +178,7 @@ class AddComponentForm extends Component {
 
     const filterList = async (inputValue) => {
       const { partName } = this.state
-      if (inputValue?.length === searchCount && partName !== inputValue) {
+      if (inputValue?.length >= searchCount && partName !== inputValue) {
         let obj = {
           technologyId: this.props?.TechnologySelected.value,
           date: this.context,

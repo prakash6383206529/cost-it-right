@@ -158,8 +158,10 @@ class UsersListing extends Component {
 			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId,
 			RoleId: roleId,
+			userType: this.props.RFQUser ? 'RFQ' : 'CIR'
 		}
 		this.setState({ isLoader: true })
+
 		this.props.getAllUserDataAPI(data, res => {
 			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
@@ -170,9 +172,8 @@ class UsersListing extends Component {
 					userData: Data,
 				})
 			} else {
-
 			}
-		});
+		})
 	}
 
 	/**
@@ -224,6 +225,7 @@ class UsersListing extends Component {
 			isEditFlag: true,
 			UserId: Id,
 			passwordFlag: passwordFlag,
+			RFQUser: this.props.RFQUser
 		}
 		this.closeUserDetails()
 		this.props.getUserDetail(data)
@@ -477,7 +479,7 @@ class UsersListing extends Component {
 	}
 
 	formToggle = () => {
-		this.props.formToggle()
+		this.props.formToggle(this.props?.RFQUser)
 	}
 
 	onPageSizeChanged = (newPageSize) => {
@@ -691,6 +693,7 @@ class UsersListing extends Component {
 							EditAccessibility={EditAccessibility}
 							anchor={"right"}
 							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+							RFQUser={this.props.RFQUser}
 						/>
 					)}
 

@@ -36,6 +36,7 @@ function TabOverheadProfit(props) {
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
 
         setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+        dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
       }
     }
   }, [OverheadProfitTabData])

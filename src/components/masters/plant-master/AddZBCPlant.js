@@ -15,6 +15,7 @@ import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { ZBCTypeId } from '../../../config/constants';
 
 
 class AddZBCPlant extends Component {
@@ -262,7 +263,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         this.setState({ setDisable: false })
@@ -288,7 +290,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
 
       this.props.createPlantAPI(formData, (res) => {

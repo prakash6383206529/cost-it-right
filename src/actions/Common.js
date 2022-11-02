@@ -55,6 +55,7 @@ import {
   config,
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
+  GET_REPORTER_LIST
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -738,7 +739,7 @@ export function fetchSupplierCityDataAPI(callback) {
 export function fetchCostingHeadsAPI(costingHeads, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, config());
+    const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1374,6 +1375,23 @@ export function getVendorWithVendorCodeSelectList(vendorName, callback) {
   return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
+
+export function getReporterList(callback) {
+  return (dispatch) => {
+    const request = axios.get(API.getReporterList, config());
+    request.then((response) => {
+      dispatch({
+        type: GET_REPORTER_LIST,
+        payload: response.data.SelectList,
+      });
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
 /**
  * @method getUOMListByUnitType
  * @description UOM SELECT LIST BY UNIT TYPE
@@ -1405,30 +1423,6 @@ export function getICCAppliSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getICCAppliSelectList}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ICC_APPLICABILITY_SELECTLIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-/**
- * @method getICCAppliSelectListKeyValue
- * @description GET ICC APPLICABILITY SELECTLIST KEY VALUE USED IN OVERHEAD PROFIT COSTING
- */
-export function getICCAppliSelectListKeyValue(callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getICCAppliSelectListKeyValue}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1578,3 +1572,5 @@ export const disabledClass = (value) => {
     })
   }
 }
+
+

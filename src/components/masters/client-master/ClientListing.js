@@ -416,6 +416,7 @@ class ClientListing extends Component {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
+                                <AgGridColumn field="CompanyCode" headerName="Company Code"></AgGridColumn>
                                 <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>

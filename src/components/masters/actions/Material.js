@@ -743,7 +743,7 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
 export function getRawMaterialDetailsAPI(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.IsVendor}`, config())
+            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.costingTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -979,8 +979,8 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @method getVendorListByVendorType
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
-export function getVendorListByVendorType(isVendor, vendorName, callback) {
-    return axios.get(`${API.getVendorListByVendorType}?isVendor=${isVendor}&vendorName=${vendorName}`, config());
+export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config());
 }
 
 /**
@@ -988,7 +988,6 @@ export function getVendorListByVendorType(isVendor, vendorName, callback) {
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    console.log('vendorName: ', vendorName);
     return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
@@ -999,12 +998,11 @@ export function getVendorWithVendorCodeSelectList(vendorName, callback) {
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
 
-        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                //
                 if (isPagination === true) {
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
@@ -1090,7 +1088,7 @@ export function updateRMImportAPI(requestData, callback) {
 export function getRMImportDataById(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.IsVendor}`, config())
+            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.costingTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -1118,7 +1116,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}&${queryParamsSecond} `, config());
         request.then((response) => {
@@ -1219,6 +1217,24 @@ export function bulkUploadRMDomesticVBC(data, callback) {
 }
 
 /**
+ * @method bulkUploadRMDomesticCBC
+ * @description upload bulk RM Domestic CBC
+ */
+export function bulkUploadRMDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+/**
  * @method bulkfileUploadRM
  * @description upload bulk RM Domestic
  */
@@ -1255,6 +1271,24 @@ export function bulkUploadRMImportZBC(data, callback) {
     };
 }
 
+/**
+ * @method bulkUploadRMImportCBC
+ * @description upload bulk RM Import CBC
+ */
+export function bulkUploadRMImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadRMImportVBC
  * @description upload bulk RM Domestic VBC

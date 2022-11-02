@@ -166,3 +166,16 @@
     padding-top: 12px;
    }
 }
+.impact-drawer-table {
+    width: calc(100% - 30px);
+    margin: auto;
+    margin-bottom: 20px;
+    td {
+        border-top: none;
+    }
+}
+.sub-table {
+    th {
+        font-weight: 500 !important;
+    }
+}

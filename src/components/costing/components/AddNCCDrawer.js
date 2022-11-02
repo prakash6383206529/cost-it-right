@@ -132,7 +132,7 @@ function AddNCCDrawer(props) {
     toggleDrawer('')
   }
   const filterList = async (inputValue) => {
-    if (inputValue?.length === searchCount && vendorName !== inputValue) {
+    if (inputValue?.length >= searchCount && vendorName !== inputValue) {
       // this.setState({ inputLoader: true })
       let res
       res = await getVendorWithVendorCodeSelectList(inputValue)
@@ -220,6 +220,7 @@ function AddNCCDrawer(props) {
                     handleChange={handleVendorChange}
                     asyncOptions={filterList}
                     errors={errors.Vendor}
+                    NoOptionMessage={"Enter 3 characters to show data"}
                   />
                 </Col>
               </Row>
