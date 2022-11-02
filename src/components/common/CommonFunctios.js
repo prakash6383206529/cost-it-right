@@ -11,7 +11,6 @@ export const autoCompleteDropdown = (inputValue, dropdownArray) => {
             finalArr.push({ label: item.Text, value: item.Value })
             return null
         })
-        console.log('finalArr: ', finalArr);
         return finalArr
     } else {
         const Arr = tempArr?.slice(0, 100)
@@ -20,7 +19,6 @@ export const autoCompleteDropdown = (inputValue, dropdownArray) => {
             finalArr.push({ label: item.Text, value: item.Value })
             return null
         })
-        console.log('finalArr: ', finalArr);
         return finalArr
 
     }
