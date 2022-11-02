@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
@@ -10,12 +10,11 @@ import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from 
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -26,6 +25,9 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
 import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddOperation');
 
@@ -36,11 +38,9 @@ class AddOperation extends Component {
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
-      IsVendor: false,
       selectedTechnology: [],
       selectedPlants: [],
       isVendorNameNotSelected: false,
-
       vendorName: [],
       oldDate: '',
       UOM: [],
@@ -49,7 +49,7 @@ class AddOperation extends Component {
       IsSendForApproval: false,
       IsFinancialDataChanged: true,
       DataToChange: [],
-
+      costingTypeId: ZBCTypeId,
       isSurfaceTreatment: false,
       remarks: '',
       files: [],
@@ -59,7 +59,7 @@ class AddOperation extends Component {
       approveDrawer: false,
       approvalObj: {},
       isViewMode: this.props?.data?.isViewMode ? true : false,
-
+      client: [],
       isEditFlag: false,
       isShowForm: false,
       isOpenVendor: false,
@@ -102,12 +102,13 @@ class AddOperation extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewMode) {
       let obj = {
         MasterId: OPERATIONS_ID,
-        DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        DepartmentId: userDetails()?.DepartmentId,
+        LoggedInUserLevelId: userDetails()?.LoggedInMasterLevelId,
         LoggedInUserId: loggedInUserId()
       }
       this.setState({ finalApprovalLoader: true })
@@ -128,14 +129,15 @@ class AddOperation extends Component {
       }
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { costingSpecifiTechnology, plantSelectList, vendorWithVendorCodeSelectList,
-      UOMSelectList, } = this.props;
+    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList } = this.props;
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
@@ -161,14 +163,6 @@ class AddOperation extends Component {
       })
       return temp
     }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
         const accept = AcceptableOperationUOM.includes(item.Type)
@@ -179,18 +173,30 @@ class AddOperation extends Component {
       });
       return temp;
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
-
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = () => {
+   * @method onPressVendor
+   * @description Used for Vendor checked
+   */
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: !this.state.IsVendor,
+      vendorName: [],
+      costingTypeId: costingHeadFlag
     });
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
+    else {
+
+    }
   }
 
   /**
@@ -228,10 +234,19 @@ class AddOperation extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-    })
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
   }
 
 
@@ -338,8 +353,9 @@ class AddOperation extends Component {
               isEditFlag: true,
               IsFinancialDataChanged: false,
               isLoader: false,
-              IsVendor: Data.IsVendor,
+              costingTypeId: Data.CostingTypeId,
               selectedTechnology: technologyArray,
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
@@ -504,7 +520,17 @@ class AddOperation extends Component {
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
   }
-
+  /**
+  * @method handleClient
+  * @description called
+  */
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
 
   /**
   * @method cancel
@@ -532,18 +558,20 @@ class AddOperation extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, selectedPlants, vendorName, files,
-      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+    const { selectedPlants, vendorName, files,
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
     const { initialConfiguration } = this.props;
+    const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
-
-    if (vendorName.length <= 0) {
-      if (IsVendor) {
+    if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
+      if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
     }
     this.setState({ isVendorNameNotSelected: false })
+
+
 
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
@@ -551,13 +579,22 @@ class AddOperation extends Component {
       return technologyArray;
     })
     let plantArray = []
-    if (IsVendor) {
+    if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return plantArray
+      })
+    }
+    let cbcPlantArray = []
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    }
+    else {
+      userDetailsOperation?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
       })
     }
     /** Update existing detail of supplier master **/
@@ -647,12 +684,12 @@ class AddOperation extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         IsSendForApproval: this.state.IsSendForApproval,
         OperationId: OperationId,
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         OperationName: values.OperationName,
         OperationCode: values.OperationCode,
         Description: values.Description,
-        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? getVendorCode(vendorName.label) : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
+        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
         UnitOfMeasurementId: UOM.value,
         IsSurfaceTreatmentOperation: isSurfaceTreatment,
         //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
@@ -660,14 +697,13 @@ class AddOperation extends Component {
         LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
         Technology: technologyArray,
         Remark: remarks,
-        plant: plantArray,
+        plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        VendorPlant: []
+        VendorPlant: [],
+        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
-
-
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
@@ -731,27 +767,39 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(inputValue)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: inputValue })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
 
     return (
       <div className="container-fluid">
@@ -774,25 +822,49 @@ class AddOperation extends Component {
                 >
                   <div className="add-min-height">
                     <Row>
-                      <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={"left-title"}>Zero Based</div>
-                          <Switch
-                            onChange={this.onPressVendor}
-                            checked={this.state.IsVendor}
-                            id="normal-switch"
+                      <Col md="12">
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === ZBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(ZBCTypeId)
+                            }
                             disabled={isEditFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>Vendor Based</div>
-                        </label>
+                          />{" "}
+                          <span>Zero Based</span>
+                        </Label>
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === VBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(VBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Vendor Based</span>
+                        </Label>
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === CBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(CBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Customer Based</span>
+                        </Label>
                       </Col>
                     </Row>
                     <Row>
@@ -865,7 +937,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      {!this.state.IsVendor && (
+                      {(costingTypeId === ZBCTypeId) && (
                         <Col md="3">
                           <Field
                             label="Plant"
@@ -885,7 +957,7 @@ class AddOperation extends Component {
                           />
                         </Col>
                       )}
-                      {this.state.IsVendor && (
+                      {costingTypeId === VBCTypeId && (
                         <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
@@ -894,10 +966,10 @@ class AddOperation extends Component {
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -917,10 +989,10 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
                           <Field
-                            label={'Destination Plant'}
+                            label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
                             name="DestinationPlant"
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("singlePlant")}
@@ -935,6 +1007,29 @@ class AddOperation extends Component {
                           />
                         </Col>
                       }
+                      {costingTypeId === CBCTypeId && (
+                        <Col md="3">
+                          <Field
+                            name="clientName"
+                            type="text"
+                            label={"Customer Name"}
+                            component={searchableSelect}
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("ClientList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.client == null ||
+                                this.state.client.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleClient}
+                            valueDescription={this.state.client}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      )}
                       <Col md="3">
                         <Field
                           name="UnitOfMeasurementId"
@@ -1122,24 +1217,23 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      {
-                        (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
-                          <button type="submit"
-                            class="user-btn approval-btn save-btn mr5"
-                            disabled={isViewMode || setDisable}
-                          >
-                            <div className="send-for-approval"></div>
-                            {'Send For Approval'}
-                          </button>
-                          :
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable}
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                        <button type="submit"
+                          class="user-btn approval-btn save-btn mr5"
+                          disabled={isViewMode || setDisable}
+                        >
+                          <div className="send-for-approval"></div>
+                          {'Send For Approval'}
+                        </button>
+                        :
+                        <button
+                          type="submit"
+                          className="user-btn mr5 save-btn"
+                          disabled={isViewMode || setDisable}
+                        >
+                          <div className={"save-icon"}></div>
+                          {isEditFlag ? "Update" : "Save"}
+                        </button>
                       }
 
 
@@ -1153,7 +1247,7 @@ class AddOperation extends Component {
         {isOpenVendor && (
           <AddVendorDrawer
             isOpen={isOpenVendor}
-            closeDrawer={this.closeVendorDrawer}
+            closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
             isEditFlag={false}
             ID={""}
             anchor={"right"}
@@ -1195,13 +1289,14 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, otherOperation, supplier, auth, costing } = state;
+  const { comman, otherOperation, supplier, auth, costing, client } = state;
   const filedObj = selector(state, 'OperationCode', 'text');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
+  const { clientSelectList } = client;
 
   let initialValues = {};
   if (operationData && operationData !== undefined) {
@@ -1218,7 +1313,7 @@ function mapStateToProps(state) {
   return {
     plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology
+    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList
   }
 }
 
@@ -1240,7 +1335,8 @@ export default connect(mapStateToProps, {
   fileDeleteOperation,
   masterFinalLevelUser,
   checkAndGetOperationCode,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getClientSelectList
 })(reduxForm({
   form: 'AddOperation',
   touchOnChange: true,

@@ -21,15 +21,15 @@ import { debounce } from 'lodash';
 
 let counter = 0;
 function ProcessCost(props) {
-  const { data, item } = props
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const { data, item, isAssemblyTechnology } = props
+  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   // const processGroup = false
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
+  const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse ? data && data?.CostingProcessCostResponse : [])
   const trimValue = getConfigurationKey()
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
@@ -76,8 +76,8 @@ function ProcessCost(props) {
   }
 
   /**
-   * 
-   * @param {*} arr 
+   *
+   * @param {*} arr
    * @returns ARRAY HAVING ONLY PARENT OBJECT | USED TO SET REDUCER EVERY TIME
    */
   const formatReducerArray = (arr) => {
@@ -101,8 +101,8 @@ function ProcessCost(props) {
   useEffect(() => {
     const Params = {
       index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
+      BOMLevel: props?.item?.BOMLevel,
+      PartNumber: props?.item?.PartNumber,
     }
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
@@ -115,7 +115,11 @@ function ProcessCost(props) {
       }
 
       if (JSON.stringify(tabData) !== JSON.stringify(props.data)) {
-        props.setConversionCost(tabData, Params, item)
+        if (isAssemblyTechnology) {
+          props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+        } else {
+          props.setConversionCost(tabData, Params, item)
+        }
       }
     }
   }, [tabData]);
@@ -442,7 +446,7 @@ function ProcessCost(props) {
       let apiArr = formatMainArr(tempArr)
       let tempArr2 = {
         ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0,) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
@@ -457,7 +461,8 @@ function ProcessCost(props) {
 
     if (groupNameIndex === '') {
       if (rowData.length > 0) {
-        let rowArr = rowData && rowData.map((item) => {
+        let rowArr = []
+        rowArr = rowData && rowData.map((item) => {
           let processQuantityMain = 1
           if (item.UOMType === MASS) {
             processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
@@ -527,7 +532,8 @@ function ProcessCost(props) {
       if (rowData.length > 0) {
         let parentTempData = processGroupGrid[groupNameIndex]
         let parentProcessList = parentTempData.ProcessList
-        let rowArr = rowData && rowData.map((el) => {
+        let rowArr = []
+        rowArr = rowData && rowData.map((el) => {
           let processQuantityMain = 1
           let productionPerHourMain = ''
           if (item.UOMType === MASS) {
@@ -677,7 +683,6 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)
@@ -941,7 +946,7 @@ function ProcessCost(props) {
     // })
     let tempArr = {
       ...tabData,
-      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
+      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
       OperationCostTotal: OperationCostTotal,
       CostingOperationCostResponse: operationGrid,
       CostingProcessCostResponse: apiArr
@@ -949,7 +954,6 @@ function ProcessCost(props) {
 
     setIsFromApi(false)
     setTabData(tempArr)
-    // props.setOperationCost(tempArr, params, item)
   }
 
   const setOtherOperationCost = (otherOperationGrid, params, index) => {
@@ -971,14 +975,13 @@ function ProcessCost(props) {
     // })
     let tempArr = {
       ...tabData,
-      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
+      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
       OtherOperationCostTotal: OtherOperationCostTotal,
       CostingOtherOperationCostResponse: otherOperationGrid,
       CostingProcessCostResponse: apiArr
     }
     setIsFromApi(false)
     setTabData(tempArr)
-    // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
@@ -1121,18 +1124,20 @@ function ProcessCost(props) {
   return (
     <>
       <div className="user-page p-0">
-        <Row>
+        {!isAssemblyTechnology && <Row>
           <Col md="12">
             <div className="left-border">{'Conversion Cost:'}</div>
           </Col>
-        </Row>
-        <div className="cr-process-costwrap">
+        </Row>}
+        <div className={isAssemblyTechnology ? '' : 'cr-process-costwrap'}>
           <Row className="cr-innertool-cost">
 
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            {!isAssemblyTechnology && <>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            </>}
           </Row>
 
           <Row className="align-items-center">
@@ -1321,24 +1326,29 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <OperationCost
-            data={props.data && props.data.CostingOperationCostResponse}
-            setOperationCost={setOperationCost}
-            item={props.item}
-            IsAssemblyCalculation={false}
-            rmFinishWeight={rmFinishWeight}
-          />
+          {
+            !isAssemblyTechnology &&
+            <>
+              <OperationCost
+                data={props.data && props.data.CostingOperationCostResponse}
+                setOperationCost={setOperationCost}
+                item={props.item}
+                IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
+              />
 
-          <OperationCostExcludedOverhead
-            data={props.data && props.data.CostingOtherOperationCostResponse}
-            setOtherOperationCost={setOtherOperationCost}
-            item={props.item}
-            IsAssemblyCalculation={false}
-            rmFinishWeight={rmFinishWeight}
-          />
+              <OperationCostExcludedOverhead
+                data={props.data && props.data.CostingOtherOperationCostResponse}
+                setOtherOperationCost={setOtherOperationCost}
+                item={props.item}
+                IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
+              />
+            </>
+          }
 
-        </div>
-      </div>
+        </div >
+      </div >
       {isDrawerOpen && (
         <AddProcess
           isOpen={isDrawerOpen}
@@ -1350,19 +1360,22 @@ function ProcessCost(props) {
           MachineIds={MachineIds}
           groupMachineId={groupNameMachine}
         />
-      )}
-      {isCalculator && (
-        <VariableMhrDrawer
-          technology={calculatorTechnology}
-          calculatorData={calculatorData}
-          isOpen={isCalculator}
-          item={item}
-          CostingViewMode={CostingViewMode || IsLocked}
-          rmFinishWeight={props.rmFinishWeight}
-          closeDrawer={closeCalculatorDrawer}
-          anchor={'right'}
-        />
-      )}
+      )
+      }
+      {
+        isCalculator && (
+          <VariableMhrDrawer
+            technology={calculatorTechnology}
+            calculatorData={calculatorData}
+            isOpen={isCalculator}
+            item={item}
+            CostingViewMode={CostingViewMode || IsLocked}
+            rmFinishWeight={props.rmFinishWeight}
+            closeDrawer={closeCalculatorDrawer}
+            anchor={'right'}
+          />
+        )
+      }
     </>
   )
 }

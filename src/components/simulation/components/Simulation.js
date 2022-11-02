@@ -372,7 +372,7 @@ function Simulation(props) {
     const editTable = (Data, length) => {
         let uniqeArray = _.uniq(Data)
         dispatch(setSelectedRowForPagination(uniqeArray))
-        setTableData(Data)
+        setTableData(uniqeArray)
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;

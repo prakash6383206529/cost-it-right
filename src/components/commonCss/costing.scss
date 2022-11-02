@@ -237,3 +237,46 @@
 .fixed-error {
   bottom: -10px;
 }
+.assembly-button-container {
+  display: flex;
+  grid-gap: 3px;
+  justify-content: flex-end;
+  button {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+.add-container {
+  display: flex;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 10px;
+
+  grid-gap: 5px;
+  .form-group-searchable-select {
+    max-width: 230px;
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+  }
+  button {
+    margin-top: 30px;
+  }
+}
+.part-cost-table {
+  .form-group-searchable-select,
+  .inputbox {
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+    max-width: 100px;
+    label {
+      display: none;
+    }
+  }
+  .delta-warpper {
+    display: flex;
+    grid-gap: 5px;
+    .form-group-searchable-select {
+      max-width: 100px;
+    }
+  }
+}

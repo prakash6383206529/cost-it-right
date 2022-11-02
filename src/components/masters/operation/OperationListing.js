@@ -69,7 +69,7 @@ class OperationListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -505,7 +505,6 @@ class OperationListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
         if (this.props.selectedRowForPagination?.length > 0) {
             this.props.selectedRowForPagination.map((item) => {
                 if (item.OperationId === props.node.data.OperationId) {
@@ -513,9 +512,9 @@ class OperationListing extends Component {
                 }
                 return null
             })
-            return data
+            return cellValue
         } else {
-            return data
+            return cellValue
         }
     }
 
@@ -754,7 +753,7 @@ class OperationListing extends Component {
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
-                        <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
+                        <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
                             <Col md="3" lg="3">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
@@ -837,7 +836,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
                     <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
-                        <SelectRowWrapper dataCount={this.state.dataCount} className="mb-0 mt-n1" />
+                        {!this.props.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-0 mt-n1" />}
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
@@ -869,6 +868,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant(Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>

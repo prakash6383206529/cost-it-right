@@ -127,6 +127,7 @@ function AddPackaging(props) {
     let totalPackagingCost = 0
     switch (Text) {
       case 'RM':
+      case 'Part Cost':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -148,6 +149,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC':
+      case 'Part Cost + CC':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -180,6 +182,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -190,6 +193,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {

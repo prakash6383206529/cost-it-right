@@ -3,12 +3,14 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, getZBCDetailByPlantId, } from '../actions/Costing';
-import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
 import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 function AddNCCDrawer(props) {
 
@@ -21,14 +23,13 @@ function AddNCCDrawer(props) {
   const [data, setPlantData] = useState({});
   const [selectedPlants, setSelectedPlants] = useState([]);
   const [vendor, setVendor] = useState([]);
-
+  const [vendorName, setVendorName] = useState('')
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
   useEffect(() => {
     const { nccGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -37,7 +38,9 @@ function AddNCCDrawer(props) {
       return null;
     })
     setSelectedPlants(tempArr)
-
+    return () => {
+      reactLocalStorage?.setObject('vendorData', [])
+    }
   }, []);
 
   const toggleDrawer = (event) => {
@@ -70,16 +73,6 @@ function AddNCCDrawer(props) {
       });
       return temp;
     }
-    if (label === 'Vendor') {
-      // console.log(vendorSelectList, "vendorSelectList");
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
   }
 
   /**
@@ -138,7 +131,37 @@ function AddNCCDrawer(props) {
   const onSubmit = data => {
     toggleDrawer('')
   }
-
+  const filterList = async (inputValue) => {
+    if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+      // this.setState({ inputLoader: true })
+      let res
+      res = await getVendorWithVendorCodeSelectList(inputValue)
+      setVendorName(inputValue)
+      // this.setState({ inputLoader: false })
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      let VendorData = []
+      if (inputValue) {
+        VendorData = reactLocalStorage?.getObject('vendorData')
+        // this.setState({ inputLoader: false })
+        return autoCompleteDropdown(inputValue, VendorData)
+      } else {
+        return VendorData
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('vendorData')
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -183,19 +206,21 @@ function AddNCCDrawer(props) {
                   />
                 </Col>
                 <Col md="12">
-                  <SearchableSelectHookForm
+                  <AsyncSearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}
                     control={control}
-                    rules={{ required: false }}
+                    rules={{ required: true }}
                     register={register}
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
                     mandatory={true}
                     handleChange={handleVendorChange}
+                    asyncOptions={filterList}
                     errors={errors.Vendor}
+                    NoOptionMessage={"Enter 3 characters to show data"}
                   />
                 </Col>
               </Row>

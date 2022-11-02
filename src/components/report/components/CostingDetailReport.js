@@ -784,6 +784,7 @@ function ReportListing(props) {
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>

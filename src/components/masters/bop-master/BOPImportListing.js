@@ -57,9 +57,9 @@ class BOPImportListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            inRangeDate: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -130,9 +130,20 @@ class BOPImportListing extends Component {
     * @method getDataList
     * @description GET DATALIST OF IMPORT BOP
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
+        }
+
+        if (this.state.filterModel?.EffectiveDateNew && !isReset) {
+            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+                let temp = []
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
@@ -254,6 +265,7 @@ class BOPImportListing extends Component {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
@@ -491,6 +503,7 @@ class BOPImportListing extends Component {
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
@@ -516,6 +529,22 @@ class BOPImportListing extends Component {
 
         var setDate = (date) => {
             this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+        }
+
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
         }
 
         const isFirstColumn = (params) => {
@@ -578,13 +607,23 @@ class BOPImportListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
+
         }
 
 
         return (
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">
@@ -705,6 +744,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>

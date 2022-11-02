@@ -333,6 +333,9 @@ export const MESSAGES = {
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
 
 
+  //RFQ
+  RFQ_ADD_SUCCESS: 'RFQ details added successfully',
+
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
 
