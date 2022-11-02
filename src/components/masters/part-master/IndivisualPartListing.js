@@ -407,8 +407,8 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        //return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        return cellValue != null ? cellValue : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        // return cellValue != null ? cellValue : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
