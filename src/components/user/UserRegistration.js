@@ -1454,12 +1454,11 @@ function UserRegistration(props) {
   };
 
   const vendorFilterList = async (inputValue) => {
-    if (inputValue?.length >= searchCount && vendor !== inputValue) {
-      // this.setState({ inputLoader: true })
+    const resultInput = inputValue.slice(0, 3)
+    if (inputValue?.length >= searchCount && vendor !== resultInput) {
       let res
-      res = await getVendorWithVendorCodeSelectList(inputValue)
-      setVendor(inputValue)
-      // this.setState({ inputLoader: false })
+      res = await getVendorWithVendorCodeSelectList(resultInput)
+      setVendor(resultInput)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       let VendorData = []

@@ -1692,11 +1692,12 @@ function CostingDetails(props) {
 
   const filterList = async (inputValue) => {
 
-    if (inputValue?.length >= searchCount && partName !== inputValue) {
+    const resultInput = inputValue.slice(0, 3)
+    if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
-      const res = await getPartSelectListByTechnology(technology.value, inputValue);
+      const res = await getPartSelectListByTechnology(technology.value, resultInput);
       setInputLoader(false)
-      setpartName(inputValue)
+      setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
       reactLocalStorage.setObject('PartData', partDataAPI)
       let partData = []

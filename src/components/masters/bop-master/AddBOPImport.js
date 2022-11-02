@@ -900,23 +900,23 @@ class AddBOPImport extends Component {
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
-        // this.setState({ inputLoader: true })
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
         let res
-        if (this.state.IsVendor) {
-          res = await getVendorWithVendorCodeSelectList(inputValue)
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorWithVendorCodeSelectList(resultInput)
         }
         else {
-          res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          res = await getVendorTypeBOPSelectList(resultInput)
         }
-        // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         let VendorData = []
         if (inputValue) {
           VendorData = reactLocalStorage?.getObject('vendorData')
-          // this.setState({ inputLoader: false })
           return autoCompleteDropdown(inputValue, VendorData)
         } else {
           return VendorData
@@ -935,7 +935,6 @@ class AddBOPImport extends Component {
         }
       }
     };
-
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
