@@ -432,6 +432,7 @@ function Insights(props) {
 
         rmBenchmarkList && rmBenchmarkList.Specification?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
+            let plantTypeTemp = []
             let obj = {           //OBJ IS CUSTOM OBJECT THAT WILL BE PASSED AS ROWDATA TO AG-GRID
                 Specification: item.RawMaterialSpecificationName,
                 Minimum: item.Minimum,
@@ -448,6 +449,18 @@ function Insights(props) {
                 data.Plant.map((ele, ind) => {
                     let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val] = ele.Price
+
+                    let Val2 = `quantity${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val2] = ele.TotalConsumptionInTon
+
+
+                    let Val3 = `value${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val3] = ele.Price * ele.TotalConsumptionInTon
+
+
+                    let Val4 = `plantBar${ele.PlantName}` + ind
+                    obj[Val4] = ele.Price
+
 
                 })
 
@@ -467,10 +480,13 @@ function Insights(props) {
 
                 ele.Plant.map((el) => {
                     plantTemp.push(el.PlantName)
+                    plantTypeTemp.push(el.PlantName + el.CostingTypeId + el.CostingTypeId)
 
                 })
                 obj2.plants = plantTemp
+                obj2.plantsType = plantTypeTemp
                 plantTemp = []
+                plantTypeTemp = []
 
                 arrSample.push(obj2)
                 uniqueVendors.push(ele.Vendor)        //UNIQUEVENDORS HAS ALL THE TOTAL VENDORS IN DATA (WITH DUPLICATE ENTRY)
@@ -492,22 +508,27 @@ function Insights(props) {
             let obj = {}
             obj.vendor = item
             let plants = []
+            let plantsType = []
 
             vendorTemp.map((element, indx) => {
 
-                element.map((e) => {
 
+                element.map((e) => {
 
                     if (e.vendor == item) {
 
                         plants = [...plants, ...e.plants]
+                        plantsType = [...plantsType, ...e.plantsType]
                     }
 
                 })
 
             })
             let uniqueP = plants.filter((item, i, ar) => ar.indexOf(item) === i);
+            let uniquePType = plantsType.filter((item, i, ar) => ar.indexOf(item) === i);
+
             obj.plants = uniqueP
+            obj.plantsType = uniquePType
             finalArray.push(obj)
         })
 
@@ -560,28 +581,84 @@ function Insights(props) {
         let array55 = []
         finalArray.map((item) => {
 
-            let childPlants = []
+            let childPlantsVbc = []
+            let childPlantsZbc = []
 
 
             item.plants.map((ele, ind) => {
 
+                let rate = {
+
+                    headerName: "RM Rate",
+                    width: "130",
+                    field: `plant${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
+
+                }
+                let Quantity = {
+
+                    headerName: "Quantity",
+                    width: "130",
+                    field: `quantity${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
+
+                }
+                let Value = {
+
+                    headerName: "Value",
+                    width: "130",
+                    field: `value${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? checkForDecimalAndNull(params.value, 4) : '-',
+
+                }
+
                 let plantObj = {
                     headerName: ele,
-                    field: `plant${item.vendor}${ind}`,
-                    width: "115",
+                    // field: `plant${item.vendor}${ind}`,
+                    width: "125",
                     cellRendererFramework: (params) => params.value ? params.value : '-',
+                    marryChildren: true,
+                    children: [rate, Quantity, Value]
+
                 }
-                childPlants.push(plantObj)
+
+
+                let str = item.plantsType[ind]
+                if (str.charAt(str.length - 1) == 2) {
+
+                    childPlantsVbc.push(plantObj)
+                } else {
+                    childPlantsZbc.push(plantObj)
+
+                }
+
+
+                // childPlantsVbc.push(plantObj)
 
             })
 
+            let inHouse = {
+                headerName: "In-house",
+                width: "115",
+                marryChildren: true,
+                children: childPlantsZbc
+
+            }
+            let VendorBased = {
+                headerName: "Vendor Based",
+                width: "115",
+                marryChildren: true,
+                children: childPlantsVbc
+            }
+            let VbcZbc = [inHouse, VendorBased]
 
             let obj = {
 
                 headerName: `${item.vendor}`,
                 headerClass: "justify-content-center",
                 marryChildren: true,
-                children: childPlants
+                // children: childPlants
+                children: VbcZbc
             }
 
             array55.push(obj)
@@ -679,23 +756,21 @@ function Insights(props) {
 
         let labelArr = []
 
-
         tableHeaderColumnDefs?.map((item, index) => {
 
             if (index > 5) {
 
                 item.children.map((ele) => {
-                    labelArr.push(`${item.headerName}-${ele.headerName}`)
+
+                    ele.children.map((itemI) => {
+
+                        labelArr.push(`${item.headerName}-${itemI.headerName}`)
+                    })
                 })
-
             }
-
         })
 
-
         setLabelArray(labelArr)
-
-
         var rowCount = event.api.getSelectedRows();
 
         var graphDataNew = rowCount[0].graphData;
@@ -706,8 +781,10 @@ function Insights(props) {
         var array = []
         var plantLabel = []
         var obj = rowCount[0]
+
+
         for (var prop in obj) {
-            if (prop.includes('plant')) {
+            if (prop.includes('plantBar')) {
                 array.push(obj[prop])
                 plantLabel.push(prop)
 
@@ -718,7 +795,8 @@ function Insights(props) {
         let newArr = []
         labelArr.map((item, index) => {
             plantLabel.map((element, ind) => {
-                let ele = element.slice(5, -1)
+                let ele = element.slice(8, -1)
+
                 if (item.includes(ele)) {
                     newArr[index] = array[ind]
                 }
