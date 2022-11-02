@@ -17,7 +17,6 @@ import {
     GET_AMMENDENT_STATUS_COSTING,
     GET_FG_WISE_IMPACT_DATA,
     GET_COMBINED_PROCESS_LIST,
-    SET_SELECTED_VENDOR_SIMULATION,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
@@ -51,7 +50,9 @@ import {
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
-    GET_SIMULATION_APPROVAL_LIST_DRAFT
+    GET_SIMULATION_APPROVAL_LIST_DRAFT,
+    SET_SELECTED_VENDOR_SIMULATION,
+    GET_ALL_MULTI_TECHNOLOGY_COSTING,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -799,14 +800,7 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
         })
     }
 }
-export function setVendorForSimulation(selectedVendorForSimulation) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_VENDOR_SIMULATION,
-            payload: selectedVendorForSimulation,
-        });
-    }
-}
+
 
 export function sapPushedInitialMoment(simulationId, callback) {
     return (dispatch) => {
@@ -1486,4 +1480,107 @@ export function getMachineRateCostingSimulationList(token, callback) {
             apiErrors(error);
         })
     }
+}
+
+// ASSEMBLY TECHNOLOGY
+export function setVendorForSimulation(selectedVendorForSimulation) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_VENDOR_SIMULATION,
+            payload: selectedVendorForSimulation,
+        });
+    }
+}
+
+export function getAllMultiTechnologyCostings(obj, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ALL_MULTI_TECHNOLOGY_COSTING,
+                    payload: response?.data?.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function runSimulationOnSelectedAssemblyTechnologyCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedAssemblyTechnologyCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function draftSimulationMultiTechnology(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftSimulationMultiTechnology, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getAllMultiTechnologyImpactedSimulationCostings(simulationId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMultiTechnologyImpactedSimulationCostings}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response?.data?.Data?.SimulationImpactedCostings,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllSimulatedMultiTechnologyCosting}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response?.data?.DataList,
+                });
+            }
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
 }

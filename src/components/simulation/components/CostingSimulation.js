@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -19,7 +19,7 @@ import {
     BOPGridForToken,
     COMBINEDPROCESSSIMULATION,
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -109,6 +109,8 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
+    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+    const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value));
 
     const dispatch = useDispatch()
 
@@ -202,7 +204,7 @@ function CostingSimulation(props) {
     * @description COMMON FUNCTION TO HANDLE RESPONSE FROM API
     */
     const setCommonStateForList = (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
             const tokenNo = res.data.Data.SimulationTokenNumber
             const Data = res.data.Data
             setStatus(Data.SapMessage)
@@ -286,48 +288,53 @@ function CostingSimulation(props) {
     * @description API CALL FOR GET LIST OF ALL MASTERS
     */
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        switch (Number(selectedMasterForSimulation?.value)) {
-            //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
-            case Number(RMDOMESTIC):
-            case Number(RMIMPORT):
-                dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(SURFACETREATMENT):
-                dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(OPERATIONS):
-                dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
-                dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(EXCHNAGERATE):
-                dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(MACHINERATE):
-                dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(COMBINED_PROCESS):
-                dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-
-            default:
-                break;
+        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation?.value))) {
+            dispatch(getAllSimulatedMultiTechnologyCosting(simulationId, (res) => {
+                setCommonStateForList(res)
+            }))
+        } else {
+            switch (Number(selectedMasterForSimulation?.value)) {
+                //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
+                case Number(RMDOMESTIC):
+                case Number(RMIMPORT):
+                    dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(SURFACETREATMENT):
+                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(OPERATIONS):
+                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(BOPDOMESTIC):
+                case Number(BOPIMPORT):
+                    dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(EXCHNAGERATE):
+                    dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(MACHINERATE):
+                    dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(COMBINED_PROCESS):
+                    dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -981,9 +988,14 @@ function CostingSimulation(props) {
 
     const returnExcelColumnSecond = (data = []) => {
         return (
-            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+            [1, 2, 3] && [1, 2, 3].map(() => {
+                return (
+                    <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                        {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                    </ExcelSheet>
+                );
+            })
+        )
     }
 
     const returnExcelColumnImpactedMaster = () => {
@@ -1197,7 +1209,7 @@ function CostingSimulation(props) {
     return (
         <>
             {
-                loader ? <LoaderCustom customClass={`center-loader`} /> :
+                false ? <LoaderCustom customClass={`center-loader`} /> :
 
                     !showApprovalHistory &&
 
@@ -1361,6 +1373,12 @@ function CostingSimulation(props) {
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" headerName='Old Net Child Parts Cost With Quantity' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" headerName='New Net Child Parts Cost With Quantity' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="Variance" headerName='Variance' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                     <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact for Quarter(INR)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Budgeted Price Impact/Quarter' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
@@ -1443,7 +1461,7 @@ function CostingSimulation(props) {
                                 simulationDetail={simulationDetail}
                                 selectedRowData={selectedRowData}
                                 costingArr={costingArr}
-                                master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                                master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
                                 apiData={apiData}
@@ -1489,7 +1507,7 @@ function CostingSimulation(props) {
                     simulationDetail={simulationDetail}
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
-                    master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                    master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                     simulationMode={true}
