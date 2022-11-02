@@ -914,10 +914,11 @@ function Simulation(props) {
     }
 
     const filterList = async (inputValue) => {
-        if (inputValue?.length === searchCount && vendorName !== inputValue) {
+        const resultInput = inputValue.slice(0, 3)
+        if (inputValue?.length >= searchCount && vendorName !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(inputValue)
-            setVendorName(inputValue)
+            res = await getVendorWithVendorCodeSelectList(resultInput)
+            setVendorName(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             reactLocalStorage?.setObject('vendorData', vendorDataAPI)
             let VendorData = []
