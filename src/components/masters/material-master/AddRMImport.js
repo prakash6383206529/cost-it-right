@@ -1171,36 +1171,37 @@ class AddRMImport extends Component {
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
-        // this.setState({ inputLoader: true })
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
         let res
-        if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(inputValue)
+        if (costingTypeId === VBCTypeId && resultInput) {
+          res = await getVendorWithVendorCodeSelectList(resultInput)
         }
         else {
-          res = await getVendorListByVendorType(costingTypeId, inputValue)
+          res = await getVendorListByVendorType(costingTypeId, resultInput)
         }
-        // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let vendorData = []
+        let VendorData = []
         if (inputValue) {
-          vendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, vendorData)
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
         } else {
-          return vendorData
+          return VendorData
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let vendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('vendorData')
           if (inputValue) {
-            vendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, vendorData)
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
           } else {
-            return vendorData
+            return VendorData
           }
         }
       }

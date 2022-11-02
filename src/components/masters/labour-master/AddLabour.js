@@ -672,12 +672,13 @@ class AddLabour extends Component {
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
-        res = await labourTypeVendorSelectList(inputValue)
+        res = await labourTypeVendorSelectList(resultInput)
         // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         let VendorData = []
@@ -759,7 +760,7 @@ class AddLabour extends Component {
                         <Col md="3" className='mb-4'>
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                           <div className="p-relative">
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
@@ -768,7 +769,7 @@ class AddLabour extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) || gridTable.length !== 0 ? true : false}
+                              isDisabled={(isEditFlag) || gridTable.length !== 0 ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}

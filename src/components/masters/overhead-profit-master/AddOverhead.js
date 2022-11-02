@@ -972,7 +972,7 @@ class AddOverhead extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                isDisabled={(isEditFlag) ? true : false}
                                 onFocus={() => onFocus(this)}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

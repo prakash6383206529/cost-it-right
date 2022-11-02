@@ -701,11 +701,12 @@ class AddVolume extends Component {
     };
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
-      if (inputValue?.length >= searchCount && partName !== inputValue) {
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && partName !== resultInput) {
         this.setState({ isLoader: true })
         const res = await getPartSelectList()
         this.setState({ isLoader: false })
-        this.setState({ partName: inputValue })
+        this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('PartData', partDataAPI)
         let partData = []
@@ -858,7 +859,7 @@ class AddVolume extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                    isDisabled={(isEditFlag) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}

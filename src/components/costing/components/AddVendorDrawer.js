@@ -141,18 +141,16 @@ function AddVendorDrawer(props) {
   const VendorLoaderObj = { isLoader: VendorInputLoader }
   const plantLoaderObj = { isLoader: inputLoader }
   const filterList = async (inputValue) => {
-    if (inputValue?.length >= searchCount && vendorName !== inputValue) {
-      // this.setState({ inputLoader: true })
+    const resultInput = inputValue.slice(0, 3)
+    if (inputValue?.length >= searchCount && vendorName !== resultInput) {
       let res
-      res = await getVendorWithVendorCodeSelectList(inputValue)
-      setVendorName(inputValue)
-      // this.setState({ inputLoader: false })
+      res = await getVendorWithVendorCodeSelectList(resultInput)
+      setVendorName(resultInput)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       let VendorData = []
       if (inputValue) {
         VendorData = reactLocalStorage?.getObject('vendorData')
-        // this.setState({ inputLoader: false })
         return autoCompleteDropdown(inputValue, VendorData)
       } else {
         return VendorData

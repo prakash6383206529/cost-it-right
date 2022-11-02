@@ -326,9 +326,12 @@ function CostingSummary(props) {
 
   const filterList = async (inputValue) => {
 
-    if (inputValue?.length >= searchCount && partName !== inputValue) {
-      const res = await getPartSelectListByTechnology(technology.value, inputValue);
-      setpartName(inputValue)
+    const resultInput = inputValue.slice(0, 3)
+    if (inputValue?.length >= searchCount && partName !== resultInput) {
+      setInputLoader(true)
+      const res = await getPartSelectListByTechnology(technology.value, resultInput);
+      setInputLoader(false)
+      setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
       reactLocalStorage.setObject('PartData', partDataAPI)
       let partData = []
@@ -432,7 +435,7 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0 || inputLoader) ? true : false}
+                          disabled={(technology.length === 0) ? true : false}
                           NoOptionMessage={"Enter 3 characters to show data"}
                         />
 

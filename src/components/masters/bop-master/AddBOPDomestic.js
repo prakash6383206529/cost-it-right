@@ -857,10 +857,6 @@ class AddBOPDomestic extends Component {
         }
       }
     };
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -1168,7 +1164,6 @@ class AddBOPDomestic extends Component {
                             </>
                           )}
                         </Row>
-
 
                         <Row className='UOM-label-container'>
                           <Col md="12">
