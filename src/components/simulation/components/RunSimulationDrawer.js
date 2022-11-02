@@ -5,17 +5,20 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+//import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey, setValueAccToUOM } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
+import { IdForMultiTechnology } from '../../../config/masterData';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
@@ -59,6 +62,8 @@ function RunSimulationDrawer(props) {
     const [disablePackaging, setDisablePackaging] = useState(false)
     const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
 
+    const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
+    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -229,64 +234,68 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        switch (Number(masterId)) {
-            case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-
-            case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(SURFACETREATMENT):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(OPERATIONS):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(MACHINERATE):
-                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(BOPDOMESTIC):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            case Number(BOPIMPORT):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                break;
-            // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-            //         checkForResponse(res)
-            //     }))
-            //     runSimulationCosting()
-            //     break;
-            // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-            //         checkForResponse(res)
-            //     }))
-            //     runSimulationCosting()
-            //     break;
-            default:
-                break;
+        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation.value))) {
+            dispatch(runSimulationOnSelectedAssemblyTechnologyCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp, SimulationId: props?.token }, (res) => {
+                checkForResponse(res)
+            }))
+        } else {
+            switch (Number(masterId)) {
+                case Number(EXCHNAGERATE):
+                    dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(RMDOMESTIC):
+                    dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(RMIMPORT):
+                    dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(SURFACETREATMENT):
+                    dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(OPERATIONS):
+                    dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(MACHINERATE):
+                    dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(BOPDOMESTIC):
+                    dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(BOPIMPORT):
+                    dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                // case Number(BOPIMPORT):
+                //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                //         checkForResponse(res)
+                //     }))
+                //     runSimulationCosting()
+                //     break;
+                // case Number(BOPIMPORT):
+                //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                //         checkForResponse(res)
+                //     }))
+                //     runSimulationCosting()
+                //     break;
+                default:
+                    break;
+            }
         }
-
         // if (masterId === Number(EXCHNAGERATE)) {
         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
         //         if (res.data.Result) {

@@ -21,8 +21,10 @@ import {
     GET_AMMENDENT_STATUS_COSTING,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
-    GET_SIMULATION_APPROVAL_LIST_DRAFT
+    GET_SIMULATION_APPROVAL_LIST_DRAFT,
 
+    SET_SELECTED_VENDOR_SIMULATION,
+    GET_ALL_MULTI_TECHNOLOGY_COSTING
 } from '../../../config/constants';
 
 const initialState = {
@@ -201,6 +203,19 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedRowForPagination: action.payload
+            }
+
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
+        case GET_ALL_MULTI_TECHNOLOGY_COSTING:
+            return {
+                ...state,
+                loading: false,
+                multiTechnologyCostinig: action.payload
             }
         default:
             return state;
