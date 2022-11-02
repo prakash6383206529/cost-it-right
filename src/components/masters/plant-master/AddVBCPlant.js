@@ -36,7 +36,7 @@ class AddVBCPlant extends Component {
   */
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
-    this.props.getSupplierList(() => { })
+    this.props.getSupplierList(this.state.vendorName, () => { })
     this.getDetails()
   }
 

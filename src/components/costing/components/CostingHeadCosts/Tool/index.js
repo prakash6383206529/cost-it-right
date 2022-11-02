@@ -14,6 +14,7 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function Tool(props) {
 
@@ -52,11 +53,13 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 && data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? { label: data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType, value: data.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 && data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
+  const { costingData } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data.CostingPartDetails.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
+  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
 
 
   useEffect(() => {
@@ -69,7 +72,8 @@ function Tool(props) {
   }, [data && data.CostingPartDetails.CostingToolCostResponse])
 
   useEffect(() => {
-    dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, (res) => { }))
   }, [])
 
 
@@ -348,6 +352,7 @@ function Tool(props) {
 
       switch (Text) {
         case 'RM':
+        case 'Part Cost':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -388,6 +393,7 @@ function Tool(props) {
           break;
 
         case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -401,6 +407,7 @@ function Tool(props) {
           break;
 
         case 'RM + BOP':
+        case 'Part Cost + BOP':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOP * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -414,6 +421,7 @@ function Tool(props) {
           break;
 
         case 'RM + CC':
+        case 'Part Cost + CC':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({

@@ -8,7 +8,6 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
-import { getVendorListByVendorType, } from '../actions/Material';
 import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -499,6 +498,7 @@ class InterestRateListing extends Component {
                   <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                   <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -554,7 +554,6 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
 export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
-  getVendorListByVendorType,
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {

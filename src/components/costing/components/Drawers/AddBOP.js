@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -97,49 +97,27 @@ function AddBOP(props) {
     toggleDrawer('')
   }
 
-
   const getDataList = (categoryId = 0) => {
-    if (costData.VendorType === ZBC) {
-
-      const data = {
-        PlantId: costData.PlantId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-        categoryId: categoryId
-      }
-      dispatch(getBOPDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-        categoryId: categoryId
-      }
-      dispatch(getBOPDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      categoryId: categoryId,
+      CostingTypeId: costData.CostingTypeId,
+      CustomerId: costData.CustomerId
     }
+    dispatch(getBOPDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
 
   }
 

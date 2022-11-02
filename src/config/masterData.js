@@ -242,10 +242,50 @@ export const RMImportZBC = [
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-
-
 ]
 
+export const RMDomesticCBCTempData = [
+    {
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        "UOM": "Kilogram",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
+        "DestinationPlantCode": "1032",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
+    },
+    {
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        "UOM": "Gallon",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
+        "DestinationPlantCode": "EC1",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
+    }
+]
 
 export const RMImportZBCTempData = [
     {
@@ -296,6 +336,26 @@ export const RMImportZBCTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
+]
+export const RMDomesticCBC = [
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
+    { label: "CustomerName", value: "CustomerName" }, //*
+    { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
+    { label: "UOM", value: "UOM" }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
+    { label: "Remark", value: "Remark" },
 ]
 
 /** 
@@ -379,7 +439,73 @@ export const RMImportVBCTempData = [
         "Remark": "Remark Text",
     }
 ]
+export const RMImportCBC = [
+    //{ label: "CostingHead", value: "CostingHead" },
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
+    { label: "CustomerName", value: "CustomerName" },
+    { label: "CustomerCode", value: "CustomerCode" }, //NOUI
+    { label: "UOM", value: "UOM" }, //*
+    { label: "Currency", value: "Currency" }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
+    { label: "Remark", value: "Remark" },
+]
 
+export const RMImportCBCTempData = [
+    {
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000001",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        "UOM": "Kilogram",
+        "Currency": "INR",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
+        "DestinationPlantCode": "EC1",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
+    },
+    {
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "RawMaterialCode": "RM-10000002",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        "UOM": "Gallon",
+        "Currency": "USD",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
+        "DestinationPlantCode": "EC1",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -550,7 +676,44 @@ export const VBCOperationTempData = [
         'Remark': 'Remark',
     }
 ]
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const CBCOperation = [
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
+    { label: 'OperationCode', value: 'OperationCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'CustomerName', value: 'CustomerName', }, //*
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'Remark', value: 'Remark', },
+]
 
+export const CBCOperationTempData = [
+    {
+        'Technology': 'Sheet Metal',
+        'OperationName': 'Crushing',
+        'OperationCode': 'Crushing123',
+        'Description': 'Description Text',
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': "1032",
+        'UOM': 'Litre',
+        'Rate': 50,
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "IsSurfaceTreatmentOperation": "Yes or No",
+        'LabourRate': 5,
+        'Remark': 'Remark',
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -769,6 +932,38 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Remark': 'Remark Text'
     }
 ]
+export const BOP_CBC_DOMESTIC = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'Specification', value: 'Specification', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'CustomerName', value: 'CustomerName', },
+    { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'BasicRate', value: 'BasicRate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark' }
+]
+
+export const BOP_CBC_DOMESTIC_TempData = [
+    {
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': "1032",
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        // 'MinimumOrderQuantity': '1',
+        'BasicRate': '100',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+]
 
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
@@ -811,6 +1006,39 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         // 'MinimumOrderQuantity': '1',
+        'BasicRate': '100',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+]
+export const BOP_CBC_IMPORT = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'Specification', value: 'Specification', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', },
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
+    { label: 'CustomerName', value: 'CustomerName', },
+    { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'Currency', value: 'Currency', }, //*
+    { label: 'BasicRate', value: 'BasicRate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark' }
+]
+
+export const BOP_CBC_IMPORT_TempData = [
+    {
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': '1032',
+        "CustomerName": "Honda",
+        "CustomerCode": "C-10008",
+        'Currency': 'INR or USD',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -866,7 +1094,32 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'ActualQuantity': 50,
     }
 ]
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const VOLUME_ACTUAL_CBC = [
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI ,*
+    { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
+]
 
+export const VOLUME_ACTUAL_CBC_TEMPDATA = [
+    {
+        'CustomerCode': 'C-10008',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'PartNo': 'Screw Jack',
+        'PartName': 'Screw',
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+        'Month': DayTime().format('MMMM'),
+        'ActualQuantity': 50,
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -877,6 +1130,7 @@ export const VOLUME_BUDGETED_ZBC = [
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
+    { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //*
 ]
 
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
@@ -887,6 +1141,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 10,
+        'BudgetedPrice': 200,
     }
 ]
 
@@ -902,6 +1157,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
+    { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //*
 ]
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
@@ -914,9 +1170,32 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
+        'BudgetedPrice': 200,
     }
 ]
+export const VOLUME_BUDGETED_CBC = [
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'PartName', value: 'PartName', },//NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI
+    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
+]
 
+export const VOLUME_BUDGETED_CBC_TEMPDATA = [
+    {
+        'CustomerCode': 'C-10008',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': "1032",
+        'PartNo': 'Screw01',
+        'PartName': 'Screw',
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+        'Month': DayTime().format('MMMM'),
+        'BudgetedQuantity': 25,
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -1103,6 +1382,7 @@ export const MHRMoreZBC = [
 
 export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Company Name", value: "CompanyName", },
+    { label: "Company Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
     { label: "Country", value: "CountryName", },
@@ -1270,7 +1550,45 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }
 ]
+export const MachineCBC = [
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'CustomerName', value: 'CustomerName', }, //*, co
+    { label: 'CustomerCode', value: 'CustomerCode', }, // not on UI
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'MachineNo', value: 'MachineNo', }, //*
+    { label: 'MachineSpecification', value: 'Description', },
+    { label: 'MachineName', value: 'MachineName', }, //*
+    { label: 'MachineType', value: 'MachineType', },
+    { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
+    { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'ProcessCode', value: 'ProcessCode', }, //*
+    { label: 'UOM', value: 'UOM', }, //* maybe
+    { label: 'MachineRate', value: 'MachineRate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
 
+export const MachineCBCTempData = [
+    {
+        'Technology': 'Sheet Metal',
+        'CustomerName': 'Honda',
+        'CustomerCode': 'C-10008',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': '1032',
+        'MachineNo': 'SM101',
+        'Description': 'Mechanical Power Press',
+        'MachineName': 'Power Press',
+        'MachineType': 'Mechanical',
+        'MachineCapicityAndTonnage': '40',
+        'ProcessName': 'Punching',
+        'ProcessCode': 'PR-1000001',
+        'UOM': 'Stroke',
+        'MachineRate': '20',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -1381,6 +1699,33 @@ export const VBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
+        "PlantName": "1511",
+        "PlantCode": "1511",
+        'ICCApplicability': 'RM+CC',
+        'ICCPercent': '10   ',
+        'PaymentTermApplicability': 'RM',
+        'RepaymentPeriod': '30',
+        'PaymentTermPercent': '10',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+    }
+]
+export const CBCInterestRate = [
+    { label: 'CustomerName', value: 'CustomerName', }, //NOUI
+    { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: "PlantName", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
+    { label: 'ICCPercent', value: 'ICCPercent', }, //*
+    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
+    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
+    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+]
+
+export const CBCInterestRateTempData = [
+    {
+        'CustomerName': 'Honda',
+        'CustomerCode': 'C-10008',
         "PlantName": "1511",
         "PlantCode": "1511",
         'ICCApplicability': 'RM+CC',
@@ -1877,14 +2222,17 @@ export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "Technologies", value: "Technologies" },
     { label: "VendorName", value: "VendorName" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "Plants", value: "Plants" },
+    { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
     { label: "MachineTonnage", value: "MachineTonnage" },
     { label: "ProcessName", value: "ProcessName" },
     { label: "MachineRate", value: "MachineRate" },
     { label: "NewMachineRate", value: "NewMachineRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "MachineId", value: "MachineId" },
+    { label: "MachineProcessRateId", value: "MachineProcessRateId" }
 ]
 
 export const BOPDomesticSimulation = [
@@ -2406,6 +2754,7 @@ export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9']
+export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
 
 
 export const CostingSimulationDownloadRM = [
@@ -2438,6 +2787,9 @@ export const CostingSimulationDownloadRM = [
     { label: "RM Variance", value: "RMCVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2496,6 +2848,9 @@ export const CostingSimulationDownloadST = [
     { label: "STVariance", value: "STVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2553,6 +2908,9 @@ export const CostingSimulationDownloadOperation = [
     { label: "OperationCostVariance", value: "OperationCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2610,6 +2968,9 @@ export const CostingSimulationDownloadBOP = [
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2710,6 +3071,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "PO Variance", value: "POVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
 ]
 
@@ -2735,6 +3099,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "PO Variance", value: "POVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
 ]
 
@@ -2747,6 +3114,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Specification", value: "Specification", },
     { label: "Plant(Code)", value: "Plants", },
     { label: "Vendor(Code)", value: "Vendor", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Net Cost", value: "NetLandedCost", },
     { label: "Effective Date", value: "EffectiveDate", }
@@ -2762,6 +3130,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Specification", value: "Specification" },
     { label: "Plant(Code)", value: "Plants" },
     { label: "Vendor(Code)", value: "Vendor" },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Basic Rate", value: "BasicRate" },
     { label: "Net Cost(Currency)", value: "NetLandedCost" },
     { label: "Net Cost(INR)", value: "NetLandedCostConversion" },
@@ -2794,6 +3163,7 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Source City", value: "SourceCity", },
     { label: "Destination City", value: "DestinationCity", },
 ]
@@ -2822,6 +3192,7 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "Annual ICC(%)", value: "ICCPercent", },
     { label: "Payment Term Applicability", value: "PaymentTermApplicability", },
@@ -2845,6 +3216,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Plant(Code)", value: "Plants", },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
@@ -2871,6 +3243,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Material Type", value: "MaterialType", },
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UOM", },
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Freight Cost", value: "RMFreightCost", },
@@ -2892,6 +3265,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Category", value: "Category", },
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
     { label: "Basic Rate", value: "BasicRate", },
@@ -2925,6 +3299,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Operation Code", value: "OperationCode", },
     { label: "Plant(Code)", value: "Plants", },
     { label: "Vendor(Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurement", },
     { label: "Rate", value: "Rate", },
     { label: "Effective Date", value: "EffectiveDate", },
@@ -2934,7 +3309,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(Code)", value: "VendorName", },
-    { label: "Customer Name", value: "ClientName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
     { label: "Overhead Applicability(%)", value: "OverheadPercentage", },
@@ -3014,10 +3389,12 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Part Number", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
+    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE 
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
@@ -3025,7 +3402,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant(Code)", value: "PlantName", },
     { label: "Vendor(code)", value: "VendorName", },
-    { label: "Customer Name", value: "ClientName", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Model Type", value: "ModelType", },
     { label: "Profit Applicability", value: "ProfitApplicabilityType", },
     { label: "Profit Applicability(%)", value: "ProfitPercentage", },
@@ -3048,6 +3425,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "TechnologyName" },
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(Code)", value: "Vendor", },
+    { label: "Customer (Code)", value: "Customer", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "ECN No.", value: "ECNNumber", },
@@ -3377,7 +3755,108 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "PO Price", value: "OldPOPrice" },
     { label: "Variance", value: "Variance" },
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
+
+export const CostingSimulationDownloadMR = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldMachineRate", value: "OldMachineRate" },
+    { label: "NewMachineRate", value: "NewMachineRate" },
+    { label: "MRVariance", value: "MRVariance" },
+    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
+    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
+    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "NewNetToolCost", value: "NewNetToolCost" },
+    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "NewNetFreightCost", value: "NewNetFreightCost" },
+    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const MRGridForToken = [
+    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
+    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
+    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
+
+    { label: "Machine Name", value: "MachineName" },
+    { label: "Machine Number", value: "MachineNumber" },
+    { label: "Old Machine Cost", value: "OldNetMachineCost" },
+    { label: "New Machine Cost", value: "NewNetMachineCost" },
+    { label: "Machine Variance", value: "NetMachineCostVariance" },
+
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
+
+]
+
+export const MRGridForTokenSummary = [
+    { label: "Process Name", value: "ProcessName" },
+    { label: "Process Code", value: "ProcessCode" },
+    { label: "Old Net Process Cost", value: "OldNetProcessCost" },
+    { label: "New Net Process Cost", value: "NewNetProcessCost" },
+    { label: "Process Variance", value: "NetProcessCostVariance" },
+]
+
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
@@ -3396,12 +3875,1096 @@ export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumb
 
 export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'Plants', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
-export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'DestinationPlant', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate']
+export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'Plants', 'MachineName', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate', 'MachineId', 'MachineProcessRateId']
 
 export const TechnologyDropdownBulkUpload = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
     { label: 'Rubber, Plastic, Die Casting', value: '2' },
     { label: 'Forging, Machining, Turn Part', value: '3' }
 ]
+
+export const tempObject = [
+    {
+        "JsonStage": "_assemblyCosting",
+        "CostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+        "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+        "CostingNumber": "ASY-123800",
+        "Version": "1.0.76.1292",
+        "CostingDate": "2022-03-24T16:21:17.39",
+        "CreatedBy": "Rushaliii",
+        "ShareOfBusinessPercent": 0,
+        "PlantId": null,
+        "PlantName": null,
+        "PlantCode": null,
+        "VendorType": "VBC",
+        "VendorId": "bcffb6f5-d9e8-403a-aa6f-85c92ba95f2d",
+        "VendorName": "Dummy Vendor ",
+        "VendorCode": "07102021",
+        "VendorPlantId": null,
+        "VendorPlantName": null,
+        "VendorPlantCode": null,
+        "TechnologyId": 13,
+        "Technology": "Assembly",
+        "IsScrapRecoveryPercentageApplied": false,
+        "PartTypeId": 1,
+        "PartType": "Assembly",
+        "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+        "AssemblyPartNumber": "03022022",
+        "AssemblyPartName": "03022022",
+        "PartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+        "PartNumber": "03022022",
+        "PartName": "03022022",
+        "BOMLevel": "L0",
+        "IsAssemblyPart": true,
+        "IsLocked": null,
+        "IsPartLocked": false,
+        "IsCostingLocked": false,
+        "CostPerPiece": 43,
+        "NetChildPartsCost": undefined,
+        "Quantity": 1,
+
+
+        "CostingPartDetails": {
+            "JsonStage": "_part",
+            "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+            "AssemblyPartNumber": "03022022",
+            "AssemblyPartName": "03022022",
+            "PartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+            "PartNumber": "03022022",
+            "PartName": "03022022",
+            "BOMNumber": null,
+            "BOMLevel": "L0",
+            "CostingDetailId": null,
+            "PartTypeId": 1,
+            "PartType": "Assembly",
+            "IsApplyBOPHandlingCharges": null,
+            "BOPHandlingPercentage": null,
+            "BOPHandlingCharges": null,
+            "TotalRawMaterialsCost": 0,
+            "TotalBoughtOutPartCost": 0,
+            "TotalConversionCost": 0,
+            "TotalProcessCost": 0,
+            "TotalOperationCost": 0,
+            "TotalOtherOperationCost": null,
+            "TotalToolCost": 0,
+            "BoughtOutPartUOM": null,
+            "BoughtOutPartRate": null,
+            "TotalCalculatedRMBOPCCCost": 0,
+            "TotalRawMaterialsCostWithQuantity": 0,
+            "TotalBoughtOutPartCostWithQuantity": 0,
+            "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+            "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+            "TotalConversionCostWithQuantity": 0,
+            "CostPerPiece": undefined,
+            "NetChildPartsCost": undefined,
+            "Quantity": 1,
+            "GrandTotalCost": 0,
+            "IsOpen": false,
+            "IsShowToolCost": false,
+            "IsToolCostProcessWise": false,
+            "IsAssemblyPart": true,
+            "Sequence": 0,
+            "TotalOperationCostSubAssembly": 0,
+            "TotalOperationCostComponent": 0,
+            "TotalOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerSubAssembly": 0,
+            "TotalToolCostPerAssembly": 0,
+            "CostingOperationCostResponse": [],
+            "CostingToolCostResponse": [],
+            "TempRM": null,
+            "TempBOP": null,
+            "TempCC": null,
+            "TempRMBOPCC": null,
+            "IsLocked": null,
+            "IsPartLocked": false,
+            "CostingConversionCost": {
+                "IsShowToolCost": false,
+                "ProcessCostTotal": 0,
+                "OperationCostTotal": 0,
+                "OtherOperationCostTotal": null,
+                "ToolsCostTotal": 0,
+                "NetConversionCost": 0,
+                "IsProcessCostChanged": null,
+                "CostingProcessCostResponse": [],
+                "CostingGroupWiseProcessCostResponse": null,
+                "IsOperationCostChanged": null,
+                "CostingOperationCostResponse": [],
+                "CostingOtherOperationCostResponse": [],
+                "IsToolCostChanged": null,
+                "CostingToolsCostResponse": []
+            }
+        },
+        "CostingChildPartDetails": [
+            // Bop11    
+            {
+                "JsonStage": "_apart",
+                "IsLocked": null,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": null,
+                "PartId": "21444211-078c-4f77-876b-45369efb6528",
+                "PartNumber": "011",
+                "PartName": "Bop11",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 3,
+                "PartType": "BOP",
+                "IsScrapRecoveryPercentageApplied": null,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": null,
+                    "TotalOperationCost": null,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": null,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": 0,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": null,
+                    "TotalBoughtOutPartCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": null,
+                    "TotalConversionCostWithQuantity": null,
+                    "CostPerPiece": 50,
+                    // "NetChildPartsCost": 1000,
+                    "CostPerAssemblyBOP": 1000,
+                    "Quantity": 20,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": null,
+                    "TotalOperationCostComponent": null,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerSubAssembly": null,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
+            // LOWER CROSS BEAM FABRICATED 
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": "7f0273e4-36f4-434a-8db6-734f359cb8b9",
+                "PartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+                "PartNumber": "010101",
+                "PartName": "LOWER CROSS BEAM FABRICATED",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 1,
+                "PartType": "Sub Assembly",
+                "IsScrapRecoveryPercentageApplied": false,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": true,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 50.75,
+                    "TotalBoughtOutPartCost": 55,
+                    "TotalConversionCost": 303.1,
+                    "TotalProcessCost": 3.1,
+                    "TotalOperationCost": 300,
+                    "TotalOtherOperationCost": 0,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 408.85,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 55,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 408.85,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 303.1,
+                    "CostPerPiece": undefined,
+                    "NetChildPartsCost": undefined,
+                    "Quantity": 68,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
+            // Test 07 
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": "e4c001ff-06a7-4587-8963-5cbf8ef091e4",
+                "PartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+                "PartNumber": "Assem Part No. 10",
+                "PartName": "Test 07",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 1,
+                "PartType": "Sub Assembly",
+                "IsScrapRecoveryPercentageApplied": false,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": true,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": 0,
+                    "TotalOperationCost": 0,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 0,
+                    "CostPerPiece": undefined,
+                    "NetChildPartsCost": undefined,
+                    "Quantity": 68,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
+            // demo part1   
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": "3d261dbd-e4ac-43f5-8e46-9e0050b86e0d",
+                "PartId": "86c108a3-9ad3-43bc-9b39-6638ce359b7b",
+                "PartNumber": "001",
+                "PartName": "demo part1",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 2,
+                "PartType": "Part",
+                "IsScrapRecoveryPercentageApplied": false,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": 0,
+                    "TotalOperationCost": 0,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 0,
+                    "CostPerPiece": undefined,
+                    "NetChildPartsCost": undefined,
+                    "Quantity": 68,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
+            // Bop12     
+            {
+                "JsonStage": "_apart",
+                "IsLocked": null,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": null,
+                "PartId": "21444211-078c-4f77-876b-45369efb6528",
+                "PartNumber": "011",
+                "PartName": "Bop12",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 3,
+                "PartType": "BOP",
+                "IsScrapRecoveryPercentageApplied": null,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": null,
+                    "TotalOperationCost": null,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": null,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": 0,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": null,
+                    "TotalBoughtOutPartCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": null,
+                    "TotalConversionCostWithQuantity": null,
+                    "CostPerPiece": 50,
+                    // "NetChildPartsCost": 1000,
+                    "CostPerAssemblyBOP": 1000,
+                    "Quantity": 20,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": null,
+                    "TotalOperationCostComponent": null,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerSubAssembly": null,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
+        ]
+    }
+]
+
+export const ListForPartCost = [
+    {
+        VendorName: 'Vendor 1',
+        SettledPrice: 10,
+        SOBPercentage: 50,
+        DeltaValue: 5,
+        // NetCost: 7.5
+    }, {
+        VendorName: 'Vendor 2',
+        SettledPrice: 15,
+        SOBPercentage: 0,
+        DeltaValue: 5,
+        // NetCost: 0
+    }, {
+        VendorName: 'Vendor 3',
+        SettledPrice: 10,
+        SOBPercentage: 0,
+        DeltaValue: 5,
+        // NetCost: 0
+    }, {
+        VendorName: 'Vendor 4',
+        SettledPrice: 20,
+        SOBPercentage: 50,
+        DeltaValue: 10,
+        // NetCost: 5
+    },
+]
+
+export const optionsForDelta = [
+    {
+        label: '+',
+        value: '+'
+    }, {
+        label: '-',
+        value: '-'
+    }
+
+]
+
+export const subAssembly010101 = [
+    {
+        "JsonStage": "_assemblyCosting",
+        "CostingId": "ebc314b1-7eea-4c15-a84b-20a2939ffecf",
+        "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+        "CostingNumber": "ASY-123809",
+        "Version": "1.0.65.130",
+        "CostingDate": "2022-03-24T16:24:02.513",
+        "CreatedBy": "Chandler",
+        "ShareOfBusinessPercent": 0,
+        "PlantId": null,
+        "PlantName": null,
+        "PlantCode": null,
+        "VendorType": "VBC",
+        "VendorId": "bcffb6f5-d9e8-403a-aa6f-85c92ba95f2d",
+        "VendorName": "Dummy Vendor ",
+        "VendorCode": "07102021",
+        "VendorPlantId": null,
+        "VendorPlantName": null,
+        "VendorPlantCode": null,
+        "TechnologyId": 13,
+        "Technology": "Assembly",
+        "IsScrapRecoveryPercentageApplied": false,
+        "PartTypeId": 1,
+        "PartType": "Assembly",
+        "AssemblyPartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+        "AssemblyPartNumber": "010101",
+        "AssemblyPartName": "LOWER CROSS BEAM FABRICATED",
+        "PartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+        "PartNumber": "010101",
+        "PartName": "LOWER CROSS BEAM FABRICATED",
+        "BOMLevel": "L0",
+        "IsAssemblyPart": true,
+        "IsLocked": null,
+        "IsPartLocked": false,
+        "IsCostingLocked": false,
+        "CostingPartDetails": {
+            "JsonStage": "_part",
+            "AssemblyPartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+            "AssemblyPartNumber": "010101",
+            "AssemblyPartName": "LOWER CROSS BEAM FABRICATED",
+            "PartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+            "PartNumber": "010101",
+            "PartName": "LOWER CROSS BEAM FABRICATED",
+            "BOMNumber": null,
+            "BOMLevel": "L0",
+            "CostingDetailId": null,
+            "PartTypeId": 1,
+            "PartType": "Assembly",
+            "IsApplyBOPHandlingCharges": null,
+            "BOPHandlingPercentage": null,
+            "BOPHandlingCharges": null,
+            "TotalRawMaterialsCost": 50.75,
+            "TotalBoughtOutPartCost": 55,
+            "TotalConversionCost": 303.1,
+            "TotalProcessCost": 3.1,
+            "TotalOperationCost": 300,
+            "TotalOtherOperationCost": 0,
+            "TotalToolCost": 0,
+            "BoughtOutPartUOM": null,
+            "BoughtOutPartRate": null,
+            "TotalCalculatedRMBOPCCCost": 408.85,
+            "TotalRawMaterialsCostWithQuantity": 50.75,
+            "TotalBoughtOutPartCostWithQuantity": 55,
+            "TotalCalculatedRMBOPCCCostWithQuantity": 408.85,
+            "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+            "TotalConversionCostWithQuantity": 303.1,
+            "Quantity": 1,
+            "GrandTotalCost": 0,
+            "IsOpen": false,
+            "IsShowToolCost": false,
+            "IsToolCostProcessWise": false,
+            "IsAssemblyPart": true,
+            "Sequence": 0,
+            "TotalOperationCostSubAssembly": 0,
+            "TotalOperationCostComponent": 0,
+            "TotalOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerSubAssembly": 0,
+            "TotalToolCostPerAssembly": 0,
+            "CostingOperationCostResponse": [],
+            "CostingToolCostResponse": [],
+            "TempRM": null,
+            "TempBOP": null,
+            "TempCC": null,
+            "TempRMBOPCC": null
+        },
+        "CostingChildPartDetails": [
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+                "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+                "AssemblyPartNumber": "010101",
+                "AssemblyPartName": "LOWER CROSS BEAM FABRICATED",
+                "SubAssemblyCostingId": "ebc314b1-7eea-4c15-a84b-20a2939ffecf",
+                "CostingId": "54a227f4-cae3-4940-bac7-f54398ad8c63",
+                "PartId": "222b057d-fc6b-463e-807f-30c468fe7aec",
+                "PartNumber": "1628",
+                "PartName": "BRACKET, CENTER STANDUP-STOP",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 2,
+                "PartType": "Part",
+                "IsScrapRecoveryPercentageApplied": false,
+                "Quantity": 1,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": 0,
+                    "TotalOperationCost": 0,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 0,
+                    "Quantity": 1,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null
+                },
+                "CostingChildPartDetails": []
+            },
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+                "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+                "AssemblyPartNumber": "010101",
+                "AssemblyPartName": "LOWER CROSS BEAM FABRICATED",
+                "SubAssemblyCostingId": "ebc314b1-7eea-4c15-a84b-20a2939ffecf",
+                "CostingId": "17137bf4-54a0-4162-b939-b8e06fff1243",
+                "PartId": "e1a3418a-82ad-4a9b-951e-ed04e6c745ed",
+                "PartNumber": "1627",
+                "PartName": "BRACKET, EVAP CANISTER",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 2,
+                "PartType": "Part",
+                "IsScrapRecoveryPercentageApplied": false,
+                "Quantity": 1,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": 0,
+                    "TotalOperationCost": 0,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 0,
+                    "Quantity": 1,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null
+                },
+                "CostingChildPartDetails": []
+            },
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "25661f2f-0d3f-43cd-b20f-003da2344195",
+                "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+                "AssemblyPartNumber": "010101",
+                "AssemblyPartName": "LOWER CROSS BEAM FABRICATED",
+                "SubAssemblyCostingId": "ebc314b1-7eea-4c15-a84b-20a2939ffecf",
+                "CostingId": "aad3830b-f000-4b3e-b6fd-950d329441cd",
+                "PartId": "08826230-addd-4129-9d8d-3080e072f7db",
+                "PartNumber": "1629",
+                "PartName": "TUBE, LOWER CROSS BEAM",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 2,
+                "PartType": "Part",
+                "IsScrapRecoveryPercentageApplied": false,
+                "Quantity": 1,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": 0,
+                    "TotalOperationCost": 0,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": 0,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": null,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": 0,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+                    "TotalConversionCostWithQuantity": 0,
+                    "Quantity": 1,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": 0,
+                    "TotalOperationCostComponent": 0,
+                    "TotalOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerAssembly": 0,
+                    "TotalOtherOperationCostPerSubAssembly": 0,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null
+                },
+                "CostingChildPartDetails": []
+            }
+        ]
+    }
+]
+
+export const subAssemblyAssemPart = [
+    {
+        "JsonStage": "_assemblyCosting",
+        "CostingId": "fa58563f-7537-406d-9909-f130ee12629e",
+        "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+        "CostingNumber": "ASY-124825",
+        "Version": "1.0.86.258",
+        "CostingDate": "2022-03-24T16:24:03.06",
+        "CreatedBy": "Chandler",
+        "ShareOfBusinessPercent": 0,
+        "PlantId": null,
+        "PlantName": null,
+        "PlantCode": null,
+        "VendorType": "VBC",
+        "VendorId": "bcffb6f5-d9e8-403a-aa6f-85c92ba95f2d",
+        "VendorName": "Dummy Vendor ",
+        "VendorCode": "07102021",
+        "VendorPlantId": null,
+        "VendorPlantName": null,
+        "VendorPlantCode": null,
+        "TechnologyId": 13,
+        "Technology": "Assembly",
+        "IsScrapRecoveryPercentageApplied": false,
+        "PartTypeId": 1,
+        "PartType": "Assembly",
+        "AssemblyPartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+        "AssemblyPartNumber": "Assem Part No. 10",
+        "AssemblyPartName": "Test 07",
+        "PartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+        "PartNumber": "Assem Part No. 10",
+        "PartName": "Test 07",
+        "BOMLevel": "L0",
+        "IsAssemblyPart": true,
+        "IsLocked": null,
+        "IsPartLocked": false,
+        "IsCostingLocked": false,
+        "CostingPartDetails": {
+            "JsonStage": "_part",
+            "AssemblyPartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+            "AssemblyPartNumber": "Assem Part No. 10",
+            "AssemblyPartName": "Test 07",
+            "PartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+            "PartNumber": "Assem Part No. 10",
+            "PartName": "Test 07",
+            "BOMNumber": null,
+            "BOMLevel": "L0",
+            "CostingDetailId": null,
+            "PartTypeId": 1,
+            "PartType": "Assembly",
+            "IsApplyBOPHandlingCharges": null,
+            "BOPHandlingPercentage": null,
+            "BOPHandlingCharges": null,
+            "TotalRawMaterialsCost": 0,
+            "TotalBoughtOutPartCost": 0,
+            "TotalConversionCost": 0,
+            "TotalProcessCost": 0,
+            "TotalOperationCost": 0,
+            "TotalOtherOperationCost": null,
+            "TotalToolCost": 0,
+            "BoughtOutPartUOM": null,
+            "BoughtOutPartRate": null,
+            "TotalCalculatedRMBOPCCCost": 0,
+            "TotalRawMaterialsCostWithQuantity": 0,
+            "TotalBoughtOutPartCostWithQuantity": 0,
+            "TotalCalculatedRMBOPCCCostWithQuantity": 0,
+            "TotalCalculatedRMBOPCCCostPerAssembly": 0,
+            "TotalConversionCostWithQuantity": 0,
+            "Quantity": 1,
+            "GrandTotalCost": 0,
+            "IsOpen": false,
+            "IsShowToolCost": false,
+            "IsToolCostProcessWise": false,
+            "IsAssemblyPart": true,
+            "Sequence": 0,
+            "TotalOperationCostSubAssembly": 0,
+            "TotalOperationCostComponent": 0,
+            "TotalOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerAssembly": 0,
+            "TotalOtherOperationCostPerSubAssembly": 0,
+            "TotalToolCostPerAssembly": 0,
+            "CostingOperationCostResponse": [],
+            "CostingToolCostResponse": [],
+            "TempRM": null,
+            "TempBOP": null,
+            "TempCC": null,
+            "TempRMBOPCC": null
+        },
+        "CostingChildPartDetails": [
+            {
+                "JsonStage": "_apart",
+                "IsLocked": false,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "589525ee-3f45-4ee3-8748-4dff12a869d1",
+                "AssemblyCostingId": "79025e8e-e8f0-42f7-862e-1e212da28c49",
+                "AssemblyPartNumber": "Assem Part No. 10",
+                "AssemblyPartName": "Test 07",
+                "SubAssemblyCostingId": "fa58563f-7537-406d-9909-f130ee12629e",
+                "CostingId": null,
+                "PartId": "c0e3482d-b867-458b-9b06-7041f503121f",
+                "PartNumber": "BOP 10",
+                "PartName": "BOP Insert",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 3,
+                "PartType": "BOP",
+                "IsScrapRecoveryPercentageApplied": null,
+                "Quantity": 5,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": null,
+                    "TotalOperationCost": null,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": null,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": 0,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": null,
+                    "TotalBoughtOutPartCostWithQuantity": 0,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": null,
+                    "TotalConversionCostWithQuantity": null,
+                    "Quantity": 5,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": null,
+                    "TotalOperationCostComponent": null,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerSubAssembly": null,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null
+                },
+                "CostingChildPartDetails": []
+            }
+        ]
+    }
+]
+
 
 

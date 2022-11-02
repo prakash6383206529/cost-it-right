@@ -40,8 +40,10 @@ function CostingBenchmarkReport(props) {
     const [cancelButton, setcancelButton] = useState(false)
     const [dropDown, setDropDown] = useState(true)
     const [blueDivison, setblueDivison] = useState(false)
+    const [dateArray, setDateArray] = useState([])
 
     const dispatch = useDispatch()
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
@@ -77,19 +79,26 @@ function CostingBenchmarkReport(props) {
     }
 
 
+    const handleRM = (data) => {
+
+        let unique = data.filter((item, i, ar) => ar.indexOf(item) === i);
+        setDateArray(unique)
+    }
+
 
     const renderModule = (value) => {
+
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
             case MACHINERATE:
                 return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
@@ -105,15 +114,15 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case RMIMPORT:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case MACHINERATE:
                 return (<MachineInsights />)
             case BOPDOMESTIC:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPIMPORT:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:

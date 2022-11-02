@@ -282,6 +282,7 @@ class Role extends Component {
 													setInitialModuleData={this.setInitialModuleData}
 													moduleData={this.moduleDataHandler}
 													isNewRole={this.state.isNewRole}
+													refVariable={true}
 												/>
 											</div>
 										</div>

@@ -62,7 +62,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -241,6 +241,7 @@ class MachineRateListing extends Component {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         this.props.getDetails(data, rowData?.IsMachineAssociated);
     }
@@ -376,9 +377,9 @@ class MachineRateListing extends Component {
                 }
                 return null
             })
-            return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
+            return cellValue
         } else {
-            return (cellValue === 'VBC' || cellValue === "Vendor Based") ? 'Vendor Based' : 'Zero Based';
+            return cellValue
         }
     }
 
@@ -632,10 +633,10 @@ class MachineRateListing extends Component {
         }
 
         return (
-            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : ''}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
-                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
@@ -712,8 +713,8 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1 mt-n1" />
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                            {!this.props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1 mt-n1" />}
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
@@ -740,6 +741,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

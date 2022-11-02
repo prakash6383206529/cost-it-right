@@ -69,6 +69,7 @@ export function createBOPImport(data, callback) {
  */
 export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
+        console.log(obj, "objobj")
         // dispatch({ type: API_REQUEST});
         if (isPagination === true) {
             dispatch({
@@ -76,7 +77,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
                 payload: undefined
             })
         }
-        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -109,7 +110,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}`
+        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -431,7 +432,24 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
         });
     };
 }
-
+/**
+ * @method bulkUploadBOPDomesticCBC
+ * @description upload bulk BOP Domestic CBC
+ */
+export function bulkUploadBOPDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadBOPImportZBC
  * @description upload bulk BOP Domestic ZBC
@@ -469,7 +487,24 @@ export function bulkUploadBOPImportVBC(data, callback) {
         });
     };
 }
-
+/**
+ * @method bulkUploadBOPImportCBC
+ * @description upload bulk BOP Import CBC
+ */
+export function bulkUploadBOPImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method getManageBOPSOBDataList
  * @description get all BOP SOB Data list.

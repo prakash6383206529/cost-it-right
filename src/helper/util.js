@@ -6,7 +6,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
@@ -748,14 +748,25 @@ export function formViewData(costingSummary, header = '') {
   obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
   obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
   obj.PoPriceWithDate = `${obj?.poPrice}(${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
-  obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
+  // obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
   obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
   obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
   obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
   obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
   obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
   obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
+  obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
+  obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
+  obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
+  obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
+  obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
 
+  // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
+  obj.netChildPartsCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetChildPartsCost ? dataFromAPI.CostingPartDetails?.NetChildPartsCost : 0
+  obj.netOperationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOperationCost ? dataFromAPI.CostingPartDetails?.NetOperationCost : 0
+  obj.netProcessCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProcessCost ? dataFromAPI.CostingPartDetails?.NetProcessCost : 0
+  obj.netBoughtOutPartCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost : 0
+  obj.multiTechnologyCostingDetails = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI.CostingPartDetails?.MultiTechnologyCostingDetails : ''
   temp.push(obj)
   return temp
 }

@@ -258,7 +258,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${filterData.OperationType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
-        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {
@@ -484,19 +484,9 @@ export function getOperationSelectList(callback) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList() {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+
 }
 
 /**
@@ -698,7 +688,24 @@ export function operationVBCBulkUpload(data, callback) {
     };
 }
 
-
+/**
+ * @method operationCBCBulkUpload
+ * @description create CBC Opration by Bulk Upload
+ */
+export function operationCBCBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.operationCBCBulkUpload, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 
 /**
  * @method masterApprovalRequestBySenderOperation

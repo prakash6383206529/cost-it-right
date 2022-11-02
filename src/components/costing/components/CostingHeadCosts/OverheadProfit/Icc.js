@@ -6,9 +6,10 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function Icc(props) {
 
@@ -61,9 +62,10 @@ function Icc(props) {
     const callInventoryAPI = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
-                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                isVendor: costData.IsVendor,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                VendorId: costData?.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+                costingTypeId: costData.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
@@ -145,7 +147,6 @@ function Icc(props) {
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
@@ -265,7 +266,7 @@ function Icc(props) {
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

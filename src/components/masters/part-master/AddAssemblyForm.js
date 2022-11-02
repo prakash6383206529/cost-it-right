@@ -5,9 +5,10 @@ import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { ASSEMBLY, searchCount, SPACEBAR } from '../../../config/constants';
+import { searchCount, SPACEBAR } from '../../../config/constants';
 import { getRandomSixDigit, onFocus } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
+import { ASSEMBLYNAME } from '../../../config/constants';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -82,7 +83,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;
@@ -159,7 +160,7 @@ class AddAssemblyForm extends Component {
 
         const filterList = async (inputValue) => {
             const { partName } = this.state
-            if (inputValue?.length === searchCount && partName !== inputValue) {
+            if (inputValue?.length >= searchCount && partName !== inputValue) {
                 let obj = {
                     technologyId: this.props?.TechnologySelected.value,
                     date: this.context,

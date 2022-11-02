@@ -20,9 +20,12 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { IdForMultiTechnology } from '../../../../config/masterData';
+
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -57,8 +60,10 @@ function TabDiscountOther(props) {
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -216,31 +221,31 @@ function TabDiscountOther(props) {
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
-            setTimeout(() => {
-              let topHeaderData = {
-                DiscountsAndOtherCost: checkForNull(OtherCostDetails.HundiOrDiscountValue),
-                HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-                AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
-                OtherCostType: OtherCostDetails.OtherCostType,
-                PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
-                HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
-                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
-                OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-                DiscountApplicability: OtherCostDetails.DiscountApplicability
-              }
+            // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
+            let topHeaderData = {
+              DiscountsAndOtherCost: checkForNull(OtherCostDetails.HundiOrDiscountValue),
+              HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+              AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
+              OtherCostType: OtherCostDetails.OtherCostType,
+              PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
+              HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
+              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
+              OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
+              DiscountApplicability: OtherCostDetails.DiscountApplicability
+            }
 
-              props.setHeaderCost(topHeaderData, headerCosts, costData)
-              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-              let files = Data.Attachements && Data.Attachements.map((item) => {
-                item.meta = {}
-                item.meta.id = item.FileId
-                item.meta.status = 'done'
-                return item
-              })
-              if (dropzone.current !== null) {
-                dropzone.current.files = files
-              }
-            }, 1500)
+            props.setHeaderCost(topHeaderData, headerCosts, costData)
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (dropzone.current !== null) {
+              dropzone.current.files = files
+            }
+            // }, 1500)
           }
         }
       }))
@@ -646,6 +651,9 @@ function TabDiscountOther(props) {
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
     const discountAndOtherTabData = DiscountCostData
+    const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+    const toolTabData = ToolTabData && ToolTabData[0]
+
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: costData.CostingId }
     })
@@ -699,12 +707,13 @@ function TabDiscountOther(props) {
       },
       "Attachements": updatedFiles
     }
-    if (costData.IsAssemblyPart === true) {
+    if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
       if (!CostingViewMode) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
+
     if (!CostingViewMode) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         if (res.data.Result) {
@@ -718,6 +727,28 @@ function TabDiscountOther(props) {
         }
       }))
     }
+
+    setTimeout(() => {
+      if (partType) {
+
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+      }
+    }, 500);
+
   }, 500)
 
   const handleOherCostApplicabilityChange = (value) => {

@@ -1,0 +1,28 @@
+@import './cssVariable.scss';
+
+.rfq-container-drawer {
+    .container {
+        padding-right: 0 !important;
+    }
+    .part-detail-wrapper {
+       .col-md-3, .col-md-6 {
+        // padding-right: 7px;
+        // padding-left: 7px;
+        >div {
+            margin-bottom: 0 !important;
+        }
+       }
+       .inputbox {
+        border-bottom: none;
+       }
+       textarea {
+        min-height: 9.4rem;
+       }
+    }
+    .overlay-contain {
+        .ag-center-cols-container {
+            border: 1px solid $borderColor;
+            border-top: none;
+        }
+    }
+}
