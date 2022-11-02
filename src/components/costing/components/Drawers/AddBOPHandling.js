@@ -28,13 +28,13 @@ function AddBOPHandling(props) {
     const childPartDetail = reactLocalStorage.getObject('costingArray')
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
-      if (el.PartType === 'BOP' && el.AssemblyPartNumber === item.PartNumber) {
+      if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
         BOPSum = BOPSum + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
       }
       return BOPSum
     })
     setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
-    let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
+    let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem?.PartNumber === item?.PartNumber && assyItem?.AssemblyPartNumber === item?.AssemblyPartNumber && (assyItem?.PartType === 'Sub Assembly' || assyItem?.PartType === 'Assembly'))
     setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
     setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
     setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
