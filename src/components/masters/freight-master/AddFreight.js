@@ -609,18 +609,18 @@ class AddFreight extends Component {
     const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
-        // this.setState({ inputLoader: true })
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(inputValue)
-        // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         let VendorData = []
         if (inputValue) {
           VendorData = reactLocalStorage?.getObject('vendorData')
-          // this.setState({ inputLoader: false })
           return autoCompleteDropdown(inputValue, VendorData)
         } else {
           return VendorData
@@ -756,7 +756,7 @@ class AddFreight extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                    isDisabled={(isEditFlag) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}

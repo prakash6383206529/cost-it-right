@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -27,6 +27,8 @@ import Switch from "react-switch";
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctios';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -73,8 +75,8 @@ class AddAssemblyPart extends Component {
       convertPartToAssemblyPartId: "",
       uploadAttachements: true,
       showErrorOnFocusDate: false,
-      IsTechnologyUpdateRequired: false
-
+      IsTechnologyUpdateRequired: false,
+      partName: ''
     }
   }
 
@@ -86,14 +88,8 @@ class AddAssemblyPart extends Component {
     if (!(this.state.isViewMode)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
-    this.setState({ inputLoader: true })
     if (!this.state.isViewMode) {
       this.props.getProductGroupSelectList(() => { })
-    }
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getPartSelectList((res) => {
-        this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
-      })
     }
     this.getDetails()
   }
@@ -853,23 +849,37 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
-
-    const filterList = (inputValue) => {
-      let tempArr = []
-      tempArr = this.renderListing("partNo").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { partName } = this.state
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && partName !== resultInput) {
+        this.setState({ isLoader: true })
+        const res = await getPartSelectList(resultInput)
+        this.setState({ isLoader: false })
+        this.setState({ partName: resultInput })
+        let partDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('PartData', partDataAPI)
+        let partData = []
+        if (inputValue) {
+          partData = reactLocalStorage?.getObject('PartData')
+          return autoCompleteDropdown(inputValue, partData)
+        } else {
+          return partData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let partData = reactLocalStorage?.getObject('PartData')
+          if (inputValue) {
+            partData = reactLocalStorage?.getObject('PartData')
+            return autoCompleteDropdown(inputValue, partData)
+          } else {
+            return partData
+          }
+        }
       }
     };
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         <div className="container-fluid">
@@ -936,10 +946,10 @@ class AddAssemblyPart extends Component {
                                 name="partNo"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? 'Enter 3 characters to show data' : "No results found"}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
