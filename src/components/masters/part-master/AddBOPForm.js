@@ -218,7 +218,7 @@ class AddBOPForm extends Component {
                   cacheOptions
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
                   onFocus={() => onFocus(this)}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
