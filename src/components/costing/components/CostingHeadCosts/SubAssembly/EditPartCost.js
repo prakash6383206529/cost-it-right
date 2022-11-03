@@ -7,7 +7,7 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 // import { getCostingForMultiTechnology,getSettledCostingDetails,saveSettledCostingDetails, updateMultiTechnologyTopAndWorkingRowCalculation} from '../../../actions/SubAssembly';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
@@ -80,8 +80,8 @@ function EditPartCost(props) {
             costingTypeId: costData?.CostingTypeId
         }
 
-        // !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
-        // dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
+        !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
+        dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
         // dispatch(getEditPartCostDetails(obj, res => { }))
         return () => {
             gridData && gridData.map((item, index) => {
