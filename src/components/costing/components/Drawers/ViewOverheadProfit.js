@@ -64,7 +64,7 @@ function ViewOverheadProfit(props) {
     return <>
       <Row>
         <Col md="12">
-          <div className="left-border">{"Overheads"}</div>
+          <div className="left-border">{"Overheads:"}</div>
         </Col>
       </Row>
       <Row>
