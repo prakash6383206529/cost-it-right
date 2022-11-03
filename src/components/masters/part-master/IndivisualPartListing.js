@@ -480,7 +480,7 @@ class IndivisualPartListing extends Component {
 
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this.props.selectedCostingListSimulation
+        tempArr = this.props.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
@@ -742,9 +742,9 @@ class IndivisualPartListing extends Component {
 function mapStateToProps({ part, auth, simulation }) {
     const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
-    const { selectedCostingListSimulation } = simulation;
+    const { selectedCostingListSimulation, selectedRowForPagination } = simulation;
 
-    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation };
+    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation, selectedRowForPagination };
 }
 
 /**

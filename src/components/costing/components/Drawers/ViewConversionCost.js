@@ -671,14 +671,15 @@ function ViewConversionCost(props) {
           </div>
         </Container>
       </Drawer> : <>
-        {!stCostShow && costingProcessCost.length !== 0 && processTableData()}
-        {!stCostShow && costingOperationCost.length !== 0 && operationTableData()}
-        {!stCostShow && othercostingOperationCost.length !== 0 && otherOperTableData()}
+        {!stCostShow && costingProcessCost.length !== 0 && !props?.processShow && !props?.operationShow && processTableData()}
+        {!stCostShow && costingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && operationTableData()}
+        {!stCostShow && othercostingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && otherOperTableData()}
         {/* {costingToolsCost.length != 0 && toolCostTableData()} */}
-        {stCostShow && surfaceTreatmentCost.length !== 0 && stTableData()}
-        {stCostShow && transportCost.length !== 0 && extraCostTableData()}
+        {stCostShow && surfaceTreatmentCost.length !== 0 && !props?.processShow && !props?.operationShow && stTableData()}
+        {stCostShow && transportCost.length !== 0 && !props?.processShow && !props?.operationShow && extraCostTableData()}
+        {props?.processShow && costingProcessCost.length !== 0 && processTableData()}
+        {props?.operationShow && costingOperationCost.length !== 0 && operationTableData()}
       </>}
-
     </>
   )
 }

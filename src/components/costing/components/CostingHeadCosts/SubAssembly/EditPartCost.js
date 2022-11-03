@@ -79,7 +79,7 @@ function EditPartCost(props) {
             costingTypeId: costData?.CostingTypeId
         }
 
-        dispatch(getCostingForMultiTechnology(obj, res => { }))
+        !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
         dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
         // dispatch(getEditPartCostDetails(obj, res => { }))
     }, [])
@@ -304,7 +304,7 @@ function EditPartCost(props) {
 
     return (
         <div>
-            <Drawer className="bottom-drawer"
+            <Drawer className={`${props.costingSummary ? '' : 'bottom-drawer'}`}
                 anchor={props.anchor}
                 open={props.isOpen}>
                 <div className="container-fluid">
@@ -326,14 +326,14 @@ function EditPartCost(props) {
                                 <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
                                     <thead>
                                         <tr className="cr-bg-tbl" width='100%'>
-                                            <th>Parent Assembly Number: {`${props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
+                                            <th>Parent Assembly Number: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
                                             <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
                                             <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
                                             <th colSpan={2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
                                         </tr>
                                     </thead>
                                 </Table>
-                                <div className='add-container'>
+                                {!props.costingSummary && <div className='add-container'>
                                     <SearchableSelectHookForm
                                         label={`Costing Number`}
                                         name={`CostingNumber`}
@@ -355,8 +355,8 @@ function EditPartCost(props) {
                                     >
                                         <div className={"plus "}></div>Add
                                     </button>
-                                </div>
-                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                </div>}
+                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
                                             <th>Vendor Name</th>
@@ -396,7 +396,7 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={CostingViewMode ? true : false}
+                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
                                                             />
                                                         </td>
                                                         <td >
@@ -412,7 +412,7 @@ function EditPartCost(props) {
                                                                     options={optionsForDelta}
                                                                     mandatory={true}
                                                                     handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                                    disabled={CostingViewMode ? true : false}
+                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
                                                                 />
 
                                                                 <NumberFieldHookForm
@@ -432,7 +432,7 @@ function EditPartCost(props) {
                                                                     defaultValue={''}
                                                                     className=""
                                                                     customClassName={'withBorder'}
-                                                                    disabled={CostingViewMode ? true : false}
+                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
                                                                 />
                                                             </div>
                                                         </td>
@@ -478,7 +478,7 @@ function EditPartCost(props) {
                                 </Table>
                             </Col>
                         </form>
-                        <Row className="mx-0 mb-3" >
+                        {!props.costingSummary && <Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button
                                     type={'submit'}
@@ -490,7 +490,7 @@ function EditPartCost(props) {
                                     {'SAVE'}
                                 </button>
                             </Col>
-                        </Row >
+                        </Row >}
                     </div >
                 </div >
             </Drawer >
