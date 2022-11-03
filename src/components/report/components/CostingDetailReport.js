@@ -24,6 +24,7 @@ import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -67,6 +68,7 @@ function ReportListing(props) {
     const [departmentCodeFilter, setDepartmentCodeFilter] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const [dataCount, setDataCount] = useState(0)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -681,6 +683,7 @@ function ReportListing(props) {
         setPageSize10(true)
         setPageSize50(false)
         setPageSize100(false)
+        setDataCount(0)
     }
 
     const onRowSelect = () => {
@@ -688,6 +691,7 @@ function ReportListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
         setSelectedRowData(selectedRows)
+        setDataCount(selectedRowData.length)
 
     }
 
@@ -916,6 +920,7 @@ function ReportListing(props) {
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
+                    <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
