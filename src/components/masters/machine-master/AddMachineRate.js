@@ -1432,7 +1432,7 @@ class AddMachineRate extends Component {
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {

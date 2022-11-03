@@ -1166,7 +1166,7 @@ class AddBOPImport extends Component {
                                       loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
                                       isDisabled={(isEditFlag) ? true : false}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {

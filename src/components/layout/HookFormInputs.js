@@ -38,7 +38,7 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading , disableErrorOverflow} = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -596,7 +596,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 selected={value}
                 value={value}
                 isLoading={isLoader}
-                noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
+                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? NoOptionMessage : "No results found"}
                 onKeyDown={(onKeyDown) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
