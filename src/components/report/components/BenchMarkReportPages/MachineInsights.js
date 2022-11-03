@@ -283,6 +283,7 @@ function Insights(props) {
                                                     title: EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
+                                                suppressRowClickSelection={true}
                                             >
                                                 <AgGridColumn pinned="left" width="140" field="Specification" />
                                                 <AgGridColumn pinned="left" width="115" field="Minimum" />
