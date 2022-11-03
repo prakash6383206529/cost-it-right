@@ -944,7 +944,7 @@ class AddAssemblyPart extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? 'Enter 3 characters to show data' : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
