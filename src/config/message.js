@@ -307,10 +307,10 @@ export const MESSAGES = {
   VOLUME_UPDATE_SUCCESS: 'Actual/Budget Volume updated successfully',
 
   //CLIENT MASTER
-  CLIENT_ADD_SUCCESS: 'Client added successfully',
-  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this client?',
-  DELETE_CLIENT_SUCCESS: 'Client deleted successfully',
-  CLIENT_UPDATE_SUCCESS: 'Client updated successfully',
+  CLIENT_ADD_SUCCESS: 'Customer added successfully',
+  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this Customer?',
+  DELETE_CLIENT_SUCCESS: 'Customer deleted successfully',
+  CLIENT_UPDATE_SUCCESS: 'Customer updated successfully',
 
   //EXCHANGE MASTER
   EXCHANGE_ADD_SUCCESS: 'Exchange Rate added successfully',
