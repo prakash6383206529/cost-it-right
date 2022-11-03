@@ -121,7 +121,7 @@ function UserRegistration(props) {
   }
 
 
-  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -284,6 +284,10 @@ function UserRegistration(props) {
     setIsShowHidePassword(!isShowHidePassword)
   }
 
+  const checkPasswordConfirm = value => {
+    let pass = getValues('Password')
+    return value && (value != pass) ? "Password and confirm password do not match." : undefined
+  }
 
   /**
   * @method selectType
@@ -399,7 +403,11 @@ function UserRegistration(props) {
     */
   const departmentHandler = (newValue, actionMeta) => {
 
-    setDepartment([newValue])
+    if (getConfigurationKey().IsMultipleDepartmentAllowed) {
+      setDepartment(newValue)
+    } else {
+      setDepartment([newValue])
+    }
   };
 
 
@@ -1519,10 +1527,11 @@ function UserRegistration(props) {
                         mandatory={true}
                         rules={{
                           required: true,
-                          pattern: {
-                            value: /^[a-z]{3,25}$/i,
-                            message: 'Minimum length should be 3 and maximum length should be 25',
-                          },
+                          validate: {
+                            minLength3,
+                            maxLength25,
+                            checkWhiteSpaces
+                          }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -1542,10 +1551,7 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          pattern: {
-                            value: /^[a-z]{3,25}$/i,
-                            message: 'Minimum length should be 3 and maximum length should be 25',
-                          },
+                          validate: { minLength3, maxLength25 }
                         }}
                         handleChange={() => { }}
                         customClassName={'withBorder'}
@@ -1563,10 +1569,7 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          pattern: {
-                            value: /^[0-9]{10,12}$/i,
-                            message: 'Minimum length should be 10 and maximum length should be 12'
-                          }
+                          validate: { postiveNumber, minLength10, maxLength12, checkWhiteSpaces }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -1588,10 +1591,7 @@ function UserRegistration(props) {
                             disableErrorOverflow={true}
                             rules={{
                               required: false,
-                              pattern: {
-                                value: /^[0-9]{10,12}$/i,
-                                message: 'Minimum length should be 10 and maximum length should be 12'
-                              }
+                              validate: { postiveNumber, minLength10, maxLength12 }
                             }}
                             handleChange={() => { }}
                             placeholder={'Enter'}
@@ -1610,10 +1610,7 @@ function UserRegistration(props) {
                             disableErrorOverflow={true}
                             rules={{
                               required: false,
-                              pattern: {
-                                value: /^[0-9]{0,5}$/i,
-                                message: 'Maximum length should be 5'
-                              }
+                              validate: { postiveNumber, maxLength5 }
                             }}
                             handleChange={() => { }}
                             placeholder={'Ext'}
@@ -1704,10 +1701,7 @@ function UserRegistration(props) {
                         handleChange={() => { }}
                         rules={{
                           required: true,
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                            message: 'Invalid email'
-                          }
+                          validate: { required, email, minLength7, maxLength80, checkWhiteSpaces }
                         }}
 
                         placeholder={'Enter'}
@@ -1730,10 +1724,7 @@ function UserRegistration(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^[a-z0-9]{3,15}$/i,
-                              message: 'Minimum length should be 3 and maximum length should be 15',
-                            },
+                            validate: { required, minLength3, maxLength15 }
                           }}
                           handleChange={() => { }}
                           placeholder={'Enter'}
@@ -1761,10 +1752,7 @@ function UserRegistration(props) {
                             //validate={[required, minLength6, maxLength18, checkWhiteSpaces, strongPassword]}
                             rules={{
                               required: true,
-                              pattern: {
-                                value: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
-                                message: 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.',
-                              },
+                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, strongPassword }
                             }}
                             isShowHide={isShowHidePassword}
                             showHide={showHidePasswordHandler}
@@ -1785,13 +1773,9 @@ function UserRegistration(props) {
                             register={register}
                             mandatory={true}
                             disableErrorOverflow={true}
-
                             rules={{
                               required: true,
-                              pattern: {
-                                value: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
-                                message: 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.',
-                              },
+                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, checkPasswordConfirm }
                             }}
                             //component={renderPasswordInputField}
                             //validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
@@ -1820,14 +1804,10 @@ function UserRegistration(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
-                          pattern: {
-                            // value: /^[0-9]{0,80}$/i,
-                            value: /[0-9a-zA-Z](?=@.#%_!\^&\*\(\)-+=\?<>,|)/,
-                            message: 'Invalid field'
-                          }
+                          required: false,
+                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80 }
                         }}
                         handleChange={() => { }}
 
@@ -1847,14 +1827,10 @@ function UserRegistration(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
-                          pattern: {
-                            // value: /^[0-9]{0,80}$/i,
-                            value: /[0-9a-zA-Z](?=@.#%_!\^&\*\(\)-+=\?<>,|)/,
-                            message: 'Invalid field'
-                          }
+                          required: false,
+                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80 }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -1873,9 +1849,9 @@ function UserRegistration(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         placeholder={'Select city'}
                         options={searchableSelectType('city')}
@@ -1895,13 +1871,10 @@ function UserRegistration(props) {
                         control={control}
                         register={register}
                         disableErrorOverflow={true}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
-                          pattern: {
-                            value: /^[0-9]{0,6}$/i,
-                            message: 'Field should be positive no with Max length 6'
-                          }
+                          required: false,
+                          validate: { postiveNumber, maxLength6 }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -1964,6 +1937,7 @@ function UserRegistration(props) {
                                 }}
 
                                 handleChange={departmentHandler}
+                                isMulti={true}
                                 //component={renderMultiSelectField}
                                 placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                                 selection={department == null || department.length === 0 ? [] : department}
