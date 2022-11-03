@@ -427,6 +427,7 @@ class SpecificationListing extends Component {
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>

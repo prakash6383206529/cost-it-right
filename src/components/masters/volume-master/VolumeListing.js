@@ -752,6 +752,7 @@ function VolumeListing(props) {
                   frameworkComponents={frameworkComponents}
                   onFilterModified={onFloatingFilterChanged}
                   onRowSelected={onRowSelect}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>

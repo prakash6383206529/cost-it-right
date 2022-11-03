@@ -533,6 +533,7 @@ class LabourListing extends Component {
                 rowSelection={'multiple'}
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
+                suppressRowClickSelection={true}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

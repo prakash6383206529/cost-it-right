@@ -692,6 +692,7 @@ class IndivisualPartListing extends Component {
 
                                 }}
                                 frameworkComponents={frameworkComponents}
+                                suppressRowClickSelection={true}
                             >
                                 <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>

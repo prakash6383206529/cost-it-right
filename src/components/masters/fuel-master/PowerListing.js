@@ -500,6 +500,7 @@ class PowerListing extends Component {
                     onFilterModified={this.onFloatingFilterChanged}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
+                    suppressRowClickSelection={true}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>

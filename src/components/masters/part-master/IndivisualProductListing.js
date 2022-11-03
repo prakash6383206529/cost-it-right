@@ -429,6 +429,7 @@ class IndivisualProductListing extends Component {
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                             onFilterModified={this.onFloatingFilterChanged}
+                            suppressRowClickSelection={true}
                         >
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
