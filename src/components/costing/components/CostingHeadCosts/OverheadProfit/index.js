@@ -1376,7 +1376,7 @@ function OverheadProfit(props) {
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
                             disabled={true}
-                          /> {overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
+                          /> {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
@@ -1443,7 +1443,7 @@ function OverheadProfit(props) {
                             errors={errors.OverheadRMCost}
                             disabled={true}
                           />
-                          {CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
+                          {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3 costing-tooltip'}>
                               <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>}
@@ -1730,7 +1730,7 @@ function OverheadProfit(props) {
                             errors={errors.ProfitCombinedCost}
                             disabled={true}
                           />
-                          {profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
+                          {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
@@ -1796,7 +1796,7 @@ function OverheadProfit(props) {
                             errors={errors.ProfitRMCost}
                             disabled={true}
                           />
-                          {CostingDataList[0]?.IsRMCutOffApplicable && checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff) > 0 &&
+                          {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
                             </span>
