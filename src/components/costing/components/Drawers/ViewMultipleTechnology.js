@@ -3,13 +3,15 @@ import { checkForDecimalAndNull } from '../../../../helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { BOUGHTOUTPART, EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
+import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
     const [viewMultiCost, setViewMultiCost] = useState([])
-    console.log('viewMultiCost: ', viewMultiCost);
+    const [costingDetailId, setCostingDetailId] = useState('')
+    const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
         setViewMultiCost(multipleTechnologyData)
@@ -27,7 +29,15 @@ function ViewMultipleTechnology(props) {
         }
         props.closeDrawer('')
     }
-    const bopDataTable = () => {
+    const viewCosting = (id) => {
+        setCostingDetailId(id)
+        setOpemDrawer(true)
+    }
+    const closeDrawerPartCost = (e = '') => {
+        setOpemDrawer(false)
+    }
+
+    const multipleCost = () => {
         return <>
             <Row>
                 <Col md="12">
@@ -42,7 +52,8 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
                                 <th>{`BOP Cost`}</th>
-                                <th className="costing-border-right">{`Part Cost/Assembly`}</th>
+                                <th>{`Part Cost/Assembly`}</th>
+                                <th className="costing-border-right">{`Action`}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,6 +77,12 @@ function ViewMultipleTechnology(props) {
                                             <td>
                                                 {checkForDecimalAndNull(item.NetChildPartsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
                                             </td>
+                                            <td> {item.PartTypeName !== BOUGHTOUTPART && <button
+                                                type="button"
+                                                title='View'
+                                                className="float-right mb-0 View "
+                                                onClick={() => viewCosting(item)}
+                                            > </button>}</td>
                                         </tr>
                                     )
                                 })}
@@ -103,13 +120,21 @@ function ViewMultipleTechnology(props) {
                                     ></div>
                                 </Col>
                             </Row>
-                            {bopDataTable()}
+                            {multipleCost()}
 
 
                         </div>
                     </Container>
                 </Drawer> : <div className='mt-2'>
-                    {viewMultiCost.length !== 0 && bopDataTable()}</div>}
+                    {viewMultiCost.length !== 0 && multipleCost()}</div>}
+            {openDrawer && <EditPartCost
+                isOpen={openDrawer}
+                closeDrawer={closeDrawerPartCost}
+                anchor={'right'}
+                tabAssemblyIndividualPartDetail={costingDetailId}
+                costingSummary={true}
+            />}
+
         </Fragment>
     )
 }
