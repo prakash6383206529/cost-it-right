@@ -90,7 +90,7 @@ export default function partReducer(state = initialState, action) {
 
             let arrNew = []
             arrNew = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: 01/03/2021  BUT WE WERE RECEIVING DATE IN '2021-03-01T00:00:00'
-                el.EffectiveDateNew = DayTime(el.EffectiveDate).format("DD/MM/YYYY")                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID FOR PAGINATION IN PART MASTER
+                el.EffectiveDateNew = DayTime(el.EffectiveDate)                                //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID FOR PAGINATION IN PART MASTER
                 return true
             })
 
