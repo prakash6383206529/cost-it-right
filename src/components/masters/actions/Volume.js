@@ -397,3 +397,6 @@ export function checkRegularizationLimit(obj, callback) {
       });
   };
 }
+export function getPartSelectListWtihRevNo(partName, callback) {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?partName=${partName}`, config());
+}

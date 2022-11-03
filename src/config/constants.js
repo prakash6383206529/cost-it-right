@@ -880,6 +880,8 @@ export const API = {
   updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
+  getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
+
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
