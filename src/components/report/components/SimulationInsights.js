@@ -10,7 +10,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper'
-import WarningMessage from '../../common/WarningMessage'
+import WarningMessage from '../../common/WarningMessage';
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -38,6 +39,7 @@ function SimulationInsights(props) {
   const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
+  const [dataCount, setDataCount] = useState(0)
 
 
   var filterParams = {
@@ -309,6 +311,7 @@ function SimulationInsights(props) {
     setPageSize10(true)
     setPageSize50(false)
     setPageSize100(false)
+    setDataCount(0)
   }
 
 
@@ -321,7 +324,7 @@ function SimulationInsights(props) {
 
       setSimulationInsightsReportExcelData(simulationInsightsReport)
     }
-
+    setDataCount(selectedRows.length)
   }
 
 
@@ -415,6 +418,7 @@ function SimulationInsights(props) {
         <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsightsReport && simulationInsightsReport?.length <= 0 ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+            <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
           </div>
           <div
             className="ag-theme-material">
