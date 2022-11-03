@@ -2,16 +2,14 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col, Label } from 'reactstrap'
-import { positiveAndDecimalNumber, required } from '../../../helper/validation'
-import { searchableSelect, renderNumberInputField } from '../../layout/FormInputs'
-// import { getVendorListByVendorType } from '../actions/Material'
-import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
+import { required } from '../../../helper/validation'
+import { searchableSelect } from '../../layout/FormInputs'
+import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
-import Switch from 'react-switch'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -703,7 +701,7 @@ class AddVolume extends Component {
       const resultInput = inputValue.slice(0, 3)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
         this.setState({ isLoader: true })
-        const res = await getPartSelectList()
+        const res = await getPartSelectListWtihRevNo(resultInput)
         this.setState({ isLoader: false })
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.SelectList
@@ -923,7 +921,7 @@ class AddVolume extends Component {
                             </Col>
                           )}
                           <Col md="3">
-                            <label>{"Part No."}<span className="asterisk-required">*</span></label>
+                            <label>{"Part No.(Revision No.)"}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center async-select">
                               <div className="fullinput-icon p-relative">
                                 <AsyncSelect
@@ -933,7 +931,7 @@ class AddVolume extends Component {
                                   loadOptions={partFilterList}
                                   onChange={(e) => this.handlePartName(e)}
                                   value={this.state.part}
-                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no." : "No results found"}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}

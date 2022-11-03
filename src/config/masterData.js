@@ -1072,7 +1072,7 @@ export const BOP_CBC_IMPORT_TempData = [
 */
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -1097,7 +1097,7 @@ export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1123,7 +1123,7 @@ export const VOLUME_ACTUAL_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1147,7 +1147,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
 */
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1174,7 +1174,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1199,7 +1199,7 @@ export const VOLUME_BUDGETED_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -3411,7 +3411,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Month", value: "Month", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "Part Number", value: "PartNumber", },
+    { label: "Part No.(Revision No.)", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
