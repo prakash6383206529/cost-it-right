@@ -403,6 +403,7 @@ class FuelListing extends Component {
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>

@@ -416,6 +416,7 @@ class ClientListing extends Component {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={this.onRowSelect}
                                 frameworkComponents={frameworkComponents}
+                                suppressRowClickSelection={true}
                             >
                                 <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                                 <AgGridColumn field="CompanyCode" headerName="Company Code"></AgGridColumn>

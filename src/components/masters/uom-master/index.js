@@ -401,6 +401,7 @@ class UOMMaster extends Component {
                     rowSelection={'multiple'}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
+                    suppressRowClickSelection={true}
                   >
                     <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
                     <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>

@@ -496,6 +496,7 @@ class InterestRateListing extends Component {
                   onFilterModified={this.onFloatingFilterChanged}
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}

@@ -441,6 +441,7 @@ class ExchangeRateListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>

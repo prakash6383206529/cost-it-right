@@ -643,6 +643,7 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
+                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Row>
                     <Col md="12" className="d-flex justify-content-between">
                         <h1 className="mb-0">Vendor Master</h1>
@@ -706,7 +707,6 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                {this.state.isLoader && <LoaderCustom />}
                 {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

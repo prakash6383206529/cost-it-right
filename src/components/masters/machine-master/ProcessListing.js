@@ -482,6 +482,7 @@ class ProcessListing extends Component {
                   }}
                   frameworkComponents={frameworkComponents}
                   onFilterModified={this.onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

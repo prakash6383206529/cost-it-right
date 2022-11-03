@@ -637,6 +637,7 @@ function VerifySimulation(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelected}
                                             onSelectionChanged={onRowSelect}
+                                            suppressRowClickSelection={true}
 
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
