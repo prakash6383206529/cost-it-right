@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData, checkAndGetCustomerCode } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -500,7 +500,7 @@ class AddClientDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            validate={[postiveNumber]}
+                                            validate={[postiveNumber, maxLength6]}
                                             component={renderNumberInputField}
                                             // required={true}
                                             maxLength={6}
