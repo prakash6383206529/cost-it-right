@@ -878,6 +878,8 @@ export const API = {
   updateVolumeLimit: `${BASE_URL}/masters-volume/update-add-limit`,
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
+  getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
+
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
@@ -2055,4 +2057,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.610";
+export const VERSION = "V1.2.612";

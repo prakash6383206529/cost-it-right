@@ -232,13 +232,11 @@ function InsightsBop(props) {
         let specification = []
 
 
-        bopBenchmarkList?.map((item) => {
+        Array.isArray(bopBenchmarkList) && bopBenchmarkList?.map((item) => {
 
             specification.push(item.BOPSpecifications[0])
 
         })
-
-
 
 
         true && specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
@@ -259,6 +257,14 @@ function InsightsBop(props) {
                 data.BOPPlant.map((ele, ind) => {
                     let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val] = ele.Rate
+
+                    let Val2 = `quantity${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val2] = ele.TotalQuantity
+
+
+                    let Val3 = `value${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val3] = ele.TotalValue
+
 
                 })
 
@@ -376,11 +382,41 @@ function InsightsBop(props) {
 
             item.plants.map((ele, ind) => {
 
+                let rate = {
+
+                    headerName: "Rate",
+                    width: "130",
+                    field: `plant${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
+
+                }
+                let Quantity = {
+
+                    headerName: "Quantity",
+                    width: "130",
+                    field: `quantity${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? params.value : '-',
+
+                }
+                let Value = {
+
+                    headerName: "Value",
+                    width: "130",
+                    field: `value${item.vendor}${ind}`,
+                    cellRendererFramework: (params) => params.value ? checkForDecimalAndNull(params.value, 4) : '-',
+
+                }
+
+
+
                 let plantObj = {
                     headerName: ele,
-                    field: `plant${item.vendor}${ind}`,
+                    // field: `plant${item.vendor}${ind}`,
                     width: "115",
                     cellRendererFramework: (params) => params.value ? params.value : '-',
+                    marryChildren: true,
+                    children: [rate, Quantity, Value]
+
                 }
                 childPlants.push(plantObj)
 
