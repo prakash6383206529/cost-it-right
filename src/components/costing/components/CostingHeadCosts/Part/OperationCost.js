@@ -220,6 +220,7 @@ function OperationCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
   }
 
   const handleQuantityChange = (event, index) => {
