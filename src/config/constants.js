@@ -1785,7 +1785,7 @@ export const VIEW_COSTING_DATA = {
   RevisionNumber: 'Revision Number',
   vendor: 'Vendor (Code)',
   customer: 'Customer (Code)',
-  plantCode: 'Plant (Code)',
+  plantExcel: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
   rmRate: 'RM Rate',
