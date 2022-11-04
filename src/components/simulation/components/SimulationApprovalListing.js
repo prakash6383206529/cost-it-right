@@ -192,10 +192,17 @@ function SimulationApprovalListing(props) {
                         setPageNo(0)
                     }
                     setTimeout(() => {
-                        for (var prop in obj) {
-                            if (obj[prop] !== "") {
 
-                                isReset = false
+                        for (var prop in obj) {
+                            if (props?.status) {   // CONDITION WHEN RENDERED FROM DASHBOARD
+                                if (prop !== 'DisplayStatus' && obj[prop] !== "") {
+                                    isReset = false
+                                }
+                            }
+                            else {
+                                if (obj[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
