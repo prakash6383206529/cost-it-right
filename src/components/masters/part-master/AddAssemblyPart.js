@@ -642,7 +642,7 @@ class AddAssemblyPart extends Component {
     let childPartArray = [];
     let isStructureChanges;
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
-    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0 || BOMViewerData.length === 1) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
 
       return false;
