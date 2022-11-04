@@ -357,6 +357,7 @@ class ZBCPlantListing extends Component {
         }, () => {
             if (type === 'submit') {
                 this.filterList()
+                this.setState({ noData: false })
             }
         })
 
