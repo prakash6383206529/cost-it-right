@@ -267,7 +267,7 @@ export const SearchableSelectHookForm = (field) => {
       temp = 128
     }
     else {
-      temp = dropdownHeight * 49;
+      temp = dropdownHeight * 39;
     }
   }
   const onFocusChange = () => {
