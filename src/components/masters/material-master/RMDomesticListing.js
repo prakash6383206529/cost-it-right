@@ -872,7 +872,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 {!props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />}
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
