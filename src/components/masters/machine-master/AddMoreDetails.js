@@ -195,12 +195,14 @@ class AddMoreDetails extends Component {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
-        const data = {
-          machineTypeId: machineType?.value ? machineType?.value : '',
-          plantId: selectedPlants?.value ? selectedPlants?.value : '',
-          effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        if (machineType.value) {
+          const data = {
+            machineTypeId: machineType?.value ? machineType?.value : '',
+            plantId: selectedPlants?.value ? selectedPlants?.value : '',
+            effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+          }
+          this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
-        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       }
       this.props.change('MachineName', fieldsObj.MachineName)
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
@@ -335,13 +337,15 @@ class AddMoreDetails extends Component {
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          const { machineType, selectedPlants, effectiveDate } = this.state;
-          const data = {
-            machineTypeId: machineType?.value,
-            plantId: selectedPlants?.value,
-            effectiveDate: effectiveDate
+          const { machineType, effectiveDate } = this.state;
+          if (machineType.value) {
+            const data = {
+              machineTypeId: machineType?.value,
+              plantId: Data.Plant[0].PlantId,
+              effectiveDate: effectiveDate
+            }
+            this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
-          this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
@@ -581,7 +585,9 @@ class AddMoreDetails extends Component {
         effectiveDate: ''
       }
       this.setState({ machineType: [], labourGrid: [], })
-      this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      if (newValue.value) {
+        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      }
     }
   };
 
@@ -601,7 +607,7 @@ class AddMoreDetails extends Component {
       plantId: selectedPlants?.value,
       effectiveDate: effectiveDate
     }
-    if (machineType && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
+    if (machineType && machineType.value && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
       this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
     }
   }

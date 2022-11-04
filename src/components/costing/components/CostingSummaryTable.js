@@ -833,7 +833,11 @@ const CostingSummaryTable = (props) => {
     let costingSummary = []
     for (var prop in VIEW_COSTING_DATA) {
 
-      if (IsNccCosting) {
+      if (partType) {
+        if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
+          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+      }
+      else if (IsNccCosting) {
         costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       } else {
 
@@ -1150,7 +1154,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
                                     <span className="d-block">{data?.RevisionNumber}</span>
-                                    <span className="d-block">{data.costingTypeId === ZBCTypeId || data.costingTypeId === CBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
+                                    <span className="d-block">{data.costingTypeId === ZBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
                                   </td>
                                 )
                               })}

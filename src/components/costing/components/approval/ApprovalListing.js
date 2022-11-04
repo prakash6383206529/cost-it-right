@@ -29,6 +29,7 @@ import { setSelectedRowForPagination } from '../../../simulation/actions/Simulat
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import ScrollToTop from '../../../common/ScrollToTop'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -897,7 +898,8 @@ function ApprovalListing(props) {
         !showApprovalSumary &&
         <> {
           (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
+            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+              <ScrollToTop pointProp={"approval-go-to-top"} />
               <form noValidate>
                 <Row className="pt-4 blue-before">
                   <Col md="6" lg="6" className="search-user-block mb-3">
