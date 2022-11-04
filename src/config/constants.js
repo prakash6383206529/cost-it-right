@@ -949,6 +949,15 @@ export const API = {
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
   getAmmendentStatus: `${BASE_URL}/simulation/get-ammendent-status`,             //THIS IS DUMMY API, IT WILL BE REPLACE FROM REAL API IN FUTURE
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
+
+  // ASSEMBLY TECHNOLOGY
+  getAssemblyTechnologySimulation: `${BASE_URL}/simulation/get-assembly-technology-simulation`,
+  runSimulationOnSelectedAssemblyTechnologyCosting: `${BASE_URL}/simulation/run-simulation-on-selected-multi-technology-costing`,
+  getAllMultiTechnologyCostings: `${BASE_URL}/simulation/get-all-multi-technology-costings`,
+  draftSimulationMultiTechnology: `${BASE_URL}/simulation/draft-simulation-multi-technology`,
+  getAllMultiTechnologyImpactedSimulationCostings: `${BASE_URL}/simulation/get-all-multi-technology-impacted-simulation-costings`,
+  getAllSimulatedMultiTechnologyCosting: `${BASE_URL}/simulation/get-all-simulated-multi-technology-costings`,
+
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
   getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
@@ -1605,6 +1614,10 @@ export const SET_TOKEN_FOR_SIMULATION = 'SET_TOKEN_FOR_SIMULATION'
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const GET_MASTER_SELECT_LIST_SIMUALTION = 'GET_MASTER_SELECT_LIST_SIMUALTION'
 export const SET_SELECTED_ROW_FOR_PAGINATION = 'SET_SELECTED_ROW_FOR_PAGINATION'
+
+// ASSEMBLY TECHNOLOGY
+export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
+export const GET_ALL_MULTI_TECHNOLOGY_COSTING = 'GET_ALL_MULTI_TECHNOLOGY_COSTING'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
