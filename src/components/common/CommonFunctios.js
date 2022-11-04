@@ -1,21 +1,25 @@
 // FOR AUTOCOMPLLETE IN PART AND VENDOR 
 export const autoCompleteDropdown = (inputValue, dropdownArray) => {
     let tempArr = []
+    let finalArr = []
     tempArr = dropdownArray && dropdownArray.filter(i => {
         return i.Text?.toLowerCase().includes(inputValue?.toLowerCase())
     });
     if (tempArr?.length) {
-        const finalArr = tempArr && tempArr.map(item => {
-            if (item.Value === 0) return false
-            return { label: item.Text, value: item.Value }
+        tempArr && tempArr.map(item => {
+            if (item.Value === '0') return tempArr
+            finalArr.push({ label: item.Text, value: item.Value })
+            return null
         })
         return finalArr
     } else {
         const Arr = tempArr?.slice(0, 100)
-        const finalArr = Arr && Arr.map(item => {
-            if (item.Value === 0) return false
-            return { label: item.Text, value: item.Value }
+        Arr && Arr.map(item => {
+            if (item.Value === '0') return tempArr
+            finalArr.push({ label: item.Text, value: item.Value })
+            return null
         })
         return finalArr
+
     }
 }

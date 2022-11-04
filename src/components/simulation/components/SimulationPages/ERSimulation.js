@@ -268,6 +268,7 @@ function ERSimulation(props) {
                                             rowSelection={'multiple'}
                                             // frameworkComponents={frameworkComponents}
                                             onSelectionChanged={onRowSelect}
+                                            suppressRowClickSelection={true}
                                         >
                                             <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}

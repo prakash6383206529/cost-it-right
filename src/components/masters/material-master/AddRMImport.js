@@ -1171,36 +1171,37 @@ class AddRMImport extends Component {
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
-        // this.setState({ inputLoader: true })
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
         let res
-        if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(inputValue)
+        if (costingTypeId === VBCTypeId && resultInput) {
+          res = await getVendorWithVendorCodeSelectList(resultInput)
         }
         else {
-          res = await getVendorListByVendorType(costingTypeId, inputValue)
+          res = await getVendorListByVendorType(costingTypeId, resultInput)
         }
-        // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let vendorData = []
+        let VendorData = []
         if (inputValue) {
-          vendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, vendorData)
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
         } else {
-          return vendorData
+          return VendorData
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let vendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('vendorData')
           if (inputValue) {
-            vendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, vendorData)
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
           } else {
-            return vendorData
+            return VendorData
           }
         }
       }
@@ -1495,7 +1496,7 @@ class AddRMImport extends Component {
                                 <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
-                                    {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="DestinationSupplierId"
                                       ref={this.myRef}
@@ -1504,8 +1505,8 @@ class AddRMImport extends Component {
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
-                                      isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                      isDisabled={isEditFlag || isViewFlag}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

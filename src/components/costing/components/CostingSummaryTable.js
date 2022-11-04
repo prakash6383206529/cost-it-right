@@ -1175,7 +1175,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                       }
                       {partType ? <>
-                        {!drawerDetailPDF ? <tr>
+                        <tr>
                           <td>
                             <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Part Cost/Pc</span>
                             <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>BOP Cost/Assembly</span>
@@ -1203,19 +1203,53 @@ const CostingSummaryTable = (props) => {
                                 </td>
                               )
                             })}
-                        </tr> : <tr><th colSpan={2} className='py-0'>
-                          <ViewRM
-                            isOpen={isViewRM}
-                            viewRMData={viewRMData}
-                            closeDrawer={closeViewDrawer}
-                            isAssemblyCosting={isAssemblyCosting}
-                            anchor={'right'}
-                            index={index}
-                            technologyId={technologyId}
-                            rmMBDetail={rmMBDetail}
-                            isPDFShow={true}
-                          />
-                        </th></tr>}
+                        </tr>
+                        {drawerDetailPDF &&
+                          <tr><th colSpan={2} className='py-0'>
+                            <ViewBOP
+                              isOpen={drawerOpen.BOP}
+                              viewBOPData={viewBOPData}
+                              closeDrawer={closeViewDrawer}
+                              anchor={'right'}
+                              isPDFShow={true}
+                            />
+                          </th></tr>}
+                        {drawerDetailPDF && <tr>
+                          <th colSpan={2} className='py-0'>
+                            <ViewConversionCost
+                              isOpen={drawerOpen.process}
+                              viewConversionCostData={viewConversionCostData}
+                              closeDrawer={closeViewDrawer}
+                              anchor={'right'}
+                              index={index}
+                              isPDFShow={true}
+                              processShow={true}
+                            />
+                          </th>
+                        </tr>}
+                        {drawerDetailPDF && <tr>
+                          <th colSpan={2} className='py-0'>
+                            <ViewConversionCost
+                              isOpen={drawerOpen.operation}
+                              viewConversionCostData={viewConversionCostData}
+                              closeDrawer={closeViewDrawer}
+                              anchor={'right'}
+                              index={index}
+                              isPDFShow={true}
+                              stCostShow={false}
+                              operationShow={true}
+                            /></th></tr>}
+                        {<tr>
+                          <th colSpan={2} className='py-0'>
+                            <ViewMultipleTechnology
+                              isOpen={viewMultipleTechnologyDrawer}
+                              multipleTechnologyData={multipleTechnologyData}
+                              closeDrawer={closeViewDrawer}
+                              anchor={'right'}
+                              index={index}
+                              isPDFShow={true}
+                            /></th></tr>}
+
                         <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? 'green-row' : viewCostingData[0]?.netRM < viewCostingData[1]?.netRM ? 'red-row' : '' : '-'}`}>
                           <th>Cost/Assembly {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                           {viewCostingData &&

@@ -751,6 +751,7 @@ function VolumeListing(props) {
                   frameworkComponents={frameworkComponents}
                   onFilterModified={onFloatingFilterChanged}
                   onRowSelected={onRowSelect}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
@@ -758,7 +759,7 @@ function VolumeListing(props) {
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                  <AgGridColumn field="PartNumber" headerName="Part No.(Revision No.)" width={200}></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                   {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}

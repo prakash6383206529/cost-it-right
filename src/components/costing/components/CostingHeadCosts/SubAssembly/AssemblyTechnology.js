@@ -343,6 +343,7 @@ function AssemblyTechnology(props) {
                     closeDrawer={closeDrawerPartCost}
                     anchor={'bottom'}
                     tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
+                    costingSummary={false}
                 />
             }
         </ >

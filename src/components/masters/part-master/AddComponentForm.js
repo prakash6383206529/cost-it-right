@@ -178,16 +178,17 @@ class AddComponentForm extends Component {
 
     const filterList = async (inputValue) => {
       const { partName } = this.state
-      if (inputValue?.length >= searchCount && partName !== inputValue) {
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && partName !== resultInput) {
         let obj = {
           technologyId: this.props?.TechnologySelected.value,
           date: this.context,
-          partNumber: inputValue
+          partNumber: resultInput
         }
         this.setState({ isLoader: true })
         const res = await getComponentPartSelectList(obj)
         this.setState({ isLoader: false })
-        this.setState({ partName: inputValue })
+        this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('PartData', partDataAPI)
         let partData = []
@@ -232,7 +233,7 @@ class AddComponentForm extends Component {
                   cacheOptions
                   loadOptions={filterList}
                   onChange={(e) => this.handlePartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Enter 3 characters to show data' : "No results found"}
+                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
                   onFocus={() => onFocus(this)}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
