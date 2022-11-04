@@ -390,12 +390,10 @@ function ApprovalSummary(props) {
                           {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
-                      {
-                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === VBC) &&
-                        <th>
-                          {`Plant(Code):`}
-                        </th>
-                      }
+                      {(getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) && <th>{`Plant(Code):`}</th>}
+
+                      {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant(Code):`} </th>}
+
                       <th>{`SOB(%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Old/Current Price:`}</th>
@@ -430,15 +428,16 @@ function ApprovalSummary(props) {
                           {
                             approvalDetails.CostingTypeId === VBCTypeId ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
+
                         </td>
                       }
-                      {
+                      {/* {
                         ((getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.CostingTypeId === VBCTypeId)) &&
                         <td>
                           {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode)}? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`:'-'
                         </td>
-                      }
-                      {(approvalDetails.CostingTypeId === CBCTypeId || approvalDetails.CostingTypeId === NCCTypeId) && <td> {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode) ? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})` : '-'}</td>}
+                      } */}
+                      {(approvalDetails.CostingTypeId === CBCTypeId || approvalDetails.CostingTypeId === NCCTypeId || approvalDetails.CostingTypeId === VBCTypeId) && <td> {(approvalDetails.DestinationPlantName || approvalDetails.DestinationPlantCode) ? `${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})` : '-'}</td>}
                       {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName || approvalDetails.PlantCode) ? `${approvalDetails.PlantName}(${approvalDetails.PlantCode})` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
