@@ -298,12 +298,12 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
 		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
