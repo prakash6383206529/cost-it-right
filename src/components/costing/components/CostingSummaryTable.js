@@ -845,7 +845,11 @@ const CostingSummaryTable = (props) => {
     let costingSummary = []
     for (var prop in VIEW_COSTING_DATA) {
 
-      if (IsNccCosting) {
+      if (partType) {
+        if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
+          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+      }
+      else if (IsNccCosting) {
         costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       } else {
 
