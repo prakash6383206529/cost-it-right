@@ -948,7 +948,7 @@ a:hover {
 
   .ag-row,
   .ag-cell {
-    line-height: 22px;
+    line-height: 35px;
     height: 35px !important;
 
     @media screen and (min-width: $middleDesktop) {
@@ -1844,6 +1844,7 @@ button .fas {
   position: relative;
   padding-left: 27px;
   margin-top: 0px;
+  max-width: max-content;
 
   input[type="checkbox"] {
     opacity: 0;
