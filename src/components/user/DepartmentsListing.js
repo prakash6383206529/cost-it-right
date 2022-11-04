@@ -19,6 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import { PaginationWrapper } from '../common/commonPagination';
+import ScrollToTop from '../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -216,7 +217,8 @@ class DepartmentsListing extends Component {
 
 
     return (
-      <div className={"ag-grid-react"}>
+      <div className={"ag-grid-react"} id="department-go-to-top">
+        <ScrollToTop pointProp={"department-go-to-top"} />
         <>
           {this.state.isLoader && <LoaderCustom />}
           <Row className="pt-4 no-filter-row">

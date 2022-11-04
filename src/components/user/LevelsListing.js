@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
+import ScrollToTop from '../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -345,7 +346,8 @@ class LevelsListing extends Component {
 		};
 
 		return (
-			<div className={"levellisting-page-main"}>
+			<div className={"levellisting-page-main"} id={'level-go-to-top'}>
+				<ScrollToTop pointProp={"level-go-to-top"} />
 				<div className={"ag-grid-react"}>
 					<>
 						{this.state.isLoader && <LoaderCustom />}
