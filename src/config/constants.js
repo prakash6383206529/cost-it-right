@@ -1785,7 +1785,7 @@ export const VIEW_COSTING_DATA = {
   RevisionNumber: 'Revision Number',
   vendor: 'Vendor (Code)',
   customer: 'Customer (Code)',
-  plantCode: 'Plant (Code)',
+  plantExcel: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
   rmRate: 'RM Rate',
@@ -2063,4 +2063,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.617";
+export const VERSION = "V1.2.618";
