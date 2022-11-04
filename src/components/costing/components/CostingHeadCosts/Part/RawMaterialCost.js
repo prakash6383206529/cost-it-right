@@ -758,6 +758,7 @@ function RawMaterialCost(props) {
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING 
       }, 400)
+      errors.rmGridFields = []
       setGridData(tempArr)
 
       if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
