@@ -195,7 +195,7 @@ class AddMoreDetails extends Component {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
-        if (machineType?.value !== null) {
+        if (machineType.value) {
           const data = {
             machineTypeId: machineType?.value ? machineType?.value : '',
             plantId: selectedPlants?.value ? selectedPlants?.value : '',
@@ -337,11 +337,11 @@ class AddMoreDetails extends Component {
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          const { machineType, selectedPlants, effectiveDate } = this.state;
+          const { machineType, effectiveDate } = this.state;
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: selectedPlants?.value,
+              plantId: Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -585,7 +585,7 @@ class AddMoreDetails extends Component {
         effectiveDate: ''
       }
       this.setState({ machineType: [], labourGrid: [], })
-      if (newValue?.value !== null) {
+      if (newValue.value) {
         this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       }
     }
