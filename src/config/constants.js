@@ -1798,7 +1798,7 @@ export const VIEW_COSTING_DATA = {
   RevisionNumber: 'Revision Number',
   vendor: 'Vendor (Code)',
   customer: 'Customer (Code)',
-  plantCode: 'Plant (Code)',
+  plantExcel: 'Plant (Code)',
   status: 'Status',
   rm: 'RM name-Grade',
   rmRate: 'RM Rate',
@@ -1809,6 +1809,12 @@ export const VIEW_COSTING_DATA = {
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
   netBOP: 'Net BOP Cost',
+  netChildPartsCost: 'Part Cost/Pc',
+  netBoughtOutPartCost: 'BOP Cost/Assembly',
+  netProcessCost: 'Process Cost/Assembly',
+  netOperationCost: 'Operation Cost/Assembly',
+  nTotalRMBOPCC: 'Cost/Assembly',
+
   pCost: 'Process Cost',
   oCost: 'Operation Cost',
   netOtherOperationCost: 'Other Operation Cost',
@@ -2070,4 +2076,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.617";
+export const VERSION = "V1.2.618";
