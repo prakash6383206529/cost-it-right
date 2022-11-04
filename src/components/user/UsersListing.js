@@ -25,6 +25,7 @@ import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
 import SelectRowWrapper from '../common/SelectRowWrapper';
+import ScrollToTop from '../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -546,7 +547,8 @@ class UsersListing extends Component {
 		};
 
 		return (
-			<div className={"ag-grid-react"}>
+			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
+				<ScrollToTop pointProp={"userlist-go-to-top"} />
 				<>
 					{" "}
 					{this.state.isLoader && <LoaderCustom />}
