@@ -121,6 +121,7 @@ class IndivisualProductListing extends Component {
                 Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
 
                 this.getTableListData();
+                this.setState({ dataCount: 0 })
             }
 
         });

@@ -202,6 +202,7 @@ class ProcessListing extends Component {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()
+        this.setState({ dataCount: 0 })
       }
     })
     this.setState({ showPopup: false })
@@ -328,6 +329,7 @@ class ProcessListing extends Component {
     this.setState({ isOpenProcessDrawer: false }, () => {
       if (type === 'submit')
         this.getDataList()
+      this.setState({ dataCount: 0 })
     })
 
   }

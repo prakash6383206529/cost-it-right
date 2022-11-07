@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../common/DayTimeWrapper'
 import { EMPTY_DATA, VBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { checkForNull, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
@@ -20,7 +20,10 @@ import DatePicker from "react-datepicker";
 import { getMaxDate } from '../SimulationUtils';
 import WarningMessage from '../../common/WarningMessage';
 
-const gridOptions = {};
+const gridOptions = {
+
+};
+
 
 function AssemblySimulationListing(props) {
     const { isbulkUpload, isImpactedMaster, technology } = props
@@ -38,11 +41,14 @@ function AssemblySimulationListing(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [maxDate, setMaxDate] = useState(false)
+    const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
 
     const { register, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+
 
     const dispatch = useDispatch()
 
@@ -54,7 +60,9 @@ function AssemblySimulationListing(props) {
             vendorId: selectedVendorForSimulation?.value,
             costingTypeId: VBCTypeId,
         }
-        dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
+        dispatch(getAllMultiTechnologyCostings(obj, (res) => {
+        }))
+        // API CALL
     }, [])
 
     useEffect(() => {
@@ -168,7 +176,6 @@ function AssemblySimulationListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        gridRef.current.api.sizeColumnsToFit();
     };
 
     const onPageSizeChanged = (newPageSize) => {

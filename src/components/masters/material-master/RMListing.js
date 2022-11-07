@@ -72,6 +72,7 @@ class RMListing extends Component {
             if (type === 'submit') {
                 this.setState({ isLoader: true })
                 this.getListData()
+                this.setState({ dataCount: 0 })
             }
         })
     }
@@ -91,6 +92,7 @@ class RMListing extends Component {
         this.setState({ isOpenAssociation: false }, () => {
             this.getListData()
         })
+        this.setState({ dataCount: 0 })
     }
 
     /**
@@ -123,6 +125,7 @@ class RMListing extends Component {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                this.setState({ dataCount: 0 })
                 this.getListData();
             }
         });
