@@ -735,9 +735,9 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}

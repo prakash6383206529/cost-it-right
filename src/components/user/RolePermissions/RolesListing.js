@@ -16,6 +16,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId } from '../../../helper';
 import Switch from "react-switch";
+import ScrollToTop from '../../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -231,7 +232,8 @@ class RolesListing extends Component {
     };
 
     return (
-      <div className={"ag-grid-react"}>
+      <div className={"ag-grid-react"} id={'role-go-to-top'}>
+        <ScrollToTop pointProp={"role-go-to-top"} />
         <>
           {this.state.isLoader && <LoaderCustom />}
           <Row className="pt-4 ">
