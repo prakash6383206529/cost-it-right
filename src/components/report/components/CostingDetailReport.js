@@ -906,8 +906,9 @@ function ReportListing(props) {
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
                                 <>
-                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
                                         {/* DOWNLOAD */}
+                                        {`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                     </button>
                                     <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
                                         <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
