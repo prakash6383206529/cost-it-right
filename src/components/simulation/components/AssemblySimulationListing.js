@@ -168,6 +168,7 @@ function AssemblySimulationListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        gridRef.current.api.sizeColumnsToFit();
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -209,8 +210,8 @@ function AssemblySimulationListing(props) {
                     !showverifyPage &&
                     <Fragment>
                         <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${multiTechnologyCostinig && multiTechnologyCostinig?.length <= 0 ? "overlay-contain" : ""}`}>
-                                <div className="ag-grid-wrapper height-width-wrapper">
+                            <Col className={`${multiTechnologyCostinig && multiTechnologyCostinig?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className="ag-grid-wrapper assembly-simulaiton">
                                     <div className="ag-grid-header d-flex align-items-center">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
