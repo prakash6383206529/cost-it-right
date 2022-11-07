@@ -710,7 +710,7 @@ class BOPDomesticListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             {!this.props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />}
