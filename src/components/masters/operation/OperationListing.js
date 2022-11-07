@@ -359,6 +359,7 @@ class OperationListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })

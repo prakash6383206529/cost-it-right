@@ -162,7 +162,7 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-
+        this.setState({ dataCount: 0 })
         //this.getTableListData(null, null, null, null)
         this.filterList()
       }

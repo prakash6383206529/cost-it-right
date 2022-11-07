@@ -112,6 +112,7 @@ class FreightListing extends Component {
     this.props.deleteFright(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
+        this.setState({ dataCount: 0 })
         this.getDataList()
       }
     });

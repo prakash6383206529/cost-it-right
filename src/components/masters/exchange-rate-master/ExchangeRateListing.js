@@ -171,6 +171,7 @@ class ExchangeRateListing extends Component {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
 
                 this.getTableListData()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })

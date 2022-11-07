@@ -139,8 +139,8 @@ class FuelListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {ViewAccessibility && <button title='View' className="View mr5" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this?.deleteItem(rowData?.FuelDetailId)} />}
             </>
         )
@@ -155,6 +155,7 @@ class FuelListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
                 this.getDataList()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })

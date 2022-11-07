@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../common/DayTimeWrapper'
 import { EMPTY_DATA, VBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { checkForNull, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
@@ -38,11 +38,14 @@ function AssemblySimulationListing(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [maxDate, setMaxDate] = useState(false)
+    const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
 
     const { register, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+
 
     const dispatch = useDispatch()
 
@@ -54,7 +57,9 @@ function AssemblySimulationListing(props) {
             vendorId: selectedVendorForSimulation?.value,
             costingTypeId: VBCTypeId,
         }
-        dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
+        dispatch(getAllMultiTechnologyCostings(obj, (res) => {
+        }))
+        // API CALL
     }, [])
 
     useEffect(() => {
@@ -72,9 +77,12 @@ function AssemblySimulationListing(props) {
                 window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+
             let maxDate = getMaxDate(multiTechnologyCostinig)
             setMaxDate(maxDate)
+
         }
+
     }, [multiTechnologyCostinig])
 
     const verifySimulation = debounce(() => {
@@ -130,6 +138,92 @@ function AssemblySimulationListing(props) {
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
+    const newBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        Number(row.NewBOPRate) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                }
+
+            </>
+        )
+    }
+    const oldBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldBOPRate :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                }
+
+            </>
+        )
+    }
+
+    const costFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+        const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
+        const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    /**
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
+    const beforeSaveCell = (props) => {
+        const cellValue = props
+        if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
+            if (cellValue.length > 8) {
+                Toaster.warning("Value should not be more than 8")
+                return false
+            }
+            return true
+        } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid positive numbers.')
+            return false
+        }
+        return true
+    }
+
+    const NewcostFormatter = (props) => {
+        const row = props?.data;
+        if (isImpactedMaster) {
+            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
+        } else {
+            if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+            const BasicRate = Number(row.BasicRate)
+            const NewBasicRate = Number(row.NewBasicRate)
+            const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+
+        }
+    }
+
+    const OldcostFormatter = (props) => {
+        const row = props?.data;
+        if (isImpactedMaster) {
+            return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
+        } else {
+            if (!row.BasicRate || row.BasicRate === '') return ''
+
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+
+        }
+    }
+
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
@@ -180,9 +274,14 @@ function AssemblySimulationListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const cellChange = (props) => {
+    }
+
     const onRowSelect = () => {
+
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
+
     }
 
     const resetState = () => {
@@ -196,22 +295,28 @@ function AssemblySimulationListing(props) {
             gridRef.current.api.sizeColumnsToFit();
         }
     }
-
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
+        NewcostFormatter: NewcostFormatter,
+        OldcostFormatter: OldcostFormatter,
+        costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
+        newBasicRateFormatter: newBasicRateFormatter,
+        cellChange: cellChange,
+        oldBasicRateFormatter: oldBasicRateFormatter,
     };
 
     return (
+
         <div>
             <div className={`ag-grid-react`}>
                 {
                     !showverifyPage &&
                     <Fragment>
                         <Row>
-                            <Col className={`${multiTechnologyCostinig && multiTechnologyCostinig?.length <= 0 ? "overlay-contain" : ""}`}>
-                                <div className="ag-grid-wrapper assembly-simulaiton">
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${multiTechnologyCostinig && multiTechnologyCostinig?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header d-flex align-items-center">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>

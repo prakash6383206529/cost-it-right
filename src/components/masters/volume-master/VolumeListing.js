@@ -262,6 +262,9 @@ function VolumeListing(props) {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
         getTableListData(0, globalTake, true)
+        gridApi.deselectAll()
+        dispatch(setSelectedRowForPagination([]))
+        setDataCount(0)
       }
     }))
     setShowPopup(false)
