@@ -771,8 +771,9 @@ function ReportListing(props) {
                             </button></div> :
 
                                 <>
-                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
                                         {/* DOWNLOAD */}
+                                        {`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                     </button>
 
                                     <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
