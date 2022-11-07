@@ -153,6 +153,7 @@ class PowerListing extends Component {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
+          this.setState({ dataCount: 0 })
         }
       });
       this.setState({ showPopup: false })

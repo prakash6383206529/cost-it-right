@@ -247,6 +247,7 @@ class UsersListing extends Component {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				}
 				this.getUsersListData(null, null);
+				this.setState({ dataCount: 0 })
 			}
 		})
 
