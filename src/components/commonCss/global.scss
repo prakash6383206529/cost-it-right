@@ -677,7 +677,7 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
-        .ag-center-cols-clipper {
+        .ag-center-cols-clipper, .ag-pinned-left-cols-container {
           .ag-cell {
             &:first-child {
               border-left: 1px solid #e5eaf9;
@@ -3351,6 +3351,12 @@ input:focus,
 
       @media screen and (min-width: $middleDesktop) {
         min-height: calc(100vh - 385px) !important;
+      }
+      &.assembly-simulaiton {
+        min-height: calc(100vh - 416px) !important;
+        @media screen and (min-width: $middleDesktop) {
+          min-height: calc(100vh - 416px) !important;
+        }
       }
     }
   }
