@@ -380,9 +380,9 @@ function CostingSummary(props) {
             <span className="d-block mt-1">PDF</span>
           </button> */}
 
-          <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <div className="add-rounded m-auto"></div>
-            <span className="d-block mt-1">ADD BOM</span>
+          <button onClick={bulkToggle} className="btn-primary btn mt-2 float-right">
+            <div className="hirarchy-icon"></div>
+            <span>ADD BOM</span>
           </button>
         </div>
       </span>
