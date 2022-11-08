@@ -1305,12 +1305,13 @@ class AddMachineRate extends Component {
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      if (inputValue?.length >= searchCount && vendorName !== inputValue) {
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(inputValue)
+        res = await getVendorWithVendorCodeSelectList(resultInput)
         // this.setState({ inputLoader: false })
-        this.setState({ vendorName: inputValue })
+        this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         let VendorData = []
@@ -1442,7 +1443,7 @@ class AddMachineRate extends Component {
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {

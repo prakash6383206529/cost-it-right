@@ -363,8 +363,9 @@ class FreightListing extends Component {
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

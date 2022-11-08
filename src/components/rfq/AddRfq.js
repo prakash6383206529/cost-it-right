@@ -563,18 +563,16 @@ function AddRfq(props) {
 
     }
     const vendorFilterList = async (inputValue) => {
-        if (inputValue?.length >= searchCount && vendor !== inputValue) {
-            // this.setState({ inputLoader: true })
+        const resultInput = inputValue.slice(0, 3)
+        if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(inputValue)
-            setVendor(inputValue)
-            // this.setState({ inputLoader: false })
+            res = await getVendorWithVendorCodeSelectList(resultInput)
+            setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             reactLocalStorage?.setObject('vendorData', vendorDataAPI)
             let VendorData = []
             if (inputValue) {
                 VendorData = reactLocalStorage?.getObject('vendorData')
-                // this.setState({ inputLoader: false })
                 return autoCompleteDropdown(inputValue, VendorData)
             } else {
                 return VendorData
@@ -595,11 +593,10 @@ function AddRfq(props) {
     };
     const partFilterList = async (inputValue) => {
 
-        if (inputValue?.length >= searchCount && partName !== inputValue) {
-            // setInputLoader(true)
-            const res = await getPartSelectListByTechnology(getValues('technology').value, inputValue);
-            // setInputLoader(false)
-            setPartName(inputValue)
+        const resultInput = inputValue.slice(0, 3)
+        if (inputValue?.length >= searchCount && partName !== resultInput) {
+            const res = await getPartSelectListByTechnology(getValues('technology').value, resultInput);
+            setPartName(resultInput)
             let partDataAPI = res?.data?.SelectList
             reactLocalStorage.setObject('PartData', partDataAPI)
             let partData = []

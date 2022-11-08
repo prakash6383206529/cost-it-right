@@ -109,6 +109,7 @@ class BulkUpload extends Component {
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
+            this.setState({ bulkUploadLoader: false })
         } else {
             let data = new FormData()
             data.append('file', fileObj)

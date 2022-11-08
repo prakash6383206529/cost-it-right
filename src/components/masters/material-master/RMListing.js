@@ -294,7 +294,6 @@ class RMListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -382,6 +381,7 @@ class RMListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     onSelectionChanged={this.onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

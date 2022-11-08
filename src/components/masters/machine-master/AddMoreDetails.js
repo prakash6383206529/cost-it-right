@@ -195,12 +195,14 @@ class AddMoreDetails extends Component {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
-        const data = {
-          machineTypeId: machineType?.value ? machineType?.value : '',
-          plantId: selectedPlants?.value ? selectedPlants?.value : '',
-          effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        if (machineType.value) {
+          const data = {
+            machineTypeId: machineType?.value ? machineType?.value : '',
+            plantId: selectedPlants?.value ? selectedPlants?.value : '',
+            effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+          }
+          this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
-        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       }
       this.props.change('MachineName', fieldsObj.MachineName)
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
@@ -335,13 +337,15 @@ class AddMoreDetails extends Component {
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          const { machineType, selectedPlants, effectiveDate } = this.state;
-          const data = {
-            machineTypeId: machineType?.value,
-            plantId: selectedPlants?.value,
-            effectiveDate: effectiveDate
+          const { machineType, effectiveDate } = this.state;
+          if (machineType.value) {
+            const data = {
+              machineTypeId: machineType?.value,
+              plantId: Data.Plant[0].PlantId,
+              effectiveDate: effectiveDate
+            }
+            this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
-          this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
@@ -581,7 +585,9 @@ class AddMoreDetails extends Component {
         effectiveDate: ''
       }
       this.setState({ machineType: [], labourGrid: [], })
-      this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      if (newValue.value) {
+        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      }
     }
   };
 
@@ -601,7 +607,7 @@ class AddMoreDetails extends Component {
       plantId: selectedPlants?.value,
       effectiveDate: effectiveDate
     }
-    if (machineType && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
+    if (machineType && machineType.value && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
       this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
     }
   }
@@ -1508,8 +1514,8 @@ class AddMoreDetails extends Component {
       if (count > 0) {
         return false
       }
-      if (this.props.invalid === true) {
-        return false;
+      if (maxLength10(fieldsObj.MachineRate) || decimalLengthsix(fieldsObj.MachineRate)) {
+        return false
       }
       if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
@@ -3653,7 +3659,7 @@ class AddMoreDetails extends Component {
                                     required={true}
                                     handleChangeDescription={this.handleProcessName}
                                     valueDescription={this.state.processName}
-                                    disabled={this.state.isViewMode}
+                                    disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                   />
                                   {this.state.errorObj.processName && this.state.processName.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
 
@@ -3677,7 +3683,7 @@ class AddMoreDetails extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleUOM}
                                 valueDescription={this.state.UOM}
-                                disabled={this.state.lockUOMAndRate || this.state.isViewMode}
+                                disabled={this.state.lockUOMAndRate || this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                               />
                               {this.state.errorObj.processUOM && this.state.UOM.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
 
@@ -3742,14 +3748,14 @@ class AddMoreDetails extends Component {
                                   <>
                                     <button
                                       type="button"
-                                      disabled={this.state.isViewMode}
+                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                       className={'btn btn-primary pull-left mr5'}
                                       onClick={this.updateProcessGrid}
                                     >Update</button>
 
                                     <button
                                       type="button"
-                                      disabled={this.state.isViewMode}
+                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                       className={'reset-btn pull-left'}
                                       onClick={this.resetProcessGridData}
                                     >Cancel</button>
@@ -3759,7 +3765,7 @@ class AddMoreDetails extends Component {
                                     <button
                                       type="button"
                                       className={'user-btn pull-left'}
-                                      disabled={this.state.isViewMode}
+                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                       onClick={this.processTableHandler}>
                                       <div className={'plus'}></div>ADD</button>
                                     <button
@@ -3794,8 +3800,8 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={this.state.isViewMode} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
+                                            <button className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)} onClick={() => this.editItemDetails(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
                                           </td>
                                         </tr>
                                       )

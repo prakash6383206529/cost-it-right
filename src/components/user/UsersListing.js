@@ -25,6 +25,7 @@ import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
 import SelectRowWrapper from '../common/SelectRowWrapper';
+import ScrollToTop from '../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -303,12 +304,12 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
 		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
@@ -546,7 +547,8 @@ class UsersListing extends Component {
 		};
 
 		return (
-			<div className={"ag-grid-react"}>
+			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
+				<ScrollToTop pointProp={"userlist-go-to-top"} />
 				<>
 					{" "}
 					{this.state.isLoader && <LoaderCustom />}
@@ -678,7 +680,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="RoleName" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>

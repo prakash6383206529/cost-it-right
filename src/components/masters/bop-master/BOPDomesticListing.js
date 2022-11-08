@@ -650,7 +650,7 @@ class BOPDomesticListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             {!this.props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />}
@@ -735,9 +735,9 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
