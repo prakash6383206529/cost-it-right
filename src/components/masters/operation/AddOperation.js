@@ -89,7 +89,7 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.state.isViewMode || this.props.data.isEditFlag)) {
+    if (!(this.state.isViewMode)) {
       this.props.getUOMSelectList(() => { })
     }
   }
