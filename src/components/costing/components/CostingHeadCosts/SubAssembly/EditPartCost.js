@@ -7,8 +7,7 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
-// import { getCostingForMultiTechnology,getSettledCostingDetails,saveSettledCostingDetails, updateMultiTechnologyTopAndWorkingRowCalculation} from '../../../actions/SubAssembly';
+import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, saveSettledCostingDetails, setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
@@ -341,7 +340,7 @@ function EditPartCost(props) {
                 "NetPOPrice": weightedCost,
                 "CostingSettledDetails": tempArray
             }
-            // dispatch(saveSettledCostingDetails(obj, res => { }))
+            dispatch(saveSettledCostingDetails(obj, res => { }))
 
             let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
@@ -352,7 +351,7 @@ function EditPartCost(props) {
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
-            // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
             dispatch(gridDataAdded(true))
         }
         props.closeDrawer('')
