@@ -82,7 +82,7 @@ function AddAssemblyOperation(props) {
       checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
       checkForNull(totalOperationCost)
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost;
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost ? totalOperationCost : 0;
 
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
