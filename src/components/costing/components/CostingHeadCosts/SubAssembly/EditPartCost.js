@@ -82,6 +82,15 @@ function EditPartCost(props) {
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
         dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
         // dispatch(getEditPartCostDetails(obj, res => { }))
+        return () => {
+            gridData && gridData.map((item, index) => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, 0)
+                setValue(`${PartCostFields}.${index}.SOBPercentage`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                return null
+            })
+        }
     }, [])
 
     /**
@@ -182,6 +191,21 @@ function EditPartCost(props) {
         setIsOpen(true)
     }
 
+    const deleteDetails = (item, index) => {
+        let tempArr = gridData.filter(e => e?.value !== item?.value)
+        let weightedCostCalc = 0
+        weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
+
+        setWeightedCost(weightedCostCalc)
+        setGridData(tempArr)
+        setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+        setValue(`${PartCostFields}.${index}.DeltaSign`, 0)
+        setValue(`${PartCostFields}.${index}.SOBPercentage`, 0)
+        setValue(`${PartCostFields}.${index}.NetCost`, 0)
+    }
+
     /**
       * @method calcTotalSOBPercent
       * @description TO CALCULATE TOTAL SOB PERCENTAGE 
@@ -205,6 +229,12 @@ function EditPartCost(props) {
             setGridData([...gridData, costingNumberData])
             setValue('CostingNumber', {})
             setCostingNumberData({})
+            let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
+
+            setValue(`${PartCostFields}.${indexForUpdate}.DeltaValue`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
         } else {
             Toaster.warning('Please select Costing Number')
             return false
@@ -232,70 +262,71 @@ function EditPartCost(props) {
         const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
         const toolTabData = ToolTabData && ToolTabData[0]
 
-        let sum = calcTotalSOBPercent(gridData)
-        if (checkForNull(sum) !== 100) {
-            Toaster.warning('Total SOB percent should be 100');
-            return false
+        if (!(settledCostingDetails?.length === 0 && gridData?.length === 0)) {
+            let sum = calcTotalSOBPercent(gridData)
+            if (gridData?.length !== 0 && checkForNull(sum) !== 100) {
+                Toaster.warning('Total SOB percent should be 100');
+                return false
+            }
+            let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+            let costPerAssemblyTotalWithQuantity = 0
+
+            const index = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.findIndex(object => {
+                return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
+            });
+
+            let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
+
+            editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
+            editedChildPart.CostingPartDetails.TotalCalculatedRMBOPCCCost = weightedCost
+            editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
+
+            Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
+
+            // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
+            costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+            }, 0)
+            // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(costPerAssemblyTotalWithQuantity) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+            let tempArray = []
+            gridData && gridData?.map((item) => {
+                let tempObject = {}
+                tempObject.BaseCostingId = item?.value
+                tempObject.SOBPercentage = item?.SOBPercentage
+                tempObject.Delta = item?.DeltaValue
+                tempObject.DeltaSign = item?.DeltaSign?.label
+                tempObject.NetCost = item?.NetCost
+                tempArray.push(tempObject)
+            })
+
+            dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+            let obj = {
+                "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
+                "NetPOPrice": weightedCost,
+                "CostingSettledDetails": tempArray
+            }
+            dispatch(saveSettledCostingDetails(obj, res => { }))
+
+            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+                checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+                checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
+                checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+                checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                checkForNull(DiscountCostData?.AnyOtherCost)) -
+                checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         }
-        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let costPerAssemblyTotalWithQuantity = 0
-
-        const index = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.findIndex(object => {
-            return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
-        });
-
-        let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
-
-        editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
-        editedChildPart.CostingPartDetails.TotalCalculatedRMBOPCCCost = weightedCost
-        editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
-
-        Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
-
-        // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
-        costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
-            return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
-        }, 0)
-        // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
-            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(costPerAssemblyTotalWithQuantity) +
-            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
-            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
-        let tempArray = []
-        gridData && gridData?.map((item) => {
-            let tempObject = {}
-            tempObject.BaseCostingId = item?.value
-            tempObject.SOBPercentage = item?.SOBPercentage
-            tempObject.Delta = item?.DeltaValue
-            tempObject.DeltaSign = item?.DeltaSign?.label
-            tempObject.NetCost = item?.NetCost
-            tempArray.push(tempObject)
-        })
-
-        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
-        let obj = {
-            "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
-            "NetPOPrice": weightedCost,
-            "CostingSettledDetails": tempArray
-        }
-        dispatch(saveSettledCostingDetails(obj, res => { }))
-
-        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
-            checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-            checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
-            checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
-            checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost)) -
-            checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
-        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-
         props.closeDrawer('')
 
         // SAVE API FOR PART COST
@@ -461,6 +492,12 @@ function EditPartCost(props) {
                                                                 type="button"
                                                                 className={'View mr-2 align-middle'}
                                                                 onClick={() => viewDetails(item)}
+                                                            >
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className={'Delete mr-2 align-middle'}
+                                                                onClick={() => deleteDetails(item, index)}
                                                             >
                                                             </button>
                                                         </td>
