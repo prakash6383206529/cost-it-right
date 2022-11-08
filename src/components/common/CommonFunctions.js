@@ -5,7 +5,7 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
     tempArr = dropdownArray && dropdownArray.filter(i => {
         return i.Text?.toLowerCase().includes(inputValue?.toLowerCase())
     });
-    if (tempArr?.length) {
+    if (tempArr?.length <= 100) {
         tempArr && tempArr.map(item => {
             if (item.Value === '0') return tempArr
             if (tempBoolean && selectedParts.includes(item.Value)) return false
@@ -17,6 +17,7 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
         const Arr = tempArr?.slice(0, 100)
         Arr && Arr.map(item => {
             if (item.Value === '0') return tempArr
+            if (tempBoolean && selectedParts.includes(item.Value)) return false
             finalArr.push({ label: item.Text, value: item.Value })
             return null
         })
