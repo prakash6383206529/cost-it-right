@@ -18,7 +18,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import { MACHINING } from '../../../config/masterData'
 import { searchCount } from '../../../config/constants'
-import { autoCompleteDropdown } from '../../common/CommonFunctios'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
 
 function CostingSummary(props) {
 

@@ -19,7 +19,7 @@ import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, searchCount, ZBCTypeId } from '../
 import { onFocus, showDataOnHover } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddInterestRate');
 

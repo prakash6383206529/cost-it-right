@@ -10,7 +10,7 @@ import { getConfigurationKey } from '../../../helper';
 import WarningMessage from '../../common/WarningMessage';
 import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 function AddVendorDrawer(props) {
 

@@ -33,7 +33,7 @@ import { debounce } from 'lodash';
 import { MACHINING } from '../../../config/masterData';
 import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
