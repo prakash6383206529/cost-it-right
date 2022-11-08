@@ -733,7 +733,6 @@ function OverheadProfit(props) {
         setValue('OverheadCCCost', checkForDecimalAndNull(overheadCCCost, initialConfiguration.NoOfDecimalForPrice))
         const totalOverheadCost = (checkForNull(NetConversionCost) + checkForNull(NetSurfaceTreatmentCost)) * calculatePercentage(OverheadCCPercentage)
         setValue('OverheadCCTotalCost', checkForDecimalAndNull(totalOverheadCost, initialConfiguration.NoOfDecimalForPrice))
-        setIsSurfaceTreatmentAdded(true)
         setOverheadObj({
           ...overheadObj,
           OverheadCCCost: overheadCCCost,
@@ -776,7 +775,6 @@ function OverheadProfit(props) {
         const profitTotalCost = profitCCCost * calculatePercentage(ProfitCCPercentage)
         setValue('ProfitCCCost', checkForDecimalAndNull(profitCCCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitCCTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-        setIsSurfaceTreatmentAdded(true)
         setProfitObj({
           ...profitObj,
           ProfitCCCost: profitCCCost,
@@ -824,7 +822,6 @@ function OverheadProfit(props) {
             overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
             setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(true)
             setOverheadObj({
               ...overheadObj,
               OverheadCombinedCost: checkForNull(overheadCombinedCost),
@@ -958,7 +955,6 @@ function OverheadProfit(props) {
             setValue('ProfitPercentage', ProfitPercentage)
             setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(true)
             setProfitObj({
               ...profitObj,
               ProfitCombinedCost: profitCombinedCost,
@@ -973,7 +969,6 @@ function OverheadProfit(props) {
             setValue('ProfitPercentage', ProfitPercentage)
             setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(true)
             setProfitObj({
               ...profitObj,
               ProfitCombinedCost: profitCombinedCost,
@@ -988,7 +983,6 @@ function OverheadProfit(props) {
             setValue('ProfitPercentage', ProfitPercentage)
             setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(true)
             setProfitObj({
               ...profitObj,
               ProfitCombinedCost: profitCombinedCost,
