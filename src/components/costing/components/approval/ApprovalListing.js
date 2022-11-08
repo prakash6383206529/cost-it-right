@@ -222,10 +222,18 @@ function ApprovalListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (floatingFilterData[prop] !== "") {
-                isReset = false
+              if (props?.status) {   // CONDITION WHEN RENDERED FROM DASHBOARD
+                if (prop !== 'DisplayStatus' && floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
+              }
+              else {
+                if (floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
               }
             }
+
             // Sets the filter model via the grid API
             isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
           }, 300);
@@ -257,8 +265,15 @@ function ApprovalListing(props) {
             let isReset = true
             setTimeout(() => {
               for (var prop in floatingFilterData) {
-                if (floatingFilterData[prop] !== "") {
-                  isReset = false
+                if (props?.status) {    // CONDITION WHEN RENDERED FROM DASHBOARD
+                  if (prop !== 'DisplayStatus' && floatingFilterData[prop] !== "") {
+                    isReset = false
+                  }
+                }
+                else {
+                  if (floatingFilterData[prop] !== "") {
+                    isReset = false
+                  }
                 }
               }
               // Sets the filter model via the grid API
