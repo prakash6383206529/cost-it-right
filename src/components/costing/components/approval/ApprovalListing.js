@@ -800,7 +800,7 @@ function ApprovalListing(props) {
 
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn

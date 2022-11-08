@@ -27,7 +27,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddOperation');
 
@@ -89,7 +89,7 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.state.isViewMode || this.props.data.isEditFlag)) {
+    if (!(this.state.isViewMode)) {
       this.props.getUOMSelectList(() => { })
     }
   }

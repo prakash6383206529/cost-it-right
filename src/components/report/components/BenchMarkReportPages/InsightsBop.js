@@ -616,7 +616,7 @@ function InsightsBop(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         // headerCheckboxSelection: isFirstColumn,
         // checkboxSelection: isFirstColumn
     };

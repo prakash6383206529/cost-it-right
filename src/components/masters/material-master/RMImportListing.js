@@ -760,7 +760,7 @@ function RMImportListing(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn

@@ -24,7 +24,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from "../../../helper";
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../../common/CommonFunctios";
+import { autoCompleteDropdown } from "../../common/CommonFunctions";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -367,9 +367,10 @@ class AddFreight extends Component {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = gridTable.findIndex(
         (el) =>
-          el.CapacityId === FullTruckCapacity.value &&
-          el.RateCriteriaId === RateCriteria.value
+          el.Capacity === FullTruckCapacity.value &&
+          el.RateCriteria === RateCriteria.value,
       );
+
       if (isExist !== -1) {
         Toaster.warning("Already added, Please check the values.");
         return false;
