@@ -22,7 +22,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown } from '../../common/CommonFunctios'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
 
 const gridOptions = {};
 
@@ -732,7 +732,7 @@ class AddVolume extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       editable: true
     };
 

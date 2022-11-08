@@ -254,7 +254,8 @@ function ProcessCost(props) {
       }
       let gridTempArr = Object.assign([...listData], { [calciIndex]: tempData })
 
-      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+
+      setValue(`${SingleProcessGridField}.${calciIndex}${parentCalciIndex}${tempData.ProcessName}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -721,7 +722,7 @@ function ProcessCost(props) {
     setTabData(tempArr3)
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       return null
     })
 
@@ -811,7 +812,7 @@ function ProcessCost(props) {
     }
   }
 
-  const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex) => {
+  const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
     let tempArr = []
     let processTempData = processGroupGrid[parentIndex]
@@ -892,7 +893,7 @@ function ProcessCost(props) {
       }
       let gridTempArr = Object.assign([...list], { [index]: tempData })
       setTimeout(() => {
-        setValue(`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`, "")
+        setValue(`${SingleProcessGridField}.${index}${parentIndex}${processName}.Quantity`, "")
         setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, "")
       }, 200)
 
@@ -1016,7 +1017,7 @@ function ProcessCost(props) {
                   {
                     <NumberFieldHookForm
                       label=""
-                      name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
+                      name={`${SingleProcessGridField}.${index}${parentIndex}${item.ProcessName}.Quantity`}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -1028,16 +1029,16 @@ function ProcessCost(props) {
                           message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
                       }}
-                      errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[index] && errors.SingleProcessGridField[index][parentIndex] && errors.SingleProcessGridField[index][parentIndex].Quantity : ''}
+                      errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`] && errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`].Quantity : ''}
                       defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => {
                         e.preventDefault()
-                        handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
+                        handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex, item.ProcessName)
                       }}
 
-                      // errors={}
+                      // errors={ }
                       disabled={(CostingViewMode || IsLocked) ? true : false}
                     />
 
