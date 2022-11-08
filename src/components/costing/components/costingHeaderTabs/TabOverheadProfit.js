@@ -529,7 +529,7 @@ function TabOverheadProfit(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              <Row className="m-0">
+              <Row className="m-0 border-left border-right">
                 {/* {costData.IsAssemblyPart &&
                   <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                     <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
@@ -560,7 +560,7 @@ function TabOverheadProfit(props) {
                   </Col>
                 } */}
 
-                <Col md="12" className="px-30 py-4 d-flex">
+                <Col md="12" className="px-20 py-3 d-flex">
                   <label
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
