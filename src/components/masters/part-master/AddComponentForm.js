@@ -10,7 +10,7 @@ import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import { onFocus } from '../../../helper';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 class AddComponentForm extends Component {
@@ -177,7 +177,7 @@ class AddComponentForm extends Component {
     const { handleSubmit, isEditFlag } = this.props;
 
     const filterList = async (inputValue) => {
-      const { partName } = this.state
+      const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, 3)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
         let obj = {
@@ -194,7 +194,7 @@ class AddComponentForm extends Component {
         let partData = []
         if (inputValue) {
           partData = reactLocalStorage?.getObject('PartData')
-          return autoCompleteDropdown(inputValue, partData)
+          return autoCompleteDropdown(inputValue, partData, true, selectedParts)
         } else {
           return partData
         }
@@ -205,7 +205,7 @@ class AddComponentForm extends Component {
           let partData = reactLocalStorage?.getObject('PartData')
           if (inputValue) {
             partData = reactLocalStorage?.getObject('PartData')
-            return autoCompleteDropdown(inputValue, partData)
+            return autoCompleteDropdown(inputValue, partData, true, selectedParts)
           } else {
             return partData
           }
