@@ -38,6 +38,7 @@ import {
   SET_PROCESS_GROUP_GRID,
   SAVE_BOM_LEVEL_STOP_API_CALL,
   SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
+  SET_SURFACE_COST_FOR_REJECTION_DATA
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2604,4 +2605,18 @@ export function saveAssemblyNumber(assemblyNumber) {
     })
   }
 }
+
+/**
+ * @method setSurfaceCostInOverheadProfitRejection
+ * @description SET SURFACE TREATMENT COST FOR REJECTION
+ */
+export function setSurfaceCostInOverheadProfitRejection(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_REJECTION_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
 
