@@ -12,8 +12,7 @@ import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
 import { ASSEMBLYNAME } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
-import { ASSEMBLY } from '../../../config/masterData';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 class AddAssemblyForm extends Component {
 
@@ -31,7 +30,7 @@ class AddAssemblyForm extends Component {
             updateAsyncDropdown: false,
             issubAssembyNoNotSelected: false,
             showErrorOnFocus: false,
-            partName: ''
+            partName: '',
         }
     }
 
@@ -41,17 +40,15 @@ class AddAssemblyForm extends Component {
    */
     componentDidMount() {
         const { BOMViewerData } = this.props;
-
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;
         })
 
         this.setState({ selectedParts: tempArr })
-
     }
 
     componentWillUnmount() {
@@ -182,7 +179,7 @@ class AddAssemblyForm extends Component {
         const { handleSubmit, isEditFlag, } = this.props;
 
         const filterList = async (inputValue) => {
-            const { partName } = this.state
+            const { partName, selectedParts } = this.state
             const resultInput = inputValue.slice(0, 3)
             if (inputValue?.length >= searchCount && partName !== resultInput) {
                 let obj = {
@@ -199,7 +196,7 @@ class AddAssemblyForm extends Component {
                 let partData = []
                 if (inputValue) {
                     partData = reactLocalStorage?.getObject('PartData')
-                    return autoCompleteDropdown(inputValue, partData)
+                    return autoCompleteDropdown(inputValue, partData, true, selectedParts)
                 } else {
                     return partData
                 }
@@ -210,7 +207,7 @@ class AddAssemblyForm extends Component {
                     let partData = reactLocalStorage?.getObject('PartData')
                     if (inputValue) {
                         partData = reactLocalStorage?.getObject('PartData')
-                        return autoCompleteDropdown(inputValue, partData)
+                        return autoCompleteDropdown(inputValue, partData, true, selectedParts)
                     } else {
                         return partData
                     }
