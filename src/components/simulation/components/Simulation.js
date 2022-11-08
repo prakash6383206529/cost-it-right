@@ -565,7 +565,6 @@ function Simulation(props) {
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
-        setShowEditTable(true)
         if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
