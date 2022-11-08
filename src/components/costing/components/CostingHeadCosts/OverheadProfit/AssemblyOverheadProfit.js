@@ -26,7 +26,7 @@ function AssemblyOverheadProfit(props) {
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = IdForMultiTechnology.includes(String(costData.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const partType = IdForMultiTechnology.includes(String(costData.technologyId))
 
   const dispatch = useDispatch()
 
