@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -14,7 +14,9 @@ function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
+  const [IsIncludeSurfaceTreatmentRejection, setIsIncludeSurfaceTreatmentRejection] = useState(false);
   const [isPressedST, setIsPressST] = useState(false)
+  const [isPressedSTRejection, setIsPressSTRejection] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -36,6 +38,12 @@ function TabOverheadProfit(props) {
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
 
         setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+      }
+    }
+    if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
+      if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection !== null && !isPressedSTRejection) {
+
+        setIsIncludeSurfaceTreatmentRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection)
       }
     }
   }, [OverheadProfitTabData])
@@ -498,6 +506,17 @@ function TabOverheadProfit(props) {
   }
 
   /**
+  * @method onPressIncludeSurfaceTreatmentRejection
+  * @description SET INCLUDE SURFACE TREATMENT
+  */
+  const onPressIncludeSurfaceTreatmentRejection = () => {
+    dispatch(setSurfaceCostInOverheadProfitRejection(!IsIncludeSurfaceTreatmentRejection, () => { }))
+    setIsIncludeSurfaceTreatmentRejection(!IsIncludeSurfaceTreatmentRejection)
+    setIsPressSTRejection(true)
+    dispatch(isOverheadProfitDataChange(true))
+  }
+
+  /**
   * @method onSubmit
   * @description Used to Submit the form
   */
@@ -541,9 +560,9 @@ function TabOverheadProfit(props) {
                   </Col>
                 } */}
 
-                <Col md="12" className="px-30 py-4 costing-border-x costing-border-top">
+                <Col md="12" className="px-30 py-4 d-flex">
                   <label
-                    className={`custom-checkbox mb-0`}
+                    className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
                     Include Surface Treatment Cost in Overheads & Profits
@@ -556,6 +575,22 @@ function TabOverheadProfit(props) {
                       className=" before-box"
                       checked={IsIncludeSurfaceTreatment}
                       onChange={onPressIncludeSurfaceTreatment}
+                    />
+                  </label>
+                  <label
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIncludeSurfaceTreatmentRejection}
+                  >
+                    Include Surface Treatment Cost in Rejection
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeSurfaceTreatmentRejection}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeSurfaceTreatmentRejection}
+                      onChange={onPressIncludeSurfaceTreatmentRejection}
                     />
                   </label>
                 </Col>
@@ -587,6 +622,7 @@ function TabOverheadProfit(props) {
                                   index={index}
                                   item={item}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
+                                  IsIncludedSurfaceInRejection={IsIncludeSurfaceTreatmentRejection}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
                                   setProfitDetail={setProfitDetail}
@@ -605,6 +641,7 @@ function TabOverheadProfit(props) {
                                   item={item}
                                   children={item.CostingChildPartDetails}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
+                                  IsIncludeSurfaceTreatmentRejection={IsIncludeSurfaceTreatmentRejection}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}

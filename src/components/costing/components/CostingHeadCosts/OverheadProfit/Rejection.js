@@ -27,6 +27,9 @@ function Rejection(props) {
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
+    const { IsIncludedSurfaceInRejection } = useSelector(state => state.costing)
+    const { SurfaceTabData } = useSelector(state => state.costing)
+
 
     const dispatch = useDispatch()
 
@@ -53,6 +56,10 @@ function Rejection(props) {
 
 
     }, [rejectionFieldValues]);
+
+    useEffect(() => {
+        checkRejectionApplicability(applicability.label)
+    }, [IsIncludedSurfaceInRejection]);
 
 
     useEffect(() => {
@@ -98,12 +105,13 @@ function Rejection(props) {
     const checkRejectionApplicability = (Text) => {
         if (headerCosts && Text !== '') {
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const NetSurfaceTreatmentCost = (IsIncludedSurfaceInRejection ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) : 0)
 
-            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
+            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
 
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
-            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost);
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost);
             const RejectionPercentage = getValues('RejectionPercentage')
 
             switch (Text) {
@@ -134,15 +142,16 @@ function Rejection(props) {
                     break;
 
                 case 'CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    let totalRejectionCost = ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(totalRejectionCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((totalRejectionCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: ConversionCostForCalculation,
-                        RejectionTotalCost: checkForNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: totalRejectionCost,
+                        RejectionTotalCost: checkForNull((totalRejectionCost * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 

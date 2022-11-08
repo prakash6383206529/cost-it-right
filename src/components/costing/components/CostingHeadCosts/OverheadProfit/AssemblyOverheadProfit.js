@@ -87,6 +87,7 @@ function AssemblyOverheadProfit(props) {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
       "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
+      "IsIncludeSurfaceTreatmentWithRejection": props.IsIncludeSurfaceTreatmentRejection,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
