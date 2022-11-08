@@ -369,17 +369,12 @@ class AddFreight extends Component {
         return false
       }
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-      console.log('gridTable: ', gridTable);
-      console.log('FullTruckCapacity: ', FullTruckCapacity.value);
-      console.log('RateCriteria: ', RateCriteria.value);
       const isExist = gridTable.findIndex(
         (el) =>
           el.Capacity === FullTruckCapacity.value &&
           el.RateCriteria === RateCriteria.value,
       );
 
-
-      console.log('isExist: ', isExist);
       if (isExist !== -1) {
         Toaster.warning("Already added, Please check the values.");
         return false;
