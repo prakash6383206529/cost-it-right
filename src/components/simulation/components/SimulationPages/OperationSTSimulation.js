@@ -182,7 +182,7 @@ function OperationSTSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true
+        sortable: false
     };
 
     const onGridReady = (params) => {

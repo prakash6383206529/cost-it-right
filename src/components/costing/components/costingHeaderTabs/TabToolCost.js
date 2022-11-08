@@ -158,7 +158,7 @@ function TabToolCost(props) {
 
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
   };
   /**
    * @method dispatchOverallApplicabilityCost

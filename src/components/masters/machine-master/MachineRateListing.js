@@ -580,7 +580,7 @@ class MachineRateListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
             headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,

@@ -207,7 +207,7 @@ class TaxListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
     };
     const frameworkComponents = {
 

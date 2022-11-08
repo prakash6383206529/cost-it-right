@@ -733,7 +733,7 @@ class AddVolume extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       editable: true
     };
 

@@ -352,7 +352,7 @@ function SimulationInsights(props) {
 
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     floatingFilter: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
