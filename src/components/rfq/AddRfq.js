@@ -22,7 +22,7 @@ import redcrossImg from '../../assests/images/red-cross.png'
 import NoContentFound from '../common/NoContentFound';
 import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../common/CommonFunctios';
+import { autoCompleteDropdown } from '../common/CommonFunctions';
 
 const gridOptions = {};
 

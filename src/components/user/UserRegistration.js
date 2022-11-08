@@ -30,7 +30,7 @@ import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../common/CommonFunctios";
+import { autoCompleteDropdown } from "../common/CommonFunctions";
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
 

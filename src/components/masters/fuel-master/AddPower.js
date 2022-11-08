@@ -27,7 +27,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddPower');
 
