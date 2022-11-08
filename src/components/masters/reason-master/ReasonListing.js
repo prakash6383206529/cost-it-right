@@ -377,7 +377,7 @@ class ReasonListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };

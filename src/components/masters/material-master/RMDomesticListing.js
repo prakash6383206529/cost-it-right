@@ -744,7 +744,7 @@ function RMDomesticListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn

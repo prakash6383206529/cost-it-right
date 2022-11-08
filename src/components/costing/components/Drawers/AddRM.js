@@ -157,7 +157,7 @@ function AddRM(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isMultipleRMAllow(costData?.TechnologyId) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
