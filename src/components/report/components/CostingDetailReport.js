@@ -137,10 +137,10 @@ function ReportListing(props) {
 
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]))
-        if (statusColumnData?.data) {
+
+        if (statusColumnData?.id) {
             setEnableSearchFilterButton(false)
             setWarningMessage(true)
-
             switch (statusColumnData?.id) {
                 case 1:
                     setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
