@@ -177,7 +177,7 @@ function OverheadListing(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData?.id) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
