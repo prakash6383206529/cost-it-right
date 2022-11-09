@@ -107,8 +107,7 @@ function CostingSimulation(props) {
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-    // const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value));
-    const isMultiTechnology = IdForMultiTechnology.includes(String(SimulationTechnologyIdState))
+    const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value));
 
     const dispatch = useDispatch()
 
