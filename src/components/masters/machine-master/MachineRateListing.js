@@ -299,6 +299,7 @@ class MachineRateListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
     }
@@ -578,7 +579,7 @@ class MachineRateListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
             headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,

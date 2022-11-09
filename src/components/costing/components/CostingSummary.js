@@ -16,7 +16,7 @@ import BOMUpload from '../../massUpload/BOMUpload'
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { searchCount } from '../../../config/constants'
-import { autoCompleteDropdown } from '../../common/CommonFunctios'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
 
 function CostingSummary(props) {
 

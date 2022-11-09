@@ -525,7 +525,6 @@ function Simulation(props) {
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
-        setShowEditTable(true)
         if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
@@ -1062,7 +1061,7 @@ function Simulation(props) {
                     }
                     {/* <RMDomesticListing isSimulation={true} /> */}
                     {showMasterList &&
-                        <div className={`${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
+                        <div className={`${partType ? 'simulation-edit' : ''} ${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
                     }
 
                     {showMasterList && !partType &&

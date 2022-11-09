@@ -260,6 +260,7 @@ class IndivisualPartListing extends Component {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();
                 this.ApiActionCreator(this.state.currentRowIndex, 100, this.state.floatingFilterData, true)
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -594,7 +595,7 @@ class IndivisualPartListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

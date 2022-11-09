@@ -290,6 +290,7 @@ class BOPImportListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -557,7 +558,7 @@ class BOPImportListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             checkboxSelection: isFirstColumn,
             headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
@@ -624,7 +625,7 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                    <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

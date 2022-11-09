@@ -875,7 +875,7 @@ function Insights(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         // headerCheckboxSelection: isFirstColumn,
         // checkboxSelection: isFirstColumn
     };
@@ -1041,7 +1041,6 @@ function Insights(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 enableBrowserTooltips={true}
-                                                suppressRowClickSelection={true}
                                             >
                                                 <AgGridColumn pinned="left" field="Specification" />
                                                 <AgGridColumn pinned="left" width="120" field="Minimum" />

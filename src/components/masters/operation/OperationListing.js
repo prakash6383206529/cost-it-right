@@ -358,6 +358,7 @@ class OperationListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -732,7 +733,7 @@ class OperationListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
             headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,

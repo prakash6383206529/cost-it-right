@@ -124,7 +124,7 @@ function OperationInsights(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         // headerCheckboxSelection: isFirstColumn,
         // checkboxSelection: isFirstColumn
     };
@@ -243,7 +243,6 @@ function OperationInsights(props) {
                                                     title: EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
-                                                suppressRowClickSelection={true}
                                             >
                                                 <AgGridColumn pinned="left" width="160" field="OperationName" headerName="Operation Name" />
                                                 <AgGridColumn pinned="left" width="115" field="Minimum" />

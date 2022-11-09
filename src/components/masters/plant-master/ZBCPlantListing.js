@@ -113,6 +113,7 @@ class ZBCPlantListing extends Component {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+                this.setState({ dataCount: 0 })
                 this.filterList()
 
             }
@@ -270,6 +271,7 @@ class ZBCPlantListing extends Component {
             if (type === 'submit') {
                 this.filterList()
                 this.setState({ noData: false })
+                this.setState({ dataCount: 0 })
             }
         })
 
@@ -356,7 +358,7 @@ class ZBCPlantListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

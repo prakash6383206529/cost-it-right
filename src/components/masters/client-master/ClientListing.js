@@ -150,6 +150,7 @@ class ClientListing extends Component {
         this.props.deleteClient(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
+                this.setState({ dataCount: 0 })
                 this.getTableListData(null, null)
             }
         });
@@ -241,6 +242,7 @@ class ClientListing extends Component {
         }, () => {
             if (type === 'submit')
                 this.getTableListData(null, null)
+            this.setState({ dataCount: 0 })
         })
     }
 
@@ -327,7 +329,7 @@ class ClientListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

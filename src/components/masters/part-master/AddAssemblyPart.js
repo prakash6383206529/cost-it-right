@@ -28,7 +28,7 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -642,7 +642,7 @@ class AddAssemblyPart extends Component {
     let childPartArray = [];
     let isStructureChanges;
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
-    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0 || BOMViewerData.length === 1) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
 
       return false;

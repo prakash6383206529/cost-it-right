@@ -93,6 +93,7 @@ class SpecificationListing extends Component {
         this.setState({ isOpen: false }, () => {
             if (type === 'submit')
                 this.getSpecificationListData('', '');
+            this.setState({ dataCount: 0 })
         })
 
     }
@@ -140,6 +141,7 @@ class SpecificationListing extends Component {
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
+                this.setState({ dataCount: 0 })
             }
             this.setState({ showPopup: false })
         });
@@ -322,7 +324,7 @@ class SpecificationListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

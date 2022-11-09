@@ -339,6 +339,8 @@ function OverheadListing(props) {
         dispatch(deleteOverhead(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
+                dispatch(setSelectedRowForPagination([]))
+                setDataCount(0)
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }))
@@ -612,7 +614,7 @@ function OverheadListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };

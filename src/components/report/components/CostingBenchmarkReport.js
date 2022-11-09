@@ -188,7 +188,7 @@ function CostingBenchmarkReport(props) {
                     </Row>
 
                     <Row>
-                        <Col md="12" className="filter-block zindex-12">
+                        <Col md="12" className="filter-block">
                             {dropDown &&
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Masters:</div>
