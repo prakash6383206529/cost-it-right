@@ -15,6 +15,7 @@ import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
+    ASSEMBLY_TECHNOLOGY,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     COMBINEDPROCESSSIMULATION,
@@ -110,8 +111,7 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-    const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value));
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     const dispatch = useDispatch()
 
@@ -289,7 +289,7 @@ function CostingSimulation(props) {
     * @description API CALL FOR GET LIST OF ALL MASTERS
     */
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation?.value))) {
+        if (isMultiTechnology) {
             dispatch(getAllSimulatedMultiTechnologyCosting(simulationId, (res) => {
                 setCommonStateForList(res)
             }))

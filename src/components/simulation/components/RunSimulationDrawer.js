@@ -10,13 +10,13 @@ import DayTime from '../../common/DayTimeWrapper'
 import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { IdForMultiTechnology } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY, IdForMultiTechnology } from '../../../config/masterData';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props

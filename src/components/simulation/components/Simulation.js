@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, COMBINED_PROCESS } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -20,7 +20,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { applyEditCondSimulation, checkForNull, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -71,7 +71,7 @@ function Simulation(props) {
     const [inputLoader, setInputLoader] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [vendorName, setVendorName] = useState({})
-    const partType = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value))
+    const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -153,7 +153,7 @@ function Simulation(props) {
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
-        if (IdForMultiTechnology.includes(String(value.value))) {
+        if (checkForNull(value.value) === ASSEMBLY_TECHNOLOGY) {
             // SINCE WE ARE IN MASTER HANDLE CHANGE, TO SET VALUE OF ASSEMBLY TECHNOLOGY IN DROPDOWN WE NEED TO GET DYNAMIC VALUE FROM DROPDOWN API'S REDUCER
             setShowTokenDropdown(false)
             dispatch(setTechnologyForSimulation(value))
@@ -163,7 +163,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if (IdForMultiTechnology.includes(String(value?.value))) {
+        if (checkForNull(value?.value) === ASSEMBLY_TECHNOLOGY) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
