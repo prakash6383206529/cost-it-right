@@ -129,7 +129,7 @@ function CostingSummary(props) {
     if (label === 'Technology') {
       technologySelectList &&
         technologySelectList.map((item) => {
-          if (item.Value === '0') return false
+          if (item.Value === '0' || item.Value === '14') return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
