@@ -29,6 +29,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import _ from 'lodash';
 import { useRef } from 'react';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -147,6 +148,7 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
+        reactLocalStorage.setObject('selectedRow', {})
         if (!props.stopApiCallOnCancel) {
             let obj = {
                 MasterId: RM_MASTER_ID,
@@ -159,9 +161,9 @@ function RMDomesticListing(props) {
                     setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
                 }
             }))
-
             return () => {
                 dispatch(setSelectedRowForPagination([]))
+                reactLocalStorage.setObject('selectedRow', {})
             }
         }
     }, [])
@@ -696,6 +698,7 @@ function RMDomesticListing(props) {
 
     const onRowSelect = (event) => {
 
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -718,14 +721,12 @@ function RMDomesticListing(props) {
 
         }
 
-
         let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
 
         if (isSimulation) {
             apply(uniqueArray, length)
@@ -751,6 +752,7 @@ function RMDomesticListing(props) {
     };
 
     const checkBoxRenderer = (props) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
