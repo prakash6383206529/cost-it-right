@@ -122,7 +122,7 @@ function ProfitListing(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData?.id) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicabilityType: encodeURIComponent(statusColumnData.data) }))
