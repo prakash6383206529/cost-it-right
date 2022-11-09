@@ -154,6 +154,7 @@ function Icc(props) {
 
             switch (Text) {
                 case 'RM':
+                case 'Part Cost':
                     setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -164,6 +165,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + CC':
+                case 'Part Cost + CC':
                     setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -174,6 +176,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + BOP':
+                case 'Part Cost + BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -184,6 +187,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + CC + BOP':
+                case 'Part Cost + CC + BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -266,7 +270,7 @@ function Icc(props) {
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
+                            disabled={CostingViewMode ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
