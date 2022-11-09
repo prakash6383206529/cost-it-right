@@ -121,6 +121,7 @@ class IndivisualProductListing extends Component {
                 Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
 
                 this.getTableListData();
+                this.setState({ dataCount: 0 })
             }
 
         });
@@ -341,7 +342,7 @@ class IndivisualProductListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

@@ -379,6 +379,8 @@ function ProfitListing(props) {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+                dispatch(setSelectedRowForPagination([]))
+                setDataCount(0)
             }
         }))
         setShowPopup(false)
@@ -632,7 +634,7 @@ function ProfitListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };

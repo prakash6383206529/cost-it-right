@@ -153,6 +153,7 @@ class PowerListing extends Component {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
+          this.setState({ dataCount: 0 })
         }
       });
       this.setState({ showPopup: false })
@@ -381,7 +382,7 @@ class PowerListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };

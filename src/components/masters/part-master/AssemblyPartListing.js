@@ -120,6 +120,7 @@ class AssemblyPartListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -313,7 +314,7 @@ class AssemblyPartListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };

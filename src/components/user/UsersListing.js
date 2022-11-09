@@ -247,6 +247,7 @@ class UsersListing extends Component {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				}
 				this.getUsersListData(null, null);
+				this.setState({ dataCount: 0 })
 			}
 		})
 
@@ -532,7 +533,7 @@ class UsersListing extends Component {
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
-			sortable: true,
+			sortable: false,
 			headerCheckboxSelectionFilteredOnly: true,
 			checkboxSelection: isFirstColumn
 

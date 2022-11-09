@@ -431,6 +431,7 @@ function RMDomesticListing(props) {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+                setDataCount(0)
                 resetState()
             }
         }));
@@ -727,7 +728,7 @@ function RMDomesticListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn

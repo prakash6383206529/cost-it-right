@@ -418,6 +418,7 @@ function RMImportListing(props) {
         Toaster.error(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+        setDataCount(0)
         resetState()
       }
     }));
@@ -760,7 +761,7 @@ function RMImportListing(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn

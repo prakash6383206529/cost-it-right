@@ -290,6 +290,7 @@ class BOPImportListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -557,7 +558,7 @@ class BOPImportListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             checkboxSelection: isFirstColumn,
             headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };

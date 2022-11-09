@@ -23,7 +23,7 @@ import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown } from '../../common/CommonFunctios'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
 
 const selector = formValueSelector('AddLabour')
 
