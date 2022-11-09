@@ -10,12 +10,13 @@ import {
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { MACHINING } from '../../../config/masterData'
 
 function CostingSummary(props) {
 
@@ -129,7 +130,7 @@ function CostingSummary(props) {
     if (label === 'Technology') {
       technologySelectList &&
         technologySelectList.map((item) => {
-          if (item.Value === '0') return false
+          if (item.Value === '0' || checkForNull(item.Value) === MACHINING) return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
