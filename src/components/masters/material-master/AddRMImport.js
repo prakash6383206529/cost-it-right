@@ -1365,7 +1365,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
+                                <TooltipCustom id={'category'} tooltipText="RM category will come here like CutToFit, CutToLength." />
                                 <Field
                                   name="CategoryId"
                                   type="text"
@@ -1698,7 +1698,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
-                          <Col md="3">
+                          <Col md="3"><TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate + Freight Cost + Shearing Cost"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"NetLandedCost"}
