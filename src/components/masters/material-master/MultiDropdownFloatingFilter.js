@@ -63,7 +63,9 @@ function MultiDropdownFloatingFilter(props) {
 
     const valueChanged = (event) => {
 
-        if (!Array.isArray(event)) {
+        if (event === null) {
+            event = []
+        } else if (!Array.isArray(event)) {
             event = [event]
         }
 
@@ -72,9 +74,9 @@ function MultiDropdownFloatingFilter(props) {
         let plants = ""
         event && event.map((item, index) => {
             if (index > 0) {
-                plants = plants + "," + item.label
+                plants = plants + "," + item?.label
             } else {
-                plants = item.label
+                plants = item?.label
             }
         })
 
@@ -86,8 +88,6 @@ function MultiDropdownFloatingFilter(props) {
         }
 
         let gridTempArr = Object.assign([...arr], { [props?.maxValue]: event })
-
-
         dispatch(agGridStatus(plants, props?.maxValue, event, gridTempArr))
         setCurrentValue(event?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
