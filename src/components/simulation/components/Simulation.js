@@ -34,7 +34,7 @@ import _ from 'lodash'
 import AssemblySimulationListing from './AssemblySimulationListing';
 import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctios';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
