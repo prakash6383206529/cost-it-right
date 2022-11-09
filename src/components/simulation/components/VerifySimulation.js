@@ -7,7 +7,7 @@ import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREA
 import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { IdForMultiTechnology } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -44,7 +44,7 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
-    const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation.value));
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) ? true : false;
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
@@ -65,7 +65,7 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation?.value))) {
+        if (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) {
             dispatch(getAllMultiTechnologyImpactedSimulationCostings(props?.token, (res) => {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
@@ -289,14 +289,14 @@ function VerifySimulation(props) {
     const newBRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const newSRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row?.NewScrapRate > row?.OldScrapRate) ? 'red-value form-control' : (row?.NewScrapRate < row?.OldScrapRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
@@ -323,31 +323,31 @@ function VerifySimulation(props) {
     const renderPlant = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}(${row?.PlantCode})` : '-'
     }
 
     const renderVendor = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}(${row?.VendorCode})` : '-'
     }
 
     const renderPart = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = isMultiTechnology ? row.PartNumber : row.PartNo
+        let value = isMultiTechnology ? row?.PartNumber : row?.PartNo
         return (value !== null && value !== '-') ? value : '-'
     }
 
     const renderRM = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
+        return `${cell}-${row?.RMGrade ? row?.RMGrade : '-'}`
     }
 
     const newExchangeRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row?.NewExchangeRate > row?.OldExchangeRate) ? 'red-value form-control' : (row?.NewExchangeRate < row?.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
