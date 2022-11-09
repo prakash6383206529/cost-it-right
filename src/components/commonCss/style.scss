@@ -2992,7 +2992,7 @@ button:disabled,
 }
 
 .tooltip-inner {
-  background-color: #D0D8E5;
+  background-color: #d0d8e5;
   color: #3D4465;
 }
 
@@ -7467,6 +7467,7 @@ body {
   position: sticky;
   bottom: 0;
   padding: 0 16px !important;
+  z-index: 2;
 }
 
 .rmcc-main-headings {

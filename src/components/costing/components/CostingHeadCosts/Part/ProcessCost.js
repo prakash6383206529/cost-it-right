@@ -1155,10 +1155,6 @@ function ProcessCost(props) {
     )
   }
 
-  /**
-   * @method render
-   * @description Renders the component
-   */
   const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds.</div> <div>For all others UOMs, please enter the actual quantity.</div></div>;
   return (
     <>
@@ -1207,7 +1203,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
-                    <th style={{ width: "110px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "110px" }} >{`Net Cost`}<TooltipCustom tooltipClass={'process-net-cost'} customClass={"header-tooltip"} id="process-net-cost" tooltipText={processNetCostFormula} /></th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>

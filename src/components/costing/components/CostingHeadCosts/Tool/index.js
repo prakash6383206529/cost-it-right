@@ -15,6 +15,7 @@ import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function Tool(props) {
 
@@ -696,7 +697,7 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom id="tool-maintanence" tooltipText={"Tool Maintanence Cost = maintanence Cost(%) * Cost(Applicability) / 100"} />}
                     <TextFieldHookForm
                       label="Tool Maintanence Cost"
                       name={`ToolMaintenanceCost`}
@@ -778,6 +779,7 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
+                    <TooltipCustom id="tool-amortization" tooltipText={"Tool Amortization = Tool Cost / Amortization Quantity"} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={`ToolAmortizationCost`}
@@ -802,7 +804,7 @@ function Tool(props) {
                     />
                   </Col>
 
-                  <Col md="3">
+                  <Col md="3"> <TooltipCustom id="tool-cost" tooltipText={"Net Tool Cost = Tool Maintanence Cost + Tool Amortization"} />
                     <TextFieldHookForm
                       label="Net Tool Cost"
                       name={`NetToolCost`}

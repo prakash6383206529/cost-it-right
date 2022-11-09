@@ -206,7 +206,7 @@ export const PasswordFieldHookForm = (field) => {
 
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow, id } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -214,37 +214,40 @@ export const NumberFieldHookForm = (field) => {
 
   return (
     <>
-      <div className={className}>
+      <div className={className} >
         <label>
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => {
-            return (
-              <input
-                {...field}
-                {...register}
-                type={'number'}
-                name={name}
-                className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-              />
-            )
-          }
-          }
-        />
+        <div id={id}>
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => {
+              return (
+                <input
+                  {...field}
+                  {...register}
+                  type={'number'}
+                  id={id && id}
+                  name={name}
+                  className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                />
+              )
+            }
+            }
+          />
+        </div>
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>

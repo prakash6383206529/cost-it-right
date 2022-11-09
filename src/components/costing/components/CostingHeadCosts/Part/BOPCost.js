@@ -13,6 +13,7 @@ import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Cos
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function BOPCost(props) {
@@ -469,7 +470,7 @@ function BOPCost(props) {
                       <th>{`UOM`}</th>
                       <th>{`BOP Cost (INR)`}</th>
                       <th>{`Quantity`}</th>
-                      <th>{`Net BOP Cost`}</th>
+                      <th>{`Net BOP Cost`}<TooltipCustom customClass="header-tooltip" id="bop-cost" tooltipText="Net BOP Cost = BOP Cost * Qauntity" /></th>
                       <th>{`Action`}</th>
                     </tr>
                   </thead>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Col, Row } from 'reactstrap'
+import { Col, Row, Tooltip } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
@@ -15,6 +15,7 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -471,6 +472,10 @@ function Pipe(props) {
    * @method render
    * @description Renders the component
    */
+  const tooltipMessageForSheetWeight = (value) => {
+    return <div>Weight of Sheet = Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value}</div>
+  }
+  const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? '(π * Inner Diameter * Length of Part) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
   return (
     <>
       <div className="user-page p-0">
@@ -534,6 +539,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness / 10)" />
                   <NumberFieldHookForm
                     label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
@@ -541,6 +547,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'inner-diameter'}
                     rules={{
                       required: false,
                     }}
@@ -599,6 +606,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = Length(Sheet) / Length(Part)" />
                   <NumberFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
@@ -606,6 +614,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'length-of-part'}
                     rules={{
                       required: false,
                       pattern: {
@@ -622,6 +631,8 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no of parts/Sheet" />
+
                   <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
@@ -629,6 +640,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'length-of-scrap'}
                     rules={{
                       required: false,
                       pattern: {
@@ -645,6 +657,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
                   <NumberFieldHookForm
                     label={`Weight of Sheet(g)`}
                     name={'WeightofSheet'}
@@ -652,6 +665,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'weight-of-sheet'}
                     rules={{
                       required: false,
                       pattern: {
@@ -668,6 +682,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
                   <NumberFieldHookForm
                     label={`Weight of Part(g)`}
                     name={'WeightofPart'}
@@ -675,6 +690,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'weight-of-part'}
                     rules={{
                       required: false,
                       pattern: {
@@ -691,6 +707,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
                   <NumberFieldHookForm
                     label={`Weight of Scrap(g)`}
                     name={'WeightofScrap'}
@@ -698,6 +715,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'weight-of-scrap'}
                     rules={{
                       required: false,
                       pattern: {
@@ -751,6 +769,7 @@ function Pipe(props) {
               <hr className="mx-n4 w-auto" />
               <Row>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'surface-area'} tooltipText={surfaceaAreaTooltipMessage} />
                   <NumberFieldHookForm
                     label={UnitFormat()}
                     name={'NetSurfaceArea'}
@@ -758,6 +777,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'surface-area'}
                     rules={{
                       required: false,
                     }}
@@ -788,6 +808,7 @@ function Pipe(props) {
 
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Weight of Part"} />
                   <NumberFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
@@ -795,6 +816,7 @@ function Pipe(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'gross-weight'}
                     rules={{
                       required: false,
                     }}
