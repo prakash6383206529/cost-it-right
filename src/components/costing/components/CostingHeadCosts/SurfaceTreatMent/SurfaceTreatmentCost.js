@@ -11,6 +11,7 @@ import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -237,7 +238,7 @@ function SurfaceTreatmentCost(props) {
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
-                    <th>{`Cost`}</th>
+                    <th>{`Cost`}<TooltipCustom customClass="header-tooltip" id="surface-cost" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Surface Area * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = Surface Area * Rate"} /></th>
                     <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>

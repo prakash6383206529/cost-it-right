@@ -18,6 +18,7 @@ import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
 import { debounce } from 'lodash';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -1121,7 +1122,7 @@ function ProcessCost(props) {
    * @description Renders the component
    */
   const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds.</div> <div>For all others UOMs, please enter the actual quantity.</div></div>;
-
+  const processNetCostFormula = <div><div>If UOM is in hours, Net Cost = (Quantity * Machine Rate)/3600</div><div>If UOM is in Minutes, Net Cost = (Quantity * Machine Rate)/60</div><div>For all others UOMs, Net Cost = Quantity * Machine Rate</div></div>
   return (
     <>
       <div className="user-page p-0">
@@ -1169,7 +1170,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
-                    <th style={{ width: "110px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "110px" }} >{`Net Cost`}<TooltipCustom tooltipClass={'process-net-cost'} customClass={"header-tooltip"} id="process-net-cost" tooltipText={processNetCostFormula} /></th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
