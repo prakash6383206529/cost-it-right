@@ -30,6 +30,7 @@ import AddNCCDrawer from './AddNCCDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
+import { MACHINING } from '../../../config/masterData';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -230,7 +231,7 @@ function CostingDetails(props) {
 
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
-        if (item.Value === '0') return false
+        if (item.Value === '0' || checkForNull(item.Value) === MACHINING) return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
