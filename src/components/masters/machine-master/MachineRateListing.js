@@ -299,6 +299,7 @@ class MachineRateListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
     }

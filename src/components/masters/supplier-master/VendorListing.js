@@ -265,6 +265,7 @@ class VendorListing extends Component {
                 Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()
                 //this.getTableListData(null, null, null)
+                this.props.setSelectedRowForPagination([])
             }
         });
         this.setState({ showPopup: false })
@@ -342,6 +343,7 @@ class VendorListing extends Component {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
                 this.filterList()
+                this.setState({ dataCount: 0 })
             }
         })
         this.setState({ showPopupToggle: false })
@@ -521,6 +523,8 @@ class VendorListing extends Component {
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        this.state.gridApi.deselectAll()
+        this.props.setSelectedRowForPagination([])
         this.setState({ dataCount: 0 })
     }
     onExcelDownload = () => {

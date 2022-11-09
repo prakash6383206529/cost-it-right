@@ -379,6 +379,8 @@ function ProfitListing(props) {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+                dispatch(setSelectedRowForPagination([]))
+                setDataCount(0)
             }
         }))
         setShowPopup(false)

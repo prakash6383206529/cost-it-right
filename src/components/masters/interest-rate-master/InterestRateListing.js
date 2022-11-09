@@ -160,6 +160,7 @@ class InterestRateListing extends Component {
     this.props.deleteInterestRate(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
+        this.setState({ dataCount: 0 })
         this.getTableListData()
       }
     });
