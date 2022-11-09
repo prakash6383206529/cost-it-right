@@ -326,22 +326,22 @@ function TabOverheadProfit(props) {
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(rejectionObj.RejectionTotalCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
+            checkForNull(i.CostingPartDetails.ProfitCost) +
+            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(i.CostingPartDetails.ICCCost) +
+            checkForNull(i.CostingPartDetails.PaymentTermCost);
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(rejectionObj.RejectionTotalCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
+            checkForNull(i.CostingPartDetails.ProfitCost) +
+            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(i.CostingPartDetails.ICCCost) +
+            checkForNull(i.CostingPartDetails.PaymentTermCost);
 
         } else {
           i.IsOpen = false;
