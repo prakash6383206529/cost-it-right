@@ -2153,6 +2153,7 @@ export const HARDWARE = 18
 export const RIVET = 19
 export const PLATING = 21
 export const DIE_CASTING = 23
+export const ASSEMBLY_TECHNOLOGY = 10
 
 
 
