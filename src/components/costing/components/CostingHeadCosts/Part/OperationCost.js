@@ -13,6 +13,7 @@ import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } f
 import Popup from 'reactjs-popup';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function OperationCost(props) {
@@ -333,7 +334,7 @@ function OperationCost(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
-                    <th>{`Net Cost`}</th>
+                    <th>{`Net Cost`}<TooltipCustom customClass="header-tooltip" id="operation-cost" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = Rate * Quantity"} /></th>
                     <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>

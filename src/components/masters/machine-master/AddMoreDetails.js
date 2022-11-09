@@ -40,6 +40,7 @@ import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -2654,7 +2655,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = Machine Cost + Accessories Cost + Installation Charges"} />
                           <Field
                             label={`Total Cost(INR)`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
