@@ -1351,7 +1351,7 @@ export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response?.data?.DataList,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 });
             }
             callback(response);
