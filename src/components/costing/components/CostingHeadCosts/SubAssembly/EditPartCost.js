@@ -160,6 +160,15 @@ function EditPartCost(props) {
     }
 
     const handleDeltaValue = (value, index) => {
+        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPrice < value) {
+
+            Toaster.warning('Delta value should be less than settled price')
+            setTimeout(() => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+            }, 200);
+            return false
+        }
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);

@@ -15,10 +15,12 @@ import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
+    ASSEMBLY_TECHNOLOGY,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
+    CostingSimulationDownloadAssemblyTechnology,
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -105,8 +107,7 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-    const isMultiTechnology = IdForMultiTechnology.includes(String(selectedMasterForSimulation?.value));
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     const dispatch = useDispatch()
 
@@ -279,7 +280,7 @@ function CostingSimulation(props) {
     * @description API CALL FOR GET LIST OF ALL MASTERS
     */
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation?.value))) {
+        if (isMultiTechnology) {
             dispatch(getAllSimulatedMultiTechnologyCosting(simulationId, (res) => {
                 setCommonStateForList(res)
             }))
@@ -900,14 +901,9 @@ function CostingSimulation(props) {
 
     const returnExcelColumnSecond = (data = []) => {
         return (
-            [1, 2, 3] && [1, 2, 3].map(() => {
-                return (
-                    <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-                        {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-                    </ExcelSheet>
-                );
-            })
-        )
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const returnExcelColumnImpactedMaster = () => {
@@ -976,23 +972,27 @@ function CostingSimulation(props) {
             finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
         }
 
-        switch (Number(master)) {
-            case Number(RMDOMESTIC):
-            case Number(RMIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(SURFACETREATMENT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(OPERATIONS):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(EXCHNAGERATE):
-                return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
-            case Number(MACHINERATE):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
-            default:
-                return 'foo'
+        if (isMultiTechnology) {
+            return returnExcelColumn(CostingSimulationDownloadAssemblyTechnology, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+        } else {
+            switch (Number(master)) {
+                case Number(RMDOMESTIC):
+                case Number(RMIMPORT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(SURFACETREATMENT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(OPERATIONS):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(BOPDOMESTIC):
+                case Number(BOPIMPORT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(EXCHNAGERATE):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                case Number(MACHINERATE):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                default:
+                    return 'foo'
+            }
         }
     }
 
