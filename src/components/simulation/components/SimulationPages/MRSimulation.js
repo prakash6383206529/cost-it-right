@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import moment from 'moment';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -42,6 +42,7 @@ function MRSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [maxDate, setMaxDate] = useState('');
     const [isDisable, setIsDisable] = useState(false)
+    const [noData, setNoData] = useState(false);
     const gridRef = useRef();
 
 
@@ -128,7 +129,11 @@ function MRSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -326,7 +331,7 @@ function MRSimulation(props) {
                         <div>
 
                             <Row>
-                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-wrapper height-width-wrapper">
                                         <div className="ag-grid-header d-flex align-items-center">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -375,7 +380,7 @@ function MRSimulation(props) {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="ag-theme-material" style={{ width: '100%' }}>
+                                        <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
@@ -390,6 +395,7 @@ function MRSimulation(props) {
                                                 gridOptions={gridOptions}
                                                 // loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                onFilterModified={onFloatingFilterChanged}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
                                                 }}
