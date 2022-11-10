@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -41,6 +41,7 @@ function OperationSTSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
+    const [noData, setNoData] = useState(false);
 
     const gridRef = useRef();
 
@@ -105,6 +106,11 @@ function OperationSTSimulation(props) {
         )
     }
 
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -312,7 +318,7 @@ function OperationSTSimulation(props) {
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header d-flex align-items-center">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -362,7 +368,8 @@ function OperationSTSimulation(props) {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="ag-theme-material" style={{ width: '100%' }}>
+                                        <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                             <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
@@ -383,6 +390,7 @@ function OperationSTSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
+                                                onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}
                                             >
                                                 {!isImpactedMaster && <>

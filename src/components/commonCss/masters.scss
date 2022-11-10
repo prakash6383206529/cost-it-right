@@ -72,37 +72,35 @@
     }
   }
 
-  .plus-icon-square {
-    width: 25px;
-    height: 23px;
+  .ag-grid-wrapper,
+  .ag-theme-material {
+    .no-content-found {
+      position: absolute;
+      z-index: 1;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      margin: 0 !important;
 
-  }
-}
+      .my-2 {
+        margin-top: 0 !important;
+      }
 
-.ag-grid-wrapper,
-.ag-theme-material {
-  .no-content-found {
-    position: absolute;
-    z-index: 1;
-    bottom: 70px;
-    left: 0;
-    right: 0;
-    margin: 0 !important;
+      &.approval-listing {
+        bottom: 103px;
+      }
 
-    .my-2 {
-      margin-top: 0 !important;
-    }
+      &.bop-drawer {
+        bottom: 130px;
+      }
 
-    &.approval-listing {
-      bottom: 103px;
-    }
+      &.drawer {
+        bottom: 100px;
+      }
 
-    &.vendor-listing {
-      bottom: 97px !important;
-    }
-
-    &.bop-drawer {
-      bottom: 130px;
+      &.simulation-lisitng {
+        bottom: 78px;
+      }
     }
   }
 }

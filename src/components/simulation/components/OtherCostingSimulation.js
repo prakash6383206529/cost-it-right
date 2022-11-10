@@ -7,7 +7,7 @@ import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../
 import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -62,6 +62,7 @@ function OtherCostingSimulation(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
+    const [noData, setNoData] = useState(false);
 
     const isExchangeRate = String(selectedMasterForSimulation?.value) === EXCHNAGERATE;
 
@@ -126,7 +127,11 @@ function OtherCostingSimulation(props) {
             }
         }))
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (tableData.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
 
     const dataSet = (res) => {
         const tokenNo = res.data.Data.SimulationTokenNumber
@@ -651,13 +656,12 @@ function OtherCostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-                                            >
+                                            <div className="ag-theme-material">
+                                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
@@ -680,6 +684,7 @@ function OtherCostingSimulation(props) {
                                                     // frameworkComponents={frameworkComponents}
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
+                                                    onFilterModified={onFloatingFilterChanged}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>

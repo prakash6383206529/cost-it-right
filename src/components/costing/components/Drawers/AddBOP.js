@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,6 +24,7 @@ function AddBOP(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -154,7 +155,11 @@ function AddBOP(props) {
     params.api.paginationGoToPage(0);
 
   };
-
+  const onFloatingFilterChanged = (value) => {
+    if (bopDrawerList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
@@ -214,17 +219,15 @@ function AddBOP(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${(bopDrawerList && bopDrawerList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -247,6 +250,7 @@ function AddBOP(props) {
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Insert Type"  ></AgGridColumn>

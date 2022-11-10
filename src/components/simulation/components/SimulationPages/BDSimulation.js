@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { runVerifyBoughtOutPartSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -43,6 +43,8 @@ function BDSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
+    const [noData, setNoData] = useState(false);
+
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -267,7 +269,11 @@ function BDSimulation(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
     };
-
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
@@ -318,7 +324,7 @@ function BDSimulation(props) {
                     <Fragment>
 
                         <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header d-flex align-items-center">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -370,7 +376,8 @@ function BDSimulation(props) {
                                             </div>
                                         </>
                                     }
-                                    <div className="ag-theme-material" style={{ width: '100%' }}>
+                                    <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
@@ -390,6 +397,7 @@ function BDSimulation(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
+                                            onFilterModified={onFloatingFilterChanged}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                             <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>

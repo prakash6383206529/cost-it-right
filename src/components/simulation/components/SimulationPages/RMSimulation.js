@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -47,6 +47,7 @@ function RMSimulation(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
     const gridRef = useRef();
+    const [noData, setNoData] = useState(false);
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -222,7 +223,11 @@ function RMSimulation(props) {
         return cell != null ? cell : '-';
     }
 
-
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -430,7 +435,7 @@ function RMSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -499,7 +504,8 @@ function RMSimulation(props) {
 
 
                                     </div>
-                                    <div className="ag-theme-material" style={{ width: '100%' }}>
+                                    <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
@@ -520,6 +526,7 @@ function RMSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onCellValueChanged={onCellValueChanged}
+                                            onFilterModified={onFloatingFilterChanged}
                                         >
                                             {
                                                 !isImpactedMaster &&

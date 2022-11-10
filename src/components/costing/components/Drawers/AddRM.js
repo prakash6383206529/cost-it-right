@@ -11,7 +11,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -32,6 +32,7 @@ function AddRM(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
 
   const dispatch = useDispatch()
 
@@ -154,6 +155,7 @@ function AddRM(props) {
     return thisIsFirstColumn;
   }
 
+
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -172,6 +174,11 @@ function AddRM(props) {
 
   };
 
+  const onFloatingFilterChanged = (value) => {
+    if (rmDrawerList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
@@ -272,17 +279,15 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <= 0 ? "overlay-contain" : ""} `}>
+                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${(rmDrawerList && rmDrawerList?.length <= 0) || noData ? "overlay-contain" : ""} `}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -305,6 +310,7 @@ function AddRM(props) {
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>

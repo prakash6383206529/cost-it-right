@@ -12,7 +12,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 const gridOptions = {};
@@ -23,6 +23,7 @@ function AddOperation(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -156,6 +157,11 @@ function AddOperation(props) {
     gridOptions.api.setFilterModel(null);
   }
 
+  const onFloatingFilterChanged = (value) => {
+    if (tableData.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
 
   /**
   * @method render
@@ -185,17 +191,15 @@ function AddOperation(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -217,6 +221,7 @@ function AddOperation(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                         onRowSelected={onRowSelect}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
