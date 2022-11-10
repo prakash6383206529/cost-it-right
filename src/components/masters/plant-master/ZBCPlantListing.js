@@ -398,7 +398,8 @@ class ZBCPlantListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
@@ -419,7 +420,6 @@ class ZBCPlantListing extends Component {
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     {!this.state.isLoader && < div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

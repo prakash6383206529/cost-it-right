@@ -447,8 +447,9 @@ class PowerListing extends Component {
                       <>
 
                         <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
-                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-0" ></div>
                             {/* DOWNLOAD */}
+                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                           </button>}>
 
                           {this.onBtExport()}
@@ -475,7 +476,6 @@ class PowerListing extends Component {
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

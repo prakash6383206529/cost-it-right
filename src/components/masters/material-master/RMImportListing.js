@@ -70,7 +70,7 @@ function RMImportListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
-  const [dataCount, setDataCount] = useState(false)
+  const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
   const [dateArray, setDateArray] = useState([])
 
@@ -847,8 +847,9 @@ function RMImportListing(props) {
                           </button></div> :
 
                             <>
-                              <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                              <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
                                 {/* DOWNLOAD */}
+                                {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                               </button>
 
                               <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
@@ -874,7 +875,6 @@ function RMImportListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact

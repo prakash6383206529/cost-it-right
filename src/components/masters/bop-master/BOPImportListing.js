@@ -629,7 +629,6 @@ class BOPImportListing extends Component {
 
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -681,8 +680,9 @@ class BOPImportListing extends Component {
                                         </button></div> :
 
                                             <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                 </button>
 
                                                 <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
