@@ -730,6 +730,26 @@ function CostingDetails(props) {
         }, 500)
       }))
     }
+    if (type === NCCTypeId) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getBriefCostingById(costingId, (res) => {
+
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+    if (type === CBCTypeId) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getBriefCostingById(costingId, (res) => {
+
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
     // resetGrid()
   }
 
