@@ -829,8 +829,9 @@ function RMDomesticListing(props) {
                                                         </button></div> :
 
                                                             <>
-                                                                <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                                     {/* DOWNLOAD */}
+                                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                                 </button>
 
                                                                 <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
@@ -859,7 +860,6 @@ function RMDomesticListing(props) {
                     <Row>
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                {!props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />}
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact

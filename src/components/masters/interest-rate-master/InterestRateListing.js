@@ -445,16 +445,13 @@ class InterestRateListing extends Component {
                         <>
 
                           <ExcelFile filename={'InterestMaster'} fileExtension={'.xls'} element={
-                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                               {/* DOWNLOAD */}
+                              {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                             </button>}>
-
                             {this.onBtExport()}
                           </ExcelFile>
-
                         </>
-
-
 
                       }
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -471,7 +468,6 @@ class InterestRateListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
