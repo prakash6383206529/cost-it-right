@@ -7,7 +7,7 @@ import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DAT
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -107,6 +107,7 @@ function CostingSimulation(props) {
     const gridRef = useRef();
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const [noData, setNoData] = useState(false);
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
@@ -426,7 +427,11 @@ function CostingSimulation(props) {
         let isSelected = e.node.isSelected()
         setGridSelection(isSelected, e.node)
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (tableData.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     /**
     * @method setGridSelection
     * @description SET REJECTED DATA FOR API RESPONSE
@@ -1259,13 +1264,12 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-                                            >
+                                            <div className="ag-theme-material p-relative" >
+                                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
@@ -1289,6 +1293,7 @@ function CostingSimulation(props) {
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
                                                     onRowSelected={onRowSelected}
+                                                    onFilterModified={onFloatingFilterChanged}
                                                 >
 
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>

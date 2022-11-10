@@ -7,7 +7,7 @@ import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREA
 import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -35,6 +35,7 @@ function VerifySimulation(props) {
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [noData, setNoData] = useState(false);
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -391,6 +392,12 @@ function VerifySimulation(props) {
         setGridSelection(row, e.node)
     }
 
+    const onFloatingFilterChanged = (value) => {
+        if (verifyList.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
+
     const setGridSelection = (type, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
         const rowIndex = clickedElement.rowIndex
@@ -608,15 +615,15 @@ function VerifySimulation(props) {
                     <Row>
                         <Col>
                             <div className={`ag-grid-react`}>
-                                <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${(verifyList && verifyList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                     </div>
-                                    <div
-                                        className="ag-theme-material">
+                                    <div className="ag-theme-material p-relative">
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
@@ -637,6 +644,7 @@ function VerifySimulation(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelected}
                                             onSelectionChanged={onRowSelect}
+                                            onFilterModified={onFloatingFilterChanged}
                                             suppressRowClickSelection={true}
 
                                         >
