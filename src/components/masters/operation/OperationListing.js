@@ -811,8 +811,9 @@ class OperationListing extends Component {
                                                 {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                                                 </button></div> :
                                                     <>
-                                                        <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                             {/* DOWNLOAD */}
+                                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                         </button>
 
                                                         <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
@@ -837,7 +838,6 @@ class OperationListing extends Component {
                         </Row>
                     </form>
                     <div className={`ag-grid-wrapper p-relative ${(this.props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(this.state.tableData && this.state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
-                        {!this.props.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-0 mt-n1" />}
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
