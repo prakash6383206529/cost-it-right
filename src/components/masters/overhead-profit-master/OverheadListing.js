@@ -671,8 +671,9 @@ function OverheadListing(props) {
                                                 {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                                                 </button></div> :
                                                     <>
-                                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                             {/* DOWNLOAD */}
+                                                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                         </button>
                                                         <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
                                                             <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
@@ -697,7 +698,6 @@ function OverheadListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <SelectRowWrapper dataCount={dataCount} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

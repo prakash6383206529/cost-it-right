@@ -266,6 +266,8 @@ class VendorListing extends Component {
                 this.filterList()
                 //this.getTableListData(null, null, null)
                 this.props.setSelectedRowForPagination([])
+                this.setState({ dataCount: 0 })
+                this.state.gridApi.deselectAll()
             }
         });
         this.setState({ showPopup: false })
@@ -692,7 +694,8 @@ class VendorListing extends Component {
                                         {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                                         </button></div> :
                                             <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                 </button>
 
                                                 <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
@@ -713,7 +716,6 @@ class VendorListing extends Component {
                 </Row>
                 {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
-                        <SelectRowWrapper className={"mt-3"} dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 

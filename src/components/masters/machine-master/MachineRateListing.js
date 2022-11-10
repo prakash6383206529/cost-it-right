@@ -690,8 +690,9 @@ class MachineRateListing extends Component {
                                         {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                                         </button></div> :
                                             <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
                                                     {/* DOWNLOAD */}
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                 </button>
 
                                                 <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
@@ -715,7 +716,6 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.machineDatalist && this.props.machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            {!this.props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1 mt-n1" />}
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact

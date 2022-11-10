@@ -382,7 +382,6 @@ class ExchangeRateListing extends Component {
                             <Row className="pt-4 blue-before zindex-0">
                                 <Col md="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                    <SelectRowWrapper dataCount={dataCount} className="mb-n2" />
                                 </Col>
                                 <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -403,7 +402,8 @@ class ExchangeRateListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
                                                     <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>

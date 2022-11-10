@@ -26,6 +26,7 @@ import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 import _ from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -190,7 +191,7 @@ function ReportListing(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
                 if (item.BaseCostingId === props.node.data.BaseCostingId) {
@@ -434,11 +435,15 @@ function ReportListing(props) {
     }
 
     useEffect(() => {
-
+        reactLocalStorage.setObject('selectedRow', {})
         setLoader(true)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
+
+        return () => {
+            reactLocalStorage.setObject('selectedRow', {})
+        }
     }, [])
 
     const onBtNext = () => {
@@ -699,7 +704,7 @@ function ReportListing(props) {
     }
 
     const onRowSelect = (event) => {
-
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -722,7 +727,7 @@ function ReportListing(props) {
         }
 
         let uniqeArray = _.uniqBy(selectedRows, "BaseCostingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
 
     }
@@ -906,9 +911,9 @@ function ReportListing(props) {
                             {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
                                 <>
-                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
+                                    <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
                                         {/* DOWNLOAD */}
-                                        {`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                        {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                     </button>
                                     <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
                                         <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
@@ -955,7 +960,6 @@ function ReportListing(props) {
                 {isLoader ? <LoaderCustom /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
-                        <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             style={{ height: '100%', width: '100%' }}
