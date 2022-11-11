@@ -124,7 +124,7 @@ function TabToolCost(props) {
     }
 
     if (ToolTabData) {
-      if (ToolTabData[0]?.CostingPartDetails.IsToolCostProcessWise) {
+      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise) {
         setIsApplicableProcessWise(true)
       }
     }
@@ -206,7 +206,7 @@ function TabToolCost(props) {
 
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
-        //i.CostingPartDetails.OverAllApplicability = {};
+        //i.CostingPartDetails?.OverAllApplicability = {};
         i.IsChanged = IsChanged;
 
         return i;
@@ -464,14 +464,14 @@ function TabToolCost(props) {
                                       {item.PartName}
                                     </span>
                                   </td>
-                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 </tr>
                                 <tr>
                                   <td colSpan={2} className="cr-innerwrap-td pb-3">
                                     <div>
                                       <Tool
                                         index={index}
-                                        IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
+                                        IsApplicableProcessWise={item.CostingPartDetails?.IsToolCostProcessWise}
                                         data={item}
                                         // headCostRMCCBOPData={props.headCostRMCCBOPData}
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}

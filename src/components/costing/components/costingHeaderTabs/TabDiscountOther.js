@@ -176,8 +176,8 @@ function TabDiscountOther(props) {
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
-          if (Data && Data.CostingPartDetails && Data.CostingPartDetails.GrandTotalCost !== null) {
-            let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
+          if (Data && Data.CostingPartDetails && Data.CostingPartDetails?.GrandTotalCost !== null) {
+            let OtherCostDetails = Data.CostingPartDetails?.OtherCostDetails;
             setDiscountObj(OtherCostDetails)
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
