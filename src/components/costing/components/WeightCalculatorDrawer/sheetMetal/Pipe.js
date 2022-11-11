@@ -341,11 +341,13 @@ function Pipe(props) {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
       updatedValue.GrossWeight = WeightofPart
+      updatedValue.newGrossWeight = WeightofPart
       setDataToSend(updatedValue)
     } else {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart)
       updatedValue.GrossWeight = WeightofPart
+      updatedValue.newGrossWeight = WeightofPart
       setDataToSend(updatedValue)
     }
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
