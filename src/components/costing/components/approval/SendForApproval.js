@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { CBCTypeId, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -313,7 +313,7 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, viewApprovalData[index]?.costingTypeId === ZBCTypeId || viewApprovalData[index]?.costingTypeId === CBCTypeId ? viewApprovalData[index]?.plantId : viewApprovalData[index]?.destinationPlantId, viewApprovalData[index]?.vendorId, viewApprovalData[index]?.CustomerId, viewApprovalData[index]?.CostingTypeId, (res) => {
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, viewApprovalData[index]?.costingTypeId === ZBCTypeId ? viewApprovalData[index]?.plantId : viewApprovalData[index]?.destinationPlantId, viewApprovalData[index]?.vendorId, viewApprovalData[index]?.customerId, viewApprovalData[index]?.costingTypeId, (res) => {
       if (res.data.Result === true || res.status === 202) {
         let approvedQtyArr = res.data.Data.VolumeApprovedDetails
         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -1146,6 +1146,7 @@ const SendForApproval = (props) => {
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
                 TypeOfCosting={viewApprovalData[0].typeOfCosting}
+                CostingTypeId={viewApprovalData[0]?.costingTypeId}
               />}
           </div>
         </div>
