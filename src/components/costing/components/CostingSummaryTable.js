@@ -994,6 +994,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
+          {(Object.keys(viewCostingData).length === 0 && <LoaderCustom />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -1243,7 +1244,7 @@ const CostingSummaryTable = (props) => {
                               stCostShow={false}
                               operationShow={true}
                             /></th></tr>}
-                        {<tr>
+                        {drawerDetailPDF && <tr>
                           <th colSpan={2} className='py-0'>
                             <ViewMultipleTechnology
                               isOpen={viewMultipleTechnologyDrawer}
