@@ -23,7 +23,7 @@ function Tool(props) {
   const headerCosts = useContext(netHeadCostContext);
   const dispatch = useDispatch();
 
-  const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails?.CostingToolCostResponse && data.CostingPartDetails?.CostingToolCostResponse[0];
+  const ObjectForOverAllApplicability = data?.CostingPartDetails && data?.CostingPartDetails?.CostingToolCostResponse && data?.CostingPartDetails?.CostingToolCostResponse[0];
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const costingHead = useSelector(state => state.comman.costingHead)
@@ -52,11 +52,11 @@ function Tool(props) {
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [applicability, setApplicability] = useState(data && data.CostingPartDetails?.CostingToolCostResponse.length > 0 && data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
-  const [valueByAPI, setValueByAPI] = useState(data && data.CostingPartDetails?.CostingToolCostResponse.length > 0 && data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
+  const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
+  const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
   const { costingData } = useSelector(state => state.costing)
 
-  const [toolObj, setToolObj] = useState(data.CostingPartDetails?.CostingToolCostResponse[0])
+  const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);

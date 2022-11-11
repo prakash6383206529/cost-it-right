@@ -182,8 +182,8 @@ function TabDiscountOther(props) {
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
-          if (Data && Data.CostingPartDetails && Data.CostingPartDetails?.GrandTotalCost !== null) {
-            let OtherCostDetails = Data.CostingPartDetails?.OtherCostDetails;
+          if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
+            let OtherCostDetails = Data?.CostingPartDetails?.OtherCostDetails;
             setDiscountObj(OtherCostDetails)
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
@@ -763,10 +763,10 @@ function TabDiscountOther(props) {
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
 
-        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
-          checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
           checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
           checkForNull(DiscountCostData?.AnyOtherCost)) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)

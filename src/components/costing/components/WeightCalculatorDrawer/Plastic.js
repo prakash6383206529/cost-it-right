@@ -170,7 +170,7 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
-    DisableMasterBatchCheckbox(!item.CostingPartDetails?.IsApplyMasterBatch ? true : false)
+    DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"

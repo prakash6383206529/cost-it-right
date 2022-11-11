@@ -46,7 +46,7 @@ function TabPackagingFreight(props) {
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
-      let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
+      let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0]?.CostingPartDetails !== undefined ? PackageAndFreightTabData[0]?.CostingPartDetails : null;
       let topHeaderData = {
         NetFreightPackagingCost: TopHeaderValues && TopHeaderValues.NetFreightPackagingCost !== null ? checkForNull(TopHeaderValues.NetFreightPackagingCost) : 0,
       }
@@ -76,7 +76,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i?.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
         i.CostingPartDetails.CostingPackagingDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -122,7 +122,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i?.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
         i.CostingPartDetails.CostingFreightDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -173,7 +173,7 @@ function TabPackagingFreight(props) {
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
-        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
+        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails
       }
       if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {
@@ -184,11 +184,11 @@ function TabPackagingFreight(props) {
 
       if (partType) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
-        tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost = PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost = PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost
 
-        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost) +
+          checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetFreightPackagingCost) +
           checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost) +
           checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
           checkForNull(DiscountCostData?.AnyOtherCost)) -

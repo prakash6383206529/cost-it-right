@@ -42,8 +42,8 @@ function SurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
-  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
-  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  const [surfaceTableData, setSurfacetableData] = useState(item?.CostingPartDetails?.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item?.CostingPartDetails?.TransportationDetails)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
@@ -279,24 +279,24 @@ function SurfaceTreatment(props) {
                         {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails?.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails?.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + (item?.CostingPartDetails && item?.CostingPartDetails?.TotalTransportationCostPerAssembly !== null ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
 
                             </>
                             :
                             <>
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails?.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(CostingViewMode || IsLocked) ?
-                                checkForDecimalAndNull(item.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :
+                                checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :
                                 checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                             </>
                         }
-                      </Row>
+                      </Row >
 
                       {/* <hr /> */}
-                      <div className="user-page px-3 pb-3">
+                      < div className="user-page px-3 pb-3" >
                         <div>
                           <SurfaceTreatmentCost
                             index={props.index}
@@ -323,10 +323,10 @@ function SurfaceTreatment(props) {
                         </div>
                       </div >
 
-                    </div>
-                  </div>
-                </Col>
-              </Row>
+                    </div >
+                  </div >
+                </Col >
+              </Row >
 
               <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-right bluefooter-butn">
@@ -346,10 +346,10 @@ function SurfaceTreatment(props) {
                   </button>
                 </div>
               </Row>
-            </form>
-          </div>
-        </div>
-      </Drawer>
+            </form >
+          </div >
+        </div >
+      </Drawer >
 
     </ >
   );

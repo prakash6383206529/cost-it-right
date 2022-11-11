@@ -37,7 +37,7 @@ function BOPCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails?.IsApplyBOPHandlingCharges)
+  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item?.CostingPartDetails?.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
   const [percentageLimit, setPercentageLimit] = useState(false)
@@ -131,7 +131,7 @@ function BOPCost(props) {
   //   if (IsApplyBOPHandlingCharges) {
   //     handleBOPPercentageChange(getValues('BOPHandlingPercentage'))
   //   }
-  // }, [item.CostingPartDetails?.TotalBoughtOutPartCost])
+  // }, [item?.CostingPartDetails?.TotalBoughtOutPartCost])
 
   /**
    * @method netBOPCost

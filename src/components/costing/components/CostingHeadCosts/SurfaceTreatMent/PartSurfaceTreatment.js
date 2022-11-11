@@ -41,7 +41,7 @@ function PartSurfaceTreatment(props) {
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
-            let Data = res.data.DataList[0].CostingPartDetails;
+            let Data = res.data.DataList[0]?.CostingPartDetails;
             DrawerToggle()
             props.setPartDetails(Params, Data, item)
           }
@@ -85,14 +85,14 @@ function PartSurfaceTreatment(props) {
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item.CostingPartDetails?.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails?.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item.CostingPartDetails?.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails?.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TransportationCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.Quantity}</td>
-          <td>{item.CostingPartDetails?.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails?.NetSurfaceTreatmentCost * item.Quantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost * item.Quantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
-            {!CostingViewMode && (item.CostingPartDetails?.NetSurfaceTreatmentCost !== 0) ?
+            {!CostingViewMode && (item?.CostingPartDetails?.NetSurfaceTreatmentCost !== 0) ?
 
               <button
                 type="button"
@@ -123,8 +123,8 @@ function PartSurfaceTreatment(props) {
         ID={''}
         anchor={'right'}
         item={item}
-        surfaceData={item.CostingPartDetails?.SurfaceTreatmentDetails}
-        transportationData={item.CostingPartDetails?.TransportationDetails}
+        surfaceData={item?.CostingPartDetails?.SurfaceTreatmentDetails}
+        transportationData={item?.CostingPartDetails?.TransportationDetails}
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
         IsAssemblyCalculation={props.IsAssemblyCalculation}

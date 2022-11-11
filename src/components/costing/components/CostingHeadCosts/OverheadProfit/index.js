@@ -18,7 +18,7 @@ import _, { debounce } from 'lodash';
 function OverheadProfit(props) {
   const { data } = props;
 
-  const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data.CostingPartDetails;
+  const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data?.CostingPartDetails;
 
   const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
 
@@ -71,15 +71,15 @@ function OverheadProfit(props) {
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
-  const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails?.ModelType !== null ? { label: data.CostingPartDetails?.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
+  const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
 
-    if (data.CostingPartDetails && data.CostingPartDetails.ModelTypeId !== null) {
-      handleModelTypeChange({ label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId }, false)
+    if (data?.CostingPartDetails && data?.CostingPartDetails?.ModelTypeId !== null) {
+      handleModelTypeChange({ label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId }, false)
     }
 
     //GET FIXED VALUE IN GET API
@@ -1177,7 +1177,7 @@ function OverheadProfit(props) {
   */
 
   const showValueInInput = () => {
-    let value = checkForDecimalAndNull(checkForNull(data.CostingPartDetails?.OverheadCost) + checkForNull(data.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
+    let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
   return (
