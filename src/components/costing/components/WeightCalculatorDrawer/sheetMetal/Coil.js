@@ -12,6 +12,7 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../../helper/validation'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -305,6 +306,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -328,6 +330,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -351,6 +354,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -374,6 +378,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}

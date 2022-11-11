@@ -16,6 +16,7 @@ import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
+import { nonZero } from '../../../../../helper/validation'
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -508,6 +509,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -531,6 +533,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -598,6 +601,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
