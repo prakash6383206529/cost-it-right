@@ -28,6 +28,8 @@ import Logo from '../../assests/images/logo/company-logo.svg'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
+import activeRFQ from '../../assests/images/rfqActive.svg'
+import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { SIMULATION, VERSION } from '../../config/constants';
 import _ from "lodash";
@@ -794,7 +796,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : masterImage}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
                   alt={module + " icon"}
                 />
                 <span className="rfq">{el.ModuleName}</span>
