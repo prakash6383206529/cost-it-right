@@ -61,15 +61,15 @@ function CostingHeaderTabs(props) {
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
       let requestData = {
-        "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
-        "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
-        "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
-        "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
-        "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
-        "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-        "NetOtherOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
-        "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost)) : ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost : netPOPrice,
+        "NetRawMaterialsCost": ComponentItemData?.CostingPartDetails?.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": ComponentItemData?.CostingPartDetails?.TotalBoughtOutPartCost,
+        "NetConversionCost": ComponentItemData?.CostingPartDetails?.TotalConversionCost,
+        "NetOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal : 0,
+        "NetProcessCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal : 0,
+        "NetToolsCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal : 0,
+        "NetOtherOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal : 0,
+        "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -105,7 +105,7 @@ function CostingHeaderTabs(props) {
         // "NetSurfaceTreatmentCost": CostingDataList[0].NetSurfaceTreatmentCost,
         // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
         // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
-        CostingPartDetails: ComponentItemData.CostingPartDetails,
+        CostingPartDetails: ComponentItemData?.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         callAssemblyAPi(1)
@@ -129,18 +129,18 @@ function CostingHeaderTabs(props) {
         "CostingNumber": costData.CostingNumber,
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
-        "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
-          checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
-          checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
-          checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
-          checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
+        "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
         "CostingPartDetails": {
-          ...ComponentItemOverheadData.CostingPartDetails,
-          NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
-            checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
-            checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
-            checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
-            checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
+          ...ComponentItemOverheadData?.CostingPartDetails,
+          NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
         },
       }
       if (ComponentItemOverheadData.IsAssemblyPart) {
@@ -174,7 +174,7 @@ function CostingHeaderTabs(props) {
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
-        "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
+        "CostingPartDetails": ComponentItemPackageFreightData?.CostingPartDetails,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
@@ -185,7 +185,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
 
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && ComponentItemToolData.CostingPartDetails.TotalToolCost > 0 && activeTab !== '5' && checkIsToolTabChange) {
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && ComponentItemToolData?.CostingPartDetails?.TotalToolCost > 0 && activeTab !== '5' && checkIsToolTabChange) {
 
       const data = {
         "IsToolCostProcessWise": false,
@@ -194,7 +194,7 @@ function CostingHeaderTabs(props) {
         "LoggedInUserId": loggedInUserId(),
         "CostingNumber": costData.CostingNumber,
         "ToolCost": ComponentItemToolData.TotalToolCost,
-        "CostingPartDetails": ComponentItemToolData.CostingPartDetails,
+        "CostingPartDetails": ComponentItemToolData?.CostingPartDetails,
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
       }

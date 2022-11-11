@@ -62,7 +62,7 @@ function AddAssemblyOperation(props) {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
     let costPerPieceTotal = 0
-    tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+    tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
       costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
       return null
     })
@@ -74,12 +74,12 @@ function AddAssemblyOperation(props) {
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
       checkForNull(totalOperationCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
       checkForNull(totalOperationCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost ? totalOperationCost : 0;
@@ -232,7 +232,7 @@ function AddAssemblyOperation(props) {
                     </Row>
 
                     <OperationCost
-                      data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
+                      data={item?.CostingPartDetails !== undefined ? item?.CostingPartDetails?.CostingOperationCostResponse : []}
                       setAssemblyOperationCost={props.setAssemblyOperationCost}
                       item={props.item}
                       IsAssemblyCalculation={true}
