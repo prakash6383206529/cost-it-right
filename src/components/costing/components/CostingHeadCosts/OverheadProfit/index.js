@@ -67,7 +67,7 @@ function OverheadProfit(props) {
 
 
 
-  const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails.ModelType !== null ? { label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
+  const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails?.ModelType !== null ? { label: data.CostingPartDetails?.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
 
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
@@ -1102,7 +1102,7 @@ function OverheadProfit(props) {
   */
 
   const showValueInInput = () => {
-    let value = checkForDecimalAndNull(checkForNull(data.CostingPartDetails.OverheadCost) + checkForNull(data.CostingPartDetails.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
+    let value = checkForDecimalAndNull(checkForNull(data.CostingPartDetails?.OverheadCost) + checkForNull(data.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
   return (
