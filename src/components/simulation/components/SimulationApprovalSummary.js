@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, MACHINERATE, VBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -96,6 +96,7 @@ function SimulationApprovalSummary(props) {
     const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
+    const [noData, setNoData] = useState(false);
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -653,7 +654,11 @@ function SimulationApprovalSummary(props) {
         // setAssemblyWiseAcc(true)
         // }, 350);
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (costingList.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -1068,7 +1073,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${(costingList && costingList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex align-items-center">
                                                             <input type="text" className="form-control table-search mr-1" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -1092,7 +1097,8 @@ function SimulationApprovalSummary(props) {
 
                                                             }
                                                         </div>
-                                                        <div className="ag-theme-material">
+                                                        <div className="ag-theme-material" >
+                                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
@@ -1110,6 +1116,7 @@ function SimulationApprovalSummary(props) {
                                                                     title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
+                                                                onFilterModified={onFloatingFilterChanged}
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
