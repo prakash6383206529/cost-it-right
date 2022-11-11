@@ -6,7 +6,6 @@ import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteS
 import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
-import { getPlantSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
@@ -39,7 +38,6 @@ class AddProcessDrawer extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewFlag)) {
       this.props.getMachineSelectList(() => { })
-      this.props.getPlantSelectList(() => { })
     }
     this.getData()
   }
@@ -418,7 +416,6 @@ export default connect(mapStateToProps, {
   createProcess,
   updateProcess,
   getProcessData,
-  getPlantSelectList,
   getMachineSelectList,
 })(
   reduxForm({
