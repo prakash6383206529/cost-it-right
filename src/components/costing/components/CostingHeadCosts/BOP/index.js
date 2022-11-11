@@ -26,7 +26,7 @@ function BoughtOutPart(props) {
       setTimeout(() => {
         dispatch(getBOPData(data, (res) => {
           if (res && res.data && res.data.Result) {
-            // let Data = res.data.DataList[0].CostingPartDetails;
+            // let Data = res.data.DataList[0]?.CostingPartDetails;
             // props.setPartDetails(BOMLevel, PartNumber, Data)
           }
         }))
@@ -50,11 +50,11 @@ function BoughtOutPart(props) {
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
         {partType ? <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td> : <td>{'-'}</td>}
-        {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         {!partType && <td>{'-'}</td>}
-        <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : 1}</td>
-        {partType && <td>{item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item.CostingPartDetails.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+        <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration.NoOfDecimalForPrice) : 1}</td>
+        {partType && <td>{item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
         {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         {partType && <td></td>}
       </tr>

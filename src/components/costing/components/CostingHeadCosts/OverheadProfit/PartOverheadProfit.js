@@ -40,7 +40,7 @@ function PartOverheadProfit(props) {
         }
         dispatch(getOverheadProfitTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
-            let Data = res.data.DataList[0].CostingPartDetails;
+            let Data = res.data.DataList[0]?.CostingPartDetails;
             props.setPartDetails(Params, Data)
           }
         }))
@@ -71,10 +71,10 @@ function PartOverheadProfit(props) {
         "IsApplicableForChildParts": false,
         "CostingNumber": costData.CostingNumber,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
-        "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
         "CostingPartDetails": {
-          ...item.CostingPartDetails,
-          NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+          ...item?.CostingPartDetails,
+          NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
         },
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
@@ -116,11 +116,11 @@ function PartOverheadProfit(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.ICCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ICCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td className="costing-border-right">{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.OverheadCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.OverheadCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td className="costing-border-right">{item?.CostingPartDetails && item?.CostingPartDetails?.PaymentTermCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">
