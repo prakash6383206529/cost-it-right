@@ -1191,7 +1191,6 @@ function CostingDetails(props) {
     setCostingType(type)
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
-
   }
 
   /**
@@ -1250,6 +1249,7 @@ function CostingDetails(props) {
           CostingId: Item.CostingId,
           DisplayStatus: '',
           Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...nccGrid], { [index]: tempData })
         setNccGrid(tempArray)
@@ -1265,6 +1265,7 @@ function CostingDetails(props) {
           CostingId: Item.CostingId,
           DisplayStatus: '',
           Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...cbcGrid], { [index]: tempData })
         setCBCGrid(tempArray)
@@ -2407,7 +2408,7 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.CustomerName ? `${item.CustomerName}(${item.CustomerCode})` : '-'}</td>
+                                      <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
                                       {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
