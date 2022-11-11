@@ -383,4 +383,4 @@ export const decimalAndNumberValidationBoolean = (value) => {
 
 export const nonZero = value =>
     value && (Number(value) === 0)
-        ? 'Invalid no' : undefined;
+        ? 'Invalid Number.' : undefined;
