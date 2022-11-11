@@ -69,19 +69,19 @@ function AddAssemblyOperation(props) {
       "Version": item.Version,
       "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
 
-      "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-      "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-      "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
-      "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
-      "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
-      "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
+      "NetRawMaterialsCost": item.CostingPartDetails?.TotalRawMaterialsCost,
+      "NetBoughtOutPartCost": item.CostingPartDetails?.TotalBoughtOutPartCost,
+      "NetConversionCost": item.CostingPartDetails?.TotalConversionCost,
+      "TotalProcessCost": item.CostingPartDetails?.TotalProcessCost,
+      "TotalOperationCost": item.CostingPartDetails?.TotalOperationCost,
+      "NetTotalRMBOPCC": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+      "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
 
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-      "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-      "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+      "NetOperationCostPerAssembly": item.CostingPartDetails?.TotalOperationCostPerAssembly,
+      "NetToolCostPerAssembly": item.CostingPartDetails?.TotalToolCostPerAssembly,
       "CostingPartDetails": {
         "CostingId": item.CostingId,
         "CostingNumber": item.CostingNumber,
@@ -92,21 +92,21 @@ function AddAssemblyOperation(props) {
         "PartTypeId": item.PartTypeId,
         "Type": item.PartType,
 
-        "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-        "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-        "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
-        "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-        "Quantity": item.CostingPartDetails.Quantity,
+        "TotalRawMaterialsCost": item.CostingPartDetails?.TotalRawMaterialsCost,
+        "TotalBoughtOutPartCost": item.CostingPartDetails?.TotalBoughtOutPartCost,
+        "TotalConversionCost": item.CostingPartDetails?.TotalConversionCost,
+        "TotalCalculatedRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "Quantity": item.CostingPartDetails?.Quantity,
         "IsOpen": true,
-        "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
-        "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-        "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-        "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
-        "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
+        "IsShowToolCost": item.CostingPartDetails?.IsShowToolCost === null ? true : true,
+        "TotalOperationCostPerAssembly": item.CostingPartDetails?.TotalOperationCostPerAssembly,
+        "TotalToolCostPerAssembly": item.CostingPartDetails?.TotalToolCostPerAssembly,
+        "AssemblyCostingOperationCostRequest": item.CostingPartDetails?.CostingOperationCostResponse,
+        "AssemblyCostingToolsCostRequest": item.CostingPartDetails?.CostingToolCostResponse,
       }
     }
 
@@ -156,8 +156,8 @@ function AddAssemblyOperation(props) {
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
 
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-                      {/* <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col> */}
+                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+                      {/* <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails?.TotalToolCostPerAssembly !== null ? item.CostingPartDetails?.TotalToolCostPerAssembly : 0}`}</span></Col> */}
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
 
                       <Col md="3" className="switch cr-costlabel text-right">
@@ -184,7 +184,7 @@ function AddAssemblyOperation(props) {
 
 
                     <OperationCost
-                      data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
+                      data={item.CostingPartDetails !== undefined ? item.CostingPartDetails?.CostingOperationCostResponse : []}
                       setAssemblyOperationCost={props.setAssemblyOperationCost}
                       item={props.item}
                       IsAssemblyCalculation={true}
@@ -194,7 +194,7 @@ function AddAssemblyOperation(props) {
                     {IsOpenTool && <>
                       <div className="pt-2"></div>
                       <ToolCost
-                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
+                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails?.CostingToolCostResponse : []}
                         setAssemblyToolCost={props.setAssemblyToolCost}
                         item={props.item}
                         IsAssemblyCalculation={true}

@@ -37,8 +37,8 @@ function SurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
-  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
-  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails?.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails?.TransportationDetails)
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
 
@@ -118,7 +118,7 @@ function SurfaceTreatment(props) {
     const callApi = () => {
       let rmCcData = findrmCctData(item)
       // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-      let surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+      let surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails?.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
       let rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
       const tabData = RMCCTabData[0]
 
@@ -126,7 +126,7 @@ function SurfaceTreatment(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
 
-      const totalCost = ((checkForNull(tabData.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+      const totalCost = ((checkForNull(tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
         checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
         + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
         + checkForNull(DiscountCostData?.AnyOtherCost)
@@ -139,7 +139,7 @@ function SurfaceTreatment(props) {
           "PartNumber": item.PartNumber,
           "BOMLevel": item.BOMLevel,
           "CostingNumber": item.CostingNumber,
-          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": item.CostingPartDetails?.NetSurfaceTreatmentCost,
           "EffectiveDate": CostingEffectiveDate,
           "LoggedInUserId": loggedInUserId(),
           // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
@@ -148,13 +148,13 @@ function SurfaceTreatment(props) {
             "CostingDetailId": "00000000-0000-0000-0000-000000000000",
             "IsAssemblyPart": true,
             //"Type": "Assembly",
-            "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-            "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-            "TransportationCost": item.CostingPartDetails.TransportationCost,
-            "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
-            "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
-            "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-            "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+            "NetSurfaceTreatmentCost": item.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "SurfaceTreatmentCost": item.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCost": item.CostingPartDetails?.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "TotalTransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
+            "SurfaceTreatmentDetails": item.CostingPartDetails?.SurfaceTreatmentDetails,
+            "TransportationDetails": item.CostingPartDetails?.TransportationDetails,
           },
         }
         if (!CostingViewMode) {
@@ -178,18 +178,18 @@ function SurfaceTreatment(props) {
           "PartNumber": item.PartNumber,
           "BOMLevel": item.BOMLevel,
           "CostingNumber": item.CostingNumber,
-          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": item.CostingPartDetails?.NetSurfaceTreatmentCost,
           "EffectiveDate": CostingEffectiveDate,
           "LoggedInUserId": loggedInUserId(),
           // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
           "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost),
           "CostingPartDetails": {
             "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-            "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-            "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-            "TransportationCost": item.CostingPartDetails.TransportationCost,
-            "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-            "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+            "NetSurfaceTreatmentCost": item.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "SurfaceTreatmentCost": item.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCost": item.CostingPartDetails?.TransportationCost,
+            "SurfaceTreatmentDetails": item.CostingPartDetails?.SurfaceTreatmentDetails,
+            "TransportationDetails": item.CostingPartDetails?.TransportationDetails,
           },
         }
         dispatch(saveCostingSurfaceTab(requestData, res => {
@@ -251,17 +251,17 @@ function SurfaceTreatment(props) {
                         {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails?.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails?.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
 
                             </>
                             :
                             <>
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails?.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(CostingViewMode || IsLocked) ?
-                                checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :
+                                checkForDecimalAndNull(item.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :
                                 checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                             </>
                         }
