@@ -536,11 +536,9 @@ function ApprovalSummary(props) {
                   approvalSummaryTrue={true}
                 />
               </Col>
-                    }
-                  
-                  */}
+            </Row> */}
 
-            {approvalDetails.TypeOfCosting === VBC && <>
+            {approvalDetails.CostingTypeId === VBCTypeId && <>
               <Row className="mb-3">
                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                 <Col md="6">
