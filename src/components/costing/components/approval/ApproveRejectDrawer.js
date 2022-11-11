@@ -795,7 +795,13 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{
+                      required: type === 'Approve' ? false : true,
+                      maxLength: {
+                        value: 255,
+                        message: "Remark should be less than 255 word"
+                      },
+                    }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
