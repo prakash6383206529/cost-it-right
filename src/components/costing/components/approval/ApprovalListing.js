@@ -77,7 +77,8 @@ function ApprovalListing(props) {
   var floatingFilterStatus = {
     maxValue: 1,
     suppressFilterButton: true,
-    component: 'costingApproval'
+    component: 'costingApproval',
+    location: "costing"
   }
 
   useEffect(() => {
