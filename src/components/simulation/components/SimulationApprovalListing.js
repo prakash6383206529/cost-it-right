@@ -735,7 +735,6 @@ function SimulationApprovalListing(props) {
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}

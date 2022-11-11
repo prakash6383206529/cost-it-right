@@ -16,7 +16,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
-import { getConfigurationKey } from '../../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { hyphenFormatter } from '../../../masters/masterUtil';
 import { ViewCostingContext } from '../CostingDetails';
@@ -30,6 +30,7 @@ function AddProcess(props) {
   const [isTabSwitch, setIsTabSwitch] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
   // const [processGroup, setProcessGroup] = useState(true)
   // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
   const processGroup = getConfigurationKey().IsMachineProcessGroup
@@ -153,7 +154,11 @@ function AddProcess(props) {
     }
     setSelectedRowData(selectedRows)
   }
-
+  const onFloatingFilterChanged = (value) => {
+    if (tableData.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   /**
   * @method addRow
   * @description ADD ROW IN TO RM COST GRID
@@ -327,16 +332,15 @@ function AddProcess(props) {
                       <TabPane tabId="1">
                         <Row className="mx-0">
                           <Col className="pt-2 px-0">
-                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                   <div className="refresh mr-0"></div>
                                 </button>
                               </div>
-                              <div
-                                className="ag-theme-material"
-                              >
+                              <div className="ag-theme-material p-relative">
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                                 <AgGridReact
                                   style={{ height: '100%', width: '100%' }}
                                   defaultColDef={defaultColDef}
@@ -354,6 +358,7 @@ function AddProcess(props) {
                                     imagClass: 'imagClass'
                                   }}
                                   suppressRowClickSelection={true}
+                                  onFilterModified={onFloatingFilterChanged}
                                   rowSelection={'multiple'}
                                   frameworkComponents={frameworkComponents}
                                   onRowSelected={onRowSelect}
