@@ -210,10 +210,11 @@ function Sheet(props) {
         grossWeight = (sheetWeight / noOfComponent) / cavity
 
         const updatedValue = dataToSend
-        updatedValue.GrossWeight = grossWeight
+        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setGrossWeights(grossWeight)
+            setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }

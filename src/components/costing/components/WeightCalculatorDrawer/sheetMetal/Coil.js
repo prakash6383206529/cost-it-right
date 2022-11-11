@@ -159,9 +159,10 @@ function Coil(props) {
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
         setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
         const updatedValue = dataToSend
-        updatedValue.GrossWeight = grossWeight
+        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setDataToSend(updatedValue)
-        setGrossWeights(grossWeight)
+        // setGrossWeights(grossWeight)
         setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
     }
 
