@@ -579,6 +579,23 @@ function ApproveRejectDrawer(props) {
       }))
     } else {
       getApproversList(value.value, value.label)
+      // dispatch(
+      //   getAllSimulationApprovalList(simObj, (res) => {
+      //     res.data.DataList &&
+      //       res.data.DataList.map((item) => {
+      //         if (item.Value === '0') return false;
+      //         tempDropdownList.push({
+      //           label: item.Text,
+      //           value: item.Value,
+      //           levelId: item.LevelId,
+      //           levelName: item.LevelName
+      //         })
+      //         return null
+      //       })
+      //     setApprovalDropDown(tempDropdownList)
+      //   },
+      //   ),
+      // )
     }
   }
 
