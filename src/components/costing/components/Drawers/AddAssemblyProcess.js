@@ -71,7 +71,7 @@ function AddAssemblyProcess(props) {
     // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
 
     let costPerPieceTotal = 0
-    tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+    tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
       costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
       return null
     })
@@ -82,12 +82,12 @@ function AddAssemblyProcess(props) {
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost) +
       checkForNull(TotalProcessCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost) +
       checkForNull(TotalProcessCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingProcessCostResponse = processGrid.CostingProcessCostResponse
@@ -95,10 +95,10 @@ function AddAssemblyProcess(props) {
 
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
-    let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+    let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-      checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
-      checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+      checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+      checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
       checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
       checkForNull(DiscountCostData?.AnyOtherCost)) -
       checkForNull(DiscountCostData?.HundiOrDiscountValue)
@@ -127,19 +127,19 @@ function AddAssemblyProcess(props) {
       "Version": item.Version,
       "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
 
-      "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-      "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-      "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
+      "NetRawMaterialsCost": item?.CostingPartDetails?.TotalRawMaterialsCost,
+      "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCost,
+      "NetConversionCost": item?.CostingPartDetails?.TotalConversionCost,
       "TotalProcessCost": TotalProcessCost,
-      "TotalOperationCost": item.CostingPartDetails.TotalOperationCost ? item.CostingPartDetails.TotalOperationCost : 0,
-      "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      // "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
+      "TotalOperationCost": item?.CostingPartDetails?.TotalOperationCost ? item?.CostingPartDetails?.TotalOperationCost : 0,
+      "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+      // "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
 
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-      "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-      "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+      "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+      "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
       "CostingPartDetails": {
         "CostingId": item.CostingId,
         "CostingNumber": item.CostingNumber,
@@ -149,24 +149,24 @@ function AddAssemblyProcess(props) {
         "PartName": item.PartName,
         "PartTypeId": item.PartTypeId,
         "Type": item.PartType,
-        "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-        "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-        "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
-        "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-        "Quantity": item.CostingPartDetails.Quantity,
+        "TotalRawMaterialsCost": item?.CostingPartDetails?.TotalRawMaterialsCost,
+        "TotalBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCost,
+        "TotalConversionCost": item?.CostingPartDetails?.TotalConversionCost,
+        "TotalCalculatedRMBOPCCCost": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "TotalRawMaterialsCostWithQuantity": item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": item?.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "Quantity": item?.CostingPartDetails?.Quantity,
         "IsOpen": true,
-        "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
-        "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-        "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-        "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse ? item.CostingPartDetails.CostingOperationCostResponse : [],
-        "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse ? item.CostingPartDetails.CostingToolCostResponse : [],
+        "IsShowToolCost": item?.CostingPartDetails?.IsShowToolCost === null ? true : true,
+        "TotalOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+        "TotalToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+        "AssemblyCostingOperationCostRequest": item?.CostingPartDetails?.CostingOperationCostResponse ? item?.CostingPartDetails?.CostingOperationCostResponse : [],
+        "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse ? item?.CostingPartDetails?.CostingToolCostResponse : [],
         "AssemblyCostingProcessCostResponse": processGrid?.CostingProcessCostResponse ? processGrid?.CostingProcessCostResponse : [],
         // "TotalProcessCost": TotalProcessCost,
-        // "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
+        // "TotalOperationCost": item?.CostingPartDetails?.TotalOperationCost,
       }
     }
     dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
