@@ -2038,6 +2038,48 @@ export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
+export const statusOptionsMasters = [
+
+  { label: "Draft", value: "1" },
+  { label: "PendingForApproval", value: "2" },
+  { label: "Approved", value: "3" },
+  { label: "Rejected", value: "4" },
+  { label: "History", value: "5" },
+  { label: "AwaitingApproval", value: "6" },
+]
+
+
+export const statusOptionsCosting = [
+
+  { label: "Draft", value: "1" },
+  { label: "PendingForApproval", value: "2" },
+  { label: "Approved", value: "3" },
+  { label: "Rejected", value: "4" },
+  { label: "History", value: "5" },
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Error", value: "12" },
+  { label: "Pushed", value: "13" },
+  { label: "POUpdated", value: "14" },
+
+]
+
+
+export const statusOptionsSimulation = [
+
+  { label: "Draft", value: "1" },
+  { label: "PendingForApproval", value: "2" },
+  { label: "Approved", value: "3" },
+  { label: "Rejected", value: "4" },
+  { label: "History", value: "5" },
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Error", value: "12" },
+  { label: "Pushed", value: "13" },
+  { label: "POUpdated", value: "14" },
+  { label: "Provisional", value: "15" },
+  { label: "Linked", value: "17" },
+
+]
+
 export const statusOptions = [
   { label: "Draft", value: "1" },
   { label: "PendingForApproval", value: "2" },
@@ -2058,6 +2100,8 @@ export const statusOptions = [
   { label: "Linked", value: "17" },
   { label: "RejectedBySystem", value: "18" },
 ]
+
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])

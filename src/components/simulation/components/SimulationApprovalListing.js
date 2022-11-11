@@ -71,7 +71,8 @@ function SimulationApprovalListing(props) {
     var floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: "simulationApproval"
+        component: "simulationApproval",
+        location: "simulation"
     }
 
     var filterParams = {
