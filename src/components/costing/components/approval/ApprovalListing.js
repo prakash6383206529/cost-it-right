@@ -714,7 +714,7 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        dispatch(getVolumeDataByPartAndYear(item.PartId, year, item.CostingTypeId === ZBCTypeId || item.CostingTypeId === CBCTypeId ? item.PlantId : item.DestinationPlantId, item.VendorId, item.CustomerId, item.CostingTypeId, res => {
+        dispatch(getVolumeDataByPartAndYear(item.PartId, year, item.CostingTypeId === ZBCTypeId ? item.PlantId : item.DestinationPlantId, item.VendorId, item.CustomerId, item.CostingTypeId, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
             let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
