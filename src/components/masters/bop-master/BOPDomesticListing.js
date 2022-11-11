@@ -163,6 +163,7 @@ class BOPDomesticListing extends Component {
                     if (res && isPagination === false) {
                         this.setState({ disableDownload: false })
                         setTimeout(() => {
+                            this.props.disabledClass(false)
                             let button = document.getElementById('Excel-Downloads-bop-domestic')
                             button && button.click()
                         }, 500);

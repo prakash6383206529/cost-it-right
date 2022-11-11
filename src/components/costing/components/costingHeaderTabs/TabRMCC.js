@@ -1474,7 +1474,7 @@ function TabRMCC(props) {
     assemblyObj.CostingPartDetails.BOPHandlingChargeApplicability = item.BOMLevel === LEVEL0 ? obj?.BOPHandlingChargeApplicability : checkForNull(assemblyObj.CostingPartDetails?.BOPHandlingChargeApplicability);
     assemblyObj.CostingPartDetails.BOPHandlingPercentage = item.BOMLevel === LEVEL0 ? obj?.BOPHandlingPercentage : checkForNull(assemblyObj.CostingPartDetails?.BOPHandlingPercentage);
     assemblyObj.CostingPartDetails.BOPHandlingCharges = item.BOMLevel === LEVEL0 ? obj?.BOPHandlingCharges : checkForNull(assemblyObj.CostingPartDetails?.BOPHandlingCharges);
-    assemblyObj.CostingPartDetails.BOPHandlingChargeType = item.BOMLevel === LEVEL0 ? obj?.BOPHandlingChargeType : checkForNull(assemblyObj.CostingPartDetails?.BOPHandlingChargeType);
+    assemblyObj.CostingPartDetails.BOPHandlingChargeType = item.BOMLevel === LEVEL0 ? obj?.BOPHandlingChargeType : assemblyObj.CostingPartDetails?.BOPHandlingChargeType;
     assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray) + checkForNull(assemblyObj.CostingPartDetails?.BOPHandlingCharges)
     assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
     tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })

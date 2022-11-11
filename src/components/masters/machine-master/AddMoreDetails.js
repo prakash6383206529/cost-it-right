@@ -214,6 +214,7 @@ class AddMoreDetails extends Component {
         setTimeout(() => {
           if (fieldsObj?.EffectiveDate) {
             this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
+            this.setState({ isDateChange: false })
           }
           if (Object.keys(machineType)?.length === 0) {
           } else {
@@ -821,6 +822,7 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
+
     setTimeout(() => {
       this.calculateDepreciation(date)
     }, 300);
@@ -1499,7 +1501,7 @@ class AddMoreDetails extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
         count++;
       }
-      if (!this.state.UOM.label === HOUR && (fieldsObj.MachineRate === 0 || fieldsObj.MachineRate === undefined)) {
+      if (!(this.state.UOM.label === HOUR) && (checkForNull(fieldsObj.MachineRate) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
         count++;
       }
@@ -1527,7 +1529,7 @@ class AddMoreDetails extends Component {
 
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
-        Toaster.warning('Machine Rate can not be zero or negative')
+        Toaster.warning('Machine Rate cannot be zero or negative')
         return false;
       }
 
@@ -1592,6 +1594,23 @@ class AddMoreDetails extends Component {
       return true;
     })
 
+    let count = 0;
+    if (processName.length === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+      count++;
+    }
+    if (UOM.length === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+      count++;
+    }
+    if (!(this.state.UOM.label === HOUR) && checkForNull(fieldsObj.MachineRate) === 0) {
+      this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
+      count++;
+    }
+    if (count > 0) {
+      return false
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.processId === processName.value && el.UnitOfMeasurementId === UOM.value))
     if (isExist !== -1) {
@@ -1617,7 +1636,14 @@ class AddMoreDetails extends Component {
     } else {
       MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
-
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
+      Toaster.warning('Machine Rate cannot be zero or negative')
+      return false;
+    }
+    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+    if (MachineRate <= 0 || isNaN(MachineRate)) {
+      return false;
+    }
     this.setState({ IsFinancialDataChanged: true })
     let tempArray = [];
 
@@ -1720,6 +1746,7 @@ class AddMoreDetails extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
+      IsFinancialDataChanged: true
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
@@ -1807,7 +1834,7 @@ class AddMoreDetails extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteMachine(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -1867,8 +1894,6 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
-
-
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
@@ -1902,7 +1927,7 @@ class AddMoreDetails extends Component {
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CastOfScrap: values.CastOfScrap,
-      DateOfPurchase: DateOfPurchase,
+      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1957,6 +1982,7 @@ class AddMoreDetails extends Component {
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      selectedPlants: selectedPlants,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2037,7 +2063,7 @@ class AddMoreDetails extends Component {
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
         CastOfScrap: values.CastOfScrap,
-        DateOfPurchase: DateOfPurchase,
+        DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
         WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -2114,7 +2140,6 @@ class AddMoreDetails extends Component {
         MachineVBCRequest: obj,
 
       }
-
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
@@ -2195,6 +2220,9 @@ class AddMoreDetails extends Component {
     }
 
     this.setState({ isWorkingOpen: !isWorkingOpen })
+  }
+  checksFinancialDataChanged = (data) => {
+    this.setState({ IsFinancialDataChanged: data })
   }
 
   /**
@@ -2475,7 +2503,7 @@ class AddMoreDetails extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={(disableMachineType || this.state.isViewFlag)}
+                                disabled={(disableMachineType || this.state.isViewFlag || this.state.labourType.length !== 0)}
                               />
                             </div>
                           </div>
@@ -3578,23 +3606,19 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
+                                  {this.state.labourGrid?.length === 0 && <tr>
+                                    <td colSpan={"5"}>
+                                      <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                  </tr>}
                                 </tbody>
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-
                                       <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
-                                {this.state.labourGrid?.length === 0 &&
-                                  <tbody>
-                                    <tr>
-                                      <td colSpan={"5"}>
-                                        <NoContentFound title={EMPTY_DATA} />
-                                      </td>
-                                    </tr>
-                                  </tbody>}
                               </Table>
                             </Col>
                           </div>
@@ -3779,14 +3803,12 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
-                                </tbody>
-                                {this.state.processGrid.length === 0 && <tbody>
                                   <tr>
-                                    <td colSpan={"4"}>
+                                    {this.state.processGrid?.length === 0 && <td colSpan={"6"}>
                                       <NoContentFound title={EMPTY_DATA} />
-                                    </td>
+                                    </td>}
                                   </tr>
-                                </tbody>}
+                                </tbody>
                               </Table>
 
                             </Col>
@@ -3808,7 +3830,7 @@ class AddMoreDetails extends Component {
                           </Col>
                           {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md="12">
-                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} />
+                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
                             </Col>
                           </div>}
                         </Row>
@@ -3839,7 +3861,7 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone

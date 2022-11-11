@@ -17,7 +17,7 @@ function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const dispatch = useDispatch()
-  const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
+  const [BOPHandlingType, setBOPHandlingType] = useState({})
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -28,13 +28,13 @@ function AddBOPHandling(props) {
     const childPartDetail = reactLocalStorage.getObject('costingArray')
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
-      if (el.PartType === 'BOP' && el.AssemblyPartNumber === item.PartNumber) {
+      if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
         BOPSum = BOPSum + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
       }
       return BOPSum
     })
     setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
-    let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
+    let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem?.PartNumber === item?.PartNumber && assyItem?.AssemblyPartNumber === item?.AssemblyPartNumber && (assyItem?.PartType === 'Sub Assembly' || assyItem?.PartType === 'Assembly'))
     setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
     setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
     setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
@@ -45,7 +45,7 @@ function AddBOPHandling(props) {
 
   const handleBOPPercentageChange = (value) => {
     if (!isNaN(value)) {
-      if (BOPHandlingType && value > 100) {
+      if (BOPHandlingType === 'Percentage' && value > 100) {
         setValue('BOPHandlingPercentage', 0)
         setValue('BOPHandlingCharges', 0)
         return false;

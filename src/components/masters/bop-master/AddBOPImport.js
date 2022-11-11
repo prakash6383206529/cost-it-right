@@ -629,7 +629,7 @@ class AddBOPImport extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -1263,7 +1263,7 @@ class AddBOPImport extends Component {
                               Upload Files (upload up to 3 files)
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                              Maximum file upload limit has been reached.
+                              Maximum file upload limit reached.
                             </div>
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
@@ -1339,7 +1339,8 @@ class AddBOPImport extends Component {
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <button
                             type={"button"}
                             className=" mr15 cancel-btn"

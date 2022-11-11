@@ -508,7 +508,7 @@ const CostingSummaryTable = (props) => {
    */
   const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
-
+    setDataSelected([])
     setMultipleCostings([])
 
     if (type === 'Submit') {
