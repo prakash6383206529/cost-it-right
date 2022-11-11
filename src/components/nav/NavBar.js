@@ -104,6 +104,10 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
     }
+    let disabledLogo = document.getElementsByClassName('logo-container')[0];
+    disabledLogo.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    }, false);
   }
 
   /**
@@ -828,17 +832,17 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <div className="logo-container">
-                <button className="btn btn-no-border" >
+                <div className="py-1">
                   <img
                     src={Logo}
                     alt="Minda"
                     height="40"
                   />
-                </button>
+                </div>
                 <div className="border-left"></div>
-                <button className="btn btn-no-border">
+                <div className="py-1">
                   <img src={cirLogo} alt="Cost It Right" height="40" />
-                </button>
+                </div>
               </div>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
