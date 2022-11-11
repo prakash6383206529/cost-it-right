@@ -294,7 +294,7 @@ function TransportationCost(props) {
                       handleRateChange(e)
                     }}
                     errors={errors && errors.Rate}
-                    disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
+                    disabled={!TransportationType || TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
                 </div>
               </Col>
@@ -322,7 +322,7 @@ function TransportationCost(props) {
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
@@ -349,7 +349,7 @@ function TransportationCost(props) {
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
