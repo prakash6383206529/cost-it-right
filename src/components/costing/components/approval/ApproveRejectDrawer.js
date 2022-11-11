@@ -85,7 +85,7 @@ function ApproveRejectDrawer(props) {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-        getApproversList(departObj[0].Value)
+        getApproversList(departObj[0].Value, departObj[0].Text)
 
       }))
 
@@ -121,7 +121,7 @@ function ApproveRejectDrawer(props) {
 
 
 
-  const getApproversList = (departObj) => {
+  const getApproversList = (departObj, departmentName) => {
     let values = []
     let approverDropdownValue = []
     let count = 0
@@ -233,6 +233,8 @@ function ApproveRejectDrawer(props) {
 
             Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
+            setValue('dept', { label: departmentName, value: departObj })
+            setValue('approver', '')
             return false
           }
         }))
@@ -563,7 +565,7 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value)
+      getApproversList(value.value, value.label)
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&
