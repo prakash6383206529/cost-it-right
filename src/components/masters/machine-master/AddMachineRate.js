@@ -1218,12 +1218,12 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    if (data?.CostingTypeId === VBCTypeId) {
-      this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
-    }
-    if (data?.CostingTypeId) {
-      this.props.getPlantBySupplier(data.VendorId, () => { })
-    }
+    // if (data?.CostingTypeId === VBCTypeId) {
+    //   this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
+    // }
+    // if (data?.CostingTypeId) {
+    //   this.props.getPlantBySupplier(data.VendorId, () => { })
+    // }
     let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
       const { vendorWithVendorCodeSelectList, machineTypeSelectList, plantSelectList, } = this.props;
