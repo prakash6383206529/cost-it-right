@@ -16,7 +16,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, TypeOfCosting } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, CostingTypeId } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])

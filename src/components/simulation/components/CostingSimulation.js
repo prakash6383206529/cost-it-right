@@ -820,13 +820,6 @@ function CostingSimulation(props) {
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
-    const machineRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewMachineRate > row.OldMachineRate) ? 'red-value form-control' : (row.NewMachineRate < row.OldMachineRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
     const processCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -1206,8 +1199,7 @@ function CostingSimulation(props) {
         plantFormatter: plantFormatter,
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         hyphenFormatter: hyphenFormatter,
-        machineRateFormatter: machineRateFormatter,
-        processCostFormatter: processCostFormatter
+        processCostFormatter: processCostFormatter,
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1353,12 +1345,11 @@ function CostingSimulation(props) {
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
-                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' cellRenderer='machineRateFormatter'></AgGridColumn>}
-                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' cellRenderer='machineRateFormatter' ></AgGridColumn>}
-                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="MRVariance" headerName='MR Variance' cellRenderer='hyphenFormatter' ></AgGridColumn>}
+                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='hyphenFormatter'></AgGridColumn>}
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Old Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NewNetProcessCost" headerName='New Net Process Cost' cellRenderer='processCostFormatter'></AgGridColumn>}
-                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Net Process Cost Variance' cellRenderer='hyphenFormatter' ></AgGridColumn>}
+                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Net Process Cost Variance' cellRenderer={decimalFormatter} ></AgGridColumn>}
 
 
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
@@ -1378,9 +1369,9 @@ function CostingSimulation(props) {
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
-                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" headerName='Old Net Child Parts Cost With Quantity' ></AgGridColumn>}
-                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" headerName='New Net Child Parts Cost With Quantity' ></AgGridColumn>}
-                                                    {isMultiTechnology && <AgGridColumn width={140} field="Variance" headerName='Variance' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" headerName='Old Net Child Parts Cost With Quantity' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" headerName='New Net Child Parts Cost With Quantity' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
                                                     {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
                                                     {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
