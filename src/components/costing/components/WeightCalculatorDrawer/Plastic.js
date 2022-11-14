@@ -10,6 +10,7 @@ import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../helper/validation'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -255,6 +256,7 @@ function Plastic(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                       // maxLength: 4,
                     }}
                     handleChange={() => { }}
