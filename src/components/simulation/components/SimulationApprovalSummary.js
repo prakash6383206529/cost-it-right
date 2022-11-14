@@ -804,9 +804,9 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
-    const processCostFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? cell : '-';
+    const decimalFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
     const bopNumberFormatter = (props) => {
@@ -927,7 +927,7 @@ function SimulationApprovalSummary(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         processCodeFormatter: processCodeFormatter,
         processNameFormatter: processNameFormatter,
-        processCostFormatter: processCostFormatter
+        decimalFormatter: decimalFormatter
     };
 
 
@@ -1258,14 +1258,12 @@ function SimulationApprovalSummary(props) {
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessName" headerName="Process Name" cellRenderer='processNameFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName="Process Code" cellRenderer='processCodeFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Old Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="New Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Process Cost Variance" cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Old Net Process Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="New Net Process Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Process Cost Variance" cellRenderer='decimalFormatter' ></AgGridColumn>}
 
-                                                                {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old Net Bought Out Part Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
-                                                                {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New Net Bought Out Part Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Net Bought Out Part Cost Variance"></AgGridColumn>}
 
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
