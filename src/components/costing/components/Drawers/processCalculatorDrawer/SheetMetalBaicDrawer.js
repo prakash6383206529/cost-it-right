@@ -12,6 +12,7 @@ import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
+import { nonZero } from '../../../../../helper/validation'
 
 function SheetMetalBaicDrawer(props) {
 
@@ -109,6 +110,12 @@ function SheetMetalBaicDrawer(props) {
   }, [prodHr])
 
   const onSubmit = debounce(handleSubmit((value) => {
+
+    if (Number(getValues('Quantity')) === Number(0) || Number(getValues('Efficiency')) === Number(0)) {
+      Toaster.warning('Mandatory fields can not be zero')
+      return false
+    }
+
     setIsDisable(true)
     let obj = {}
     obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
@@ -311,6 +318,7 @@ function SheetMetalBaicDrawer(props) {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.',
                         },
+                        validate: { nonZero }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -336,6 +344,7 @@ function SheetMetalBaicDrawer(props) {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.',
                         },
+                        validate: { nonZero }
                         // maxLength: 4,
                       }}
                       handleChange={checlPercentageForEfficiency}
@@ -360,6 +369,7 @@ function SheetMetalBaicDrawer(props) {
                           value: /^\d{0,6}(\.\d{0,4})?$/i,
                           message: 'Maximum length for integer is 6 and for decimal is 4',
                         },
+                        validate: { nonZero }
                       }}
                       handleChange={calculateProcessCost}
                       defaultValue={defaultValues.Quantity}
