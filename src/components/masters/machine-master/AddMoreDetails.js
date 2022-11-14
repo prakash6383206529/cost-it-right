@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -1239,8 +1239,9 @@ class AddMoreDetails extends Component {
       const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
-      this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
+      this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer, TotalPowerCostPerHour: totalPowerCostPerHour } })
       this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration.NoOfDecimalForPrice))
       // }
     }
   }
@@ -1922,6 +1923,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      CostingTypeId: ZBCTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
@@ -1968,6 +1970,7 @@ class AddMoreDetails extends Component {
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
+      TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
       IsUsesSolarPower: IsUsesSolarPower,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
@@ -2057,6 +2060,7 @@ class AddMoreDetails extends Component {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
       const formData = {
+        CostingTypeId: ZBCTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -2103,6 +2107,7 @@ class AddMoreDetails extends Component {
         PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
         TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
+        TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
         IsUsesSolarPower: IsUsesSolarPower,
         FuleId: fuelType ? fuelType.value : '',
         FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
@@ -3442,10 +3447,10 @@ class AddMoreDetails extends Component {
                                   customClassName="withBorder"
                                 />
                               </Col>
-                              {/* <Col md="3">
+                              <Col md="3">
                                 <Field
                                   label={`Power Cost/Hour(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerHour"}
+                                  name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
@@ -3455,7 +3460,7 @@ class AddMoreDetails extends Component {
                                   className=" "
                                   customClassName="withBorder"
                                 />
-                              </Col> */}
+                              </Col>
                               <Col md="3">
                                 <Field
                                   label={`Power Cost/Annum(INR)`}
@@ -4031,7 +4036,7 @@ function mapStateToProps(state) {
     'AnnualMaintancePercentage', 'AnnualMaintanceAmount', 'AnnualConsumablePercentage', 'AnnualConsumableAmount',
     'AnnualInsurancePercentage', 'AnnualInsuranceAmount',
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
-    'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
+    'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
 
@@ -4087,6 +4092,7 @@ function mapStateToProps(state) {
       PowerRatingPerKW: machineData.PowerRatingPerKW,
       PowerCostPerUnit: machineData.PowerCostPerUnit,
       TotalPowerCostPerYear: machineData.TotalPowerCostPerYear,
+      TotalPowerCostPerHour: machineData.TotalPowerCostPerHour,
       FuelCostPerUnit: machineData.FuelCostPerUnit,
       ConsumptionPerYear: machineData.ConsumptionPerYear,
       TotalFuelCostPerYear: machineData.TotalFuelCostPerYear,
