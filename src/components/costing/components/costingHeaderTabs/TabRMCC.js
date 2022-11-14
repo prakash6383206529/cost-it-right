@@ -1313,7 +1313,14 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit(() => {
-    if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
+    let count = 0
+    for (var prop in ErrorObjRMCC) {
+      if (ErrorObjRMCC[prop]?.length > 0) {
+        count++
+      }
+    }
+
+    if (ErrorObjRMCC && count !== 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
