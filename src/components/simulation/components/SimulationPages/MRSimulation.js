@@ -30,7 +30,7 @@ const gridOptions = {
 
 };
 function MRSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -406,10 +406,12 @@ function MRSimulation(props) {
                                             >
                                                 {!isImpactedMaster && <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
+                                                <AgGridColumn field="ProcessCode" editable='false' headerName="Process Code" minWidth={140}></AgGridColumn>
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
