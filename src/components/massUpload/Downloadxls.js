@@ -131,7 +131,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkLabourRateConfigure(ZBCOperation), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
-            case 'ZBC_MACHINE_MORE':
+            case ZBCADDMORE:
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
             case 'BOPDomestic':
                 return this.returnExcelColumn(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData);

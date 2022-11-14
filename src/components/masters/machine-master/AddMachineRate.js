@@ -1218,7 +1218,9 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    this.props.getVendorWithVendorCodeSelectList(data.IsVendor, this.state.vendorName, () => { })
+    if (data?.CostingTypeId === VBCTypeId) {
+      this.props.getVendorWithVendorCodeSelectList(this.state.vendorName, () => { })
+    }
     if (data?.CostingTypeId) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
@@ -1655,7 +1657,7 @@ class AddMachineRate extends Component {
                               />
                               {this.state.errorObj.processName && (this.state.processName && this.state.processName.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </div>
-                            {(!isEditFlag || this.state.isViewFlag) && <div
+                            {(!this.state.isViewFlag) && <div
                               onClick={this.processToggler}
                               className={'plus-icon-square mr5 right'}>
                             </div>}

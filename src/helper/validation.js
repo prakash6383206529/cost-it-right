@@ -385,3 +385,7 @@ export const decimalAndNumberValidation = (value) => {
 export const decimalAndNumberValidationBoolean = (value) => {
     return value && !/^\d{0,6}(\.\d{0,6})?$/i.test(value) ? true : false;
 }
+
+export const nonZero = value =>
+    value && (Number(value) === 0)
+        ? 'Invalid Number.' : undefined;
