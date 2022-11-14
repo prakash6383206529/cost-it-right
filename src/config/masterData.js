@@ -3782,9 +3782,9 @@ export const CostingSimulationDownloadMR = [
     { label: "Quantity", value: "Quantity" },
     { label: "ProcessName", value: "ProcessName" },
     { label: "ProcessCode", value: "ProcessCode" },
-    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
-    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
-    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+    { label: "OldProcessCost", value: "OldProcessCost" },
+    { label: "NewProcessCost", value: "NewProcessCost" },
+    { label: "ProcessCostVariance", value: "ProcessCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
