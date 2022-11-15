@@ -171,7 +171,7 @@ function AddAssemblyOperation(props) {
         "IsShowToolCost": item?.CostingPartDetails?.IsShowToolCost === null ? true : true,
         "TotalOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
         "TotalToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
-        "AssemblyCostingOperationCostRequest": operData,
+        "AssemblyCostingOperationCostRequest": isAssemblyTechnology ? operData : item.CostingPartDetails.CostingOperationCostResponse,
         "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse ? item?.CostingPartDetails?.CostingToolCostResponse : [],
         "AssemblyCostingProcessCostResponse": item?.CostingPartDetails?.CostingProcessCostResponse ? item?.CostingPartDetails?.CostingProcessCostResponse : [],
         "TotalOperationCost": operationCostAssemblyTechnology,
