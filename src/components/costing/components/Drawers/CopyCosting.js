@@ -320,7 +320,6 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = debounce(handleSubmit((value) => {
-    console.log('value: ', value);
     setIsDisable(true)
 
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
