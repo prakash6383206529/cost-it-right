@@ -211,8 +211,9 @@ function CostingHeaderTabs(props) {
 
 
     // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    // if(checkIsDataChange || ComponentItemToolData.IsChanged === true  || ComponentItemPackageFreightData.IsChanged === true|| ComponentItemToolData.IsChanged === true| (Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') )
-    // InjectDiscountAPICall()
+    if (checkIsDataChange || ComponentItemToolData.IsChanged === true || ComponentItemPackageFreightData.IsChanged === true || ComponentItemToolData.IsChanged === true | (Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3'))
+      InjectDiscountAPICall()
+
     if (checkIsDataChange === false) {
       dispatch(CloseOpenAccordion())
       dispatch(isDataChange(false))
