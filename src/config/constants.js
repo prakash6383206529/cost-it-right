@@ -1749,6 +1749,8 @@ export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
 export const NCC_COSTING = 'Costing - NCC';
 
+export const costingTypeLabel = [ZBC_COSTING, VBC_COSTING, CBC_COSTING, NCC_COSTING]
+
 export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
