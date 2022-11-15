@@ -119,7 +119,8 @@ function CommonApproval(props) {
     var floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: "common"
+        component: "common",
+        location: "masters"
     }
     useEffect(() => {
         if (approvalList?.length > 0) {

@@ -6,7 +6,7 @@ import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingl
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
-  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
+  getPlantByCityAndSupplier, fetchRMGradeAPI, getPlantBySupplier, getUOMSelectList,
   getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common';
 import {
@@ -124,7 +124,6 @@ class AddRMImport extends Component {
   */
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
-      this.props.getSupplierList(this.state.vendorName, () => { })
       this.props.getCurrencySelectList(() => { })
       this.props.getUOMSelectList(() => { })
       this.props.fetchPlantDataAPI(() => { })
@@ -2031,7 +2030,6 @@ export default connect(mapStateToProps, {
   fetchRMGradeAPI,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial,
-  getSupplierList,
   getPlantBySupplier,
   getUOMSelectList,
   getVendorListByVendorType,

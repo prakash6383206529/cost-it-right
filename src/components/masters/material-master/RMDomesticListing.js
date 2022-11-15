@@ -30,6 +30,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import _ from 'lodash';
 import { useRef } from 'react';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -148,6 +149,7 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
+        reactLocalStorage.setObject('selectedRow', {})
         if (!props.stopApiCallOnCancel) {
             let obj = {
                 MasterId: RM_MASTER_ID,
@@ -160,9 +162,9 @@ function RMDomesticListing(props) {
                     setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
                 }
             }))
-
             return () => {
                 dispatch(setSelectedRowForPagination([]))
+                reactLocalStorage.setObject('selectedRow', {})
             }
         }
     }, [])
@@ -680,6 +682,7 @@ function RMDomesticListing(props) {
 
     const onRowSelect = (event) => {
 
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -702,14 +705,12 @@ function RMDomesticListing(props) {
 
         }
 
-
         let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
 
         if (isSimulation) {
             apply(uniqueArray, length)
@@ -735,6 +736,7 @@ function RMDomesticListing(props) {
     };
 
     const checkBoxRenderer = (props) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
@@ -827,8 +829,9 @@ function RMDomesticListing(props) {
                                                         </button></div> :
 
                                                             <>
-                                                                <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                                     {/* DOWNLOAD */}
+                                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                                 </button>
 
                                                                 <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
@@ -857,7 +860,6 @@ function RMDomesticListing(props) {
                     <Row>
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                {!props?.isMasterSummaryDrawer && <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />}
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
