@@ -316,7 +316,7 @@ function RfqListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         rowSelection={'multiple'}
-                                    // suppressRowClickSelection={true}
+                                        suppressRowClickSelection={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
