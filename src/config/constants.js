@@ -1749,6 +1749,8 @@ export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
 export const NCC_COSTING = 'Costing - NCC';
 
+export const costingTypeLabel = [ZBC_COSTING, VBC_COSTING, CBC_COSTING, NCC_COSTING]
+
 export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
@@ -2120,4 +2122,4 @@ export const IV = 'eTEFSa0PinFKTQNB'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 //VERSION 
-export const VERSION = "V1.2.633";
+export const VERSION = "V1.2.634";
