@@ -374,12 +374,12 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'burring-allowance'} tooltipText={'BUrring Allowance = RM Rate * Burning Loss Weight'} />
+                  <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = RM Rate * Burning Loss Weight'} />
                   <NumberFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
-                    id={'burring-allowance'}
+                    id={'burning-allowance'}
                     control={control}
                     register={register}
                     mandatory={false}
