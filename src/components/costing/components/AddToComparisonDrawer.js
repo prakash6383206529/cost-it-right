@@ -211,7 +211,6 @@ function AddToComparisonDrawer(props) {
         setValue('plant', '')
       }))
 
-
     } else if ((value) === VBCTypeId) {
       dispatch(getPlantSelectListReducer([]))
       setCostingDropdown([])
@@ -225,7 +224,6 @@ function AddToComparisonDrawer(props) {
       commonApiCall(VBCTypeId)
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
 
-
     } else if ((value) === CBCTypeId) {
       dispatch(getPlantSelectListReducer([]))
       setisCbcSelected(true)
@@ -233,6 +231,7 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(false)
       setisNccSelected(false)
       setCostingDropdown([])
+      setValue('clientName', '')
       setValue('costings', '')
       setValue('plant', '')
       dispatch(getClientSelectList((res) => { }),
@@ -275,10 +274,14 @@ function AddToComparisonDrawer(props) {
     // }
   }
   const handleCustomerChange = (v) => {
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     setValue('plant', '')
     setTimeout(() => {
       setCustomerId(v.value)
     }, 500);
+    if (!getConfigurationKey().IsCBCApplicableOnPlant) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, () => { }))
+    }
     dispatch(getPlantSelectListByType(ZBC, () => { }))
   }
   /**
