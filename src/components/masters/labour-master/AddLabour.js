@@ -144,9 +144,6 @@ class AddLabour extends Component {
       this.props.getLabourData('', () => { })
     }
   }
-  componentWillUnmount() {
-    reactLocalStorage?.setObject('vendorData', [])
-  }
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
@@ -525,6 +522,7 @@ class AddLabour extends Component {
     this.props.getLabourTypeByMachineTypeSelectList(
       { machineTypeId: tempData.MachineTypeId },
       (res) => {
+        this.setState({ labourData: res?.data?.SelectList })
         this.setState({
           labourData: res?.data?.SelectList,
           labourType: {
