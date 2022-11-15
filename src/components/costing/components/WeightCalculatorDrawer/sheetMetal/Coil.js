@@ -13,6 +13,7 @@ import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -434,9 +435,11 @@ function Coil(props) {
 
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * (Thickness * Strip Width * Pitch) / 10)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
+                                        id={'coil-gross-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

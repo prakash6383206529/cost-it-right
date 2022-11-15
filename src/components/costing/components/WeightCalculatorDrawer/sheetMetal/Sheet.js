@@ -13,6 +13,7 @@ import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -424,9 +425,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} />
                                     <NumberFieldHookForm
                                         label={`Weight of Sheet(g)`}
                                         name={'SheetWeight'}
+                                        id={'sheet-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -473,8 +476,10 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = Sheet Length / Strip Width'} />
                                     <NumberFieldHookForm
                                         label={`No. of Strips`}
+                                        id={'sheet-strips'}
                                         name={'StripsNumber'}
                                         Controller={Controller}
                                         control={control}
@@ -514,9 +519,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = Sheet Width / Blank Size'} />
                                     <NumberFieldHookForm
                                         label={`Components/Strip`}
                                         name={'ComponentPerStrip'}
+                                        id={'sheet-component-per-strip'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -526,6 +533,24 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.ComponentPerStrip}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = No. of Strips * Components per Strip'} />
+                                    <NumberFieldHookForm
+                                        label={`Total Components/Sheet`}
+                                        name={'NoOfComponent'}
+                                        id={'total-component'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfComponent}
                                         disabled={true}
                                     />
                                 </Col>
@@ -616,9 +641,11 @@ function Sheet(props) {
 
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-gross-weight'} tooltipText={'Gross Weight = Weight of Sheet / Total Components per Sheet / Cavity'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
+                                        id={'sheet-gross-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

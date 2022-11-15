@@ -7,6 +7,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
+import TooltipCustom from '../../../common/Tooltip'
 function MachiningStockTable(props) {
 
   const { rmRowData, hotcoldErrors, disableAll } = props
@@ -21,6 +22,10 @@ function MachiningStockTable(props) {
   const [irregularMachiningStock, setIrregularMachiningStock] = useState(false)
   const [disable, setDisable] = useState(true)
   const [disableMachineType, setDisableMachineType] = useState(false)
+  const [tooltipClassShow, setTooltipClassShow] = useState(false)
+  const [tooltipMessageForVolume, setTooltipMessageForVolume] = useState()
+  const [tooltipMessageForGross, setTooltipMessageForGross] = useState()
+
 
 
   const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -92,11 +97,12 @@ function MachiningStockTable(props) {
       forgingV: ''
     })
     if ((value.label === "Circular") || (value.label === "Semi Circular") || (value.label === "Quarter Circular")) {
-
       setCircularMachiningStock(true)
       setSquareMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
+      setTooltipClassShow(true)
+      setTooltipMessageForGross('Gross Weight = Volume * Density / 1000000')
     }
 
     else if (value.label === "Square") {
@@ -104,6 +110,8 @@ function MachiningStockTable(props) {
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
+      setTooltipClassShow(false)
+      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
     }
 
     else if (value.label === "Rectangular") {
@@ -111,7 +119,8 @@ function MachiningStockTable(props) {
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
-
+      setTooltipClassShow(false)
+      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
     }
     else if (value.label === "Irregular") {
       setSquareMachiningStock(false)
@@ -119,9 +128,31 @@ function MachiningStockTable(props) {
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(true)
       setDisable(false)
+      setTooltipClassShow(false)
+      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
     }
     else {
       setIrregularMachiningStock(false)
+      setTooltipClassShow(false)
+    }
+    switch (value.label) {
+      case 'Circular':
+        setTooltipMessageForVolume(<div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>)
+        break;
+      case 'Semi Circular':
+        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 2</div>)
+        break;
+      case 'Quarter Circular':
+        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 4</div>)
+        break;
+      case 'Square':
+        setTooltipMessageForVolume(<div>Length * Length * Length</div>)
+        break;
+      case 'Rectangular':
+        setTooltipMessageForVolume(<div>Length * Breadth * Length</div>)
+        break;
+      default:
+        break;
     }
   }
 
@@ -722,6 +753,7 @@ function MachiningStockTable(props) {
             </Col>
           </>}
         <Col md="3">
+          {disable && tooltipMessageForVolume && <TooltipCustom disabledIcon={true} tooltipClass={`${tooltipClassShow ? 'weight-of-sheet' : ''}`} id={'forging-volume'} tooltipText={tooltipMessageForVolume} />}
           <NumberFieldHookForm
             label={UnitFormat()}
             name={'forgingVolume'}
@@ -729,6 +761,7 @@ function MachiningStockTable(props) {
             control={control}
             register={register}
             mandatory={false}
+            id={'forging-volume'}
             handleChange={handleVolumeChange}
             defaultValue={''}
             className=""
@@ -738,6 +771,7 @@ function MachiningStockTable(props) {
           />
         </Col>
         <Col md="3">
+          {tooltipMessageForGross && <TooltipCustom disabledIcon={true} id={'forging-gross-weight'} tooltipText={tooltipMessageForGross} />}
           <NumberFieldHookForm
             label={`Gross Weight(kg)`}
             name={'grossWeight'}
@@ -748,6 +782,7 @@ function MachiningStockTable(props) {
             handleChange={() => { }}
             defaultValue={''}
             className=""
+            id={'forging-gross-weight'}
             customClassName={'withBorder'}
             errors={errors.grossWeight}
             disabled={true}

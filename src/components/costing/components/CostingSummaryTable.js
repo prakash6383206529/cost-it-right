@@ -32,6 +32,7 @@ import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
 import { IdForMultiTechnology } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
+import TooltipCustom from '../../common/Tooltip'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -1123,6 +1124,7 @@ const CostingSummaryTable = (props) => {
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
+                                    {data?.CostingHeading === VARIANCE && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText="Variance = Old Costing - New Costing" />}
                                   </div>
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
