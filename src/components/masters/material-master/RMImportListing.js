@@ -30,6 +30,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -69,7 +70,7 @@ function RMImportListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
-  const [dataCount, setDataCount] = useState(false)
+  const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
   const [dateArray, setDateArray] = useState([])
 
@@ -126,6 +127,7 @@ function RMImportListing(props) {
 
   useEffect(() => {
     setTimeout(() => {
+      reactLocalStorage.setObject('selectedRow', {})
       if (!props.stopApiCallOnCancel) {
         let obj = {
           MasterId: RM_MASTER_ID,
@@ -141,6 +143,7 @@ function RMImportListing(props) {
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
+          reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
@@ -540,7 +543,7 @@ function RMImportListing(props) {
 
   const checkBoxRenderer = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
         if (item.RawMaterialId === props.node.data.RawMaterialId) {
@@ -713,6 +716,7 @@ function RMImportListing(props) {
 
   const onRowSelect = (event) => {
 
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = gridApi && gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -734,9 +738,8 @@ function RMImportListing(props) {
       selectedRows = [...selectedRows, ...finalData]
     }
 
-
     let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray })  //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
     setDataCount(uniqeArray.length)
     let finalArr = selectedRows
     let length = finalArr?.length
@@ -844,8 +847,9 @@ function RMImportListing(props) {
                           </button></div> :
 
                             <>
-                              <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                              <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
                                 {/* DOWNLOAD */}
+                                {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                               </button>
 
                               <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
@@ -871,7 +875,6 @@ function RMImportListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact

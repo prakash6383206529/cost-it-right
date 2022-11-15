@@ -24,6 +24,7 @@ import { MESSAGES } from '../../../config/message'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -137,10 +138,10 @@ function ReportListing(props) {
 
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]))
-        if (statusColumnData?.data) {
+
+        if (statusColumnData?.id) {
             setEnableSearchFilterButton(false)
             setWarningMessage(true)
-
             switch (statusColumnData?.id) {
                 case 1:
                     setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
@@ -183,7 +184,7 @@ function ReportListing(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
                 if (item.BaseCostingId === props.node.data.BaseCostingId) {
@@ -277,10 +278,10 @@ function ReportListing(props) {
 
                 setViewRMData(data)
                 setrmMBDetail({
-                    MasterBatchTotal: dataFromAPI.CostingPartDetails?.masterBatchTotal,
-                    MasterBatchRMPrice: dataFromAPI.CostingPartDetails?.masterBatchRMPrice,
-                    MasterBatchPercentage: dataFromAPI.CostingPartDetails?.masterBatchPercentage,
-                    IsApplyMasterBatch: dataFromAPI.CostingPartDetails?.isApplyMasterBatch
+                    MasterBatchTotal: dataFromAPI?.CostingPartDetails?.masterBatchTotal,
+                    MasterBatchRMPrice: dataFromAPI?.CostingPartDetails?.masterBatchRMPrice,
+                    MasterBatchPercentage: dataFromAPI?.CostingPartDetails?.masterBatchPercentage,
+                    IsApplyMasterBatch: dataFromAPI?.CostingPartDetails?.isApplyMasterBatch
                 })
                 setIsViewRM(true)
             }
@@ -417,11 +418,15 @@ function ReportListing(props) {
     }
 
     useEffect(() => {
-
+        reactLocalStorage.setObject('selectedRow', {})
         setLoader(true)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
+
+        return () => {
+            reactLocalStorage.setObject('selectedRow', {})
+        }
     }, [])
 
     const onBtNext = () => {
@@ -669,7 +674,7 @@ function ReportListing(props) {
     }
 
     const onRowSelect = (event) => {
-
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -692,7 +697,7 @@ function ReportListing(props) {
         }
 
         let uniqeArray = _.uniqBy(selectedRows, "BaseCostingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
 
     }
@@ -771,9 +776,9 @@ function ReportListing(props) {
                             </button></div> :
 
                                 <>
-                                    <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
+                                    <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
                                         {/* DOWNLOAD */}
-                                        {`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                        {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                     </button>
 
                                     <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
@@ -796,7 +801,6 @@ function ReportListing(props) {
                 {isLoader ? <LoaderCustom /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
-                        <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             style={{ height: '100%', width: '100%' }}

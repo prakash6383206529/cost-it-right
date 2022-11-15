@@ -11,13 +11,13 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { IdForMultiTechnology } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
@@ -234,7 +234,7 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        if (IdForMultiTechnology.includes(String(selectedTechnologyForSimulation.value))) {
+        if (checkForNull(selectedTechnologyForSimulation.value) === ASSEMBLY_TECHNOLOGY) {
             dispatch(runSimulationOnSelectedAssemblyTechnologyCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp, SimulationId: props?.token }, (res) => {
                 checkForResponse(res)
             }))

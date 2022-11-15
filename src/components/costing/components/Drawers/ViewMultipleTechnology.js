@@ -4,8 +4,10 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { BOUGHTOUTPART, EMPTY_DATA } from '../../../../config/constants'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { setCostingViewData } from '../../actions/Costing'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
@@ -13,6 +15,9 @@ function ViewMultipleTechnology(props) {
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const dispatch = useDispatch()
+
     useEffect(() => {
         setViewMultiCost(multipleTechnologyData)
     }, [])
@@ -32,9 +37,13 @@ function ViewMultipleTechnology(props) {
     const viewCosting = (id) => {
         setCostingDetailId(id)
         setOpemDrawer(true)
+        reactLocalStorage.setObject('viewCostingData', viewCostingData)
+        dispatch(setCostingViewData([]))
     }
     const closeDrawerPartCost = (e = '') => {
         setOpemDrawer(false)
+        let tempObj = reactLocalStorage.getObject('viewCostingData')
+        dispatch(setCostingViewData(tempObj))
     }
 
     const multipleCost = () => {

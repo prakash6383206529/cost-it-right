@@ -55,28 +55,28 @@ function AssemblyTechnology(props) {
                         let costPerPieceTotal = 0
                         let CostPerAssemblyBOPTotal = 0
 
-                        tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+                        tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
                             costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
                             CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
                             return null
                         })
-                        // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP =
+                        // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP =
                         //     checkForNull(CostPerAssemblyBOPTotal) +
-                        //     checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
+                        //     checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges)
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost =
                             checkForNull(CostPerAssemblyBOPTotal) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges)
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
 
@@ -171,7 +171,7 @@ function AssemblyTechnology(props) {
 
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
         let CostPerAssemblyBOPTotal = 0
-        tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+        tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
             CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
             return null
         })
@@ -184,22 +184,22 @@ function AssemblyTechnology(props) {
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
-            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost) +
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost) +
             checkForNull(totalBOPCost) +
-            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+            (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
-            checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost) +
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost) +
             checkForNull(totalBOPCost) +
-            (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+            (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
-        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
             checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-            checkForNull(packageAndFreightTabData.CostingPartDetails?.NetFreightPackagingCost) +
-            checkForNull(toolTabData.CostingPartDetails?.TotalToolCost) +
+            checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
+            checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
             checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
             checkForNull(DiscountCostData?.AnyOtherCost)) -
             checkForNull(DiscountCostData?.HundiOrDiscountValue)

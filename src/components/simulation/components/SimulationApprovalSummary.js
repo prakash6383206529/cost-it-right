@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, MACHINERATE, VBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -96,6 +96,7 @@ function SimulationApprovalSummary(props) {
     const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
+    const [noData, setNoData] = useState(false);
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -103,6 +104,7 @@ function SimulationApprovalSummary(props) {
     const isBOPDomesticOrImport = ((Number(SimulationTechnologyId) === Number(BOPDOMESTIC)) || (Number(SimulationTechnologyId) === Number(BOPIMPORT)))
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
     const isMachineRate = String(SimulationTechnologyId) === MACHINERATE;
+    const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
@@ -442,21 +444,25 @@ function SimulationApprovalSummary(props) {
             finalGrid = [...InitialGridForTokenSummary, ...finalGrid, ...LastGridForTokenSummary]
         }
 
-        switch (String(SimulationTechnologyId)) {
-            case RMDOMESTIC:
-            case RMIMPORT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid.length > 0 ? downloadGrid : [])
-            case SURFACETREATMENT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid.length > 0 ? downloadGrid : [])
-            case OPERATIONS:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid.length > 0 ? downloadGrid : [])
-            case BOPDOMESTIC:
-            case BOPIMPORT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, downloadGrid.length > 0 ? downloadGrid : [])
-            case MACHINERATE:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid.length > 0 ? downloadGrid : [])
-            default:
-                break;
+        if (isMultiTechnology) {
+            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid.length > 0 ? downloadGrid : [])
+        } else {
+            switch (String(SimulationTechnologyId)) {
+                case RMDOMESTIC:
+                case RMIMPORT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid.length > 0 ? downloadGrid : [])
+                case SURFACETREATMENT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid.length > 0 ? downloadGrid : [])
+                case OPERATIONS:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid.length > 0 ? downloadGrid : [])
+                case BOPDOMESTIC:
+                case BOPIMPORT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, downloadGrid.length > 0 ? downloadGrid : [])
+                case MACHINERATE:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid.length > 0 ? downloadGrid : [])
+                default:
+                    break;
+            }
         }
     }
 
@@ -648,7 +654,11 @@ function SimulationApprovalSummary(props) {
         // setAssemblyWiseAcc(true)
         // }, 350);
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (costingList.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -750,9 +760,9 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
-    const processCostFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? cell : '-';
+    const decimalFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
     const bopNumberFormatter = (props) => {
@@ -874,7 +884,7 @@ function SimulationApprovalSummary(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         processCodeFormatter: processCodeFormatter,
         processNameFormatter: processNameFormatter,
-        processCostFormatter: processCostFormatter
+        decimalFormatter: decimalFormatter
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -1063,7 +1073,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${(costingList && costingList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex align-items-center">
                                                             <input type="text" className="form-control table-search mr-1" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -1087,7 +1097,8 @@ function SimulationApprovalSummary(props) {
 
                                                             }
                                                         </div>
-                                                        <div className="ag-theme-material">
+                                                        <div className="ag-theme-material" >
+                                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
@@ -1105,6 +1116,7 @@ function SimulationApprovalSummary(props) {
                                                                     title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
+                                                                onFilterModified={onFloatingFilterChanged}
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
@@ -1155,12 +1167,13 @@ function SimulationApprovalSummary(props) {
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessName" headerName="Process Name" cellRenderer='processNameFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName="Process Code" cellRenderer='processCodeFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Old Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="New Net Process Cost" cellRenderer='processCostFormatter' ></AgGridColumn>}
-                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Process Cost Variance" cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Old Net Process Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="New Net Process Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Process Cost Variance" cellRenderer='decimalFormatter' ></AgGridColumn>}
 
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Net Bought Out Part Cost Variance"></AgGridColumn>}
 
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                     keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&

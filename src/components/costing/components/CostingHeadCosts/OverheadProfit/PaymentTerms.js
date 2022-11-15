@@ -178,6 +178,7 @@ function PaymentTerms(props) {
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
             switch (Text) {
                 case 'RM':
+                case 'Part Cost':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
@@ -186,6 +187,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'RM + CC':
+                case 'Part Cost + CC':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -195,6 +197,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'RM + BOP':
+                case 'Part Cost + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -204,6 +207,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'RM + CC + BOP':
+                case 'Part Cost + CC + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -255,7 +259,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode || (IdForMultiTechnology.includes(String(costData?.TechnologyId))) ? true : false}
+                            disabled={CostingViewMode ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

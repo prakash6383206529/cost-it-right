@@ -675,6 +675,7 @@ class UsersListing extends Component {
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}
+								{this.props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>

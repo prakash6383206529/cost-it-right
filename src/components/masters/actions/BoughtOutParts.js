@@ -131,7 +131,7 @@ export function getBOPImportDataList(data, skip, take, isPagination, obj, callba
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
     };
 }

@@ -160,6 +160,15 @@ function EditPartCost(props) {
     }
 
     const handleDeltaValue = (value, index) => {
+        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPrice < value) {
+
+            Toaster.warning('Delta value should be less than settled price')
+            setTimeout(() => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+            }, 200);
+            return false
+        }
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);
@@ -287,16 +296,16 @@ function EditPartCost(props) {
             costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
             }, 0)
-            // tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
+            // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
-                (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost) +
-                (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost))
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
             let tempArray = []
             gridData && gridData?.map((item) => {
                 let tempObject = {}
@@ -316,10 +325,10 @@ function EditPartCost(props) {
             }
             dispatch(saveSettledCostingDetails(obj, res => { }))
 
-            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-                checkForNull(PackageAndFreightTabData[0].CostingPartDetails?.NetFreightPackagingCost) +
-                checkForNull(ToolTabData && ToolTabData[0].CostingPartDetails?.TotalToolCost) +
+                checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
                 checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
                 checkForNull(DiscountCostData?.AnyOtherCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)

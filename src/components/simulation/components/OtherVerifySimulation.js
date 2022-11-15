@@ -7,7 +7,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
@@ -32,6 +32,7 @@ function OtherVerifySimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [masterId, setMasterId] = useState('')
     const [effectiveDate, setEffectiveDate] = useState('')
+    const [noData, setNoData] = useState(false);
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
 
     const dispatch = useDispatch()
@@ -98,6 +99,11 @@ function OtherVerifySimulation(props) {
         setGridSelection(row, e.node)
     }
 
+    const onFloatingFilterChanged = (value) => {
+        if (verifyList.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const setGridSelection = (type, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
         const rowIndex = clickedElement.rowIndex
@@ -229,17 +235,15 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className={`height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className={`height-width-wrapper ${(verifyList && verifyList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <div
-                                            className="ag-theme-material"
-
-                                        >
+                                        <div className="ag-theme-material p-relative">
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                             <AgGridReact
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
@@ -259,6 +263,7 @@ function OtherVerifySimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 onRowSelected={onRowSelected}
+                                                onFilterModified={onFloatingFilterChanged}
 
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
