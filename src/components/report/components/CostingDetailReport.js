@@ -278,10 +278,10 @@ function ReportListing(props) {
 
                 setViewRMData(data)
                 setrmMBDetail({
-                    MasterBatchTotal: dataFromAPI.CostingPartDetails?.masterBatchTotal,
-                    MasterBatchRMPrice: dataFromAPI.CostingPartDetails?.masterBatchRMPrice,
-                    MasterBatchPercentage: dataFromAPI.CostingPartDetails?.masterBatchPercentage,
-                    IsApplyMasterBatch: dataFromAPI.CostingPartDetails?.isApplyMasterBatch
+                    MasterBatchTotal: dataFromAPI?.CostingPartDetails?.masterBatchTotal,
+                    MasterBatchRMPrice: dataFromAPI?.CostingPartDetails?.masterBatchRMPrice,
+                    MasterBatchPercentage: dataFromAPI?.CostingPartDetails?.masterBatchPercentage,
+                    IsApplyMasterBatch: dataFromAPI?.CostingPartDetails?.isApplyMasterBatch
                 })
                 setIsViewRM(true)
             }

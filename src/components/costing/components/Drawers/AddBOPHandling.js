@@ -57,16 +57,16 @@ function AddBOPHandling(props) {
       let BOPSum = 0
       childPartDetail && childPartDetail.map((el) => {
         if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
-          BOPSum = BOPSum + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
+          BOPSum = BOPSum + (checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCost) * checkForNull(el?.CostingPartDetails?.Quantity))
         }
         return BOPSum
       })
       setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem?.PartNumber === item?.PartNumber && assyItem?.AssemblyPartNumber === item?.AssemblyPartNumber && (assyItem?.PartType === 'Sub Assembly' || assyItem?.PartType === 'Assembly'))
-      setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
-      setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
-      setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
-      setValue('BOPHandlingFixed', obj[0]?.CostingPartDetails?.BOPHandlingChargeType === "Fixed" ? checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges) : 0)
+      setValue('BOPCost', obj[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0]?.CostingPartDetails?.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
+      setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingPercentage))
+      setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingCharges))
+      setValue('BOPHandlingFixed', obj[0]?.CostingPartDetails?.BOPHandlingChargeType === "Fixed" ? checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingCharges) : 0)
       setValue('BOPHandlingType', obj[0]?.CostingPartDetails?.BOPHandlingChargeType ? { label: obj[0]?.CostingPartDetails?.BOPHandlingChargeType, value: obj[0]?.CostingPartDetails?.BOPHandlingChargeType } : {})   // COMMENT
       setBOPHandlingType(obj[0]?.CostingPartDetails?.BOPHandlingChargeType)
     }

@@ -590,7 +590,7 @@ const CostingSummaryTable = (props) => {
               year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
             }
 
-            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, viewCostingData[index]?.costingTypeId === ZBCTypeId || viewCostingData[index]?.costingTypeId === CBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId, viewCostingData[index]?.vendorId, viewCostingData[index]?.customerId, viewCostingData[index]?.costingTypeId, res => {
+            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, viewCostingData[index]?.costingTypeId === ZBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId, viewCostingData[index]?.vendorId, viewCostingData[index]?.customerId, viewCostingData[index]?.costingTypeId, res => {
               if (res.data?.Result === true || res.status === 202) {
                 let approvedQtyArr = res.data?.Data?.VolumeApprovedDetails
                 let budgetedQtyArr = res.data?.Data?.VolumeBudgetedDetails
@@ -994,6 +994,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
+          {(Object.keys(viewCostingData).length === 0 && <LoaderCustom />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -1243,7 +1244,7 @@ const CostingSummaryTable = (props) => {
                               stCostShow={false}
                               operationShow={true}
                             /></th></tr>}
-                        {<tr>
+                        {drawerDetailPDF && <tr>
                           <th colSpan={2} className='py-0'>
                             <ViewMultipleTechnology
                               isOpen={viewMultipleTechnologyDrawer}

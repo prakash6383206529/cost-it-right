@@ -756,7 +756,7 @@ export const Labour = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
-    { label: 'RatePerPerson/Annum(INR)', value: 'RatePerPerson/Annum(INR)', }, //*
+    { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
 
@@ -769,7 +769,7 @@ export const LabourTempData = [
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
-        'RatePerPerson/Annum(INR)': 2000000,
+        'RatePerPersonPerAnnum': 2000000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     },
     {
@@ -1050,7 +1050,7 @@ export const BOP_CBC_IMPORT_TempData = [
 */
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -1075,7 +1075,7 @@ export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1087,7 +1087,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
-        'PartNo': 'Screw Jack',
+        'PartNumber': 'Screw Jack',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1101,7 +1101,7 @@ export const VOLUME_ACTUAL_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1113,7 +1113,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
         'CustomerCode': 'C-10008',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
-        'PartNo': 'Screw Jack',
+        'PartNumber': 'Screw Jack',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1125,7 +1125,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
 */
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1136,7 +1136,7 @@ export const VOLUME_BUDGETED_ZBC = [
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
-        'PartNo': 'Screw01',
+        'PartNumber': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1152,7 +1152,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1165,7 +1165,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
-        'PartNo': 'Screw01',
+        'PartNumber': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1177,7 +1177,7 @@ export const VOLUME_BUDGETED_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'Part No.(Revision No.)', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1189,7 +1189,7 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
         'CustomerCode': 'C-10008',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
-        'PartNo': 'Screw01',
+        'PartNumber': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1335,9 +1335,9 @@ export const MHRMoreZBC = [
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
     { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
-    { label: "MachineCost(INR)", value: "MachineCost(INR)", }, //*
-    { label: "AccessoriesCost(INR)", value: "AccessoriesCost(INR)", },
-    { label: "InstallationCost(INR)", value: "InstallationCost(INR)", },
+    { label: "MachineCost", value: "MachineCost", }, //*
+    { label: "AccessoriesCost", value: "AccessoriesCost", },
+    { label: "InstallationCost", value: "InstallationCost", },
     { label: "LoanPercentage", value: "LoanPercentage", },
     { label: "EquityPercentage", value: "EquityPercentage", },
     { label: "RateOfInterest", value: "RateOfInterest", },
@@ -1352,12 +1352,12 @@ export const MHRMoreZBC = [
     { label: "DateOfPurchase", value: "DateOfPurchase", },
     { label: "IsMaintanceFixed", value: "IsMaintanceFixed", },
     { label: "AnnualMaintance", value: "AnnualMaintance", },
-    { label: "AnnualMaintanaceAmount(INR)", value: "AnnualMaintanaceAmount(INR)", },
+    { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumable", value: "AnnualConsumable", },
-    { label: "AnnualConsumableAmount(INR)", value: "AnnualConsumableAmount(INR)", },
+    { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
     { label: "InsuaranceTypeFixed", value: "InsuaranceTypeFixed", },
-    { label: "InsuranceAmount(INR)", value: "InsuranceAmount(INR)", },
+    { label: "InsuranceAmount", value: "InsuranceAmount", },
     { label: "AnnualInsurancePercentage", value: "AnnualInsurancePercentage", },
     { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
     { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
@@ -1407,9 +1407,9 @@ export const MHRMoreZBCTempData = [
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 40,
-        "MachineCost(INR)": 5000,
-        "AccessoriesCost(INR)": 500,
-        "InstallationCost(INR)": 500,
+        "MachineCost": 5000,
+        "AccessoriesCost": 500,
+        "InstallationCost": 500,
         "LoanPercentage": 10,
         "EquityPercentage": 10,
         "RateOfInterest": 7,
@@ -1428,9 +1428,9 @@ export const MHRMoreZBCTempData = [
         "AnnualMaintanaceAmount": 1000,
         "IsConsumableFixed": "YES",
         "AnnualConsumable": 0,
-        "AnnualConsumableAmount(INR)": 1000,
+        "AnnualConsumableAmount": 1000,
         "InsuaranceTypeFixed": "YES",
-        "InsuranceAmount(INR)": 1000,
+        "InsuranceAmount": 1000,
         "AnnualInsurancePercentage": 0,
         "BuildingCostPerSqFt": 100,
         "MachineFloorAreaSqPerFt": 2500,
@@ -1463,9 +1463,9 @@ export const MHRMoreZBCTempData = [
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 50,
-        "MachineCost(INR)": 5000,
-        "AccessoriesCost(INR)": 500,
-        "InstallationCost(INR)": 500,
+        "MachineCost": 5000,
+        "AccessoriesCost": 500,
+        "InstallationCost": 500,
         "LoanPercentage": 10,
         "EquityPercentage": 10,
         "RateOfInterest": 7,
@@ -1484,9 +1484,9 @@ export const MHRMoreZBCTempData = [
         "AnnualMaintanaceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumable": 10,
-        "AnnualConsumableAmount(INR)": 0,
+        "AnnualConsumableAmount": 0,
         "InsuaranceTypeFixed": "NO",
-        "InsuranceAmount(INR)": 0,
+        "InsuranceAmount": 0,
         "AnnualInsurancePercentage": 10,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
@@ -3774,12 +3774,17 @@ export const CostingSimulationDownloadMR = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
+    { label: "MachineName", value: "MachineName" },
+    { label: "MachineNumber", value: "MachineNumber" },
     { label: "OldMachineRate", value: "OldMachineRate" },
     { label: "NewMachineRate", value: "NewMachineRate" },
-    { label: "MRVariance", value: "MRVariance" },
-    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
-    { label: "NewNetProcessCost", value: "NewNetProcessCost" },
-    { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
+    { label: "MachineRateVariance", value: "MRVariance" },
+    { label: "Quantity", value: "Quantity" },
+    { label: "ProcessName", value: "ProcessName" },
+    { label: "ProcessCode", value: "ProcessCode" },
+    { label: "OldProcessCost", value: "OldProcessCost" },
+    { label: "NewProcessCost", value: "NewProcessCost" },
+    { label: "ProcessCostVariance", value: "ProcessCostVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
@@ -3831,11 +3836,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
 
-    { label: "Machine Name", value: "MachineName" },
-    { label: "Machine Number", value: "MachineNumber" },
-    { label: "Old Machine Cost", value: "OldNetMachineCost" },
-    { label: "New Machine Cost", value: "NewNetMachineCost" },
-    { label: "Machine Variance", value: "NetMachineCostVariance" },
+    { label: "Old Net Process Cost", value: "OldNetProcessCost" },
+    { label: "New Net Process Cost", value: "NewNetProcessCost" },
+    { label: "Net Process Cost Variance", value: "NetProcessCostVariance" },
 
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },

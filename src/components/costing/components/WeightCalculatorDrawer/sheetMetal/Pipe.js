@@ -15,6 +15,7 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../../helper/validation'
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -340,11 +341,13 @@ function Pipe(props) {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
       updatedValue.GrossWeight = WeightofPart
+      updatedValue.newGrossWeight = WeightofPart
       setDataToSend(updatedValue)
     } else {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart)
       updatedValue.GrossWeight = WeightofPart
+      updatedValue.newGrossWeight = WeightofPart
       setDataToSend(updatedValue)
     }
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
@@ -501,6 +504,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -524,6 +528,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -589,6 +594,7 @@ function Pipe(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
