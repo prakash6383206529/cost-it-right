@@ -1562,4 +1562,13 @@ export const disabledClass = (value) => {
   }
 }
 
+export function getPlantSelectListReducer(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_PLANT_SELECTLIST_BY_TYPE,
+      payload: data
+    })
+  }
+}
+
 
