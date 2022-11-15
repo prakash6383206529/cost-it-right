@@ -697,10 +697,11 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom id="tool-maintanence" tooltipText={"Tool Maintanence Cost = maintanence Cost(%) * Cost(Applicability) / 100"} />}
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintanence Cost = Maintanence Cost(%) * Cost(Applicability) / 100"} />}
                     <TextFieldHookForm
                       label="Tool Maintanence Cost"
                       name={`ToolMaintenanceCost`}
+                      id={"tool-maintanence"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -779,10 +780,11 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom id="tool-amortization" tooltipText={"Tool Amortization = Tool Cost / Amortization Quantity"} />
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = Tool Cost / Amortization Quantity"} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={`ToolAmortizationCost`}
+                      id={"tool-amortization"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -804,10 +806,12 @@ function Tool(props) {
                     />
                   </Col>
 
-                  <Col md="3"> <TooltipCustom id="tool-cost" tooltipText={"Net Tool Cost = Tool Maintanence Cost + Tool Amortization"} />
+                  <Col md="3">
+                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={"Net Tool Cost = Tool Maintanence Cost + Tool Amortization"} />
                     <TextFieldHookForm
                       label="Net Tool Cost"
                       name={`NetToolCost`}
+                      id="tool-cost"
                       Controller={Controller}
                       control={control}
                       register={register}

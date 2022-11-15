@@ -11,6 +11,7 @@ import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../helper/validation'
+import TooltipCustom from '../../../common/Tooltip'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -310,9 +311,11 @@ function Plastic(props) {
 
               <Row className={'mt25'}>
                 <Col md="3" >
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = Gross Weight + Runner Weight + Other Loss Weight'} />
                   <NumberFieldHookForm
                     label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
+                    id={'gross-weight-plastic'}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -350,11 +353,13 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = Total Gross weight - Finish Weight'} />
                   <NumberFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
                     Controller={Controller}
                     control={control}
+                    id={'scrap-weight-plastic'}
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
@@ -369,10 +374,12 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'burring-allowance'} tooltipText={'BUrring Allowance = RM Rate * Burning Loss Weight'} />
                   <NumberFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
+                    id={'burring-allowance'}
                     control={control}
                     register={register}
                     mandatory={false}
@@ -385,10 +392,12 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = Total Gross Weight * RM Rate + Burning Allowance'} />
                   <NumberFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
                     Controller={Controller}
+                    id={'rm-cost-plactic'}
                     control={control}
                     register={register}
                     mandatory={false}
@@ -401,12 +410,14 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = Scrap Rate * Scrap Weight'} />
                   <NumberFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
                     Controller={Controller}
                     control={control}
                     register={register}
+                    id={'scrap-cost-plastic'}
                     mandatory={false}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -418,11 +429,13 @@ function Plastic(props) {
                 </Col>
 
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = RM Cost + Scrap Cost'} />
                   <NumberFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}
                     name={'materialCost'}
                     Controller={Controller}
+                    id={'net-rm-cost-plastic'}
                     control={control}
                     register={register}
                     mandatory={false}
