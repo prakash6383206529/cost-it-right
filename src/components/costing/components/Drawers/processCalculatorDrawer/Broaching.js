@@ -393,7 +393,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Lenght / Module) * (No of teeth * Module * Step Forward Thinning) 1000'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No of Teeth * Module * Step Forward Thinning)  / 1000'} />
                                             <NumberFieldHookForm
                                                 label={`Broaching Force in Ton`}
                                                 name={'broachingForceInTon'}
@@ -484,7 +484,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cutting-time'} tooltipText={'Cutting time(Min) = (Tool Length/ Cutting Speed Forward/1000) + (Tool Length/ Cutting Speed Return/1000)'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cutting-time'} tooltipText={'Cutting time(Min) = (Tool Length / Cutting Speed Forward / 1000) + (Tool Length / Cutting Speed Return / 1000)'} />
                                             <NumberFieldHookForm
                                                 label={`Cutting time(min)`}
                                                 name={'cuttingTimeMins'}
@@ -608,7 +608,7 @@ function Broaching(props) {
 
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cyle-time-min'} tooltipText={'Total Cycle Time(Min) = Cutting Time+ chip to chip + tool non cutting + Indexing table + Loading & Unloading'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cyle-time-min'} tooltipText={'Total Cycle Time(Min) = Cutting Time + Chip to Chip + Tool Non-Cutting + Indexing table + Loading & Unloading'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
@@ -675,7 +675,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-part-hour'} tooltipText={'Part Per Hour = Total Cycle Time in Mins * 60'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-part-hour'} tooltipText={'Part per Hour = Total Cycle Time in Mins * 60'} />
                                             <NumberFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}

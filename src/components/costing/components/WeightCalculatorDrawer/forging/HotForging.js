@@ -597,7 +597,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = Input Bar Length - (Input Length * No of Parts Per Length)'} />
+                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = Input Bar Length - (Input Length * No of Parts per Length)'} />
                 <NumberFieldHookForm
                   label={`End Bit Length`}
                   name={'EndBitLength'}

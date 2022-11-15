@@ -495,7 +495,7 @@ function Ferrous(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = Scrap Weight * Scrap Recovery Percentage * Scrap Rate/100'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
@@ -515,7 +515,7 @@ function Ferrous(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = Gross Weight * RMRate - Scrap Cost'} />
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = Gross Weight * RM Rate - Scrap Cost'} />
                                     <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}
