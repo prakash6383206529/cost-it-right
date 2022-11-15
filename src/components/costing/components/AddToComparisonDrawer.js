@@ -4,9 +4,9 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/Common'
+import { getPlantSelectListByType, getPlantSelectListReducer } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
-import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
+import { getCostingByVendorAndVendorPlant, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
@@ -110,7 +110,6 @@ function AddToComparisonDrawer(props) {
         dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
         commonApiCall(ZBCTypeId)
       } else if (costingTypeId === VBCTypeId) {//VBC COSTING CONDITION
-
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
@@ -132,10 +131,8 @@ function AddToComparisonDrawer(props) {
         setIsVbcSelected(false)
         setisNccSelected(false)
         setisCbcSelected(true)
-        dispatch(getClientSelectList((res) => {
-          commonApiCall(CBCTypeId)
-        }),
-        )
+        dispatch(getClientSelectList(() => { }))
+        commonApiCall(CBCTypeId)
         dispatch(getPlantSelectListByType(ZBC, () => { }))
       }
       // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
@@ -176,7 +173,9 @@ function AddToComparisonDrawer(props) {
   }, [vendorSelectList])
 
   const commonApiCall = (costingTypeId) => {
-    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
+    if (((costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && VendorId && destinationPlantId) || (costingTypeId === CBCTypeId && customerId && destinationPlantId) || (costingTypeId === VBCTypeId && destinationPlantId)) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
+    }
   }
 
   /**
@@ -215,6 +214,7 @@ function AddToComparisonDrawer(props) {
 
 
     } else if ((value) === VBCTypeId) {
+      dispatch(getPlantSelectListReducer([]))
       setCostingDropdown([])
       setIsZbcSelected(false)
       setIsVbcSelected(true)
@@ -226,7 +226,9 @@ function AddToComparisonDrawer(props) {
       commonApiCall(VBCTypeId)
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
 
+
     } else if ((value) === CBCTypeId) {
+      dispatch(getPlantSelectListReducer([]))
       setisCbcSelected(true)
       setIsZbcSelected(false)
       setIsVbcSelected(false)
@@ -234,9 +236,8 @@ function AddToComparisonDrawer(props) {
       setCostingDropdown([])
       setValue('costings', '')
       setValue('plant', '')
-      dispatch(getClientSelectList((res) => {
+      dispatch(getClientSelectList((res) => { }),
         commonApiCall(CBCTypeId)
-      }),
       )
     } else if ((value) === NCCTypeId) {
       setisCbcSelected(false)
@@ -881,7 +882,7 @@ function AddToComparisonDrawer(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={isEditFlag ? plantName : ""}
-                          options={renderListing('plant')}
+                          options={renderListing('DestinationPlant')}
                           mandatory={true}
                           handleChange={handlePlantChange}
                           errors={errors.plant}
