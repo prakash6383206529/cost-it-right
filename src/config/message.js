@@ -289,7 +289,7 @@ export const MESSAGES = {
   ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission added successfully',
 
   //MHR
-  MHR_DELETE_ALERT: 'Are you sure you want to delete this machine rate?',
+  MHR_DELETE_ALERT: 'Are you sure,  you want to delete this machine rate?',
   DELETE_MHR_SUCCESS: 'Machine rate deleted successfully',
   MHR_MASTER_ADD_SUCCESS: 'Machine rate added successfully',
   UPDATE_MHR_SUCCESSFULLY: 'Machine rate updated successfully',
@@ -343,6 +343,7 @@ export const MESSAGES = {
 
   // COMMON MESSAGES 
   DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+  CANCEL_MASTER_ALERT: 'Are you sure, you want to cancel?',
 
   //ERROR MESSAGES
   PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,

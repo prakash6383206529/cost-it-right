@@ -19,6 +19,7 @@ import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -39,6 +40,7 @@ class AddSpecification extends Component {
       rmGradeId: '',
       rmSpecification: '',
       rmCode: '',
+      showPopup: false
     }
   }
 
@@ -239,6 +241,16 @@ class AddSpecification extends Component {
     this.props.getRMSpecificationDataAPI('', res => { });
   }
 
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   toggleDrawer = (event, data, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -654,7 +666,7 @@ class AddSpecification extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={() => { this.cancel('cancel') }}
+                          onClick={this.cancelHandler}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -676,6 +688,9 @@ class AddSpecification extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenRMDrawer && (
           <AddRawMaterial
             isOpen={isOpenRMDrawer}

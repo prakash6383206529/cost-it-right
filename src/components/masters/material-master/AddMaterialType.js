@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddMaterialType extends Component {
   constructor(props) {
@@ -19,7 +20,8 @@ class AddMaterialType extends Component {
       isShowForm: false,
       MaterialTypeId: '',
       DataToChange: [],
-      setDisable: false
+      setDisable: false,
+      showPopup: false
     }
   }
 
@@ -47,6 +49,16 @@ class AddMaterialType extends Component {
     this.toggleDrawer('', '', type)
   }
 
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   toggleDrawer = (event, formData, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -197,7 +209,7 @@ class AddMaterialType extends Component {
                                                 className="submit-button mr5 save-btn"
                                             /> */}
                       <button
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn"
@@ -223,6 +235,9 @@ class AddMaterialType extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     );
   }

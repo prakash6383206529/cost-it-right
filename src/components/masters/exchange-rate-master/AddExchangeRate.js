@@ -14,7 +14,7 @@ import { renderNumberInputField, searchableSelect, } from "../../layout/FormInpu
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -34,7 +34,8 @@ class AddExchangeRate extends Component {
       setDisable: false,
       minEffectiveDate: '',
       isFinancialDataChange: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      showPopup: false
 
     }
   }
@@ -158,7 +159,16 @@ class AddExchangeRate extends Component {
     this.props.hideForm(type)
 
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   onFinancialDataChange = (e) => {
 
     if (e.target.name === "CurrencyExchangeRate") {
@@ -418,7 +428,7 @@ class AddExchangeRate extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={'cancel-icon'}></div>
@@ -439,6 +449,9 @@ class AddExchangeRate extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     );
   }

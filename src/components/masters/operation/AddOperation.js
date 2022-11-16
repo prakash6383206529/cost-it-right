@@ -28,6 +28,7 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddOperation');
 
@@ -80,7 +81,8 @@ class AddOperation extends Component {
       showErrorOnFocusDate: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: false
+      finalApprovalLoader: false,
+      showPopup: false
     }
   }
 
@@ -551,7 +553,16 @@ class AddOperation extends Component {
     }
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1209,7 +1220,7 @@ class AddOperation extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={() => { this.cancel('submit') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -1242,6 +1253,10 @@ class AddOperation extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+
+        }
         {isOpenVendor && (
           <AddVendorDrawer
             isOpen={isOpenVendor}

@@ -17,6 +17,7 @@ import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -38,7 +39,8 @@ class AddVendorDrawer extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             isViewMode: this.props?.isViewMode ? true : false,
-            setDisable: false
+            setDisable: false,
+            showPopup: false
         }
     }
 
@@ -292,7 +294,16 @@ class AddVendorDrawer extends Component {
         this.props.getSupplierByIdAPI('', false, () => { })
         this.toggleDrawer('', formData, type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('submit')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -646,7 +657,7 @@ class AddVendorDrawer extends Component {
                                             type={'button'}
                                             disabled={this.state.isLoader || setDisable}
                                             className=" mr15 cancel-btn"
-                                            onClick={this.cancel} >
+                                            onClick={this.cancelHandler} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
@@ -663,6 +674,9 @@ class AddVendorDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
                 {isOpenVendorPlant && <AddVendorPlantDrawer
                     isOpen={isOpenVendorPlant}
                     closeDrawer={this.closeVendorDrawer}
