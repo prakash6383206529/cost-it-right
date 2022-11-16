@@ -1746,6 +1746,7 @@ class AddMoreDetails extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
+      IsFinancialDataChanged: true
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
@@ -1833,7 +1834,7 @@ class AddMoreDetails extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteMachine(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -2219,6 +2220,9 @@ class AddMoreDetails extends Component {
     }
 
     this.setState({ isWorkingOpen: !isWorkingOpen })
+  }
+  checksFinancialDataChanged = (data) => {
+    this.setState({ IsFinancialDataChanged: data })
   }
 
   /**
@@ -3826,7 +3830,7 @@ class AddMoreDetails extends Component {
                           </Col>
                           {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md="12">
-                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} />
+                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
                             </Col>
                           </div>}
                         </Row>
@@ -3857,7 +3861,7 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone

@@ -183,6 +183,7 @@ export const ProcessGroup = (props) => {
     }
 
     const deleteItem = (index) => {
+        if (!props.isListing) props.checksFinancialDataChanged(true)
         let tempArrAfterDelete = rowData && rowData.filter((el, i) => {
             if (i === index) return false;
             return true
