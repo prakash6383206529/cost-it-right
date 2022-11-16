@@ -649,6 +649,7 @@ class BOPDomesticListing extends Component {
             <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="3" lg="3">
@@ -656,7 +657,6 @@ class BOPDomesticListing extends Component {
                         </Col>
                         <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                         <div className="cancel-icon-white"></div></button>
@@ -701,25 +701,16 @@ class BOPDomesticListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {/* DOWNLOAD */}
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        </button>
 
-                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                        </button></div> :
-
-                                            <>
-                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                    {/* DOWNLOAD */}
-                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                                </button>
-
-                                                <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-
-                                            </>
-
-                                        }
+                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
+                                            </button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
