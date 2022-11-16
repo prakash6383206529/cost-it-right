@@ -40,6 +40,7 @@ import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -112,7 +113,8 @@ class AddRMDomestic extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      showPopup: false
     }
   }
   /**
@@ -835,7 +837,16 @@ class AddRMDomestic extends Component {
   cancel = (type) => {
     this.clearForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method resetForm
    * @description used to Reset form
@@ -1880,7 +1891,7 @@ class AddRMDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('submit') }}
+                            onClick={this.cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1911,13 +1922,15 @@ class AddRMDomestic extends Component {
 
                         </div>
                       </Row>
-                    </form >
-                  </div >
-                </div >
-              </div >
-            </div >
-          </div >
-
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
           {
             isRMDrawerOpen && (
               <AddSpecification

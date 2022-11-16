@@ -17,6 +17,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -40,7 +41,8 @@ class AddIndivisualProduct extends Component {
             isImpactCalculation: false,
             setDisable: false,
             attachmentLoader: false,
-            showErrorOnFocusDate: false
+            showErrorOnFocusDate: false,
+            showPopup: false
         }
     }
 
@@ -251,7 +253,16 @@ class AddIndivisualProduct extends Component {
         this.props.getProductData('', res => { })
         this.props.hideForm(type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -611,7 +622,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
-                                                        onClick={() => { this.cancel('cancel') }}
+                                                        onClick={this.cancelHandler}
                                                         disabled={setDisable}
                                                     >
                                                         <div className={"cancel-icon"}></div>
@@ -634,6 +645,10 @@ class AddIndivisualProduct extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
+
             </>
         );
     }
