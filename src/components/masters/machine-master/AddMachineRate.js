@@ -39,6 +39,7 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -886,7 +887,16 @@ class AddMachineRate extends Component {
     }, () => this.props.hideForm(type))
 
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -1877,7 +1887,7 @@ class AddMachineRate extends Component {
                               <button
                                 type={'button'}
                                 className=" mr15 cancel-btn"
-                                onClick={() => { this.cancel('submit') }}
+                                onClick={this.cancelHandler}
                                 disabled={setDisable}
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
@@ -1926,6 +1936,9 @@ class AddMachineRate extends Component {
             </div>
           </div>
         </div >
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}

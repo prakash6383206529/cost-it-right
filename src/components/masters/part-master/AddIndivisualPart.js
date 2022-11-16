@@ -17,6 +17,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
 import { onFocus, showDataOnHover } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -45,7 +46,8 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      showPopup: false
     }
   }
 
@@ -290,10 +292,19 @@ class AddIndivisualPart extends Component {
       RawMaterial: [],
       selectedPlants: [],
     })
-    this.props.getPartData('', res => { })
+    // this.props.getPartData('', res => { })
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -711,7 +722,7 @@ class AddIndivisualPart extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('submit') }}
+                            onClick={() => { this.cancelHandler() }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -733,6 +744,9 @@ class AddIndivisualPart extends Component {
               </Row>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
         </div>
       </>
     );

@@ -40,6 +40,7 @@ import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -130,7 +131,8 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: false
+      finalApprovalLoader: false,
+      showPopup: false
     }
     this.dropzone = React.createRef();
   }
@@ -1894,7 +1896,16 @@ class AddMoreDetails extends Component {
     }
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel()
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -3932,7 +3943,7 @@ class AddMoreDetails extends Component {
                         <button
                           type={'button'}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel} >
+                          onClick={this.cancelHandler} >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
 
@@ -3967,6 +3978,9 @@ class AddMoreDetails extends Component {
             </div>
           </div>
         </div >
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}

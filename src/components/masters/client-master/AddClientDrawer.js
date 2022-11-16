@@ -12,6 +12,7 @@ import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 
@@ -32,7 +33,8 @@ class AddClientDrawer extends Component {
             setDisable: false,
             isDisableCode: false,
             companyCode: '',
-            companyName: ''
+            companyName: '',
+            showPopup: false
         }
     }
 
@@ -199,7 +201,16 @@ class AddClientDrawer extends Component {
 
         this.toggleDrawer('', type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -516,7 +527,7 @@ class AddClientDrawer extends Component {
                                             <button
                                                 type={'button'}
                                                 className="mr15 cancel-btn"
-                                                onClick={() => { this.cancel('cancel') }}
+                                                onClick={this.cancelHandler}
                                                 disabled={setDisable}
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
@@ -535,6 +546,9 @@ class AddClientDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </div>
         );
     }
