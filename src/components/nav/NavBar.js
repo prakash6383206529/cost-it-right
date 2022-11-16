@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
-import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
   getTopAndLeftMenuData
@@ -212,7 +212,11 @@ class SideBar extends Component {
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
       case "RFQ":
-        return this.renderRFQ(module, LandingPageURL);
+        if (getConfigurationKey().IsRFQConfigured) {
+          return this.renderRFQ(module, LandingPageURL);
+        } else {
+          break;
+        }
       default:
         return null
     }
