@@ -625,6 +625,7 @@ class BOPImportListing extends Component {
         return (
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
@@ -633,7 +634,6 @@ class BOPImportListing extends Component {
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                         <div className="cancel-icon-white"></div></button>

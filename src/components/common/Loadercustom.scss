@@ -117,6 +117,11 @@
         vertical-align: middle;
         pointer-events: none;
     }
+    .message {
+        position: absolute;
+        margin-top: 110px;
+        color: $colorPrimary;
+    }
 }
 .add-page-loader{position: fixed;z-index: 15;}
 .container-fluid{

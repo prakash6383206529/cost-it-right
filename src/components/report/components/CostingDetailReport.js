@@ -892,15 +892,13 @@ function ReportListing(props) {
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Costing Breakup Details</h1>
-
-                <Row className="pt-4 mt-2 mb-2 blue-before">
-                    {/* COMMENT FOR NOW AS TOLD BY TR */}
-                    {/* <Col md="2" lg="2">
+                {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
+                <Row className="pt-4 mt-1 blue-before">
+                    {/* <Col md="3">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col> */}
                     <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
-                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-sidebar"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
@@ -957,7 +955,7 @@ function ReportListing(props) {
 
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                {isLoader ? <LoaderCustom /> :
+                {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

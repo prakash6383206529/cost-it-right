@@ -803,13 +803,13 @@ function RMImportListing(props) {
     <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
+          {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
-              {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
               {(!props.isMasterSummaryDrawer) && <>
 
                 {isSimulation &&
@@ -856,24 +856,16 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                          </button></div> :
+                          <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
+                            {/* DOWNLOAD */}
+                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                          </button>
 
-                            <>
-                              <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
-                                {/* DOWNLOAD */}
-                                {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                              </button>
-
-                              <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
-                                </button>}>
-                                {onBtExport()}
-                              </ExcelFile>
-
-                            </>
-
-                          }
+                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                            <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
+                            </button>}>
+                            {onBtExport()}
+                          </ExcelFile>
                         </>
                       }
                     </>

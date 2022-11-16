@@ -644,6 +644,7 @@ function VolumeListing(props) {
         <ScrollToTop pointProp="go-to-top" />
         {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
           <>
+            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
             <form noValidate>
               <Row>
                 <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -651,8 +652,6 @@ function VolumeListing(props) {
               <Row className="pt-4 blue-before">
                 <Col md="9" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight">
-                    {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
-
                     <div className="warning-message d-flex align-items-center">
                       {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                     </div>
@@ -706,19 +705,15 @@ function VolumeListing(props) {
                     {
                       downloadAccessibility &&
                       <>
-                        {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                        </button></div> :
-                          <>
-                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                              {/* DOWNLOAD */}
-                              {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                            </button>
-                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
-                              <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
-                              </button>}>
-                              {onBtExport()}
-                            </ExcelFile>
-                          </>}
+                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                          {/* DOWNLOAD */}
+                          {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                        </button>
+                        <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
+                          <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
+                          </button>}>
+                          {onBtExport()}
+                        </ExcelFile>
                       </>
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

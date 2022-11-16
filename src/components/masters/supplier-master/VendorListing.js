@@ -650,6 +650,7 @@ class VendorListing extends Component {
             <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 <Row>
                     <Col md="12" className="d-flex justify-content-between">
                         <h1 className="mb-0">Vendor Master</h1>
@@ -659,8 +660,6 @@ class VendorListing extends Component {
                     <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">
-                            {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
-
                             <div className="warning-message d-flex align-items-center">
                                 {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
@@ -691,20 +690,15 @@ class VendorListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                        </button></div> :
-                                            <>
-                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                                </button>
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        </button>
 
-                                                <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-                                            </>
-                                        }
+                                        <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                            </button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
