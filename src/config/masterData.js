@@ -3198,8 +3198,6 @@ export const OperationGridForToken = [
 ]
 
 export const RMGridForToken = [
-    { label: "Old PO Price", value: "OldPOPrice" },
-    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
     { label: "Old RM Cost/Pc", value: "OldNetRawMaterialsCost" },
     { label: 'New RM Cost/Pc', value: 'NewNetRawMaterialsCost' },
