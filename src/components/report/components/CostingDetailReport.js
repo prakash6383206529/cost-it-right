@@ -23,6 +23,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -139,11 +140,11 @@ function ReportListing(props) {
 
 
     useEffect(() => {
+        dispatch(setSelectedRowForPagination([]))
 
-        if (statusColumnData?.data) {
+        if (statusColumnData?.id) {
             setEnableSearchFilterButton(false)
             setWarningMessage(true)
-
             switch (statusColumnData?.id) {
                 case 1:
                     setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicability: encodeURIComponent(statusColumnData?.data) }))
