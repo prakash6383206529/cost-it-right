@@ -1971,8 +1971,8 @@ class AddPower extends Component {
                                           {/* Ask which value to use for trim */}
                                           <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
-                                            <button className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
+                                            <button title='Delete' className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
                                           </td>
                                         </tr>
                                       )

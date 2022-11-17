@@ -2133,8 +2133,8 @@ function UserRegistration(props) {
                                           <td>{item.Technology}</td>
                                           <td>{item.Level}</td>
                                           <td className="text-right">
-                                            <button className="Edit mr-2" type={'button'} onClick={() => editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />
                                           </td>
                                         </tr>
                                       )
@@ -2259,8 +2259,8 @@ function UserRegistration(props) {
                                           <td>{item.Technology}</td>
                                           <td>{item.Level}</td>
                                           <td className="text-right">
-                                            <button className="Edit mr-2" type={'button'} onClick={() => editSimulationItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => deleteSimulationItem(index)} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editSimulationItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} onClick={() => deleteSimulationItem(index)} />
                                           </td>
                                         </tr>
                                       )
@@ -2382,8 +2382,8 @@ function UserRegistration(props) {
                                               <td>{item.Master}</td>
                                               <td>{item.Level}</td>
                                               <td className="text-right">
-                                                <button className="Edit mr-2" type={'button'} onClick={() => editMasterItem(index)} />
-                                                <button className="Delete" type={'button'} onClick={() => deleteMasterItem(index)} />
+                                                <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editMasterItem(index)} />
+                                                <button title='Delete' className="Delete" type={'button'} onClick={() => deleteMasterItem(index)} />
                                               </td>
                                             </tr>
                                           )

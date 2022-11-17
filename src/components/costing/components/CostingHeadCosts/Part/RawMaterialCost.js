@@ -1234,10 +1234,11 @@ function RawMaterialCost(props) {
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && !(initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied) && < button
                                   className="Delete "
+                                  title='Delete'
                                   type={'button'}
                                   onClick={() => deleteItem(index)}
                                 />}
-                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} className="Comment-box" type={'button'} />}
+                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top center">
                                   <TextAreaHookForm
                                     label="Remark:"

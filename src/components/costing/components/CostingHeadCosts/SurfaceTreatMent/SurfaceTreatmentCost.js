@@ -313,8 +313,8 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
+                                <button title='Save' className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
+                                <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
                           </tr>
@@ -331,8 +331,8 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
-                                <button className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                                <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
                               </div>
                             </td>
                           </tr>

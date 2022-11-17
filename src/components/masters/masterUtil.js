@@ -319,8 +319,8 @@ export const ProcessGroup = (props) => {
                                 })}</td>
                                 <td>
                                     <div className='group-process-Actions'>
-                                        <button className="Edit" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => editItemDetails(index)} />
-                                        <button className="Delete" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => deleteItem(index)} />
+                                        <button title='Edit' className="Edit" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => editItemDetails(index)} />
+                                        <button title='Delete' className="Delete" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => deleteItem(index)} />
                                     </div>
                                 </td>
                             </tr>
