@@ -539,8 +539,8 @@ function BOPCost(props) {
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && <button className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
                                 </div>
                               </td>
                             </tr>
@@ -554,8 +554,8 @@ function BOPCost(props) {
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && <button className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Edit' className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Delete' className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
                                 </div>
                               </td>
                             </tr>

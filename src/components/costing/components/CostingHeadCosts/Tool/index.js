@@ -574,8 +574,8 @@ function Tool(props) {
                               <td>{item.Life}</td>
                               <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                                <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                                <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>
                           )
