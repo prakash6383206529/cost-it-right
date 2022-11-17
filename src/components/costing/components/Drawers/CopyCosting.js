@@ -57,6 +57,7 @@ function CopyCosting(props) {
   const [isToZbc, setIsToZbc] = useState(type === ZBCTypeId ? true : false)
   const [isFromVbc, setIsFromVbc] = useState(type === VBCTypeId ? true : false)
   const [isToVbc, setIsToVbc] = useState(type === VBCTypeId ? true : false)
+  const [isToNcc, setIsToNcc] = useState(type === NCCTypeId ? true : false)
   const [toSwitch, setToSwitch] = useState(type === VBCTypeId ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
@@ -133,11 +134,17 @@ function CopyCosting(props) {
    */
   const handleToSwitch = (checked) => {
     setToSwitch(checked)
-    if (checked === false) {
+    if (checked === ZBCTypeId) {
       setIsToVbc(false)
       setIsToZbc(true)
-    } else {
+      setIsToNcc(false)
+    } else if (checked === VBCTypeId) {
       setIsToVbc(true)
+      setIsToNcc(false)
+      setIsToZbc(false)
+    } else if (checked === NCCTypeId) {
+      setIsToVbc(false)
+      setIsToNcc(true)
       setIsToZbc(false)
     }
   }
@@ -147,13 +154,18 @@ function CopyCosting(props) {
    * @description Handle switch of 'From'
    */
   const handleFromChange = (checked, event, id) => {
-
     setFromType(checked)
-    if (checked === false) {
+    if (checked === ZBCTypeId) {
       setIsFromVbc(false)
+      setIsFromNcc(false)
       setIsFromZbc(true)
-    } else {
+    } else if (checked === VBCTypeId) {
       setIsFromVbc(true)
+      setIsFromNcc(false)
+      setIsFromZbc(false)
+    } else if (checked === NCCTypeId) {
+      setIsFromVbc(false)
+      setIsFromNcc(true)
       setIsFromZbc(false)
     }
   }
@@ -316,10 +328,10 @@ function CopyCosting(props) {
 
     //  COPY FROM ZBC
     if (isFromZbc) {
-      const plantCode = value.fromPlant && value.fromPlant.label.split('(')
+      const plantCode = value.fromPlant && value.fromPlant.label?.split('(')
 
       obj.FromPlantId = value.fromPlant && value.fromPlant.value
-      obj.FromPlantCode = plantCode[1] && plantCode[1].split(')')[0]
+      obj.FromPlantCode = plantCode[1] && plantCode[1]?.split(')')[0]
       obj.CostingId = value.fromcostingId && value.fromcostingId.value
       obj.CostingNumber = value.fromcostingId && value.fromcostingId.label
       obj.FromVendorPlantId = '00000000-0000-0000-0000-000000000000'
@@ -330,36 +342,37 @@ function CopyCosting(props) {
     }
     // COPY TO ZBC
     if (isToZbc) {
-      const plant = value.toPlant && value.toPlant.label.split('(')
+      const plant = value.toPlant && value.toPlant.label?.split('(')
       obj.ToPlantId = value.toPlant && value.toPlant.value
-      obj.toPlantCode = plant && plant[1] && plant[1].split(')')[0]
+      obj.toPlantCode = plant && plant[1] && plant[1]?.split(')')[0]
       obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY FROM VBC
-    if (isFromVbc) {
-      const costNo = value.fromVbccostingId.label.split(' ')
-      const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
-      const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
-      obj.CostingId = value.fromVbccostingId.value
-      obj.CostingNumber = `${costNo[0]}`
+    if (isFromVbc || isFromNcc) {
+      const costNo = value.fromVbccostingId.label?.split(' ')
+      const plantCode = value.fromVendorPlant && value.fromVendorPlant.label?.split('(')
+      const vendorCode = value.fromVendorName && value.fromVendorName.label?.split('(')
+      obj.CostingId = type === VBCTypeId ? value.fromVbccostingId.value : value.fromNcccostingId.value
+      obj.CostingNumber = type === VBCTypeId ? `${value.fromVbccostingId.label?.split(' ')[0]}` : `${value.fromNcccostingId.label?.split(' ')[0]}`
       obj.FromVendorId = value.fromVendorName.value
-      obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
+      obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1]?.split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
-      obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1].split(')')[0]
+      obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1]?.split(')')[0]
       obj.FromPlantCode = ''
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY TO VBC
-    if (isToVbc) {
+    if (isToVbc || isToNcc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.value
-      obj.ToVendorname = value.toVendorName && value.toVendorName.label
-      obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
+      obj.ToVendorId = type === VBCTypeId ? value.toVendorName && value.toVendorName.value : value.nccToVendorName.value
+      obj.ToVendorname = type === VBCTypeId ? value.toVendorName && value.toVendorName.label : value.nccToVendorName.label
+      obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1]?.split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
 
     }
+
     obj.PartNumber = partNo.label
     obj.Comments = ''
     // obj.IsVendor = isToVbc ? true : false
@@ -372,17 +385,18 @@ function CopyCosting(props) {
       obj.TypeOfCopy = 201
     } else if (isFromVbc && isToVbc) {
       obj.TypeOfCopy = 202
+    } else if (isFromNcc && isToNcc) {
+      obj.TypeOfCopy = 301
     }
 
 
-    obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
-    obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode
+    obj.ToDestinationPlantId = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.value : value.nccToPlant.value
+    obj.ToDestinationPlantName = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.label : value.nccToPlant.label
+    obj.ToDestinationPlantCode = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode : value.nccToPlant.destinationPlantCode
     obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-
       setIsDisable(false)
       if ('response' in res) {
         if (res && res?.response?.data?.Result === false) {
@@ -399,8 +413,8 @@ function CopyCosting(props) {
             setIsDisable(false)
             if ((res.status = 200)) {
               Toaster.success("Copy costing done sucessfully!")
-              const { CostingId, CostingType } = res.data.Data
-              props.closeDrawer('', CostingId, CostingType)
+              const { CostingId } = res.data.Data
+              props.closeDrawer('', CostingId, type)
             }
           }),
         ) // for saving data
@@ -421,8 +435,8 @@ function CopyCosting(props) {
         setDisablePopup(false)
         if ((res.status = 200)) {
           Toaster.success("Copy costing done sucessfully!")
-          const { CostingId, CostingType } = res.data.Data
-          props.closeDrawer('', CostingId, CostingType)
+          const { CostingId } = res.data.Data
+          props.closeDrawer('', CostingId, type)
 
         }
       }),

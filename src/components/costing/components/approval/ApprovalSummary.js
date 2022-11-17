@@ -114,8 +114,6 @@ function ApprovalSummary(props) {
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, LastCostingId, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
-      console.log('res?.data?.Data?.Costings[0]: ', res?.data?.Data?.Costings[0]);
-      console.log('ApprovalDetails: ', ApprovalDetails);
 
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -426,7 +424,6 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
-                      {console.log('approvalDetails: ', approvalDetails)}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
                       </td>}
