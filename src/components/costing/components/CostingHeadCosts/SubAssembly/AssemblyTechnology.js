@@ -222,6 +222,7 @@ function AssemblyTechnology(props) {
     * @method render
     * @description Renders the component
     */
+    console.log(item?.PartType, "item?.PartType");
     return (
         <>
             <tr className={`${item?.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''}`}>
