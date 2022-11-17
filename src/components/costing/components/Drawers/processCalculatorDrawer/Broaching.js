@@ -675,7 +675,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-part-hour'} tooltipText={'Part per Hour = Total Cycle Time in Mins * 60'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-part-hour'} tooltipText={'Part per Hour = (3600 / Cycle Time) * Efficiency / 100'} />
                                             <NumberFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}
