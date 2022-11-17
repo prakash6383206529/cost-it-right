@@ -532,6 +532,17 @@ function Tool(props) {
 
   }
 
+  const resetData = () => {
+    setToolObj({})
+    setTimeout(() => {
+      setValue('MaintananceCostApplicability', 0)
+    }, 100);
+    setValue('ToolMaintenanceCost', 0)
+    setValue('maintanencePercentage', 0)
+    setValue('toolCostType', '')
+
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -606,6 +617,7 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       rules={{ required: false }}
+                      buttonCross={resetData}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ""}
                       options={renderListing("Applicability")}
