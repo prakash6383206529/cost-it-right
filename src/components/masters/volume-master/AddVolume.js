@@ -321,7 +321,7 @@ class AddVolume extends Component {
     const rowIndex = props?.rowIndex
     return (
       <>
-        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
+        <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
       </>
     )
   }

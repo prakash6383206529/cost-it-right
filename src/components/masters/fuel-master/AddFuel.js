@@ -770,6 +770,7 @@ class AddFuel extends Component {
                                         <td>
                                           <button
                                             className="Edit mr-2"
+                                            title='Edit'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
@@ -778,6 +779,7 @@ class AddFuel extends Component {
                                           />
                                           <button
                                             className="Delete"
+                                            title='Delete'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>

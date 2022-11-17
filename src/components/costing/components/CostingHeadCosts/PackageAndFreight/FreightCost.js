@@ -135,8 +135,8 @@ function FreightCost(props) {
                             <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
                             <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>
-                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
+                              {!CostingViewMode && <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
                           </tr>
                         )

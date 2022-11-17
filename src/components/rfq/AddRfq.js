@@ -402,8 +402,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {!isEditFlag && < button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && < button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -412,8 +412,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {!isEditFlag && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {!isEditFlag && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };

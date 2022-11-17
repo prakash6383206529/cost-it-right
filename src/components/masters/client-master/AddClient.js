@@ -121,7 +121,7 @@ class AddClient extends Component {
         return (
             <>
                 {/* <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} /> */}
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
+                <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
             </>
         )
     }

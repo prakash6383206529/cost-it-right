@@ -201,7 +201,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
         {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
       </>
     )

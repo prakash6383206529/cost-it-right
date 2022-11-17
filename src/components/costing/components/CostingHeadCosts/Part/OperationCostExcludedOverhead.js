@@ -391,8 +391,8 @@ function OperationCostExcludedOverhead(props) {
                             <td>{netCost(item)}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                                <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button title='Discard' className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
                           </tr>
@@ -412,9 +412,9 @@ function OperationCostExcludedOverhead(props) {
                             <td>{netCost(item)}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
-                                <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                                <Popup trigger={<button id={`popUppTriggerss${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
                                   position="top center">
                                   <TextAreaHookForm
                                     label="Remark:"
