@@ -2452,7 +2452,7 @@ class AddMoreDetails extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={true}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={(this.state.isViewFlag || this.state.isEditFlag) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
