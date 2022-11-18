@@ -4,6 +4,9 @@
     .container {
         padding-right: 0 !important;
     }
+    .drawer-wrapper {
+        min-width: 992px;
+    }
     .part-detail-wrapper {
        .col-md-3, .col-md-6 {
         // padding-right: 7px;
@@ -21,7 +24,7 @@
     }
     .overlay-contain {
         .ag-center-cols-container {
-            border: 1px solid $borderColor;
+            border: 1px solid $agGridBorder;
             border-top: none;
         }
     }
