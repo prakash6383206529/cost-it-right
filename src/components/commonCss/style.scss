@@ -1550,6 +1550,7 @@ $roboto: "Roboto",
 
 .MuiDrawer-root.MuiDrawer-modal {
   z-index: 1000 !important;
+
   .MuiBackdrop-root {
     max-height: 100vh;
   }
@@ -1563,15 +1564,18 @@ $roboto: "Roboto",
   .drawer-1500px {
     max-width: 100%;
   }
+
   .MuiDrawer-paper {
     max-height: 65vh;
     top: auto;
     padding-bottom: 15px;
   }
 }
+
 .min-320 {
   min-width: 320px;
 }
+
 // drawer-full-top start
 .MuiDrawer-root.drawer-full-top {
   .MuiDrawer-paper {
@@ -8480,6 +8484,14 @@ table.group-process-table {
 
 .min-height100vh {
   min-height: calc(100vh - 270px);
+
+  &.min-height100vh {
+    min-height: calc(100vh - 255px);
+
+    &.rfq-portal {
+      min-height: calc(100vh - 252px);
+    }
+  }
 }
 
 .ag-cell-inline-editing {

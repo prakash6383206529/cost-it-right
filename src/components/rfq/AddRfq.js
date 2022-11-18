@@ -716,7 +716,7 @@ function AddRfq(props) {
                                 </Col>
                                 <Col md="4">
                                     <NumberFieldHookForm
-                                        label="Annual Forecast Q."
+                                        label="Annual Forecast Quantity"
                                         name={"annualForecastQuantity"}
                                         errors={errors.ZipCode}
                                         Controller={Controller}
@@ -924,7 +924,7 @@ function AddRfq(props) {
                                 </Col>
 
                                 <Col md="6" className="height152-label pr-2">
-                                    <label>Upload Attachment (upload up to 4 files)</label>
+                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>
