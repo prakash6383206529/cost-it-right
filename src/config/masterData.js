@@ -3201,7 +3201,6 @@ export const OperationGridForToken = [
 ]
 
 export const RMGridForToken = [
-    { label: "PO Variance", value: "Variance" },
     { label: "Old RM Cost/Pc", value: "OldNetRawMaterialsCost" },
     { label: 'New RM Cost/Pc', value: 'NewNetRawMaterialsCost' },
     { label: "RM Variance", value: "RMVariance" }
