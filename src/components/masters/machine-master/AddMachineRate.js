@@ -1445,7 +1445,7 @@ class AddMachineRate extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={true}
-                            disabled={isViewMode ? true : false}
+                            disabled={(isViewMode || isEditFlag) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
