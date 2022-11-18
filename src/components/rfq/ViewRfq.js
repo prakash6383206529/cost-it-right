@@ -568,7 +568,6 @@ function RfqListing(props) {
                         <Row>
                             <Col>
                                 <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                    <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                                     <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                         <AgGridReact

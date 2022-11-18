@@ -1072,7 +1072,7 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>VBC/ZBC/NCC/CBC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : 'VBC/ZBC/NCC/CBC'}</th>
                         }
                         { }
                         {viewCostingData &&
