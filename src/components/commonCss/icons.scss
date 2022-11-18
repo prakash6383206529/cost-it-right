@@ -157,7 +157,7 @@
     margin-right: 5px;
 }
 .approve-save-tick {
-    @include icons("../../assests/images/check-green.svg", 16px, 12px);
+    @include icons("../../assests/images/check-green.svg", 13px, 11px);
     margin: auto;
 
 }
@@ -210,7 +210,7 @@
     margin:auto;
 }
 .reminder {
-    @include icons("../../assests/images/reminder.svg", 20px, 20px );
+    @include icons("../../assests/images/reminder.svg", 16px, 16px );
     margin:auto;
 }
 .zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
@@ -218,7 +218,7 @@
 .zoom-out {@include icons("../../assests/images/zoom-out.svg", 14px, 14px)}
 .zoom-out-hover {@include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)}
 .history-remark {
-    @include icons("../../assests/images/history-remark.svg", 26px, 26px);
+    @include icons("../../assests/images/history-remark.svg", 22px, 22px);
     margin: auto;
     background-color: #cef2fb;
 }
@@ -415,8 +415,8 @@
   }
   .btn-send-for-approval {
      background-color: #e4defd;
-     width: 32px;
-     height: 32px;
+     width: 26px;
+     height: 26px;
      border-radius: 4px;
      &:focus {
         box-shadow: 0 0 5px #7959f6!important;
@@ -425,8 +425,8 @@
   }
   .approve-icon {
     background-color: #DBF4E2;
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     border-radius: 4px;
     margin: auto;
     &:focus {
@@ -436,8 +436,8 @@
   }
   .btn-history-remark {
       background-color: #cef2fb;
-      width: 32px;
-      height: 32px;
+      width: 26px;
+      height: 26px;
       padding: 0;
       border-radius: 4px;
 
@@ -448,9 +448,10 @@
   }
   .btn-reminder {
     background-color: #fdebcb;
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     border-radius: 4px;
+    padding-left: 4px;
     .reminder {
         position: relative;
         .count {
@@ -458,10 +459,10 @@
             top: -3px;
             right: -4px;
             background: #f8a000;
-            height: 14px;
-            width: 15px;
+            height: 13px;
+            width: 13px;
             line-height: 1.2;
-            font-size: 12px;
+            font-size: 11px;
             border-radius: 40px;
         }
     }

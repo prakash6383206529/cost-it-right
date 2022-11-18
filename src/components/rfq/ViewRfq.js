@@ -85,9 +85,9 @@ function RfqListing(props) {
     }
 
     const resetState = () => {
-
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+        gridApi.sizeColumnsToFit()
     }
 
     // const cancel = () => {
@@ -403,9 +403,11 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            params.api.sizeColumnsToFit()
+        }, 400);
     };
 
 
@@ -536,7 +538,7 @@ function RfqListing(props) {
                 {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
-                        <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                        <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                             <Col md="3" lg="3" className='mb-2'>
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </Col>
