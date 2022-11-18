@@ -72,7 +72,6 @@ function AddVendorDrawer(props) {
     const temp = [];
 
     if (label === 'DestinationPlant') {
-      console.log('plantSelectList: ', plantSelectList);
       plantSelectList && plantSelectList.map((item) => {
         if (item.PlantId === '0') return false
         temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
