@@ -88,6 +88,9 @@ function RfqListing(props) {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
         gridApi.sizeColumnsToFit()
+        gridApi.deselectAll()
+        setSelectedCostings([])
+        setaddComparisonToggle(false)
     }
 
     // const cancel = () => {
@@ -593,13 +596,13 @@ function RfqListing(props) {
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="PartNumber" headerName='Part No'  ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                            <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
-                                            <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                            <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO"></AgGridColumn>
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
                                             {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
