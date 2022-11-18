@@ -635,13 +635,11 @@ function OverheadListing(props) {
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+                        {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">
-
                                 <Col md="9" className="search-user-block mb-3 pl-0">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
@@ -661,20 +659,15 @@ function OverheadListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                                </button></div> :
-                                                    <>
-                                                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                            {/* DOWNLOAD */}
-                                                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                        </button>
-                                                        <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
-                                                            <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
-                                                            </button>}>
-                                                            {onBtExport()}
-                                                        </ExcelFile>
-                                                    </>
-                                                }
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                    {/* DOWNLOAD */}
+                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                </button>
+                                                <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </>
                                         }
 

@@ -532,6 +532,17 @@ function Tool(props) {
 
   }
 
+  const resetData = () => {
+    setToolObj({})
+    setTimeout(() => {
+      setValue('MaintananceCostApplicability', 0)
+    }, 100);
+    setValue('ToolMaintenanceCost', 0)
+    setValue('maintanencePercentage', 0)
+    setValue('toolCostType', '')
+
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -574,8 +585,8 @@ function Tool(props) {
                               <td>{item.Life}</td>
                               <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                                <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                                <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>
                           )
@@ -606,6 +617,7 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       rules={{ required: false }}
+                      buttonCross={resetData}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ""}
                       options={renderListing("Applicability")}

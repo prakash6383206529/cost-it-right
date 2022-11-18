@@ -24,6 +24,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const selector = formValueSelector('AddLabour')
 
@@ -62,7 +63,8 @@ class AddLabour extends Component {
         effectiveDate: false
       },
       showErrorOnFocus: false,
-      isEditMode: false
+      isEditMode: false,
+      showPopup: false
     }
   }
 
@@ -573,7 +575,16 @@ class AddLabour extends Component {
 
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -1004,7 +1015,7 @@ class AddLabour extends Component {
                       <button
                         type={"button"}
                         className="reset mr15 cancel-btn"
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -1025,6 +1036,9 @@ class AddLabour extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && (
           <AddMachineTypeDrawer
             isOpen={isOpenMachineType}

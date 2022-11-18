@@ -213,12 +213,13 @@ function AssemblyTechnology(props) {
     * @method render
     * @description Renders the component
     */
+    console.log(item?.PartType, "item?.PartType");
     return (
         <>
             <tr className={`${item?.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''}`}>
                 <div style={{ display: 'contents' }}>
                     <td>
-                        <span onClick={() => toggle(item?.BOMLevel, item?.PartNumber, item?.PartType)} className={`${item && item?.PartType === "Assembly" && "part-name"} ${item && item?.PartType !== "Sub Assembly" && item?.PartType !== "Assembly" && "L1"}`}>
+                        <span onClick={() => toggle(item?.BOMLevel, item?.PartNumber, item?.PartType)} className={`${item && item?.PartType === "Assembly" && "part-name"} ${item && item?.PartType !== "Sub Assembly" && item?.PartType !== "Assembly" && "L1"} ${item && item?.PartType === "Sub Assembly" && 'L1'}`}>
                             <div className={`${IsOpen ? 'Open' : 'Close'}`}></div>{item && item?.PartNumber}
                         </span>
                     </td>

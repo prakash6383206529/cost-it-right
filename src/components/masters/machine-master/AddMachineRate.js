@@ -39,6 +39,7 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -364,7 +365,7 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
             }, () => {
               this.setState({ isLoader: false })
@@ -886,7 +887,16 @@ class AddMachineRate extends Component {
     }, () => this.props.hideForm(type))
 
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -1754,8 +1764,8 @@ class AddMachineRate extends Component {
                                       <td>
                                         {/* {!this.state.IsDetailedEntry && */}
                                         <>
-                                          <button className="Edit mr-2" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated) || (UniqueProcessId.includes(item.ProcessId))) ? true : false} onClick={() => this.editItemDetails(index)} />
-                                          <button className="Delete" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated) || (UniqueProcessId.includes(item.ProcessId))) ? true : false} onClick={() => this.deleteItem(index)} />
+                                          <button title='Edit' className="Edit mr-2" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated) || (UniqueProcessId.includes(item.ProcessId))) ? true : false} onClick={() => this.editItemDetails(index)} />
+                                          <button title='Delete' className="Delete" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated) || (UniqueProcessId.includes(item.ProcessId))) ? true : false} onClick={() => this.deleteItem(index)} />
                                         </>
                                       </td>
                                     </tr>
@@ -1877,7 +1887,7 @@ class AddMachineRate extends Component {
                               <button
                                 type={'button'}
                                 className=" mr15 cancel-btn"
-                                onClick={() => { this.cancel('submit') }}
+                                onClick={this.cancelHandler}
                                 disabled={setDisable}
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
@@ -1926,6 +1936,9 @@ class AddMachineRate extends Component {
             </div>
           </div>
         </div >
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}

@@ -14,6 +14,7 @@ import {
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddVBCPlant extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class AddVBCPlant extends Component {
       PlantId: '',
       IsActive: true,
       isViewMode: this.props?.isViewMode ? true : false,
+      showPopup: false
     }
   }
 
@@ -216,7 +218,16 @@ class AddVBCPlant extends Component {
     this.props.getPlantUnitAPI('', res => { })
     this.toggleDrawer('', type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -527,7 +538,7 @@ class AddVBCPlant extends Component {
                     <button
                       type={"button"}
                       className="mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
+                      onClick={this.cancelHandler}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -546,6 +557,9 @@ class AddVBCPlant extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }
