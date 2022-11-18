@@ -318,10 +318,10 @@ function RfqListing(props) {
                                         suppressRowClickSelection={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                        <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
-                                        <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
+                                        <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                        <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="PartNumber" headerName="Part Nos"></AgGridColumn>
+                                        <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                                         <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                         <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
