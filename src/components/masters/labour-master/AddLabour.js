@@ -120,7 +120,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate) : '',
+                  EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm') : '',
                   LabourRate: item.LabourRate,
                   IsAssociated: item.IsAssociated
                 }
