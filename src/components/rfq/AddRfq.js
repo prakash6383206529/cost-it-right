@@ -908,7 +908,8 @@ function AddRfq(props) {
                                     <TextAreaHookForm
                                         label={"Remark"}
                                         name={"remark"}
-                                        placeholder={"Select"}
+                                        // placeholder={"Select"}
+                                        placeholder={isViewFlag ? '-' : "Type here..."}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}
