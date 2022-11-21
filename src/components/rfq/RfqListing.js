@@ -210,14 +210,24 @@ function RfqListing(props) {
             <>
                 <div className={"attachment images"}>
                     {files && files.length > 0 &&
-                        files.map((f) => {
+                        files.map((f, index) => {
                             const withOutTild = f.FileURL?.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
-                            return (
-                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                    {f.OriginalFileName},
-                                </a>
-                            )
+
+                            if (index === 0) {
+                                return (
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                        {f.OriginalFileName}
+                                    </a>
+                                )
+
+                            } else {
+                                return (
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                        , {f.OriginalFileName}
+                                    </a>
+                                )
+                            }
                         })}
                 </div>
             </>
