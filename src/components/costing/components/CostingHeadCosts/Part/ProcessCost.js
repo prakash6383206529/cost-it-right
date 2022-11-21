@@ -54,32 +54,16 @@ function ProcessCost(props) {
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
-
   useEffect(() => {
-
-
-
-
     setTimeout(() => {
-
-
-
       data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
       })
 
-
     }, 500);
 
-
-
-
-
-
-
   }, [])
-
 
   const formatMainArr = (arr) => {
     let apiArr = []
