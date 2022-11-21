@@ -22,6 +22,7 @@ import { debounce } from 'lodash';
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
+  console.log('data: ', data);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   // const processGroup = false
@@ -30,6 +31,7 @@ function ProcessCost(props) {
     reValidateMode: 'onChange',
   })
   const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
+  console.log('gridData: ', gridData);
   const trimValue = getConfigurationKey()
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
@@ -52,6 +54,31 @@ function ProcessCost(props) {
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
+
+  useEffect(() => {
+
+
+
+
+    setTimeout(() => {
+
+
+
+      data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
+        setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
+      })
+
+
+    }, 500);
+
+
+
+
+
+
+
+  }, [])
 
 
   const formatMainArr = (arr) => {
@@ -104,6 +131,10 @@ function ProcessCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
+    // data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
+    //   setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
+    //   setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
+    // })
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
       if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
@@ -1176,6 +1207,7 @@ function ProcessCost(props) {
                 <tbody>
                   {processGroupGrid &&
                     processGroupGrid.map((item, index) => {
+                      console.log('item: ', item);
                       return (
                         <>
                           <tr key={index}>
