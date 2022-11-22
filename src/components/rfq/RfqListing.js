@@ -210,14 +210,24 @@ function RfqListing(props) {
             <>
                 <div className={"attachment images"}>
                     {files && files.length > 0 &&
-                        files.map((f) => {
+                        files.map((f, index) => {
                             const withOutTild = f.FileURL?.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
-                            return (
-                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                    {f.OriginalFileName},
-                                </a>
-                            )
+
+                            if (index === 0) {
+                                return (
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                        {f.OriginalFileName}
+                                    </a>
+                                )
+
+                            } else {
+                                return (
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                        , {f.OriginalFileName}
+                                    </a>
+                                )
+                            }
                         })}
                 </div>
             </>
@@ -296,7 +306,6 @@ function RfqListing(props) {
                     <Row>
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                                 <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
@@ -319,10 +328,10 @@ function RfqListing(props) {
                                     // suppressRowClickSelection={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                        <AgGridColumn field="VendorName" headerName='Vendors'></AgGridColumn>
-                                        <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
+                                        <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                        <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="PartNumber" headerName="Part Nos"></AgGridColumn>
+                                        <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                                         <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                         <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
