@@ -82,10 +82,12 @@ function ApprovalListing(props) {
   }
 
   useEffect(() => {
-    getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+    if (props.activeTab === "3") {
+      getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+    }
     dispatch(isResetClick(false))
     dispatch(agGridStatus("", ""))
-  }, [])
+  }, [props.activeTab])
 
 
   useEffect(() => {
