@@ -80,7 +80,7 @@ class AddLabour extends Component {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
-      this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, () => { })
+      this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
       this.props.getPlantListByState('', () => { })
     }
     this.getDetail()
@@ -326,10 +326,11 @@ class AddLabour extends Component {
     setTimeout(() => {
       this.props.getLabourTypeByMachineTypeSelectList(
         { machineTypeId: this.state.machineType?.value ? this.state.machineType?.value : '' },
-        () => { },
+        (res) => { this.setState({ labourData: res?.data?.SelectList }) },
       )
     }, 400);
   }
+
 
   /**
    * @method labourHandler
@@ -512,9 +513,10 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, () => { })
+      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
+
 
   /**
    * @method editGridItemDetails
@@ -526,8 +528,9 @@ class AddLabour extends Component {
 
     this.props.getLabourTypeByMachineTypeSelectList(
       { machineTypeId: tempData.MachineTypeId },
-      () => {
+      (res) => {
         this.setState({
+          labourData: res?.data?.SelectList,
           labourType: {
             label: tempData.LabourType,
             value: tempData.LabourTypeId,
