@@ -130,10 +130,12 @@ function SimulationApprovalListing(props) {
 
 
     useEffect(() => {
-        getTableData(0, defaultPageSize, true, floatingFilterData)
+        if (props.activeTab === '2') {
+            getTableData(0, defaultPageSize, true, floatingFilterData)
+        }
         dispatch(isResetClick(false))
         dispatch(agGridStatus("", ""))
-    }, [])
+    }, [props.activeTab])
 
     useEffect(() => {
 
