@@ -272,7 +272,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          if (Data?.MachineLabourRates?.length !== 0) {
+          if (Data?.MachineLabourRates && Data?.MachineLabourRates?.length !== 0) {
             this.setState({ disableMachineType: true })
           }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
