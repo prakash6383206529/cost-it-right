@@ -151,10 +151,12 @@ function UserRegistration(props) {
       setValue('RoleId', registerUserData && registerUserData.RoleName !== undefined ? {
         label: registerUserData.RoleName, value: registerUserData.RoleId
       } : '')
-      setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? {
-        label: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentName, value: registerUserData?.Departments && registerUserData.Departments[0]?.DepartmentId
-      } : '')
-
+      let tempArray = []
+      registerUserData && registerUserData?.Departments?.map((item) => {
+        tempArray.push({ label: item?.DepartmentName, value: (item?.DepartmentId).toString() })
+        return null;
+      })
+      setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? tempArray : '')
       setValue('Reporter', registerUserData && registerUserData.ReporterName !== undefined ? {
         label: registerUserData?.ReporterName
         , value: registerUserData?.ReporterId
@@ -666,7 +668,6 @@ function UserRegistration(props) {
           setOldModules(Data.Modules)
           setIsLoader(false)
           if (IsShowAdditionalPermission === true) {
-
             // child.getUpdatedData(Data.Modules)      // need to be converted into functional
           }
         }
