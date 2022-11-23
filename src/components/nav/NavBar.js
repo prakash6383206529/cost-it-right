@@ -4,7 +4,7 @@ import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
@@ -87,11 +87,6 @@ class SideBar extends Component {
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
-      this.props.getModuleIdByPathName(location.pathname, (res) => {
-        // this.setLeftMenu(res.data.Data.ModuleId);
-        this.setState({ isLoader: false });
-      });
-
       this.props.getTopAndLeftMenuData((res) => {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
@@ -961,7 +956,6 @@ export default connect(mapStateToProps, {
   getMenuByUser,
   getModuleSelectList,
   getPermissionByUser,
-  getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData
 })(SideBar)
