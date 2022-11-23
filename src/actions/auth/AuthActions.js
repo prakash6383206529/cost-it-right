@@ -1428,24 +1428,6 @@ export function checkPageAuthorization(requestData, callback) {
 }
 
 /**
- * @method getModuleIdByPathName
- * @description GET MODULE ID BY PATH NAME
- */
-export function getModuleIdByPathName(pathname, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getModuleIdByPathName}?navigationURL=${pathname}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-        });
-    };
-}
-
-/**
  * @method getUsersByTechnologyAndLevel
  * @description get user by technology and level
  */
