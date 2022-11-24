@@ -158,6 +158,9 @@
   .text-help {
     position: absolute;
   }
+  .before-box {
+    padding-left: 0;
+  }
 }
 .costing-surface-section {
   @extend .costing-raw-material-section;
