@@ -737,11 +737,13 @@ function LossStandardTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
+                                title='Edit'
                                 disabled={props.CostingViewMode || disableAll}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
+                                title='Delete'
                                 type={'button'}
                                 disabled={props.CostingViewMode || disableAll}
                                 onClick={() => deleteRow(index)}

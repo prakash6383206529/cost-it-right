@@ -448,7 +448,7 @@ class PowerListing extends Component {
                       <>
 
                         <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
-                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-0" ></div>
+                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                             {/* DOWNLOAD */}
                             {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                           </button>}>

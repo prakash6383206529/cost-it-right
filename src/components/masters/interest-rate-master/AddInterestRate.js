@@ -20,6 +20,7 @@ import { onFocus, showDataOnHover } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -47,7 +48,8 @@ class AddInterestRate extends Component {
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
       costingTypeId: ZBCTypeId,
-      client: []
+      client: [],
+      showPopup: false
     }
   }
   /**
@@ -296,8 +298,8 @@ class AddInterestRate extends Component {
               costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
-              selectedPlants: Data.Plants[0]?.PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0]?.PlantId }] : [],
-              singlePlantSelected: Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
+              selectedPlants: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0]?.PlantId }] : [],
+              singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
@@ -329,7 +331,16 @@ class AddInterestRate extends Component {
     this.props.getInterestRateData('', () => { })
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -810,7 +821,7 @@ class AddInterestRate extends Component {
                       <button
                         type={"button"}
                         className=" mr15 cancel-btn"
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -831,7 +842,9 @@ class AddInterestRate extends Component {
             </div>
           </div>
         </div>
-
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     );
   }

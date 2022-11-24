@@ -756,14 +756,13 @@ function ReportListing(props) {
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Costing Breakup Details</h1>
-
+                {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col> */}
                     <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
-                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-sidebar"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
@@ -771,26 +770,16 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
+                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
+                                {/* DOWNLOAD */}
+                                {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                            </button>
 
-                            {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                            </button></div> :
-
-                                <>
-                                    <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
-                                        {/* DOWNLOAD */}
-                                        {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                    </button>
-
-                                    <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
-                                        <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
-                                        </button>}>
-                                        {renderColumn(ReportMaster)}
-                                    </ExcelFile>
-
-                                </>
-
-                            }
-
+                            <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                                <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                                </button>}>
+                                {renderColumn(ReportMaster)}
+                            </ExcelFile>
                         </div>
 
                     </Col>
@@ -798,7 +787,7 @@ function ReportListing(props) {
             </form>
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                {isLoader ? <LoaderCustom /> :
+                {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

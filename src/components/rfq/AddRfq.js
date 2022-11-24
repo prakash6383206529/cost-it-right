@@ -7,6 +7,7 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
+import { postiveNumber } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -399,11 +400,10 @@ function AddRfq(props) {
 
 
     const buttonFormatter = (props) => {
-
         return (
             <>
-                {!isEditFlag && < button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {< button title='Edit' className="Edit mr-2 align-middle" disabled={isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -412,8 +412,8 @@ function AddRfq(props) {
 
         return (
             <>
-                {!isEditFlag && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {!isEditFlag && <button className="Delete align-middle" type={'button'} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={isEditFlag} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -557,9 +557,8 @@ function AddRfq(props) {
 
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
+            setValue('contactPerson', "")
         }))
-
-
 
     }
     const vendorFilterList = async (inputValue) => {
@@ -673,7 +672,7 @@ function AddRfq(props) {
                                 </Col>
                                 <Col md="4">
                                     <SearchableSelectHookForm
-                                        label={"Plant"}
+                                        label={"Plant (Code)"}
                                         name={"plant"}
                                         placeholder={"Select"}
                                         Controller={Controller}
@@ -716,20 +715,21 @@ function AddRfq(props) {
                                 </Col>
                                 <Col md="4">
                                     <NumberFieldHookForm
-                                        label="Annual Forecast Q."
+                                        label="Annual Forecast Quantity"
                                         name={"annualForecastQuantity"}
-                                        errors={errors.ZipCode}
+                                        errors={errors.annualForecastQuantity}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         disableErrorOverflow={true}
                                         mandatory={true}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             pattern: {
                                                 value: /^[0-9]{0,6}$/i,
                                                 message: 'Field should be positive no with Max length 6'
-                                            }
+                                            },
+                                            validate: { postiveNumber }
                                         }}
                                         handleChange={() => { }}
                                         disabled={isEditFlag}
@@ -801,7 +801,7 @@ function AddRfq(props) {
                             <Row className="mt-1 part-detail-wrapper">
                                 <Col md="4">
                                     <AsyncSearchableSelectHookForm
-                                        label={"Vendor"}
+                                        label={"Vendor (Code)"}
                                         name={"vendor"}
                                         placeholder={"Select"}
                                         Controller={Controller}
@@ -907,7 +907,8 @@ function AddRfq(props) {
                                     <TextAreaHookForm
                                         label={"Remark"}
                                         name={"remark"}
-                                        placeholder={"Select"}
+                                        // placeholder={"Select"}
+                                        placeholder={isViewFlag ? '-' : "Type here..."}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}
@@ -924,7 +925,7 @@ function AddRfq(props) {
                                 </Col>
 
                                 <Col md="6" className="height152-label pr-2">
-                                    <label>Upload Attachment (upload up to 4 files)</label>
+                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>

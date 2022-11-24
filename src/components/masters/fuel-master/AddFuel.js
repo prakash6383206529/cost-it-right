@@ -20,6 +20,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -52,7 +53,8 @@ class AddFuel extends Component {
         rate: false,
         effectiveDate: false
       },
-      isGridEdit: false
+      isGridEdit: false,
+      showPopup: false
     }
   }
 
@@ -438,7 +440,16 @@ class AddFuel extends Component {
     }
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -748,6 +759,7 @@ class AddFuel extends Component {
                                         <td>
                                           <button
                                             className="Edit mr-2"
+                                            title='Edit'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
@@ -756,6 +768,7 @@ class AddFuel extends Component {
                                           />
                                           <button
                                             className="Delete"
+                                            title='Delete'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>
@@ -785,7 +798,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={this.cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -818,6 +831,9 @@ class AddFuel extends Component {
             />
           )}
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }

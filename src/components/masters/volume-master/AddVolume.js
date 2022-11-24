@@ -23,6 +23,7 @@ import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -124,7 +125,8 @@ class AddVolume extends Component {
       client: [],
       isPartNumberNotSelected: false,
       showErrorOnFocusPart: false,
-      partName: ''
+      partName: '',
+      showPopup: false
     }
   }
 
@@ -313,7 +315,7 @@ class AddVolume extends Component {
     const rowIndex = props?.rowIndex
     return (
       <>
-        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
+        <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
       </>
     )
   }
@@ -488,7 +490,16 @@ class AddVolume extends Component {
       },
     )
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
 
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
@@ -1029,7 +1040,7 @@ class AddVolume extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={this.cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>{" "}
@@ -1061,6 +1072,9 @@ class AddVolume extends Component {
             )}
           </div>
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }
