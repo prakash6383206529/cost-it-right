@@ -13,6 +13,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import { nonZero } from '../../../../../helper/validation'
+import TooltipCustom from '../../../../common/Tooltip';
 
 function SheetMetalBaicDrawer(props) {
 
@@ -45,6 +46,7 @@ function SheetMetalBaicDrawer(props) {
   const [prodHr, setProdHr] = useState('')
   const [quantityState, setQuantityState] = useState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
   const [isDisable, setIsDisable] = useState(false)
+  const [processCostTooltip, setProcessCostTooltip] = useState();
 
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
   const fieldValues = useWatch({
@@ -166,12 +168,14 @@ function SheetMetalBaicDrawer(props) {
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
           setProcessCost(cost)
+          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
           setProcessCost(cost)
+          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case TIME:
@@ -180,6 +184,7 @@ function SheetMetalBaicDrawer(props) {
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
           cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
+          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
@@ -187,13 +192,14 @@ function SheetMetalBaicDrawer(props) {
           let updatedQuantity = quantity === 0 ? 1 : quantity
           setDisabled(true)
           cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
-
+          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case VOLUMETYPE:
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
+          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
@@ -380,9 +386,11 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
                   <Col md="4">
+                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'process-cost'} tooltipText={processCostTooltip} />
                     <NumberFieldHookForm
                       label={`Process Cost`}
                       name={'ProcessCost'}
+                      id={'process-cost'}
                       Controller={Controller}
                       control={control}
                       register={register}

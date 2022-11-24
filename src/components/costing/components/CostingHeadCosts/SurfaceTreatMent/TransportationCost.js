@@ -8,6 +8,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../..
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function TransportationCost(props) {
 
@@ -325,7 +326,7 @@ function TransportationCost(props) {
                 />
 
               </Col>
-              <Col md="3">
+              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = Rate * Quantity"} />}
                 <TextFieldHookForm
                   label="Cost"
                   name={`TransportationCost`}

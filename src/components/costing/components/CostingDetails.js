@@ -729,6 +729,26 @@ function CostingDetails(props) {
         }, 500)
       }))
     }
+    if (type === NCCTypeId) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getBriefCostingById(costingId, (res) => {
+
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+    if (type === CBCTypeId) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getBriefCostingById(costingId, (res) => {
+
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
     // resetGrid()
   }
 
@@ -1744,9 +1764,9 @@ function CostingDetails(props) {
           </button> */}
 
           {/* COMMENTED FOR NOW 29-06-2021 */}
-          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <div className="add-rounded m-auto"></div>
-            <span className="d-block mt-1">ADD BOM</span>
+          {stepOne && <button onClick={bulkToggle} className="btn-primary btn mt-2 float-right">
+            <div className="hirarchy-icon"></div>
+            <span>ADD BOM</span>
           </button>}
         </div>
       </span>

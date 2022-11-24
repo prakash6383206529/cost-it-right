@@ -562,9 +562,8 @@ function AddRfq(props) {
 
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
+            setValue('contactPerson', "")
         }))
-
-
 
     }
     const vendorFilterList = async (inputValue) => {
@@ -909,7 +908,7 @@ function AddRfq(props) {
                             </div>
                             <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
                             <Row className='part-detail-wrapper'>
-                                <Col md="6">
+                                <Col md="4">
                                     <TextAreaHookForm
                                         label={"Remark"}
                                         name={"remark"}
@@ -930,7 +929,7 @@ function AddRfq(props) {
                                     />
                                 </Col>
 
-                                <Col md="6" className="height152-label pr-2">
+                                <Col md="4" className="height152-label">
                                     <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
@@ -973,7 +972,7 @@ function AddRfq(props) {
                                         />
                                     </div>
                                 </Col>
-                                <Col md="12">
+                                <Col md="4">
                                     <div className={"attachment-wrapper"}>
                                         {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                         {files &&

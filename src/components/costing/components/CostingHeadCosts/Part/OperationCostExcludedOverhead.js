@@ -12,6 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
 import WarningMessagge from '../../../../common/WarningMessage'
 import Popup from 'reactjs-popup';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -282,7 +283,7 @@ function OperationCostExcludedOverhead(props) {
             <Col md="8">
               <div className="left-border">
                 {'Other Operation Cost:'}
-                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
+                <WarningMessagge dClass="ml-2 p-absolute" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>
@@ -311,7 +312,7 @@ function OperationCostExcludedOverhead(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
-                    <th>{`Net Cost`}</th>
+                    <th>{`Net Cost`}<TooltipCustom customClass="header-tooltip" id="other-operation-cost" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = Rate * Quantity"} /> </th>
                     <th style={{ textAlign: 'right' }}>{`Action`}</th>
                   </tr>
                 </thead>

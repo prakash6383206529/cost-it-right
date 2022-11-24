@@ -46,7 +46,7 @@
         width: 9%;
       }
       &:nth-child(8) {
-        width: 9%;
+        width: 10%;
       }
       &:nth-child(9) {
         width: 9%;
@@ -65,6 +65,9 @@
       &.scrap-recovery {
         width: 11%;
         min-width: 136px;
+      }
+      &.net-rm-cost, &.scrap-weight {
+        width: 10% !important;
       }
     }
   }
@@ -154,6 +157,9 @@
   min-height: 85px;
   .text-help {
     position: absolute;
+  }
+  .before-box {
+    padding-left: 0;
   }
 }
 .costing-surface-section {
@@ -278,5 +284,34 @@
     .form-group-searchable-select {
       max-width: 100px;
     }
+  }
+}
+.net-rm-cost {
+  .tooltip-inner {
+    min-width: 270px;
+  }
+}
+.header-tooltip {
+  float: unset;
+  margin-top: 4px;
+  margin-left: 3px;
+}
+.process-net-cost {
+  .tooltip-inner {
+    min-width: 410px;
+    text-align: left;
+  }
+  .tooltip.show {
+    opacity: 1 !important;
+  }
+}
+.inner-diameter {
+  .tooltip-inner {
+    min-width: 210px;
+  }
+}
+.weight-of-sheet {
+  .tooltip-inner {
+    min-width: 310px;
   }
 }

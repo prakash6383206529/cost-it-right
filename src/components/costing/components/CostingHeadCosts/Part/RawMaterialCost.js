@@ -1101,9 +1101,9 @@ function RawMaterialCost(props) {
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery(%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
-                      <th>{`Scrap Weight`}</th>
+                      <th className='scrap-weight'><div><span>Scrap Weight </span><TooltipCustom customClass="header-tooltip" id="scrap-weight" tooltipText="Scrap weight = Gross Weight - Finish Weight" /></div></th>
                       {/* //Add i here for MB+ */}
-                      <th>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`} <TooltipCustom customClass="header-tooltip" tooltipClass="net-rm-cost" id="net-rm-cost" tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" /> </th>
                       <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -1306,7 +1306,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
                 </Col>
               }
 
