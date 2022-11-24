@@ -557,9 +557,8 @@ function AddRfq(props) {
 
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
+            setValue('contactPerson', "")
         }))
-
-
 
     }
     const vendorFilterList = async (inputValue) => {
