@@ -488,10 +488,15 @@ function AddRfq(props) {
     const addRowPartNoTable = () => {
 
         let obj = {}
-        obj.PartId = getValues('partNumber').value
+        obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNo = getValues('partNumber').label
+        obj.PartNo = getValues('partNumber')?.label
         obj.technology = getValues('technology')
+
+        if (!/^\+?(0|[0-9]\d*)$/.test(obj.Quantity)) {
+            Toaster.warning("Quantity can not be decimal value.")
+            return false;
+        }
 
         if (obj.PartId === null || obj.PartId === undefined || obj.Quantity === null || obj.Quantity === undefined || isNaN(obj.Quantity)) {
             Toaster.warning("Please fill all the mandatory fields first.")
