@@ -394,9 +394,7 @@ function Insights(props) {
 
     useEffect(() => {
 
-
         let arr = []
-
         props.data && props.data.map((item) => {
 
             arr.push({

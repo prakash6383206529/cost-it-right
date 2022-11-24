@@ -199,7 +199,7 @@ class User extends Component {
               </NavLink>
             </NavItem>}
 
-            {ViewRFQUserAccessibility && <NavItem>
+            {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                 RFQ User
               </NavLink>

@@ -867,11 +867,13 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
+                                title='Edit'
                                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
+                                title='Delete'
                                 type={'button'}
                                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                                 onClick={() => deleteRow(index)}

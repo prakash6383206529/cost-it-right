@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getModuleIdByPathName } from '../../actions/auth/AuthActions';
 import { Link } from "react-router-dom";
 import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
@@ -98,6 +97,5 @@ function mapStateToProps({ auth, comman }) {
 */
 export default connect(mapStateToProps,
 	{
-		getModuleIdByPathName,
 		getTopAndLeftMenuData,
 	})(Leftmenu);

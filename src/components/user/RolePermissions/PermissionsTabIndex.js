@@ -20,6 +20,7 @@ import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
 import RfqTab from "./RfqTab";
+import { getConfigurationKey } from "../../../helper";
 
 class PermissionsTabIndex extends Component {
     constructor(props) {
@@ -232,7 +233,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this?.state?.rfq?.length > 0 &&
+                                        this?.state?.rfq?.length > 0 && getConfigurationKey().IsRFQConfigured &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
                                                 RFQ

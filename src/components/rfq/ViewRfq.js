@@ -85,9 +85,12 @@ function RfqListing(props) {
     }
 
     const resetState = () => {
-
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+        gridApi.sizeColumnsToFit()
+        gridApi.deselectAll()
+        setSelectedCostings([])
+        setaddComparisonToggle(false)
     }
 
     // const cancel = () => {
@@ -403,9 +406,11 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            params.api.sizeColumnsToFit()
+        }, 400);
     };
 
 
@@ -536,7 +541,7 @@ function RfqListing(props) {
                 {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
-                        <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                        <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                             <Col md="3" lg="3" className='mb-2'>
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </Col>
@@ -566,7 +571,6 @@ function RfqListing(props) {
                         <Row>
                             <Col>
                                 <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                    <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                                     <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                         <AgGridReact
@@ -592,13 +596,13 @@ function RfqListing(props) {
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="PartNumber" headerName='Part No'  ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                            <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
-                                            <AgGridColumn field="PlantName" headerName='Plant'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                            <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO"></AgGridColumn>
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
                                             {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>

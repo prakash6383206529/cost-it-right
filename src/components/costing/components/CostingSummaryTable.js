@@ -1072,7 +1072,7 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>VBC/ZBC/NCC/CBC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : 'VBC/ZBC/NCC/CBC'}</th>
                         }
                         { }
                         {viewCostingData &&
@@ -1115,7 +1115,7 @@ const CostingSummaryTable = (props) => {
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {((!viewMode || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                    {((!viewMode || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>}
                                   </div>
                                 </div>
                               </th>

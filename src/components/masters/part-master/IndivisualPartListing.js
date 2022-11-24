@@ -611,10 +611,10 @@ class IndivisualPartListing extends Component {
             <>
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
+                    {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <Row className="pt-4 no-filter-row">
                         <Col md="9" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
@@ -642,21 +642,15 @@ class IndivisualPartListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                            </button></div> :
-
-                                                <>
-                                                    <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                        {/* DOWNLOAD */}
-                                                        {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                                    </button>
-                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                        <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
-                                                        </button>}>
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
-                                                </>
-                                            }
+                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                {/* DOWNLOAD */}
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                            </button>
+                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
+                                                </button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
                                         </>
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>

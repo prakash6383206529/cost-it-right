@@ -41,6 +41,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 import TooltipCustom from '../../common/Tooltip';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -131,7 +132,8 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: false
+      finalApprovalLoader: false,
+      showPopup: false
     }
     this.dropzone = React.createRef();
   }
@@ -1895,7 +1897,16 @@ class AddMoreDetails extends Component {
     }
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel()
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -3609,8 +3620,8 @@ class AddMoreDetails extends Component {
                                           <td>{item.NumberOfLabour}</td>
                                           <td>{item.LabourCost}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
-                                            <button className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
                                           </td>
                                         </tr>
                                       )
@@ -3806,8 +3817,8 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated) || UniqueProcessId?.includes(item.ProcessId)} onClick={() => this.editItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
                                           </td>
                                         </tr>
                                       )
@@ -3933,7 +3944,7 @@ class AddMoreDetails extends Component {
                         <button
                           type={'button'}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel} >
+                          onClick={this.cancelHandler} >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
 
@@ -3968,6 +3979,9 @@ class AddMoreDetails extends Component {
             </div>
           </div>
         </div >
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}

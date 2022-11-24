@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import "./formInputs.css";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
@@ -294,6 +294,9 @@ export const SearchableSelectHookForm = (field) => {
       width: 'calc(100% - 10px)',
     }),
   };
+  const filterConfig = {
+    stringify: option => `${option.label}`,
+  };
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
       <label>
@@ -332,6 +335,7 @@ export const SearchableSelectHookForm = (field) => {
                 onKeyDown={(onKeyDown) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
+                filterOption={createFilter(filterConfig)}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
               {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisable} onClick={buttonCross}>
