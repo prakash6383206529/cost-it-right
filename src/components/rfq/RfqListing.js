@@ -325,7 +325,7 @@ function RfqListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         rowSelection={'multiple'}
-                                    // suppressRowClickSelection={true}
+                                        suppressRowClickSelection={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
@@ -339,10 +339,7 @@ function RfqListing(props) {
                                         {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                     </AgGridReact>
-                                    <div className='button-wrapper'>
-                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
-
-                                    </div>
+                                    <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                 </div>
                             </div>
                         </Col>
