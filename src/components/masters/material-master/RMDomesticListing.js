@@ -366,6 +366,7 @@ function RMDomesticListing(props) {
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
+        reactLocalStorage.setObject('selectedRow', {})
     }
 
 
