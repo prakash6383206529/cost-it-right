@@ -751,6 +751,7 @@ function RMImportListing(props) {
     let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray })  //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
     setDataCount(uniqeArray.length)
+    dispatch(setSelectedRowForPagination(uniqeArray))
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
