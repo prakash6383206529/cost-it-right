@@ -32,7 +32,7 @@ function CopyCosting(props) {
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
       fromNcccostingId: selectedCostingId.nccCosting,
-      toVendorName: type === VBCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
+      toVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
 

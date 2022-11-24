@@ -112,7 +112,7 @@ export function Fgwiseimactdata(props) {
                                     {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
                                     {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
                                     {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
-                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span><TooltipCustom customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></th>}
+                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span><TooltipCustom id={"impact-volume"} customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></th>}
                                     {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
                                     {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
 

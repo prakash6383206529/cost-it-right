@@ -210,7 +210,7 @@
     margin:auto;
 }
 .reminder {
-    @include icons("../../assests/images/reminder.svg", 20px, 20px );
+    @include icons("../../assests/images/reminder.svg", 16px, 16px );
     margin:auto;
 }
 .zoom-in-hover {@include icons("../../assests/images/Path 15286.svg",  10px, 10px)}
@@ -448,8 +448,8 @@
   }
   .btn-reminder {
     background-color: #fdebcb;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
     .reminder {
         position: relative;
@@ -458,10 +458,10 @@
             top: -3px;
             right: -4px;
             background: #f8a000;
-            height: 14px;
-            width: 15px;
+            height: 13px;
+            width: 13px;
             line-height: 1.2;
-            font-size: 12px;
+            font-size: 11px;
             border-radius: 40px;
         }
     }
