@@ -21,7 +21,8 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-//const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+// const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -2098,9 +2099,7 @@ export const statusOptions = [
   { label: "ApprovedByASMSimulation", value: "16" },
   { label: "Linked", value: "17" },
   { label: "RejectedBySystem", value: "18" },
-
 ]
-
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
@@ -2112,7 +2111,9 @@ export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
+
 //AUTOCOMPLETE IN PART
+
 export const searchCount = 3
 
 // KEY AND IVgit
@@ -2121,5 +2122,6 @@ export const IV = 'eTEFSa0PinFKTQNB'
 
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
+
 //VERSION 
-export const VERSION = "V1.2.642";
+export const VERSION = "V1.2.646";

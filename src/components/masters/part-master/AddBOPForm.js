@@ -128,7 +128,6 @@ class AddBOPForm extends Component {
     const { isAddMore, BOPPart } = this.state;
     const { DrawerPartData } = this.props;
 
-
     if (BOPPart.length <= 0) {
       this.setState({ isBOPNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
       return false
@@ -140,7 +139,7 @@ class AddBOPForm extends Component {
       Position: { "x": 600, "y": 50 },
       Outputs: BOPPart ? BOPPart.label : '',
       InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
-      PartName: BOPPart ? BOPPart : [],
+      PartName: DrawerPartData && DrawerPartData.BoughtOutPartName ? DrawerPartData.BoughtOutPartName : "",
       Quantity: values.Quantity,
       UnitOfMeasurementType: this.state.UnitOfMeasurementType,
       Level: "L1",
