@@ -476,7 +476,7 @@ function Pipe(props) {
    * @description Renders the component
    */
   const tooltipMessageForSheetWeight = (value) => {
-    return <div>Weight of {value} = Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value}</div>
+    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value})</div>
   }
   const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? '(π * Inner Diameter * Length of Part) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
   return (
@@ -612,7 +612,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = Length(Sheet) / Length(Part)" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = (Length(Sheet) / Length(Part))" />
                   <NumberFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
@@ -637,7 +637,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no of parts/Sheet" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = (Remainder of no of parts/Sheet)" />
 
                   <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}

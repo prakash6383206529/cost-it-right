@@ -102,7 +102,7 @@ function MachiningStockTable(props) {
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(true)
-      setTooltipMessageForGross('Gross Weight = Volume * Density / 1000000')
+      setTooltipMessageForGross('Gross Weight = (Volume * Density / 1000000)')
     }
 
     else if (value.label === "Square") {
@@ -111,7 +111,7 @@ function MachiningStockTable(props) {
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
     }
 
     else if (value.label === "Rectangular") {
@@ -120,7 +120,7 @@ function MachiningStockTable(props) {
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
     }
     else if (value.label === "Irregular") {
       setSquareMachiningStock(false)
@@ -129,7 +129,7 @@ function MachiningStockTable(props) {
       setIrregularMachiningStock(true)
       setDisable(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = Volume * Number / 1000000')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
     }
     else {
       setIrregularMachiningStock(false)
@@ -137,7 +137,7 @@ function MachiningStockTable(props) {
     }
     switch (value.label) {
       case 'Circular':
-        setTooltipMessageForVolume(<div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>)
+        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length)</div>)
         break;
       case 'Semi Circular':
         setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 2</div>)
@@ -146,10 +146,10 @@ function MachiningStockTable(props) {
         setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 4</div>)
         break;
       case 'Square':
-        setTooltipMessageForVolume(<div>Length * Length * Length</div>)
+        setTooltipMessageForVolume(<div>(Length * Length * Length)</div>)
         break;
       case 'Rectangular':
-        setTooltipMessageForVolume(<div>Length * Breadth * Length</div>)
+        setTooltipMessageForVolume(<div>(Length * Breadth * Length)</div>)
         break;
       default:
         break;

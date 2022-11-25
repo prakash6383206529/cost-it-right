@@ -74,7 +74,7 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(true)
       setIsDisable(false)
       setFlashLossType(false)
-      setLossWeightTooltip(<div>Loss Weight = 0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000</div>)
+      setLossWeightTooltip(<div>Loss Weight = (0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
 
@@ -89,13 +89,13 @@ function LossStandardTable(props) {
       setPercentage(true)
 
       if (props?.isLossStandard) {
-        setLossWeightTooltip(`Loss Weight = Percentage * Forged Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Percentage * Forged Weight / 100)`)
       }
       else if (props?.isFerrous || props?.isNonFerrous) {
-        setLossWeightTooltip(`Loss Weight = Percentage * Casting Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Percentage * Casting Weight / 100)`)
       }
       else {
-        setLossWeightTooltip(`Loss Weight = Percentage * Gross Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Percentage * Gross Weight / 100)`)
       }
     }
     reset({
@@ -119,14 +119,14 @@ function LossStandardTable(props) {
       setUseformula(true)
       setIsDisable(false)
       setPercentage(false)
-      setLossWeightTooltip('Loss Weight = Length * Breadth * Height * Density / 1000000')
+      setLossWeightTooltip('Loss Weight = (Length * Breadth * Height * Density / 1000000)')
     }
     else {
 
       setIsDisable(true)
       setPercentage(true)
       setUseformula(false)
-      setLossWeightTooltip('Loss Weight = Percentage * Forged Weight / 100)')
+      setLossWeightTooltip('Loss Weight = (Percentage * Forged Weight / 100)')
     }
   }
 

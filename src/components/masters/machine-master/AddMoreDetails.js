@@ -2671,7 +2671,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = Machine Cost + Accessories Cost + Installation Charges"} />
+                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
                             label={`Total Cost(INR)`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}

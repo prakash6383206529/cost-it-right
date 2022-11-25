@@ -311,7 +311,7 @@ function Plastic(props) {
 
               <Row className={'mt25'}>
                 <Col md="3" >
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = Gross Weight + Runner Weight + Other Loss Weight'} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
                   <NumberFieldHookForm
                     label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
@@ -353,7 +353,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = Total Gross weight - Finish Weight'} />
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
                   <NumberFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
@@ -374,7 +374,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = RM Rate * Burning Loss Weight'} />
+                  <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
                   <NumberFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
@@ -392,7 +392,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = Total Gross Weight * RM Rate + Burning Allowance'} />
+                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Total Gross Weight * RM Rate + Burning Allowance)'} />
                   <NumberFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
@@ -410,7 +410,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = Scrap Rate * Scrap Weight'} />
+                  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = (Scrap Rate * Scrap Weight)'} />
                   <NumberFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
@@ -429,7 +429,7 @@ function Plastic(props) {
                 </Col>
 
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = RM Cost + Scrap Cost'} />
+                  <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Cost + Scrap Cost)'} />
                   <NumberFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}

@@ -537,7 +537,7 @@ function BOPCost(props) {
                                     />
                                 }
                               </td>
-                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                               <td>
                                 <div className='action-btn-wrapper'>
                                   {!CostingViewMode && !IsLocked && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
@@ -552,7 +552,8 @@ function BOPCost(props) {
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                              <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+
                               <td>
                                 <div className='action-btn-wrapper'>
                                   {!CostingViewMode && !IsLocked && <button title='Edit' className="Edit" type={'button'} onClick={() => editItem(index)} />}
