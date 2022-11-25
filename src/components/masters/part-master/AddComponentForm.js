@@ -146,7 +146,7 @@ class AddComponentForm extends Component {
       Position: { "x": 600, "y": 50 },
       Outputs: part ? part.label : '',
       InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
-      PartName: part ? part : [],
+      PartName: DrawerPartData && DrawerPartData.PartName ? DrawerPartData.PartName : "",
       Quantity: values.Quantity,
       Level: "L1",
       selectedPartType: this.props.selectedPartType,

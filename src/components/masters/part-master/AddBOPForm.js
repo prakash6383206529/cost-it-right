@@ -140,7 +140,7 @@ class AddBOPForm extends Component {
       Position: { "x": 600, "y": 50 },
       Outputs: BOPPart ? BOPPart.label : '',
       InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
-      PartName: BOPPart ? BOPPart : [],
+      PartName: DrawerPartData && DrawerPartData.BoughtOutPartName ? DrawerPartData.BoughtOutPartName : "",
       Quantity: values.Quantity,
       UnitOfMeasurementType: this.state.UnitOfMeasurementType,
       Level: "L1",
