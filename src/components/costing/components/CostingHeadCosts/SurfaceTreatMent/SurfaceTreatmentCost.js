@@ -235,7 +235,7 @@ function SurfaceTreatmentCost(props) {
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
-                    <th>{`Cost`}<TooltipCustom customClass="header-tooltip" id="surface-cost" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Surface Area * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = Surface Area * Rate"} /></th>
+                    <th>{`Cost`}</th>
                     <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -328,7 +328,7 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                            <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Surface Area * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Surface Area * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />

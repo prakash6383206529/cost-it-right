@@ -1708,13 +1708,8 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
-<<<<<<< HEAD
                           </Col> */}
-                          <Col md="3">
-=======
-                          </Col>
-                          <Col md="3"><TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate + Freight Cost + Shearing Cost"} />
->>>>>>> 275cb88e9 (CIR-I2598 | add tooltip for formules)
+                          <Col md="3"><TooltipCustom id={'net-cost'} tooltipText={"Net Cost = (Basic Rate + Freight Cost + Shearing Cost)"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"NetLandedCost"}

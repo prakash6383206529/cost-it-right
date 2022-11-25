@@ -476,7 +476,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = Sheet Length / Strip Width'} />
+                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
                                     <NumberFieldHookForm
                                         label={`No. of Strips`}
                                         id={'sheet-strips'}
@@ -519,7 +519,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = Sheet Width / Blank Size'} />
+                                    <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
                                     <NumberFieldHookForm
                                         label={`Components/Strip`}
                                         name={'ComponentPerStrip'}
@@ -537,7 +537,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = No. of Strips * Components per Strip'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip)'} />
                                     <NumberFieldHookForm
                                         label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
@@ -641,7 +641,7 @@ function Sheet(props) {
 
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-gross-weight'} tooltipText={'Gross Weight = Weight of Sheet / Total Components per Sheet / Cavity'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-gross-weight'} tooltipText={'Gross Weight = (Weight of Sheet / Total Components per Sheet / Cavity)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}

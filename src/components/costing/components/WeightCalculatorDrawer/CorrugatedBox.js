@@ -484,7 +484,7 @@ function CorrugatedBox(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = Width Sheet + 2 * Cutting Allowance'} />
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
                                         label={`Width(sheet) inc. Cutting allowance`}
                                         name={'width_inc_cutting'}
@@ -566,7 +566,7 @@ function CorrugatedBox(props) {
                                 </Col>
 
                                 <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = Width Sheet + 2 * Cutting Allowance'} />
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
                                         label={`Length(sheet) inc. Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}

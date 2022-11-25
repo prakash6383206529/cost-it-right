@@ -33,10 +33,10 @@ function PartCompoment(props) {
   const [Count, setCount] = useState(0);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -192,11 +192,11 @@ function PartCompoment(props) {
 
   }, [IsOpen])
 
-  // const InjectDiscountAPICall = () => {                 
-  //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-  //     dispatch(setComponentDiscountOtherItemData({}, () => { }))
-  //   }))
-  // }
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
+  }
 
   /**
    * @method render
