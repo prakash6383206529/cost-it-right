@@ -128,7 +128,6 @@ class AddBOPForm extends Component {
     const { isAddMore, BOPPart } = this.state;
     const { DrawerPartData } = this.props;
 
-
     if (BOPPart.length <= 0) {
       this.setState({ isBOPNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
       return false
