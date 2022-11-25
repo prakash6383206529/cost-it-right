@@ -213,7 +213,7 @@ class BOMViewer extends Component {
         Position: { "x": posX, "y": 250 },
         Outputs: [],
         InnerContent: childData && childData.InnerContent !== undefined ? childData.InnerContent : '',
-        PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
+        PartName: childData && childData.PartName !== undefined ? childData.PartName : '',
         Quantity: childData && childData.Quantity !== undefined ? checkForNull(childData.Quantity) : '',
         Level: 'L1',
         selectedPartType: childData.selectedPartType,
@@ -386,9 +386,9 @@ class BOMViewer extends Component {
                                 })
                               }
                             >
-                              
+
                               <div className="trashred-icon"></div>
-                              
+
                               {"Delete"}
                             </button>
                             <button
