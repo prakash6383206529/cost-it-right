@@ -326,9 +326,10 @@ function TransportationCost(props) {
                 />
 
               </Col>
-              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = Rate * Quantity"} />}
+              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom disabledIcon={true} id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = (Rate * Quantity)"} />}
                 <TextFieldHookForm
                   label="Cost"
+                  id="operation-cost"
                   name={`TransportationCost`}
                   Controller={Controller}
                   control={control}

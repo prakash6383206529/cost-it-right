@@ -375,7 +375,7 @@ function NonFerrous(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = Casting Weight + Net Loss Weight'} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
@@ -427,7 +427,7 @@ function NonFerrous(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-nonferrous'} tooltipText={'Scrap Weight = Casting Weight - Finished Weight'} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-nonferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
@@ -480,7 +480,7 @@ function NonFerrous(props) {
                                 {isHpdc &&
                                     <>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'-rm-cost-non-ferrous'} tooltipText={'RM Cost = Gross Weight * RM Rate'} />
+                                            <TooltipCustom disabledIcon={true} id={'-rm-cost-non-ferrous'} tooltipText={'RM Cost = (Gross Weight * RM Rate)'} />
                                             <NumberFieldHookForm
                                                 label={`RM Cost`}
                                                 name={'rmCost'}
@@ -499,7 +499,7 @@ function NonFerrous(props) {
                                         </Col>
                                     </>}
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-nonferrous'} tooltipText={'Scrap Cost = Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-nonferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
@@ -518,7 +518,7 @@ function NonFerrous(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-nonferrous'} tooltipText={'Net RM Cost = Gross Weight * RM Rate - Scrap Cost'} />
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-nonferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
                                     <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}

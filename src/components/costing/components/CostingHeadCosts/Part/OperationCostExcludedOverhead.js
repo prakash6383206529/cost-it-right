@@ -312,7 +312,7 @@ function OperationCostExcludedOverhead(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
-                    <th>{`Net Cost`}<TooltipCustom customClass="header-tooltip" id="other-operation-cost" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = Rate * Quantity"} /> </th>
+                    <th>{`Net Cost`}</th>
                     <th style={{ textAlign: 'right' }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -409,7 +409,7 @@ function OperationCostExcludedOverhead(props) {
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td>{netCost(item)}</td>
+                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

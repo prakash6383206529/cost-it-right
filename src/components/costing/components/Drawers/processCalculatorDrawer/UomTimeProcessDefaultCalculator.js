@@ -344,7 +344,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'feed'} tooltipText={'Feed = Spindle Speed * Feed * No of Tooth'} />
+                                            <TooltipCustom disabledIcon={true} id={'feed'} tooltipText={'Feed = (Spindle Speed * Feed * No of Tooth)'} />
                                             <NumberFieldHookForm
                                                 label="Feed(mm/min)"
                                                 id={'feed'}
@@ -467,7 +467,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'cutting-time'} tooltipText={'Cutting Time = Total Length per Depth / Feed'} />
+                                            <TooltipCustom disabledIcon={true} id={'cutting-time'} tooltipText={'Cutting Time = (Total Length per Depth / Feed)'} />
                                             <NumberFieldHookForm
                                                 label={`Cutting Time(min)`}
                                                 name={'cuttingTimeMins'}
@@ -589,7 +589,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cycle-min'} tooltipText={'Total Cycle Time(Min) = Cutting Time + Chip to Chip + Tool non-Cutting + Indexing Table + Loading & Unloading'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cycle-min'} tooltipText={'Total Cycle Time(Min) = (Cutting Time + Chip to Chip + Tool non-Cutting + Indexing Table + Loading & Unloading)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
@@ -608,7 +608,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'total-cycle-sec'} tooltipText={'Total Cycle Time(Sec) = Total Cycle Time in Mins * 60'} />
+                                            <TooltipCustom disabledIcon={true} id={'total-cycle-sec'} tooltipText={'Total Cycle Time(Sec) = (Total Cycle Time in Mins * 60)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(sec)`}
                                                 name={'TotalCycleTimeSec'}
@@ -674,7 +674,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'process-cost-machine'} tooltipText={'Process Cost = Machine Rate / Parts per Hour'} />
+                                            <TooltipCustom disabledIcon={true} id={'process-cost-machine'} tooltipText={'Process Cost = (Machine Rate / Parts per Hour)'} />
                                             <NumberFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
