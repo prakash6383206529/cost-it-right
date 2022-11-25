@@ -677,7 +677,8 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
-        .ag-center-cols-clipper, .ag-pinned-left-cols-container {
+        .ag-center-cols-clipper,
+        .ag-pinned-left-cols-container {
           .ag-cell {
             &:first-child {
               border-left: 1px solid #e5eaf9;
@@ -754,6 +755,13 @@ a:hover {
             &.text-center {
               .ag-cell-wrapper {
                 justify-content: center;
+              }
+            }
+
+            .ag-react-container {
+              .attachment.images {
+                border-bottom: none;
+                font-size: $font-14;
               }
             }
           }
@@ -893,7 +901,7 @@ a:hover {
   }
 
   .ag-selection-checkbox.ag-invisible {
-    display: none !important;
+    display: none;
   }
 
   --ag-foreground-color: #8a91ac;
@@ -3348,8 +3356,10 @@ input:focus,
       @media screen and (min-width: $middleDesktop) {
         min-height: calc(100vh - 385px) !important;
       }
+
       &.assembly-simulaiton {
         min-height: calc(100vh - 416px) !important;
+
         @media screen and (min-width: $middleDesktop) {
           min-height: calc(100vh - 416px) !important;
         }
