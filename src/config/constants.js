@@ -2118,12 +2118,6 @@ export const ZBCADDMORE = 0
 
 export const searchCount = 3
 
-// CBC COSTING PERMISSION
-// export const cbcCostingPermission = (reactLocalStorage.getObject('cbcCostingPermission'))
-// setTimeout(() => {
-//   console.log('cbcCostingPermission:constant ', cbcCostingPermission);
-// }, 5000);
-
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
