@@ -804,6 +804,9 @@ a:hover {
       }
     }
   }
+  .ag-selection-checkbox.ag-invisible {
+    display: none !important;
+   }
   --ag-foreground-color: #8a91ac;
   .ag-paging-button:hover {
     color: #256bd1;
