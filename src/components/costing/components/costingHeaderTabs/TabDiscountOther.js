@@ -26,6 +26,7 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
+import TooltipCustom from '../../../common/Tooltip';
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -883,9 +884,11 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="2">
+                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Other Cost Applicability * Percentage / 100"} />}
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
+                        id="other-cost"
                         Controller={Controller}
                         control={control}
                         register={register}

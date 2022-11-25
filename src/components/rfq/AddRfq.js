@@ -30,7 +30,10 @@ const gridOptions = {};
 function AddRfq(props) {
 
     const dropzone = useRef(null);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm();
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
@@ -488,10 +491,14 @@ function AddRfq(props) {
     const addRowPartNoTable = () => {
 
         let obj = {}
-        obj.PartId = getValues('partNumber').value
+        obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNo = getValues('partNumber').label
+        obj.PartNo = getValues('partNumber')?.label
         obj.technology = getValues('technology')
+
+        if (errors.annualForecastQuantity) {
+            return false;
+        }
 
         if (obj.PartId === null || obj.PartId === undefined || obj.Quantity === null || obj.Quantity === undefined || isNaN(obj.Quantity)) {
             Toaster.warning("Please fill all the mandatory fields first.")
@@ -659,13 +666,13 @@ function AddRfq(props) {
                                         placeholder={"Select"}
                                         Controller={Controller}
                                         control={control}
-                                        rules={{ required: false }}
+                                        rules={{ required: true }}
                                         register={register}
                                         defaultValue={vendor.length !== 0 ? vendor : ""}
                                         options={renderListing("technology")}
                                         mandatory={true}
                                         handleChange={handleTechnologyChange}
-                                        errors={errors.Vendor}
+                                        errors={errors.technology}
                                         disabled={isEditFlag || disableTechnology}
                                         isLoading={VendorLoaderObj}
                                     />
@@ -706,7 +713,7 @@ function AddRfq(props) {
                                         mandatory={true}
                                         // handleChange={handleDestinationPlantChange}
                                         handleChange={() => { }}
-                                        errors={errors.partNo}
+                                        errors={errors.partNumber}
                                         disabled={partNoDisable || isEditFlag}
                                         isLoading={plantLoaderObj}
                                         asyncOptions={partFilterList}
@@ -725,10 +732,6 @@ function AddRfq(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^[0-9]{0,6}$/i,
-                                                message: 'Field should be positive no with Max length 6'
-                                            },
                                             validate: { postiveNumber }
                                         }}
                                         handleChange={() => { }}
@@ -813,7 +816,7 @@ function AddRfq(props) {
                                         mandatory={true}
                                         handleChange={handleVendorChange}
                                         // handleChange={() => { }}
-                                        errors={errors.Vendor}
+                                        errors={errors.vendor}
                                         isLoading={VendorLoaderObj}
                                         asyncOptions={vendorFilterList}
                                         disabled={isViewFlag || partList.length === 0}

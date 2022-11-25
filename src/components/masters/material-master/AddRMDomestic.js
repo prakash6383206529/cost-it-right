@@ -1396,7 +1396,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
+                            <TooltipCustom id="category" tooltipText="RM category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1690,6 +1690,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate + Freight Cost + Shearing Cost"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label)}
                               name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}
