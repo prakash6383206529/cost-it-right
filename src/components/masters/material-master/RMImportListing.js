@@ -866,7 +866,7 @@ function RMImportListing(props) {
                     onRowSelected={onRowSelect}
                     suppressRowClickSelection={true}
                   >
-                    <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                    <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
 

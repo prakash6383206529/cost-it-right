@@ -670,7 +670,7 @@ function CommonApproval(props) {
     }
 
     return (
-        <div className='min-height100vh custom-pagination'>
+        <div className='custom-pagination'>
             {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="8" lg="8" className="search-user-block mb-3">

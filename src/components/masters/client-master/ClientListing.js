@@ -361,7 +361,7 @@ class ClientListing extends Component {
             // <div className="">
             <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
-                {this.state.isLoader && <LoaderCustom />}
+                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <h1 className="mb-0">Customer Master</h1>
