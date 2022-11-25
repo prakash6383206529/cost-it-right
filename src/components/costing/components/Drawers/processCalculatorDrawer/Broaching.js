@@ -2,18 +2,21 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
+import { findProcessCost } from '../../../CostingUtil'
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
+    const [isDisable, setIsDisable] = useState(false)
+    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const defaultValues = {
         noOFTeeth: WeightCalculatorRequest && WeightCalculatorRequest.NoOFTeeth !== undefined ? WeightCalculatorRequest.NoOFTeeth : '',
@@ -54,9 +57,11 @@ function Broaching(props) {
         setTotalCycleTimeMins()   //totalCycleTimeMins
     }, [fieldValues])
 
+    useEffect(() => {
+        setTotalCycleTimeMins()
+    }, [dataToSend.CuttingTimeMins])
 
     const { calculateMachineTime } = props
-    const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setBroachingForce = () => {
         const cuttingResistance = Number(getValues('cuttingResistance'))
@@ -95,7 +100,8 @@ function Broaching(props) {
         const partsPerHour = (3600 / checkForNull(TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-        const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
+        // const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
+        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
 
@@ -129,7 +135,8 @@ function Broaching(props) {
         }
     }, 500)
 
-    const onSubmit = (value) => {
+    const onSubmit = debounce(handleSubmit((value) => {
+        setIsDisable(true)
         let obj = {}
         obj.ProcessMachiningCalculatorId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -167,27 +174,38 @@ function Broaching(props) {
         obj.LoadingAndUnloadingTime = value.loadingAndUnloadingTime
         obj.TotalCycleTimeMins = dataToSend.totalCycleTimeMins
         obj.TotalCycleTimeSec = dataToSend.TotalCycleTimeSec
+        obj.CycleTime = dataToSend.TotalCycleTimeSec
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
-        obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
+        obj.TotalMachiningTime = totalMachiningTime
+
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
                 Toaster.success('Calculation saved sucessfully.')
-                calculateMachineTime(totalMachiningTime, obj)
+                calculateMachineTime('', obj)
             }
         }))
-    }
+    }), 500);
     const onCancel = () => {
         calculateMachineTime('0.00')
     }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form"
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={''}>
                             <div className="border pl-3 pr-3 pt-3">
                                 <Col md="12">
@@ -196,8 +214,8 @@ function Broaching(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-                                            <TextFieldHookForm
-                                                label={`No of Teeth`}
+                                            <NumberFieldHookForm
+                                                label={`No. of Teeth`}
                                                 name={'noOFTeeth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -221,7 +239,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Module`}
                                                 name={'module'}
                                                 Controller={Controller}
@@ -232,7 +250,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -245,7 +263,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Major Dia(mm)`}
                                                 name={'majorDiameter'}
                                                 Controller={Controller}
@@ -256,7 +274,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={(e) => handleDiameterChange(e.target)}
@@ -271,7 +289,7 @@ function Broaching(props) {
 
                                     <Row>
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Minor Dia(mm)`}
                                                 name={'minorDiameter'}
                                                 Controller={Controller}
@@ -282,7 +300,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={(e) => handleDiameterChange(e.target)}
@@ -295,7 +313,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Cutting Length`}
                                                 name={'cuttingLength'}
                                                 Controller={Controller}
@@ -306,7 +324,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -319,7 +337,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label="Cutting Resistence(Kg/mm2)"
                                                 name={'cuttingResistance'}
                                                 Controller={Controller}
@@ -330,7 +348,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -350,7 +368,7 @@ function Broaching(props) {
                                     <Row className={'mt15'}>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Step Forward Thinning(mm)`}
                                                 name={'stepForwardThinning'}
                                                 Controller={Controller}
@@ -361,7 +379,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -374,7 +392,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Broaching Force in Ton`}
                                                 name={'broachingForceInTon'}
                                                 Controller={Controller}
@@ -391,7 +409,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Tool Length`}
                                                 name={'toolLength'}
                                                 Controller={Controller}
@@ -402,7 +420,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -415,7 +433,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Cutting Speed Forward(m/min)`}
                                                 name={'cuttingSpeedForward'}
                                                 Controller={Controller}
@@ -426,7 +444,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -439,7 +457,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Cutting Speed Return(m/min)`}
                                                 name={'cuttingSpeedReturn'}
                                                 Controller={Controller}
@@ -450,7 +468,7 @@ function Broaching(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -463,7 +481,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Cutting time(min)`}
                                                 name={'cuttingTimeMins'}
                                                 Controller={Controller}
@@ -488,7 +506,7 @@ function Broaching(props) {
                                     <Row className={'mt15'}>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Chip to Chip Timing(min)`}
                                                 name={'chipToChipTiming'}
                                                 Controller={Controller}
@@ -500,7 +518,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 defaultValue={''}
@@ -512,7 +530,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Tool non cutting time(min)`}
                                                 name={'totalNonCuttingTime'}
                                                 Controller={Controller}
@@ -523,7 +541,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -536,7 +554,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Indexing table positioning time(min)`}
                                                 name={'indexingTablePositioningTime'}
                                                 Controller={Controller}
@@ -547,7 +565,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -560,7 +578,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Loading & Unloading(min)`}
                                                 name={'loadingAndUnloadingTime'}
                                                 Controller={Controller}
@@ -571,7 +589,7 @@ function Broaching(props) {
                                                     required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -585,7 +603,7 @@ function Broaching(props) {
 
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
                                                 Controller={Controller}
@@ -602,7 +620,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Total Cycle Time(sec)`}
                                                 name={'TotalCycleTimeSec'}
                                                 Controller={Controller}
@@ -619,7 +637,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Efficiency(%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
@@ -648,7 +666,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}
                                                 Controller={Controller}
@@ -665,7 +683,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
                                                 Controller={Controller}
@@ -687,7 +705,10 @@ function Broaching(props) {
                         <div className="mt25 col-md-12 text-right">
                             <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn">
                                 <div className={'cancel-icon'}></div>CANCEL</button>
-                            <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
+                            <button type="button"
+                                onClick={onSubmit}
+                                disabled={props.CostingViewMode || isDisable ? true : false}
+                                className="btn-primary save-btn">
                                 <div className={"save-icon"}></div>
                                 {'SAVE'}
                             </button>

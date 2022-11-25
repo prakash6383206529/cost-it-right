@@ -10,15 +10,16 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
-  const tempArray = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  const tempArray = reactLocalStorage.getObject('surfaceCostingArray')
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-  const { register, control, formState: { errors } } = useForm({
+  const { register, control, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -26,7 +27,6 @@ function SurfaceTreatmentCost(props) {
   const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
-  const [OldGridData, setOldGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -44,7 +44,7 @@ function SurfaceTreatmentCost(props) {
     }
 
     if (!CostingViewMode && !IsLocked) {
-      const isEqual = JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
       props.setSurfaceData({ gridData, Params, isEqual, item })
       // if (props.IsAssemblyCalculation) {
       //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
@@ -55,7 +55,6 @@ function SurfaceTreatmentCost(props) {
     // }, 100)
     selectedIds(gridData)
   }, [gridData]);
-
 
   // useEffect(() => {
   //   if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
@@ -81,10 +80,6 @@ function SurfaceTreatmentCost(props) {
     if (Object.keys(rowData).length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
-        const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
-        const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
-        const SurfaceTreatmentCost = WithLaboutCost + WithOutLabourCost;
-
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,
@@ -145,6 +140,22 @@ function SurfaceTreatmentCost(props) {
   }
 
   const SaveItem = (index) => {
+    let operationGridData = gridData[index]
+    if (operationGridData.UOM === 'Number') {
+      let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
+      console.log('operationGridData.SurfaceArea: ', operationGridData);
+      if (operationGridData.SurfaceArea === '0') {
+        Toaster.warning('Number should not be zero')
+        return false
+      }
+      if (!isValid) {
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${OperationGridFields}[${index}].SurfaceArea`, '')
+        }, 200)
+        return false
+      }
+    }
     setEditIndex('')
   }
 
@@ -215,7 +226,7 @@ function SurfaceTreatmentCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="cr-brdr-main" size="sm" >
+              <Table className="cr-brdr-main costing-surface-section" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -250,8 +261,6 @@ function SurfaceTreatmentCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.'
                                     },
                                   }}
                                   defaultValue={item.SurfaceArea}

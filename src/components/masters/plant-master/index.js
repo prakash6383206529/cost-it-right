@@ -66,7 +66,8 @@ class PlantMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -118,6 +119,7 @@ class PlantMaster extends Component {
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
                                         DownloadAccessibility={this.state.DownloadAccessibility}
+                                        ViewAccessibility={this.state.ViewAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>

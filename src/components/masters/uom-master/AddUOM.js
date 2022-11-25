@@ -162,7 +162,7 @@ class AddUOM extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, pristine, submitting } = this.props;
+    const { handleSubmit, isEditFlag } = this.props;
     return (
       <Drawer
         anchor={this.props.anchor}
@@ -290,4 +290,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'addUOM',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddUOM));

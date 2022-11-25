@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import {
-  renderPasswordInputField, renderEmailInputField, renderCheckboxInputField, focusOnError,
+  renderPasswordInputField, renderEmailInputField, focusOnError,
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
@@ -86,7 +86,7 @@ class Login extends Component {
 
         })
         departmentList = dept.join(',')
-        reactLocalStorage.setObject("userDetail", userDetail);
+        localStorage.setItem("userDetail", JSON.stringify(userDetail))
         reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
           this.setState({ inputLoader: false })
@@ -127,7 +127,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={logo} alt="Minda" /></a>
+                  <img className="logo-first" src={logo} alt="Minda" />
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
@@ -178,7 +178,7 @@ class Login extends Component {
                   </div>
 
                   <div className="text-center p-relative">
-                    {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader" />}
+                    {this.state.inputLoader && <LoaderCustom customClass="login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}

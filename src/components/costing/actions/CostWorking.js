@@ -5,13 +5,13 @@ import {
   UPDATE_COSTING_RM_SUCCESS, GET_BOP_LIST_SUCCESS, ADD_BOP_COSTING_SUCCESS, GET_OTHER_OPERATION_LIST_SUCCESS, ADD_OTHER_OPERATION_COSTING_SUCCESS, ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
   GET_MHR_LIST_SUCCESS, ADD_MHR_FOR_PROCESS_GRID_DATA, GET_PROCESSES_LIST_SUCCESS, SAVE_PROCESS_COSTING_SUCCESS, GET_OTHER_OPERATION_SELECT_LIST_SUCCESS, SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
-  SAVE_BOP_COSTING_SUCCESS, GET_RAW_MATERIAL_CALCI_INFO, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET,
+  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 
-const headers = config
+// const config() = config
 
 /**
  * @method getWeightCalculationCosting
@@ -20,7 +20,7 @@ const headers = config
 export function getWeightCalculationCosting(CostingId = '', callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getWeightCalculationInfo}/${CostingId}`, headers);
+    const request = axios.get(`${API.getWeightCalculationInfo}/${CostingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -46,7 +46,7 @@ export function getWeightCalculationCosting(CostingId = '', callback) {
 export function getWeightCalculationLayoutType(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getWeightCalculationLayoutType}`, headers);
+    const request = axios.get(`${API.getWeightCalculationLayoutType}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -71,7 +71,7 @@ export function getWeightCalculationLayoutType(callback) {
 export function getRawMaterialCalculationForSheetMetal(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForSheetMetal}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForSheetMetal}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -92,7 +92,7 @@ export function getRawMaterialCalculationForSheetMetal(costingId, rawMaterialId,
 */
 export function saveRawMaterialCalculationForSheetMetal(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForSheetMetal, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForSheetMetal, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -100,6 +100,7 @@ export function saveRawMaterialCalculationForSheetMetal(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -111,7 +112,7 @@ export function saveRawMaterialCalculationForSheetMetal(data, callback) {
 export function getRawMaterialCalculationForForging(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForForging}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForForging}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -131,7 +132,7 @@ export function getRawMaterialCalculationForForging(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForForging(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForForging, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForForging, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -139,6 +140,7 @@ export function saveRawMaterialCalculationForForging(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -151,7 +153,7 @@ export function getRawMaterialCalculationForFerrous(costingId, rawMaterialId, we
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const queryParams = `costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForFerrous}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForFerrous}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -172,7 +174,7 @@ export function getRawMaterialCalculationForFerrous(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForFerrous(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForFerrous, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForFerrous, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -180,6 +182,7 @@ export function saveRawMaterialCalculationForFerrous(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -192,7 +195,7 @@ export function getRawMaterialCalculationForPlastic(costingId, rawMaterialId, we
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForPlastic}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForPlastic}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -213,7 +216,7 @@ export function getRawMaterialCalculationForPlastic(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForPlastic(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForPlastic, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForPlastic, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -221,6 +224,7 @@ export function saveRawMaterialCalculationForPlastic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -233,7 +237,7 @@ export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterial
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForCorrugatedBox}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForCorrugatedBox}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -253,7 +257,7 @@ export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterial
 */
 export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForCorrugatedBox, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForCorrugatedBox, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -261,6 +265,7 @@ export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -273,7 +278,7 @@ export function getRawMaterialCalculationForDieCasting(costingId, rawMaterialId,
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForDieCasting}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForDieCasting}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -294,7 +299,7 @@ export function getRawMaterialCalculationForDieCasting(costingId, rawMaterialId,
 */
 export function saveRawMaterialCalculationForDieCasting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForDieCasting, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForDieCasting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -302,6 +307,7 @@ export function saveRawMaterialCalculationForDieCasting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -312,7 +318,7 @@ export function saveRawMaterialCalculationForDieCasting(data, callback) {
 export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
-    const request = axios.get(`${API.getRawMaterialCalculationForRubber}?${queryParams}`, headers);
+    const request = axios.get(`${API.getRawMaterialCalculationForRubber}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -332,7 +338,7 @@ export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, wei
 */
 export function saveRawMaterialCalculationForRubber(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForRubber, data, headers);
+    const request = axios.post(API.saveRawMaterialCalculationForRubber, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -340,6 +346,7 @@ export function saveRawMaterialCalculationForRubber(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -350,7 +357,7 @@ export function saveRawMaterialCalculationForRubber(data, callback) {
  */
 export function createWeightCalculationCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.AddCostingWeightCalculation, data, headers);
+    const request = axios.post(API.AddCostingWeightCalculation, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -379,7 +386,7 @@ export function createWeightCalculationCosting(data, callback) {
 export function updateWeightCalculationCosting(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.UpdateCostingWeightCalculation}`, requestData, headers)
+    axios.put(`${API.UpdateCostingWeightCalculation}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_WEIGHT_CALC_SUCCESS });
         callback(response);
@@ -397,7 +404,7 @@ export function updateWeightCalculationCosting(requestData, callback) {
 export function getCostingBySupplier(reqData, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingBySupplier}?supplierId=${reqData.supplierId}&partId=${reqData.partId}&loggedInUserId=${reqData.loggedInUserId}`, headers);
+    const request = axios.get(`${API.getCostingBySupplier}?supplierId=${reqData.supplierId}&partId=${reqData.partId}&loggedInUserId=${reqData.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -428,7 +435,7 @@ export function getCostingBySupplier(reqData, callback) {
 export function getRawMaterialListBySupplierId(supplierId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialListBySupplierId}/${supplierId}`, headers);
+    const request = axios.get(`${API.getRawMaterialListBySupplierId}/${supplierId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -452,7 +459,7 @@ export function getRawMaterialListBySupplierId(supplierId, callback) {
  */
 export function createNewCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createNewCosting, data, headers);
+    const request = axios.post(API.createNewCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -484,7 +491,7 @@ export function addCostingRawMaterial(data, selectedIndex, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.post(API.addCostingRawMaterial, data, headers);
+    const request = axios.post(API.addCostingRawMaterial, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -516,7 +523,7 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     if (isEditFlag) {
-      axios.get(`${API.getCostingDetailsById}/${costingId}`, headers)
+      axios.get(`${API.getCostingDetailsById}/${costingId}`, config())
         .then((response) => {
           if (response.data.Result) {
             dispatch({
@@ -554,7 +561,7 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
 export function updateCostingRawMatrial(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateCostingRawMatrial}`, requestData, headers)
+    axios.put(`${API.updateCostingRawMatrial}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_COSTING_RM_SUCCESS });
         callback(response);
@@ -572,7 +579,7 @@ export function updateCostingRawMatrial(requestData, callback) {
 export function getBoughtOutPartList(supplierId, PlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBoughtOutPartListBySupplierAndPlant}/${supplierId}/${PlantId}`, headers);
+    const request = axios.get(`${API.getBoughtOutPartListBySupplierAndPlant}/${supplierId}/${PlantId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -597,7 +604,7 @@ export function addCostingBoughtOutPart(data, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.post(API.addCostingBoughtOutPart, data, headers);
+    const request = axios.post(API.addCostingBoughtOutPart, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -628,7 +635,7 @@ export function addCostingBoughtOutPart(data, callback) {
 export function getOtherOperationList(supplierId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOtherOperationList}/${supplierId}`, headers);
+    const request = axios.get(`${API.getOtherOperationList}/${supplierId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -655,7 +662,7 @@ export function getCostingOtherOperation(costingId, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.get(`${API.getCostingOtherOperation}/${costingId}`, headers);
+    const request = axios.get(`${API.getCostingOtherOperation}/${costingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -701,7 +708,7 @@ export function addCostingUnitOtherOperationData(data, selectedIndex, callback) 
 export function getMHRCostingList(supplierId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getMHRCostingList}/${supplierId}`, headers);
+    const request = axios.get(`${API.getMHRCostingList}/${supplierId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -740,7 +747,7 @@ export function addMHRForProcess(data, callback) {
 export function getProcessesSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getProcessesSelectList}`, headers);
+    const request = axios.get(`${API.getProcessesSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -766,7 +773,7 @@ export function getProcessesSelectList(callback) {
  */
 export function saveProcessCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCosting, data, headers);
+    const request = axios.post(API.saveProcessCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -797,7 +804,7 @@ export function getCostingProcesses(costingId, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.get(`${API.getCostingProcesses}/${costingId}`, headers);
+    const request = axios.get(`${API.getCostingProcesses}/${costingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -826,7 +833,7 @@ export function getCostingProcesses(costingId, callback) {
  */
 export function getCostingBOP(costingId, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getCostingBOP}/${costingId}`, headers);
+    const request = axios.get(`${API.getCostingBOP}/${costingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -849,7 +856,7 @@ export function getCostingBOP(costingId, callback) {
  */
 export function saveBOPCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveBOPCosting, data, headers);
+    const request = axios.post(API.saveBOPCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -871,7 +878,7 @@ export function saveBOPCosting(data, callback) {
 export function getOtherOpsSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOtherOpsSelectList}`, headers);
+    const request = axios.get(`${API.getOtherOpsSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -896,7 +903,7 @@ export function getOtherOpsSelectList(callback) {
  */
 export function saveOtherOpsCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveOtherOpsCosting, data, headers);
+    const request = axios.post(API.saveOtherOpsCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -940,7 +947,7 @@ export function setCostingDetailRowData(data, selectedIndex) {
 export function updateCostingOtherOperation(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateCostingOtherOperation}`, requestData, headers)
+    axios.put(`${API.updateCostingOtherOperation}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_COSTING_OTHER_OPERATION_SUCCESS });
         callback(response);
@@ -957,7 +964,7 @@ export function updateCostingOtherOperation(requestData, callback) {
  */
 export function saveCostingAsDraft(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingAsDraft, data, headers);
+    const request = axios.post(API.saveCostingAsDraft, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -979,53 +986,6 @@ export function saveCostingAsDraft(data, callback) {
   };
 }
 
-/**
- * @method getRawMaterialCalculationByTechnology
- * @description Get raw materical calculator data by technology
-*/
-
-export function getRawMaterialCalculationByTechnology(costingId, rawMaterialId, weightCalculationId, technologyId, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}`
-    const request = axios.get(`${API.getRawMaterialCalculationByTechnology}?${queryParams}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_RAW_MATERIAL_CALCI_INFO,
-          payload: response.data.Data,
-        });
-        callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-
-export function saveRawMaterialCalciData(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalciData, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        // dispatch({
-        //   type: SAVE_COSTING_AS_DRAFT_SUCCESS,
-        // });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({
-        type: API_FAILURE
-      });
-      apiErrors(error);
-    });
-  }
-}
 
 /**
  * @method getCostingBulkUploadList
@@ -1037,7 +997,7 @@ export function getCostingBulkUploadList(callback) {
   return (dispatch) => {
 
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
+    const request = axios.get(`${API.getCostingBulkUploadList}`, config());
     request.then((response) => {
 
       if (response.data.Result) {
@@ -1059,7 +1019,7 @@ export function getCostingBulkUploadList(callback) {
 export function generateReport(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.generateReport}`, headers);
+    const request = axios.get(`${API.generateReport}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1074,7 +1034,7 @@ export function generateReport(callback) {
 
 export function getErrorFile(costingId, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getErrorFile}/${costingId}`, headers);
+    const request = axios.get(`${API.getErrorFile}/${costingId}`, config());
     request.then((response) => {
       if (response.status.Result) {
         // dispatch()
@@ -1094,7 +1054,7 @@ export function getErrorFile(costingId, callback) {
 export function bulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadCosting, data, headers);
+    const request = axios.post(API.uploadCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1115,7 +1075,7 @@ export function bulkUploadCosting(data, callback) {
 
 export function sendForApprovalFromBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.put(API.sendStatusForApproval, data, headers);
+    const request = axios.put(API.sendStatusForApproval, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1134,7 +1094,7 @@ export function sendForApprovalFromBulkUpload(data, callback) {
  */
 export function saveProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCostCalculation, data, headers)
+    const request = axios.post(API.saveProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1152,7 +1112,7 @@ export function saveProcessCostCalculationData(data, callback) {
 export function saveMachiningProcessCostCalculationData(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.saveMachiningProcessCostCalculation, data, headers)
+    const request = axios.post(API.saveMachiningProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1173,7 +1133,7 @@ export function saveMachiningProcessCostCalculationData(data, callback) {
  */
 export function saveDefaultProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveDefaultProcessCostCalculation, data, headers)
+    const request = axios.post(API.saveDefaultProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1188,15 +1148,15 @@ export function saveDefaultProcessCostCalculationData(data, callback) {
 }
 
 /**
- * @method getRawMaterialCalculationByTechnology
- * @description Get raw materical calculator data by technology
+ * @method getProcessCalculation
+ * @description Get Process Calculation
 */
 
 export function getProcessCalculation(costingId, processId, processCalculationId, technologyId, processType, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const queryParams = `costingId=${costingId}&processId=${processId}&processCalculationId=${processCalculationId ? processCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}&processType=${processType}`
-    const request = axios.get(`${API.getProcessCalculation}?${queryParams}`, headers);
+    const request = axios.get(`${API.getProcessCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         // dispatch({
@@ -1217,13 +1177,13 @@ export function getProcessCalculation(costingId, processId, processCalculationId
 
 
 
-export function getProcessMachiningCalculation(costingId, processId, processCalculationId, callback) {
+export function getProcessMachiningCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
-    const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, headers);
+    const queryParams = `&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, config());
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
         // dispatch({
         //   type: GET_RAW_MATERIAL_CALCI_INFO,
         //   payload: response.data.Data,
@@ -1241,14 +1201,13 @@ export function getProcessMachiningCalculation(costingId, processId, processCalc
 }
 
 
-export function getProcessDefaultCalculation(costingId, processId, processCalculationId, callback) {
+export function getProcessDefaultCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
-    const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, headers);
+    const queryParams = `weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, config());
     request.then((response) => {
-      if (response.data.Result) {
-
+      if (response.data.Result || response.status === 204) {
         callback(response);
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -1269,7 +1228,7 @@ export function getProcessDefaultCalculation(costingId, processId, processCalcul
 export function plasticBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadPlasticCosting, data, headers);
+    const request = axios.post(API.uploadPlasticCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1284,7 +1243,7 @@ export function plasticBulkUploadCosting(data, callback) {
 export function machiningBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadMachiningCosting, data, headers);
+    const request = axios.post(API.uploadMachiningCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);

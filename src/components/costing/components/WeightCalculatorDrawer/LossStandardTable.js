@@ -42,7 +42,6 @@ function LossStandardTable(props) {
   const [oldNetWeight, setOldNetWeight] = useState('')
   const [netWeight, setNetWeight] = useState(props.netWeight !== '' ? props.netWeight : 0)
   const [burningWeight, setBurningWeight] = useState(props.burningValue !== '' ? props.burningValue : '')
-  const [scaleandBiletLossType, setScaleandBiletLossType] = useState(false)
   const [barCuttingAllowanceLossType, setBarCuttingAllowanceLossType] = useState(false)
   const [flashLossType, setFlashLossType] = useState(false)
   const [useFormula, setUseformula] = useState(false)
@@ -61,7 +60,6 @@ function LossStandardTable(props) {
       dispatch(setForgingCalculatorMachiningStockSection(false))
     }
     else {
-
       dispatch(setForgingCalculatorMachiningStockSection(true))
     }
   }, [])
@@ -452,7 +450,7 @@ function LossStandardTable(props) {
 
   return (
     <Fragment>
-      <Row className={'mb-3'}>
+      <Row className={`mb-3 ${isFerrous ? 'mx-0' : ''}`}>
         <Col md="12">
           <div className="header-title">
             <h5>{'Loss:'}</h5>
@@ -462,7 +460,7 @@ function LossStandardTable(props) {
           <SearchableSelectHookForm
             label={`Type of Loss`}
             name={'LossOfType'}
-            placeholder={'-Select-'}
+            placeholder={'Select'}
             Controller={Controller}
             control={control}
             register={register}
@@ -476,39 +474,6 @@ function LossStandardTable(props) {
             disabled={props.CostingViewMode || disableLossType || disableAll}
           />
         </Col>
-
-        {scaleandBiletLossType &&
-          <>
-            <Col md="2">
-              <NumberFieldHookForm
-                label={`Loss (%)`}
-                name={'LossPercentage'}
-                Controller={Controller}
-                control={control}
-                register={register}
-                mandatory={false}
-                rules={{
-                  required: false,
-                  pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
-                  },
-                  max: {
-                    value: 100,
-                    message: 'Percentage cannot be greater than 100'
-                  },
-                  // maxLength: 4,
-                }}
-                handleChange={() => { }}
-                defaultValue={''}
-                className=""
-                customClassName={'withBorder'}
-                errors={errors.LossPercentage}
-                disabled={props.CostingViewMode || disableAll}
-              />
-            </Col>
-          </>}
 
         {barCuttingAllowanceLossType &&
           <>
@@ -524,7 +489,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -549,7 +514,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -567,7 +532,7 @@ function LossStandardTable(props) {
               <SearchableSelectHookForm
                 label={`Flash loss`}
                 name={'FlashLoss'}
-                placeholder={'-Select-'}
+                placeholder={'Select'}
                 Controller={Controller}
                 control={control}
                 register={register}
@@ -596,7 +561,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -619,7 +584,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -642,7 +607,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -703,7 +668,7 @@ function LossStandardTable(props) {
           />
         </Col>
         <Col md="3" className="pr-0">
-          <div>
+          <div className='mt5'>
             {isEdit ? (
               <>
                 <button

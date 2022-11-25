@@ -4,30 +4,33 @@ import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
-import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
-import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
+import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
-import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { REASON_ID } from '../../../../config/constants'
-import PushSection from '../../../common/PushSection'
+// import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL } from "../../../../config/constants";
+import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
+import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import PushSection from '../../../common/PushSection'
+import LoaderCustom from '../../../common/LoaderCustom'
+import TooltipCustom from '../../../common/Tooltip'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  const { isApprovalisting } = props
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, setError } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -37,9 +40,9 @@ const SendForApproval = (props) => {
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const SAPData = useSelector(state => state.approval.SAPObj)
 
+
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partInfo = useSelector((state) => state.costing.partInfo)
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -47,26 +50,47 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
-  const [isRegularize, setIsReggularize] = useState(false);
+  const [isRegularize, setIsRegularize] = useState(false);
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [initialFiles, setInitialFiles] = useState([]);
+  const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
+  const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [effectiveDate, setEffectiveDate] = useState('')
+  const [dataToChange, setDataToChange] = useState([]);
+  const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
     let obj = {}
-    obj.TechnologyId = partInfo.TechnologyId
+    let regularizationObj = {}
+    obj.TechnologyId = props.technologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
+    let drawerDataObj = {}
+    drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
+    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
+    drawerDataObj.Technology = props.technologyId
+    setCostingApprovalDrawerData(drawerDataObj);
 
+    regularizationObj.technologyId = viewApprovalData[0].technologyId
+    regularizationObj.partId = viewApprovalData[0].partId
+    regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
+    regularizationObj.vendorId = viewApprovalData[0].vendorId
+
+    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res.data.Data
+        setDataToChange(Data)
+      }
+    }))
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -83,32 +107,35 @@ const SendForApproval = (props) => {
           setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
           setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
 
-          let tempDropdownList = []
-
-          dispatch(
-            getAllApprovalUserFilterByDepartment({
-              LoggedInUserId: userData.LoggedInUserId,
-              DepartmentId: departObj[0]?.Value,
-              TechnologyId: partNo.technologyId,
-              ReasonId: 0 // key only for minda
-            }, (res) => {
-              if (res.data.DataList.length === 1) {
-                setShowValidation(true)
-                return false
-              }
-              const Data = res.data.DataList[1]
-
-              setApprover(Data.Text)
-              setSelectedApprover(Data.Value)
-              setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-              setValue('approver', { label: Data.Text, value: Data.Value })
-            },
-            ),
-          )
+          let requestObject = {
+            LoggedInUserId: userData.LoggedInUserId,
+            DepartmentId: departObj[0]?.Value,
+            TechnologyId: props.technologyId,
+            ReasonId: 0 // key only for minda
+          }
+          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+            let tempDropdownList = []
+            if (res.data.DataList.length === 1) {
+              setShowValidation(true)
+              return false
+            }
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+              return null
+            })
+            const Data = res.data.DataList[1]
+            setApprover(Data.Text)
+            setSelectedApprover(Data.Value)
+            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            setValue('approver', { label: Data.Text, value: Data.Value })
+            setApprovalDropDown(tempDropdownList)
+          }))
         }))
       }
 
     }))
+
   }, [])
   /**
    * @method renderDropdownListing
@@ -148,30 +175,22 @@ const SendForApproval = (props) => {
       setValue('approver', '')
       setSelectedApprover('')
       setShowValidation(false)
-      dispatch(
-        getAllApprovalUserFilterByDepartment({
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: newValue.value,
-          TechnologyId: partNo.technologyId,
-        }, (res) => {
-          if (res.data.DataList.length <= 1) {
-            setShowValidation(true)
-          }
-          res.data.DataList &&
-            res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({
-                label: item.Text,
-                value: item.Value,
-                levelId: item.LevelId,
-                levelName: item.LevelName
-              })
-              return null
-            })
-          setApprovalDropDown(tempDropdownList)
-        },
-        ),
-      )
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: newValue.value,
+        TechnologyId: props.technologyId,
+      }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        if (res.data.DataList.length <= 1) {
+          setShowValidation(true)
+        }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          return null
+        })
+        setApprovalDropDown(tempDropdownList)
+      }))
       setSelectedDepartment(newValue)
     } else {
       setSelectedDepartment('')
@@ -196,19 +215,7 @@ const SendForApproval = (props) => {
     dispatch(setCostingApprovalData(viewDataTemp))
   }
 
-  /**
-   * @method handleECNNoChange
-   * @param {*} data
-   * @param {*} index
-   * @description This method is used to handle change in ECN number for every costing
-   */
-  const handleECNNoChange = (data, index) => {
-    let viewDataTemp = viewApprovalData
-    let temp = viewApprovalData[index]
-    temp.ecNo = data
-    viewDataTemp[index] = temp
-    dispatch(setCostingApprovalData(viewDataTemp))
-  }
+
 
   /**
    * @method handleEffectiveDateChange
@@ -231,39 +238,36 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(
-      getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
-        if (res.data.Result === true || res.status === 202) {
-          let approvedQtyArr = res.data.Data.VolumeApprovedDetails
-          let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
-          let actualQty = 0
-          let totalBudgetedQty = 0
-          let actualRemQty = 0
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
+      if (res.data.Result === true || res.status === 202) {
+        let approvedQtyArr = res.data.Data.VolumeApprovedDetails
+        let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
+        let actualQty = 0
+        let totalBudgetedQty = 0
+        let actualRemQty = 0
+        approvedQtyArr.map((data) => {
+          if (data.Sequence < sequence) {
+            actualQty += parseInt(data.ApprovedQuantity)
+          } else if (data.Sequence >= sequence) {
+            actualRemQty += parseInt(data.ApprovedQuantity)
+          }
+          return null
+        })
+        budgetedQtyArr.map((data) => (
 
-          approvedQtyArr.map((data) => {
-            if (data.Sequence < sequence) {
-              // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
-              //   actualQty += parseInt(data.ApprovedQuantity)
-              // }
-              actualQty += parseInt(data.ApprovedQuantity)
-            } else if (data.Sequence >= sequence) {
-              actualRemQty += parseInt(data.ApprovedQuantity)
-            }
-          })
-          budgetedQtyArr.map((data) => {
-            // if (data.Sequence >= sequence) {
-            totalBudgetedQty += parseInt(data.BudgetedQuantity)
-            // }
-          })
-          temp.consumptionQty = checkForNull(actualQty)
-          temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
-          temp.annualImpact = temp.variance != '' ? totalBudgetedQty * temp.variance : 0
-          temp.yearImpact = temp.variance != '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
-          viewDataTemp[index] = temp
-          dispatch(setCostingApprovalData(viewDataTemp))
-        }
+          // if (data.Sequence >= sequence) {
+          totalBudgetedQty += parseInt(data.BudgetedQuantity)
+          // }
+        ))
+        temp.consumptionQty = checkForNull(actualQty)
+        temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
+        temp.annualImpact = temp.variance !== '' ? totalBudgetedQty * temp.variance : 0
+        temp.yearImpact = temp.variance !== '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
+        viewDataTemp[index] = temp
+        dispatch(setCostingApprovalData(viewDataTemp))
+      }
 
-      }),
+    }),
     )
   }
 
@@ -282,12 +286,17 @@ const SendForApproval = (props) => {
   const onSubmit = debounce(handleSubmit((data) => {
     let count = 0
     viewApprovalData.map((item) => {
-      if (item.effectiveDate == '') {
+      if (item.effectiveDate === '') {
         count = count + 1
       }
+      return null
     })
     if (Number(count) !== 0) {
       Toaster.warning('Please select effective date for all the costing')
+      return false
+    }
+    if (isRegularize && files?.length === 0) {
+      Toaster.warning('Please upload file to send for approval.')
       return false
     }
     let obj = {
@@ -304,65 +313,28 @@ const SendForApproval = (props) => {
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
+      // Quantity: getValues('Quantity'),
+      // Attachment: files,
+      // IsLimitCrossed: IsLimitCrossed
     }
 
     let temp = []
-    let tempObj = {}
-    let plantCount = 0
-    let venderCount = 0
 
-    viewApprovalData.forEach((element, index, arr) => {
-      if (element.plantId !== '-') {
-        if (index > 0) {
-          if (element.plantId === arr[index - 1].plantId) {
-            plantCount = plantCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-      else if (element.vendorId !== '-') {
-        if (index > 0) {
-
-          if (element.vendorId === arr[index - 1].vendorId) {
-            venderCount = venderCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-    });
-
-    if (viewApprovalData.length > 1) {
-
-      if (plantCount > 0) {
-        Toaster.warning('Costings with same plant cannot be sent for approval')
-        return false
-      }
-      if (venderCount > 0) {
-        Toaster.warning('Costings with same vendor cannot be sent for approval')
-        return false
-      }
-    }
     setIsDisable(true)
 
     viewApprovalData.map((data) => {
       // const { netPo, quantity } = getPOPriceAfterDecimal(SAPData.DecimalOption.value, data.revisedPrice)
       let tempObj = {}
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-      tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
+      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
       tempObj.PlantId =
-        data.typeOfCosting == 0 ? data.plantId : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantId : ''
       tempObj.PlantNumber =
-        data.typeOfCosting == 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
       tempObj.PlantName =
-        data.typeOfCosting == 0 ? data.plantName : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantName : ''
       tempObj.PlantCode =
-        data.typeOfCosting == 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -371,10 +343,10 @@ const SendForApproval = (props) => {
       // tempObj.ECNNumber = 1;
       tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD')
       tempObj.RevisionNumber = partNo.revisionNumber
-      tempObj.PartName = partNo.partName
+      tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-      tempObj.PartNumber = partNo.partNumber //label
-      tempObj.PartId = partNo.partId
+      tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
+      tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
       // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
       tempObj.FinancialYear = financialYear
       tempObj.OldPOPrice = data.oldPrice
@@ -389,41 +361,45 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        data.typeOfCosting == 1 ? data.vendorId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorId : ''
       tempObj.VendorCode =
-        data.typeOfCosting == 1 ? data.vendorCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        data.typeOfCosting == 1 ? data.vendorePlantId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        data.typeOfCosting == 1 ? data.vendorPlantCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        data.typeOfCosting == 1 ? data.vendorName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorName : ''
       tempObj.VendorPlantName =
-        data.typeOfCosting == 1 ? data.vendorPlantName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
+      tempObj.NCCPartQuantity = getValues('Quantity')
+      tempObj.Attachment = files
+      tempObj.IsRegularized = isRegularize
+      tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+
       temp.push(tempObj)
+      return null
     })
 
     obj.CostingsList = temp
-    obj.PurchasingGroup = SAPData.PurchasingGroup?.label
     obj.MaterialGroup = SAPData.MaterialGroup?.label
     obj.DecimalOption = SAPData.DecimalOption?.value
+
 
     // debounce_fun()
     // 
     // props.closeDrawer()
-    dispatch(
-      sendForApprovalBySender(obj, (res) => {
-        setIsDisable(false)
-        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-        props.closeDrawer('', 'Submit')
-        dispatch(setCostingApprovalData([]))
-        dispatch(setCostingViewData([]))
-      }),
-    )
+    dispatch(sendForApprovalBySender(obj, (res) => {
+      setIsDisable(false)
+      Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+      props.closeDrawer('', 'Submit')
+      dispatch(setCostingApprovalData([]))
+      dispatch(setCostingViewData([]))
+    }))
   }), 500)
 
 
@@ -434,13 +410,54 @@ const SendForApproval = (props) => {
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
 
+  const checkQuantityLimitValue = (value, isRegularizeValue) => {
+    let limit;
+    if (dataToChange?.QuantityUsed === 0) {
+      limit = dataToChange?.RegularizationLimit + calculatePercentageValue(dataToChange?.RegularizationLimit, dataToChange?.MaxDeviationLimitPercent)
+    } else {
+      limit = dataToChange?.QuantityUsed
+    }
+
+    if (!isRegularizeValue) {
+
+      if ((value <= limit)) {
+
+        if ((value >= dataToChange?.RegularizationLimit) && (value <= limit)) {
+          setIsLimitCrossed(true)
+        } else {
+          setIsLimitCrossed(false)
+        }
+      } else {
+        setTimeout(() => {
+          setValue('Quantity', 0)
+        }, 200);
+        setIsLimitCrossed(false)
+        Toaster.warning('Quantity should be less than Max Deviation Limit')
+        return false
+      }
+
+
+    } else {
+      if ((value >= dataToChange?.RegularizationLimit)) {
+        setIsLimitCrossed(true)
+      } else {
+        setIsLimitCrossed(false)
+      }
+    }
+  }
+
   const handleChangeQuantity = (e) => {
-    let temp = []
+    checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
 
-  useEffect(() => { }, [viewApprovalData])
+  useEffect(() => {
+    viewApprovalData && viewApprovalData.map(item => setEffectiveDate(item.effectiveDate !== "" ? DayTime(item.effectiveDate).format('DD/MM/YYYY') : ""))
+  }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
+    if (isDisable) {
+      return false
+    }
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -451,12 +468,9 @@ const SendForApproval = (props) => {
     props.closeDrawer('', 'Cancel')
   }
 
-  // specify upload params and url for your files
-  const getUploadParams = ({ file, meta }) => {
-    return { url: "https://httpbin.org/post" };
-  };
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    setAttachmentLoader(true)
     if (status === "removed") {
       const removedFileName = file.name;
       let tempArr =
@@ -469,27 +483,28 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
-      dispatch(
-        fileUploadCosting(data, (res) => {
-          let Data = res.data[0];
-          files.push(Data);
-          setFiles(files);
-          setIsOpen(!IsOpen);
-        })
-      );
+      dispatch(fileUploadCosting(data, (res) => {
+        let Data = res.data[0];
+        files.push(Data);
+        setFiles(files);
+        setIsOpen(!IsOpen);
+        setAttachmentLoader(false)
+      }));
     }
 
     if (status === "rejected_file_type") {
       Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
     }
   };
-
+  const viewImpactDrawer = () => {
+    setIsVerifyImpactDrawer(true)
+  }
   const deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
 
       // dispatch(
       //   fileDeleteCosting(deleteData, (res) => {
-      //     Toaster.success("File has been deleted successfully.");
+      //     Toaster.success("File deleted successfully.");
       //     let tempArr = files && files.filter((item) => item.FileId !== FileId);
       //     setFiles(tempArr);
       //     setIsOpen(!IsOpen);
@@ -500,6 +515,7 @@ const SendForApproval = (props) => {
       let tempArr =
         files && files.filter((item) => item.FileName !== OriginalFileName);
       setFiles(tempArr);
+      setAttachmentLoader(false)
       setIsOpen(!IsOpen);
     }
   };
@@ -518,12 +534,21 @@ const SendForApproval = (props) => {
     );
   };
   const checkboxHandler = () => {
-    Toaster.warning("Please upload files");
-    setIsReggularize(!isRegularize);
+    if (isRegularize === false) {
+      Toaster.warning("Please upload files");
+    }
+    setIsRegularize(!isRegularize);
+    checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
 
   const reasonField = 'reasonField'
   const dateField = 'dateField'
+
+  const verifyImpactDrawer = (e = '', type) => {
+    if (type === 'cancel') {
+      setIsVerifyImpactDrawer(false);
+    }
+  }
 
   return (
     <Fragment>
@@ -538,8 +563,10 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
+
                 <div
                   onClick={(e) => toggleDrawer(e)}
+                  disabled={isDisable}
                   className={"close-button right"}
                 ></div>
               </Col>
@@ -552,15 +579,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : `${data.vendorName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
-                          {`Part No.:`}{" "}
-                          <span className="grey-text">{`${partNo.partNumber}`}</span>
+                          {`Part No:`}{" "}
+                          <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `Plant Code:` : `Vendor Code`}{" "}
+                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
@@ -577,7 +604,7 @@ const SendForApproval = (props) => {
                               label={"Reason"}
                               // name={"reason"}
                               name={`${reasonField}reason[${index}]`}
-                              placeholder={"-Select-"}
+                              placeholder={"Select"}
                               Controller={Controller}
                               control={control}
                               rules={{ required: true }}
@@ -593,27 +620,8 @@ const SendForApproval = (props) => {
 
                             />
                           </Col>
-                          {/* <Col md="4">
-                            <TextFieldHookForm
-                              label="ECN Ref No"
-                              name={"encNumber"}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              rules={{ required: false }}
-                              mandatory={false}
-                              handleChange={(e) => {
-                                handleECNNoChange(e.target.value, index);
-                              }}
-                              defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
-                              className=""
-                              customClassName={"withBorder"}
-                              errors={errors.encNumber}
-                            // disabled={true}
-                            />
-                          </Col> */}
+
                           <Col md="4">
-                            {/* <div className="form-group"> */}
                             <div className="d-flex">
                               <div className="inputbox date-section">
                                 {
@@ -693,42 +701,45 @@ const SendForApproval = (props) => {
                             </div>
                           </Col>
 
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Consumed Quantity</label>
-                              <div className="d-flex align-items-center">
-                                <label className="form-control bg-grey input-form-control">
-                                  {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
-                                </label>
-                                {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                          {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Consumed Quantity</label>
+                                <div className="d-flex align-items-center">
+                                  <label className="form-control bg-grey input-form-control">
+                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
+                                  </label>
+                                  {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                                </div>
                               </div>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Remaining Budgeted Quantity</label>
-                              <label className="form-control bg-grey input-form-control">
-                                {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Annual Impact</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Remaining Budgeted Quantity</label>
+                                <label className="form-control bg-grey input-form-control">
+                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                                <label>Annual Impact</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
 
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Impact for the Year</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Impact for the Year</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+                          </>}
                         </Row>
                       </div>
                     </div>
@@ -765,7 +776,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                             name={"dept"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: false }}
@@ -782,7 +793,7 @@ const SendForApproval = (props) => {
                           <SearchableSelectHookForm
                             label={"Approver"}
                             name={"approver"}
-                            placeholder={"-Select-"}
+                            placeholder={"Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: false }}
@@ -799,7 +810,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {false && <><Col md="12">
+                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -807,15 +818,16 @@ const SendForApproval = (props) => {
                             control={control}
                             register={register}
                             mandatory={true}
+                            rules={{ required: true }}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
                             handleChange={handleChangeQuantity}
-                            //errors={errors.remarks}
+                            errors={errors.Quantity}
                             disabled={false}
                           />
                         </Col>
-                          <Col md="12" className="py-3 ">
+                          <Col md="6" className="d-flex align-items-center mb-2">
                             <span className="d-inline-block">
                               <label
                                 className={`custom-checkbox mb-0`}
@@ -871,22 +883,21 @@ const SendForApproval = (props) => {
                     </Row>
                 }
                 {isRegularize ? (
-                  <Row className="mb-4">
-                    <Col md="3" className="height152-label">
+                  <Row className="mb-4 mx-0">
+                    <Col md="6" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
+                          Maximum file upload limit reached.
                         </div>
                       ) : (
                         <Dropzone
-                          getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           mandatory={true}
                           //onSubmit={this.handleSubmit}
                           accept="*"
-                          initialFiles={initialFiles}
+                          initialFiles={[]}
                           maxFiles={4}
                           maxSizeBytes={2000000000}
                           inputContent={(files, extra) =>
@@ -917,15 +928,16 @@ const SendForApproval = (props) => {
                         />
                       )}
                     </Col>
-                    <Col md="3">
+                    <Col md="6" className='pr-0'>
                       <div className={"attachment-wrapper"}>
+                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                         {files &&
                           files.map((f) => {
                             const withOutTild = f.FileURL.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
                             return (
                               <div className={"attachment images"}>
-                                <a href={fileURL} target="_blank">
+                                <a href={fileURL} target="_blank" rel="noreferrer">
                                   {f.OriginalFileName}
                                 </a>
                                 <img
@@ -943,6 +955,11 @@ const SendForApproval = (props) => {
                     </Col>
                   </Row>
                 ) : null}
+                <Row>
+                  <Col md="12" className='text-right my-n1'>
+                    <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
+                  </Col>
+                </Row>
                 <Row className="mb-4">
                   <Col
                     md="12"
@@ -957,12 +974,16 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-
+                    {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                      <div className={"save-icon"}></div>
+                      {"Verify Impact"}
+                    </button>
+                    }
                     <button
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={isDisable}
+                      disabled={(isDisable || isFinalApproverShow)}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>
@@ -972,9 +993,24 @@ const SendForApproval = (props) => {
                 </Row>
               </form>
             </div>
+            {isVerifyImpactDrawer &&
+              <VerifyImpactDrawer
+                isOpen={isVerifyImpactDrawer}
+                approvalData={[]}
+                costingDrawer={true}
+                anchor={'bottom'}
+                closeDrawer={verifyImpactDrawer}
+                isSimulation={false}
+                amendmentDetails={costingApprovalDrawerData}
+                vendorIdState={viewApprovalData[0].vendorId}
+                EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
+                TypeOfCosting={viewApprovalData[0].typeOfCosting}
+              />}
           </div>
         </div>
+
       </Drawer>
+
     </Fragment>
   );
 }

@@ -2,18 +2,23 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import 'react-input-range/lib/css/index.css'
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import _ from 'lodash'
-import { checkForDecimalAndNull } from '../../../helper';
+import { checkForDecimalAndNull, formViewData } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
+import { PaginationWrapper } from '../../common/commonPagination';
+import WarningMessage from '../../common/WarningMessage';
+import { getComparisionSimulationData } from '../actions/Simulation';
+import { setCostingViewData } from '../../costing/actions/Costing';
+import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
+import { Link } from 'react-scroll';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -21,28 +26,26 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer } = props;
+    const { impactType, isImpactDrawer, DisplayCompareCosting } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
-    const [loader, setloader] = useState(false);
-    const [showTableData, setShowTableData] = useState(false);
-    const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
-    const dispatch = useDispatch();
+    const [showViewAssembly, setShowViewAssembly] = useState(false)
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { initialConfiguration } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
 
-    useEffect(() => {
-        setloader(true)
-        if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
-            let requestData = []
-            let isAssemblyInDraft = false
+    // useEffect(() => {
+    //     setloader(true)
+    //     if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
+    //         let requestData = []
+    //         let isAssemblyInDraft = false
 
-        }
-        setloader(false)
+    //     }
+    //     setloader(false)
 
-    }, [dataForAssemblyImpact])
+    // }, [dataForAssemblyImpact])
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -53,8 +56,7 @@ function AssemblyWiseImpactSummary(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const resetState = () => {
@@ -77,22 +79,33 @@ function AssemblyWiseImpactSummary(props) {
     const onBtExport = () => {
         let tempArr = []
         tempArr = simulationAssemblyListSummary
-
         return returnExcelColumn(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
     };
 
 
     const returnExcelColumn = (data = [], TempData) => {
-
-
         return (
-
             <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
+    const closeAssemblyDrawer = () => {
+        setShowViewAssembly(false)
+    }
 
+    const viewCosting = (data, row) => {
+        let obj = {
+            simulationId: row?.SimulationId,
+            costingId: row?.CostingId
+        }
+        dispatch(getComparisionSimulationData(obj, res => {
+            const Data = res.data.Data
+            const obj1 = formViewData(Data.OldCosting)
+            dispatch(setCostingViewData(obj1))
+            setShowViewAssembly(true)
+        }))
+    }
 
     /**
 * @method hyphenFormatter
@@ -110,37 +123,48 @@ function AssemblyWiseImpactSummary(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
     }
 
+
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                <Link to="compare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className={`${isImpactDrawer ? 'View' : 'Balance'}`} title='View' type={'button'} onClick={() => { isImpactDrawer ? viewCosting(cell, row) : DisplayCompareCosting(cell, row) }} /></Link>
+            </>
+        )
+    }
+
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
-        costFormatter: costFormatter
+        costFormatter: costFormatter,
+        buttonFormatter: buttonFormatter
     };
 
     return (
         <div className={`ag-grid-react `}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
-                <Col className="mb-3">
-                    <div className="ag-grid-header">
+                <Col>
+                    <div className="ag-grid-header assembly-wise-impact-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
                         <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
-                            <button type="button" className={'user-btn mr5 ml-2'}><div className="download mr-0" title="Download"></div>
+                            <button type="button" className={'user-btn'}><div className="download mr-0" title="Download"></div>
                                 {/* DOWNLOAD */}
                             </button>}>
                             {onBtExport()}
                         </ExcelFile>
+                        <WarningMessage dClass="mt-2" message={"Some of the parts are present at different BOM levels (child part, sub-assemblies)."} />
                     </div>
-                    <div>
-                    </div>
+
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    {(loader) && <LoaderCustom />}
                     <div className={`ag-grid-wrapper height-width-wrapper ${simulationAssemblyListSummary && simulationAssemblyListSummary?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div
                             className="ag-theme-material"
@@ -152,7 +176,7 @@ function AssemblyWiseImpactSummary(props) {
                                 domLayout='autoHeight'
                                 rowData={simulationAssemblyListSummary}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={defaultPageSize}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -170,18 +194,24 @@ function AssemblyWiseImpactSummary(props) {
                                 <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </Col>
             </Row>
+            {showViewAssembly &&
+                <CostingDetailSimulationDrawer
+                    isOpen={showViewAssembly}
+                    closeDrawer={closeAssemblyDrawer}
+                    anchor={"right"}
+                    isReport={true}
+                    isSimulation={true}
+                    simulationDrawer={true}
+                    isOldCosting={true}
+                />
+            }
         </div >
     );
 }

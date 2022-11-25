@@ -6,13 +6,13 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
-import BOPApproval from './BOPApproval';
-
 import { BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
+import CommonApproval from '../material-master/CommonApproval';
+import { MESSAGES } from '../../../config/message';
 
 class BOPMaster extends Component {
   constructor(props) {
@@ -28,8 +28,8 @@ class BOPMaster extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
-      DownloadAccessibility: false,
-      isBOPAssociated: false
+      isBOPAssociated: false,
+      stopApiCallOnCancel: false
     }
   }
 
@@ -73,7 +73,8 @@ class BOPMaster extends Component {
   toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
+        activeTab: tab,
+        stopApiCallOnCancel: false
       });
     }
   }
@@ -98,8 +99,11 @@ class BOPMaster extends Component {
   * @method hideForm
   * @description HIDE DOMESTIC AND IMPORT FORMS
   */
-  hideForm = () => {
-    this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {} })
+  hideForm = (type) => {
+    this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {}, stopApiCallOnCancel: false })
+    if (type === 'cancel') {
+      this.setState({ stopApiCallOnCancel: true })
+    }
   }
 
   /**
@@ -132,6 +136,7 @@ class BOPMaster extends Component {
         data={data}
         hideForm={this.hideForm}
         isBOPAssociated={this.state.isBOPAssociated}
+        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
       />
     }
 
@@ -140,6 +145,7 @@ class BOPMaster extends Component {
         data={data}
         hideForm={this.hideForm}
         isBOPAssociated={this.state.isBOPAssociated}
+        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
       />
     }
 
@@ -156,7 +162,8 @@ class BOPMaster extends Component {
 
           <Row>
             <Col>
-              <Nav tabs className="subtabs mt-0">
+              <Nav tabs className="subtabs mt-0 p-relative">
+                {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -215,6 +222,7 @@ class BOPMaster extends Component {
                       DownloadAccessibility={this.state.DownloadAccessibility}
                       isMasterSummaryDrawer={false}
                       selectionForListingMasterAPI='Master'
+                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                     />
                   </TabPane>
                 )}
@@ -230,6 +238,7 @@ class BOPMaster extends Component {
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       selectionForListingMasterAPI='Master'
                     />
                   </TabPane>
@@ -252,11 +261,12 @@ class BOPMaster extends Component {
 
                 {Number(this.state.activeTab) === 4 &&
                   <TabPane tabId="4">
-                    <BOPApproval
+                    <CommonApproval
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      MasterId={BOP_MASTER_ID}
                     />
                   </TabPane>}
 
@@ -274,10 +284,11 @@ class BOPMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, auth }) {
+function mapStateToProps({ boughtOutparts, auth, comman }) {
   const { BOPListing, loading } = boughtOutparts;
   const { leftMenuData, topAndLeftMenuData } = auth;
-  return { BOPListing, leftMenuData, topAndLeftMenuData, loading }
+  const { disabledClass } = comman
+  return { BOPListing, leftMenuData, topAndLeftMenuData, loading, disabledClass }
 }
 
 

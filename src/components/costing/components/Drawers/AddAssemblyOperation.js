@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import Switch from "react-switch";
 import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
@@ -13,6 +12,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingU
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const dispatch = useDispatch()
 
@@ -34,14 +34,6 @@ function AddAssemblyOperation(props) {
   };
 
   /**
-* @method onToolToggle
-* @description TOOL COST TOGGLE
-*/
-  const onToolToggle = () => {
-    setIsOpenTool(!IsOpenTool)
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
@@ -49,21 +41,16 @@ function AddAssemblyOperation(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
-
   /**
   * @method saveData
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
     let stCostingData = findSurfaceTreatmentData(item)
+
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
-
       "CostingDetailId": "00000000-0000-0000-0000-000000000000",
       "PartId": item.PartId,
       "PartNumber": item.PartNumber,
@@ -227,7 +214,7 @@ function AddAssemblyOperation(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  disabled={CostingViewMode}
+                  disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

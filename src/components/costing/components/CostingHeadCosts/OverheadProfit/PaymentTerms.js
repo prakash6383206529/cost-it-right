@@ -1,30 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { EMPTY_GUID } from '../../../../../config/constants';
-import TooltipCustom from '../../../../common/Tooltip';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function PaymentTerms(props) {
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
+    const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     const dispatch = useDispatch()
-
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
-    const [PaymentTermObj, setPaymentTermObj] = useState(PaymentTermDetail)
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
 
     const PaymentTermsFieldValues = useWatch({
@@ -55,7 +53,6 @@ function PaymentTerms(props) {
             setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-                dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
     }, [tempPaymentTermObj, paymentTermsApplicability])
@@ -71,6 +68,7 @@ function PaymentTerms(props) {
         callPaymentTermAPI(value)
 
         dispatch(gridDataAdded(true))
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     /**
@@ -82,33 +80,30 @@ function PaymentTerms(props) {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
 
             const reqParams = {
-                VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor,
-                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+                isVendor: costData.IsVendor,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
 
-            if (costData?.IsVendor && (costData.IsVendor !== null || costData.IsVendor !== undefined)) {
-                dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+            dispatch(getPaymentTermsDataByHeads(reqParams, res => {
 
-                    if (res && res.data && res.data.Result) {
-                        let Data = res.data.Data;
-                        setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-                        setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-                        setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                        checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                        setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-                        setPaymentTermObj(Data)
-                    } else if (res.status === 204) {
-                        setValue('RepaymentPeriodDays', '')
-                        setValue('RepaymentPeriodPercentage', '')
-                        setValue('RepaymentPeriodCost', '')
-                        checkPaymentTermApplicability('')
-                        setPaymentTermsApplicability([])
-                        setPaymentTermObj({})
-                    }
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+                    setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                    setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
+                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                } else if (res.status === 204) {
+                    setValue('RepaymentPeriodDays', '')
+                    setValue('RepaymentPeriodPercentage', '')
+                    setValue('RepaymentPeriodCost', '')
+                    checkPaymentTermApplicability('')
+                    setPaymentTermsApplicability([])
+                }
 
-                }))
-            }
+            }))
 
         } else {
             setPaymentTermsApplicability([])
@@ -289,7 +284,7 @@ function PaymentTerms(props) {
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                handleChange={() => { }}
+                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                 defaultValue={''}
                                 className=""
                                 customClassName={'withBorder'}
@@ -317,7 +312,7 @@ function PaymentTerms(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
@@ -339,7 +334,7 @@ function PaymentTerms(props) {
                                             message: 'Invalid Number.'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

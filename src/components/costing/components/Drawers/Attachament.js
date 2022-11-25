@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux'
 import { FILE_URL } from '../../../../config/constants'
@@ -7,7 +7,6 @@ import { FILE_URL } from '../../../../config/constants'
 function Attachament(props) {
   const { index } = props
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-
   const Data = viewCostingData[index]
   /*
    * @method toggleDrawer

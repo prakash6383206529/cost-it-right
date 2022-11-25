@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, } from 'reactstrap';
 import { Field, reduxForm } from 'redux-form';
-import { Loader } from '../common/Loader';
 
 class ImpactDrawer extends Component {
 
@@ -103,32 +102,10 @@ class ImpactDrawer extends Component {
                                             />
                                         </div>
                                         <div className="text-right mt-0 col-md-12">
-                                            {/* <input
-                                //disabled={pristine || submitting}
-                                onClick={this.cancel}
-                                type="button"
-                                value="Cancel"
-                                className="reset mr15 cancel-btn"
-                              /> */}
-                                            <button
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn">
-                                                <div className={"cancel-icon"}></div> CANCEL</button>
-                                            {/* <input
-                                disabled={isSubmitted ? true : false}
-                                type="submit"
-                                value={isEditFlag ? 'Update' : 'Save'}
-                                className="submit-button mr5 save-btn"
-                              /> */}
-
                                             <button
                                                 type="submit"
                                                 disabled={false}
-                                                className="btn-primary save-btn"
-                                            >
+                                                className="btn-primary save-btn">
                                                 <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
@@ -169,6 +146,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ImpactDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(ImpactDrawer));
 
 // export default ImpactDrawer;

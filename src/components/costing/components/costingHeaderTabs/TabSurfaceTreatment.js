@@ -2,14 +2,15 @@ import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData, setMessageForAssembly } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForNull, userDetails, } from '../../../../helper';
+import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
-import { ViewCostingContext } from '../CostingDetails';
+import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabSurfaceTreatment(props) {
 
@@ -18,19 +19,20 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const vbcExistingCosting = useContext(VbcExistingCosting);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId,
-        SubAsmCostingId: costData.CostingId
+        AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
+        SubAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
-        tempArr.push(res.data.DataList[0]);
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr));
+        tempArr.push(res?.data?.DataList[0]);
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
       }))
     }
   }, [costData]);
@@ -55,9 +57,6 @@ function TabSurfaceTreatment(props) {
       }
     }
   }, [SurfaceTabData]);
-
-
-
 
 
   /**
@@ -138,7 +137,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}, item) => {
-    let arr = formatData(Params, Data, SurfaceTabData, item)
+    formatData(Params, Data, SurfaceTabData, item)
 
 
     // dispatch(setSurfaceData(arr, () => { }))
@@ -187,7 +186,7 @@ function TabSurfaceTreatment(props) {
           formatData(Params, Data, i.CostingChildPartDetails)
         }
 
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
         let partIndex = tempArr && tempArr.findIndex(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
         let partObj = tempArr && tempArr.find(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
@@ -199,14 +198,14 @@ function TabSurfaceTreatment(props) {
         tempArr = Object.assign([...tempArr], { [partIndex]: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
 
 
         const mapArray = (data) => data.map(item => {
 
           let newItem = item
-          let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
           let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
           if (obj && Object.keys(obj).length > 0) {
@@ -257,8 +256,16 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-
-    let arr = setAssembly(params, Children, SurfaceTabData)
+    let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
+    let tempPartNumber = []
+    updatedArr && updatedArr.map((item) => {
+      if (item.IsCostingLocked === true) {
+        tempPartNumber.push(item.PartNumber)
+      }
+      return null
+    })
+    dispatch(setMessageForAssembly(tempPartNumber.join(',')))
+    setAssembly(params, Children, SurfaceTabData)
     // dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -270,11 +277,11 @@ function TabSurfaceTreatment(props) {
     subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(childArray)
     subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(childArray))
     subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostComponent)
-    subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostWithQuantity)
+    subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostWithQuantity)) * subAssemblyToUpdate.Quantity
     subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostPerAssembly)
     subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostPerSubAssembly)
     subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostComponent)
-    subAssemblyToUpdate.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalTransportationCostWithQuantity)
+    subAssemblyToUpdate.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
 
     return subAssemblyToUpdate
   }
@@ -298,7 +305,7 @@ function TabSurfaceTreatment(props) {
   //         i.IsOpenAssemblyDrawer = false;
 
   //         if (i.PartType === 'Assembly') {
-  //           let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  //           let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
   //           let subAssemblyArray = i.CostingChildPartDetails
 
   //           let assemblyObj = tempArrForCosting[0]
@@ -329,7 +336,7 @@ function TabSurfaceTreatment(props) {
   //           i.CostingPartDetails.TransportationCost = getTotalTransportationCost(CostingChildPartDetails, Children.CostingPartDetails.TransportationCost, params);
   //         }
 
-  //         // let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  //         // let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
 
   //         // if (params.BOMLevel !== LEVEL0) {
   //         //   let childArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === params.PartNumber)
@@ -359,18 +366,18 @@ function TabSurfaceTreatment(props) {
 
   const setAssembly = (params, Children, arr) => {
 
+
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
 
-        const { CostingChildPartDetails } = Children;
         // i.CostingChildPartDetails = params.BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, params.BOMLevel) : i.CostingChildPartDetails;
         i.CostingPartDetails = Children.CostingPartDetails;
         i.IsAssemblyPart = true;
         i.IsOpen = params.IsCollapse ? !i.IsOpen : false;
         i.IsOpenAssemblyDrawer = false;
 
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
 
 
         if (params.BOMLevel !== LEVEL0) {
@@ -379,23 +386,25 @@ function TabSurfaceTreatment(props) {
           let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
           subAssemblyToUpdate.CostingChildPartDetails = params.BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, params.BOMLevel) : Children.CostingChildPartDetails
           subAssemblyToUpdate.IsOpen = subAssemblyToUpdate.PartType !== "Part" ? !subAssemblyToUpdate.IsOpen : false
+
           let obj = totalSubAssemblyCalcuation(subAssemblyToUpdate, childArray)
           let totalObj = { ...subAssemblyToUpdate, ...obj }
+
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { [subbAssemblyIndex]: totalObj })
 
           const level = params.BOMLevel
           const useLevel = level.split('L')[1]
           let initialPartNo = subAssemblyToUpdate.AssemblyPartNumber
-          if (useLevel > 1) {
+          if (useLevel > 1 && !CostingViewMode) {
             for (let i = useLevel + 1; i > 0; i--) {
               // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY 
-              let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === initialPartNo)
+              let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
               let objectToUpdate = tempArrForCosting[indexForUpdate]
               if (objectToUpdate.PartType === 'Sub Assembly') {
-                let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.PartNumber === initialPartNo)
+                let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
                 initialPartNo = objectToUpdate.AssemblyPartNumber
-                let subAssemObj = totalSubAssemblyCalcuation(subAssemblyToUpdate, tempArr)
+                let subAssemObj = totalSubAssemblyCalcuation(objectToUpdate, tempArr)
                 tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
 
               }
@@ -407,26 +416,30 @@ function TabSurfaceTreatment(props) {
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === assemblyObj.PartNumber && item.BOMLevel !== LEVEL0)
 
         assemblyObj.CostingChildPartDetails = subAssemblyArray
-        assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = surfaceCostSubAssembly(subAssemblyArray)
-        assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(surfaceCostPart(subAssemblyArray))
-        assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
-        assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(subAssemblyArray)
-        assemblyObj.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(subAssemblyArray))
-        assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
-        assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
-        assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly)
-        assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
-        assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
-        assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+        if (!CostingViewMode) {
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = surfaceCostSubAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(surfaceCostPart(subAssemblyArray))
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
+          assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(subAssemblyArray))
+          assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+          assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+        }
         assemblyObj.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj.IsOpen
-        tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
+
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         const mapArray = (data) => data.map(item => {
 
           let newItem = item
-          let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
+
           let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
           if (obj && Object.keys(obj).length > 0) {
@@ -451,16 +464,16 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(obj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent)
           }
 
-          if (newItem.CostingChildPartDetails.length > 0) {
+          if (item.CostingChildPartDetails.length > 0) {
             mapArray(newItem.CostingChildPartDetails)
           }
           return newItem
         })
 
-        const updatedArr = mapArray(SurfaceTabData)
+        const updatedArr1 = mapArray(SurfaceTabData)
 
 
-        dispatch(setSurfaceData(updatedArr, () => { }))
+        dispatch(setSurfaceData(updatedArr1, () => { }))
         return i;
       });
 
@@ -483,29 +496,6 @@ function TabSurfaceTreatment(props) {
       return i;
     });
     return tempArr;
-  }
-
-  const totalSurfaceTreatmentCost = (arr, type) => {
-    const total = arr && arr.reduce((accummlator, item) => {
-      if (type === 'surface') {
-        return accummlator + checkForNull(item.CostingPartDetails.SurfaceTreatmentCost)
-      } else {
-        return accummlator + checkForNull(item.CostingPartDetails.TransportationCost)
-      }
-    }, 0)
-    return total
-  }
-
-  const assemblyTotalSurfaceTransportCost = (arr) => {
-    let tempArr = []
-    tempArr = arr && arr.map((i) => {
-      i.CostingPartDetails.SurfaceTreatmentCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails, 'surface')
-      i.CostingPartDetails.TransportationCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails, 'transport')
-      i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(i.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(i.CostingPartDetails.TransportationCost)
-
-      return i
-    })
-    return tempArr
   }
 
   /**
@@ -556,7 +546,7 @@ function TabSurfaceTreatment(props) {
         } else {
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
         }
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
 
 
         let partObj = tempArr[0]
@@ -564,11 +554,11 @@ function TabSurfaceTreatment(props) {
         partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i.CostingPartDetails.TransportationCost);
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
-        tempArr = Object.assign([...tempArr], { [0]: partObj })
+        tempArr = Object.assign([...tempArr], { 0: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
 
         return i;
       });
@@ -663,7 +653,7 @@ function TabSurfaceTreatment(props) {
         } else {
           dispatchTransportationCost(transportationObj, params, i.CostingChildPartDetails)
         }
-        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
 
         let partObj = tempArr[0]
 
@@ -671,11 +661,11 @@ function TabSurfaceTreatment(props) {
           checkForNull(transportationObj.TransportationCost);
         partObj.CostingPartDetails.TransportationCost = checkForNull(transportationObj.TransportationCost);
         partObj.CostingPartDetails.TransportationDetails = transportationObj;
-        tempArr = Object.assign([...tempArr], { [0]: partObj })
+        tempArr = Object.assign([...tempArr], { 0: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArr)
         return i;
       });
 
@@ -732,7 +722,7 @@ function TabSurfaceTreatment(props) {
   const surfaceCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -742,7 +732,7 @@ function TabSurfaceTreatment(props) {
   const transportCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity ? item.Quantity : 2)
+        return accummlator + checkForNull(item?.CostingPartDetails?.TransportationCost) * checkForNull(item.Quantity)
       } else {
         return accummlator
       }
@@ -814,13 +804,13 @@ function TabSurfaceTreatment(props) {
   /**
   * @method updateCostingValuesInStructure
   * @description UPDATE WHOLE COSTING VALUE IN RMCCTAB DATA REDUCER TO SHOW UPDATED VALUE ON UI
- */
+  */
 
   const updateCostingValuesInStructure = () => {
     //MAKING THIS MAP ARRAY COMMON
     const mapArray = (data) => data.map(item => {
       let newItem = item
-      let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
       if (obj && Object.keys(obj).length > 0) {
@@ -896,12 +886,12 @@ function TabSurfaceTreatment(props) {
           else {
             // THIS ELSE CONDITION WILL RUN FOR ALL SUBASSEMBLY COSTING CALCULATION (WILL FIND PARENT ON THE BASIS OF PARENT NO PRESENT IN IT'S CHILD)
 
-            let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === initialPartNo)
+            let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
             let objectToUpdate = tempArrForCosting[indexForUpdate]
 
             if (objectToUpdate.PartType === 'Sub Assembly') {
-              let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === initialPartNo)
-
+              let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
+              let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
               initialPartNo = objectToUpdate.AssemblyPartNumber
               let surfaceCostGrid = params.PartNumber === objectToUpdate.PartNumber ? surfaceGrid : []
               let subAssemObj = calculationForSubAssembly(surfaceCostGrid, objectToUpdate, quant, 'Operation', tempArr, {}, params)
@@ -927,10 +917,10 @@ function TabSurfaceTreatment(props) {
             }
             else {
               // THIS ELSE CONDITION WILL RUN FOR ALL SUBASSEMBLY COSTING CALCULATION (WILL FIND PARENT ON THE BASIS OF PARENT NO PRESENT IN IT'S CHILD)
-              let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === initialPartNo)
+              let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
               let objectToUpdate = tempArrForCosting[indexForUpdate]
               if (objectToUpdate.PartType === 'Sub Assembly') {
-                let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === initialPartNo)
+                let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
 
                 initialPartNo = objectToUpdate.AssemblyPartNumber
                 let surfaceCostGrid = params.PartNumber === objectToUpdate.PartNumber ? surfaceGrid : []
@@ -955,7 +945,7 @@ function TabSurfaceTreatment(props) {
 
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (OPERATION COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
 
@@ -966,11 +956,13 @@ function TabSurfaceTreatment(props) {
           const level = costingItem.BOMLevel
           const useLevel = level.split('L')[1]
           tempArrForCosting = calculateValue(useLevel, costingItem, tempArrForCosting)
+          return null
         })
 
         // MAIN ASSEMBLY CALCULATION
-        let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
         let assemblyObj = tempArrForCosting[0]
+        let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === assemblyObj.PartNumber && item.BOMLevel === 'L1')
+
 
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.PartType === 'Assembly') {
@@ -985,11 +977,11 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
           assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
-          tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
+          tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         return i;
       });
@@ -1024,7 +1016,7 @@ function TabSurfaceTreatment(props) {
   */
   const setAssemblyTransportationCost = (TransportationObj, params, item) => {
 
-    let arr = dispatchAssemblyTransportationCost(TransportationObj, params, SurfaceTabData, item)
+    dispatchAssemblyTransportationCost(TransportationObj, params, SurfaceTabData, item)
     // dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -1054,10 +1046,10 @@ function TabSurfaceTreatment(props) {
           }
           else {
             // THIS ELSE CONDITION WILL RUN FOR ALL SUBASSEMBLY COSTING CALCULATION (WILL FIND PARENT ON THE BASIS OF PARENT NO PRESENT IN IT'S CHILD)
-            let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === initialPartNo)
+            let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
             let objectToUpdate = tempArrForCosting[indexForUpdate]
             if (objectToUpdate.PartType === 'Sub Assembly') {
-              let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === initialPartNo)
+              let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
 
               initialPartNo = objectToUpdate.AssemblyPartNumber
               let transportationCostGrid = params.PartNumber === objectToUpdate.PartNumber ? TransportationObj : {}
@@ -1082,10 +1074,10 @@ function TabSurfaceTreatment(props) {
             }
             else {
               // THIS ELSE CONDITION WILL RUN FOR ALL SUBASSEMBLY COSTING CALCULATION (WILL FIND PARENT ON THE BASIS OF PARENT NO PRESENT IN IT'S CHILD)
-              let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === initialPartNo)
+              let indexForUpdate = _.findIndex(tempArrForCosting, ['PartNumber', initialPartNo]);
               let objectToUpdate = tempArrForCosting[indexForUpdate]
               if (objectToUpdate.PartType === 'Sub Assembly') {
-                let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === initialPartNo)
+                let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
 
                 initialPartNo = objectToUpdate.AssemblyPartNumber
                 let transportationCostGrid = params.PartNumber === objectToUpdate.PartNumber ? TransportationObj : {}
@@ -1109,7 +1101,7 @@ function TabSurfaceTreatment(props) {
 
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (OPERATION COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
         // THIS ARRAY IS FOR FINDING THE SUBASSEMBLIES  WHICH  HAVE SAME PART ON WHICH WE ARE DOING COSTING
@@ -1119,6 +1111,7 @@ function TabSurfaceTreatment(props) {
           const level = costingItem.BOMLevel
           const useLevel = level.split('L')[1]
           tempArrForCosting = calculateValue(useLevel, costingItem, tempArrForCosting)
+          return null
         })
 
         // MAIN ASSEMBLY CALCULATION
@@ -1137,11 +1130,11 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
           assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
-          tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
+          tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        localStorage.setItem('surfaceCostingArray', [])
-        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', tempArrForCosting)
 
         return i;
 
@@ -1173,17 +1166,6 @@ function TabSurfaceTreatment(props) {
   }
 
   /**
-  * @method saveCosting
-  * @description SAVE COSTING
-  */
-  const saveCosting = () => {
-
-    const data = {}
-    // dispatch(saveCostingSurfaceTreatmentTab(data, res => { }))
-
-  }
-
-  /**
   * @method onSubmit
   * @description Used to Submit the form
   */
@@ -1210,7 +1192,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
                           <th className="py-align-middle" style={{ width: "100px" }}>{`Quantity`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
@@ -1233,12 +1215,13 @@ function TabSurfaceTreatment(props) {
                                     setSurfaceCost={setSurfaceCost}
                                     setTransportationCost={setTransportationCost}
                                     IsAssemblyCalculation={false}
-                                    SubAssembId={item.CostingId}
+                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
                               )
 
-                            } else {
+                            } else if (item && item.PartType === 'BOP') return false
+                            else {
                               return (
                                 < >
                                   <AssemblySurfaceTreatment
@@ -1251,7 +1234,7 @@ function TabSurfaceTreatment(props) {
                                     setTransportationCost={setTransportationCost}
                                     setAssemblySurfaceCost={setAssemblySurfaceCost}
                                     setAssemblyTransportationCost={setAssemblyTransportationCost}
-                                    SubAssembId={item.CostingId}
+                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
                               )

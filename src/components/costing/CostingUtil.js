@@ -1,11 +1,16 @@
-import { LEVEL0 } from "../../config/constants";
+
+import { useDispatch } from "react-redux";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
+import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
+// TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
-  let Arr = JSON.parse(localStorage.getItem('costingArray'))
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let Arr = reactLocalStorage.getObject('costingArray')
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let assemblyWorkingRow = []
 
   if (tabId === 1) {
@@ -25,18 +30,19 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
           "TotalOperationCostSubAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
           "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-          "TotalOtherOperationCostPerSubAssembly": 0, //NEED TO IMPLEMENT THIS
+          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails.TotalOtherOperationCostPerAssembly,
           "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "TotalCostINR": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "TotalCostINR": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
           "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
           "IsApplyBOPHandlingCharges": item.CostingPartDetails?.IsApplyBOPHandlingCharges,
           "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
           "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
-          "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability
+          "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability,
+          "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff,
+          "BOPHandlingChargeType": item && item.CostingPartDetails?.BOPHandlingChargeType
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -98,8 +104,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
       "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
       "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
-      "TotalOtherOperationCostPerAssembly": 0, //NEED TO IMPLEMENT THIS
-      "TotalOtherOperationCostPerSubAssembly": 0, //NEED TO IMPLEMENT THIS
+      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails.TotalOtherOperationCostPerAssembly,
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
       "TotalSurfaceTreatmentCostWithQuantity": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity,
@@ -111,7 +116,9 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalCalculatedSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerAssembly,
       "TotalCalculatedSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerSubAssembly,
       "TotalCalculatedSurfaceTreatmentCostWithQuantitys": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
-      "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent
+      "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent,
+      "RawMaterialCostWithCutOff": tabData && tabData.CostingPartDetails?.RawMaterialCostWithCutOff,
+      "IsRMCutOffApplicable": tabData && tabData.CostingPartDetails?.IsRMCutOffApplicable
 
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
@@ -123,7 +130,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
       "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
       "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges,
+      "BOPHandlingChargeType": tabData && tabData.CostingPartDetails?.BOPHandlingChargeType
     },
     "LoggedInUserId": loggedInUserId()
 
@@ -132,13 +140,143 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 }
 
+//TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
-  let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
+
+// TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
-  let costingArr = JSON.parse(localStorage.getItem('costingArray'))
+  let costingArr = reactLocalStorage.getObject('costingArray')
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
+}
+
+// TO FIND PARTS/HOUR (PRODUCTION)
+export const findProductionPerHour = (quantity) => {
+  return checkForNull(3600 / quantity)
+}
+
+// TO FIND PROCESS COST IF UOM TYPE IS TIME AND ON THE BASIS OF UOM (HOURS,MINUTES,SECONDS)
+export const findProcessCost = (uom, mhr, productionPerHour) => {
+  let processCost = 0
+  if (uom === HOUR) {
+    processCost = checkForNull((checkForNull(mhr) / checkForNull(productionPerHour)))
+  } else if (uom === MINUTES) {
+    processCost = checkForNull(((checkForNull(mhr) * 60) / checkForNull(productionPerHour)))
+  } else if (uom === SECONDS) {
+    processCost = checkForNull(((checkForNull(mhr) * 3600) / checkForNull(productionPerHour)))
+  }
+  return processCost
+}
+
+
+// function findVolumeFields(res){
+//   const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+//   let approvedQtyArr = res.data.Data.VolumeApprovedDetails
+//         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
+//         let actualQty = 0
+//         let totalBudgetedQty = 0
+//         let variance = Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.oldPoPrice : 0) - Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.poPrice : 0)
+//         let month = new Date(date).getMonth()
+//         let year = ''
+
+//         if (month <= 2) {
+//           year = `${new Date(date).getFullYear() - 1}-${new Date(date).getFullYear()}`
+//         } else {
+//           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
+//         }
+
+
+//             obj.consumptionQty = checkForNull(actualQty)
+//             obj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
+//             obj.annualImpact = variance !== '' ? totalBudgetedQty * variance : 0
+//             obj.yearImpact = variance !== '' ? (totalBudgetedQty - actualQty) * variance : 0
+
+//         approvedQtyArr.map((data) => {
+//           if (data.Sequence < sequence) {
+//             //USE IN FUTURE
+//             // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
+//             //   actualQty += parseInt(data.ApprovedQuantity)
+//             // } 
+//             actualQty += parseInt(data.ApprovedQuantity)
+//           } else if (data.Sequence >= sequence) {
+//             // actualRemQty += parseInt(data.ApprovedQuantity)  //MAY BE USE IN FUTURE
+//           }
+//         })
+//         budgetedQtyArr.map((data) => {
+//           // if (data.Sequence >= sequence) {
+//           totalBudgetedQty += parseInt(data.BudgetedQuantity)
+//           // }
+//         })
+// }
+
+export const formatCostingApprovalObj = (costingObj) => {
+
+
+  let obj = {}
+  // add vendor key here
+  obj.typeOfCosting = costingObj.zbc
+  obj.plantCode = costingObj.plantCode
+  obj.plantName = costingObj.plantName
+  obj.plantId = costingObj.plantId
+  obj.vendorId = costingObj.vendorId
+  obj.vendorName = costingObj.vendorName
+  obj.vendorCode = costingObj.vendorCode
+  obj.vendorPlantId = costingObj.vendorPlantId
+  obj.vendorPlantName = costingObj.vendorPlantName
+  obj.vendorPlantCode = costingObj.vendorPlantCode
+  obj.costingName = costingObj.CostingNumber
+  obj.costingId = costingObj.costingId
+  obj.oldPrice = costingObj.oldPoPrice
+  obj.revisedPrice = costingObj.poPrice
+  obj.nPOPriceWithCurrency = costingObj.nPOPriceWithCurrency
+  obj.currencyRate = costingObj.currencyValue
+  obj.variance = Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.oldPoPrice : 0) - Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.poPrice : 0)
+
+
+  obj.reason = ''
+  obj.ecnNo = ''
+  obj.effectiveDate = costingObj.effectiveDate
+  obj.isDate = costingObj.effectiveDate ? true : false
+  obj.partNo = costingObj.partId
+  obj.destinationPlantCode = costingObj.destinationPlantCode
+  obj.destinationPlantName = costingObj.destinationPlantName
+  obj.destinationPlantId = costingObj.destinationPlantId
+
+  return obj
+}
+
+export const clearCosting = (dispatch) => {
+  dispatch(getBriefCostingById('', (res) => { }))
+  reactLocalStorage.setObject('costingArray', [])
+  reactLocalStorage.setObject('surfaceCostingArray', [])
+  dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+  dispatch(setComponentItemData({}, () => { }))
+
+  dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+  dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+
+
+  dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+  dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+
+  dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
+  dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
+
+  dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+
+  dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+
+  dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
+  dispatch(setSurfaceCostData({}, () => { }))
+
+  dispatch(setProcessGroupGrid([]))
+  dispatch(savePartNumber(''))
+  dispatch(saveBOMLevel(''))
+  dispatch(setPartNumberArrayAPICALL([]))
+  dispatch(isDataChange(false))
+
 }

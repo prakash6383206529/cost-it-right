@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 import AddRMDomestic from './AddRMDomestic';
 import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
@@ -8,30 +7,20 @@ import classnames from 'classnames';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey } from '../../../helper';
-
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
-
-
-
+import CommonApproval from './CommonApproval';
+import { MESSAGES } from '../../../config/message';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 
 function RowMaterialMaster(props) {
 
-
-
-    const [isRMOpen, setisRMOpen] = useState(false);
-    const [isOpen, setisOpen] = useState(false);
-    const [isEditFlag, setisEditFlag] = useState(false);
-    const [isViewFlag, setisViewFlag] = useState(false);
-    const [Id, setId] = useState('');
+    const [stopApiCallOnCancel, setStopApiCallOnCancel] = useState(false);
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
 
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
@@ -48,10 +37,10 @@ function RowMaterialMaster(props) {
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
     const [isRMAssociated, setIsRMAssociated] = useState(false);
-    const dispatch = useDispatch()
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
-
+    const disabledClass = useSelector((state) => state.comman.disabledClass)
+    const dispatch = useDispatch();
 
     /**
         * @method componentDidMount
@@ -98,7 +87,6 @@ function RowMaterialMaster(props) {
             const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
             if (permmisionData !== undefined) {
-
                 setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false);
@@ -117,9 +105,10 @@ function RowMaterialMaster(props) {
     * @description toggling the tabs
     */
     const toggle = (tab) => {
-
+        dispatch(setSelectedRowForPagination([]))
         if (activeTab !== tab) {
             setactiveTab(tab);
+            setStopApiCallOnCancel(false)
         }
     }
 
@@ -143,13 +132,14 @@ function RowMaterialMaster(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const hideForm = () => {
-
+    const hideForm = (type) => {
+        setStopApiCallOnCancel(false)
         setisRMDomesticForm(false);
         setisRMImportForm(false);
         setdata({});
-
-
+        if (type === 'cancel') {
+            setStopApiCallOnCancel(true)
+        }
     }
 
     /**
@@ -158,11 +148,9 @@ function RowMaterialMaster(props) {
     * @param DATA CONTAINS ID AND EDIT FLAG
     */
     const getDetails = (data, IsRMAssociated) => {
-
         setisRMDomesticForm(true);
         setdata(data);
         setIsRMAssociated(IsRMAssociated)
-
     }
 
 
@@ -212,7 +200,7 @@ function RowMaterialMaster(props) {
     return (
         <Container fluid>
             <Row id="go-top-top">
-                {ViewRMAccessibility && <Col sm="4">
+                {<Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>}
                 <ScrollToTop pointProp={"go-top-top"} />
@@ -220,33 +208,32 @@ function RowMaterialMaster(props) {
             <Row>
                 <Col>
                     <div>
-                        <Nav tabs className="subtabs mt-0">
+                        <Nav tabs className="subtabs mt-0 p-relative">
+                            {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
-
-
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                     Manage Raw Material (Domestic)
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                     Manage Raw Material (Import)
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                     Manage Specification
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                                     Manage Material
                                 </NavLink>
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {(ViewRMAccessibility && CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
+                            {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                 {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
@@ -261,7 +248,7 @@ function RowMaterialMaster(props) {
 
 
 
-                            {Number(activeTab) === 1 && ViewRMAccessibility &&
+                            {Number(activeTab) === 1 &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
@@ -273,6 +260,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -289,6 +277,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -304,6 +293,8 @@ function RowMaterialMaster(props) {
                                         AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                                         EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
 
@@ -314,6 +305,8 @@ function RowMaterialMaster(props) {
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
                             {Number(activeTab) === 5 &&
@@ -325,11 +318,12 @@ function RowMaterialMaster(props) {
                                     {/* <Link to="/raw-material-approval"></Link> */}
                                     {/* <Route path="/raw-material-approval">
                                         </Route> */}
-                                    <RMApproval
+                                    <CommonApproval
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        MasterId={RM_MASTER_ID}
                                     />
                                 </TabPane>}
 

@@ -3,7 +3,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
@@ -114,7 +114,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewOverheadData.IsOverheadBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`Insert`}</td>
                       <td>
                         {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -225,7 +225,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewProfitData.IsProfitBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`Insert`}</td>
                       <td>
                         {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -387,7 +387,7 @@ function ViewOverheadProfit(props) {
               <tr>
 
                 <th>{`Applicability`}</th>
-                <th>{`Repayment Period (No of days)`}</th>
+                <th>{`Repayment Period (No. of days)`}</th>
                 <th>{`Interest Rate (%)`}</th>
                 <th>{`Cost`}</th>
               </tr>

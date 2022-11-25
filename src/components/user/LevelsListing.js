@@ -7,8 +7,8 @@ import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { getConfigurationKey } from '../../helper/auth';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const gridOptions = {};
 
@@ -53,7 +54,10 @@ class LevelsListing extends Component {
 			cellData: {},
 			cellValue: '',
 			showPopupToggle: false,
-			isLoader: false
+			isLoader: false,
+			updateApi: false,
+			cancelButton: false,
+			noData: false
 
 		}
 	}
@@ -75,10 +79,6 @@ class LevelsListing extends Component {
 		}
 
 		this.getLevelsListData();
-		this.props.getUsersByTechnologyAndLevel(() => { })
-	}
-
-	UNSAFE_componentWillUpdate() {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 	}
 
@@ -129,9 +129,8 @@ class LevelsListing extends Component {
 			isShowMappingForm: false,
 			isShowForm: false,
 			isEditFlag: false,
-		}, () => {
-			this.getUpdatedData()
-			this.child.getUpdatedData();
+			updateApi: !this.state.updateApi,
+			cancelButton: e === 'cancel' ? true : false
 		})
 	}
 
@@ -142,7 +141,7 @@ class LevelsListing extends Component {
 	getLevelMappingDetail = (Id, levelType) => {
 		this.setState({
 			isEditFlag: true,
-			LevelId: Id,
+			TechnologyId: Id,
 			isOpen: true,
 			isShowForm: false,
 			isShowMappingForm: true,
@@ -229,47 +228,21 @@ class LevelsListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { EditAccessibility, DeleteAccessibility } = this.state;
+		const { EditAccessibility } = this.state;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
+				{EditAccessibility && <button title='Edit' type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
 	}
 
-	afterSearch = (searchText, result) => {
-
-	}
-
-	handleChange = (cell, row, enumObject, rowIndex) => {
-		let data = {
-			Id: row.LevelId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-	}
-
-	confirmDeactivateItem = (data, cell) => {
-		//   this.props.activeInactiveStatus(data, res => {
-		//     if (res && res.data && res.data.Result) {
-		//         // if (cell == true) {
-		//         //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-		//         // } else {
-		//         //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-		//         // }
-		//         // this.getTableListData()
-		//         this.filterList()
-		//     }
-		// })
-	}
 
 	/**
 	 * @method statusButtonFormatter
 	 * @description Renders buttons
 	 */
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-		const { ActivateAccessibility } = this.props;
 		// if (ActivateAccessibility) {
 		return (
 			<>
@@ -337,7 +310,6 @@ class LevelsListing extends Component {
 	};
 
 	onPageSizeChanged = (newPageSize) => {
-		var value = document.getElementById('page-size').value;
 		this.state.gridApi.paginationSetPageSize(Number(newPageSize));
 	};
 
@@ -356,25 +328,9 @@ class LevelsListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
-			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
-		const options = {
-			clearSearch: true,
-			noDataText: (this.props.usersListByTechnologyAndLevel === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-			afterSearch: this.afterSearch,
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-			pagination: true,
-			sizePerPageList: [{
-				text: '5', value: 5
-			}, {
-				text: '10', value: 10
-			}],
-			sizePerPage: 5,
-		};
+		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
+			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact, noData } = this.state;
+
 
 		const defaultColDef = {
 			resizable: true,
@@ -403,6 +359,8 @@ class LevelsListing extends Component {
 										AddAccessibility={AddAccessibility}
 										EditAccessibility={EditAccessibility}
 										DeleteAccessibility={DeleteAccessibility}
+										updateApi={this.state.updateApi}
+										cancelButton={this.state.cancelButton}
 									/>
 								</Col>
 							</Row>
@@ -424,33 +382,12 @@ class LevelsListing extends Component {
 									<Row>
 										<Col className="mt-0 level-table" md="12">
 
-											{/* <BootstrapTable
-											data={this.props.usersListByTechnologyAndLevel}
-											striped={false}
-											bordered={false}
-											hover={false}
-											options={options}
-											search
-											ignoreSinglePage
-											ref={'table'}
-											trClassName={'userlisting-row'}
-											tableHeaderClass={'my-custom-header'}
-											pagination>
-											<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-											<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-											<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
-													<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
-
-													{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
-											{/* </BootstrapTable> */}
-
-											<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+											<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.usersListByTechnologyAndLevel && this.props.usersListByTechnologyAndLevel?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 												<div className="ag-grid-header">
 													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 												</div>
 												<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+													{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 													<AgGridReact
 														defaultColDef={defaultColDef}
 														floatingFilter={true}
@@ -462,6 +399,7 @@ class LevelsListing extends Component {
 														onGridReady={this.onGridReady}
 														gridOptions={gridOptions}
 														noRowsOverlayComponent={'customNoRowsOverlay'}
+														onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
 														noRowsOverlayComponentParams={{
 															title: EMPTY_DATA,
 														}}
@@ -473,13 +411,7 @@ class LevelsListing extends Component {
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
-													<div className="paging-container d-inline-block float-right">
-														<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-															<option value="5" selected={true}>5</option>
-															<option value="20">20</option>
-															<option value="50">50</option>
-														</select>
-													</div>
+													{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
 												</div>
 											</div>
 
@@ -497,7 +429,7 @@ class LevelsListing extends Component {
 									isShowMappingForm={isShowMappingForm}
 									closeDrawer={this.closeDrawer}
 									isEditFlag={isEditFlag}
-									LevelId={LevelId}
+									TechnologyId={TechnologyId}
 									anchor={'right'}
 									isEditedlevelType={this.state.levelType}
 								/>

@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Row, Col, Button, Table
+  Row, Col
 } from 'reactstrap';
-import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA } from '../../config/constants';
+import { COMPANY, defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
-import { checkPermission } from '../../helper/util';
+import { getConfigurationKey } from '../../helper/auth';
+import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const gridOptions = {};
 
@@ -37,18 +38,19 @@ class DepartmentsListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: '',
+      noData: false
 
     }
   }
 
   componentDidMount() {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     const { topAndLeftMenuData } = this.props;
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-      const accessData = userMenu && userMenu.Pages.find(el => el.PageName === DEPARTMENT)
+      const accessData = userMenu && userMenu.Pages.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
@@ -88,9 +90,11 @@ class DepartmentsListing extends Component {
    * @method closeDrawer
    * @description  used to cancel filter form
    */
-  closeDrawer = (e = '') => {
+  closeDrawer = (e = '', type) => {
     this.setState({ isOpen: false }, () => {
-      this.getDepartmentListData()
+      if (type === 'submit') {
+        this.getDepartmentListData()
+      }
     })
   }
 
@@ -122,15 +126,15 @@ class DepartmentsListing extends Component {
   * @description confirm delete Department
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-   
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
    * @method confirmDeleteItem
@@ -141,11 +145,11 @@ closePopUp= () =>{
       if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
         this.getDepartmentListData();
-      } else if (res.data.Result === false && res.statusText == "Found") {
+      } else if (res.data.Result === false && res.statusText === "Found") {
         Toaster.warning(res.data.Message)
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -163,8 +167,8 @@ closePopUp= () =>{
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete ml5" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete ml5" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -178,8 +182,7 @@ closePopUp= () =>{
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   onFilterTextBoxChanged(e) {
@@ -197,17 +200,7 @@ closePopUp= () =>{
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={EMPTY_DATA} />,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
+    const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = this.state;
 
     const defaultColDef = {
       resizable: true,
@@ -250,11 +243,12 @@ closePopUp= () =>{
 
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -262,11 +256,12 @@ closePopUp= () =>{
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'
@@ -275,16 +270,10 @@ closePopUp= () =>{
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
-                    {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
+                    <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Department Code'}></AgGridColumn>
                     <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
-                  <div className="paging-container d-inline-block float-right">
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
+                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
               </div>
 
@@ -301,9 +290,9 @@ closePopUp= () =>{
               className={"test-rahul"}
             />
           )}
-           {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`}  />
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />
+          }
         </>
       </div>
     );

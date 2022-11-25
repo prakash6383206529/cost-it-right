@@ -1,25 +1,27 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
-import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { DatePickerHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
-import LoaderCustom from '../../common/LoaderCustom';
+import DatePicker from "react-datepicker";
+
+import DayTime from '../../common/DayTimeWrapper';
 
 function ManageSOBDrawer(props) {
 
-  const { ID, isEditFlag } = props;
+  const { ID } = props;
   const GridFields = 'GridFields';
   const defaultValues = {
     //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, reset, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -30,9 +32,7 @@ function ManageSOBDrawer(props) {
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
-  const [dropdownChanged, setDropDownChanged] = useState(true)
-  const [isLoader, setIsLoader] = useState(false)
-
+  const [effectiveDate, setEffectiveDate] = useState('')
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
@@ -52,6 +52,8 @@ function ManageSOBDrawer(props) {
       // setIsLoader(true)
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
+
+        setEffectiveDate(Data.Effectivedate)
 
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
@@ -134,52 +136,21 @@ function ManageSOBDrawer(props) {
     } else {
       //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
-    setDropDownChanged(false)
   }
-
   /**
-  * @method checkIsSOBChanged
-  * @description HANDLE SOB CHANGE
-  */
-  const checkIsSOBChanged = (event, index) => {
-    let tempOldObj = GridDataOldArray[index];
-
-    if (index > GridDataOldArray.length - 1) {
-      return false;
-    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercentage) {
-      return false;
-    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercentage) {
-      return true;
-    }
-
-  }
-
-  /**
-  * @method warningMessageHandle
-  * @description VIEW COSTING DETAILS IN READ ONLY MODE
-  */
-  const warningMessageHandle = (warningType) => {
-    switch (warningType) {
-      case 'SOB_WARNING':
-        Toaster.warning('SOB Should not be greater than 100.');
-        break;
-      case 'VALID_NUMBER_WARNING':
-        Toaster.warning('Please enter a valid number.');
-        break;
-      case 'ERROR_WARNING':
-        Toaster.warning('Please enter a valid number.');
-        break;
-      default:
-        break;
-    }
+   * @method handleChange
+   * @description Handle Effective Date
+   */
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
   }
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  const cancel = () => {
-    props.closeDrawer('')
+  const cancel = (type) => {
+    props.closeDrawer('', type)
   }
 
   /**
@@ -201,10 +172,6 @@ function ManageSOBDrawer(props) {
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
-    if (dropdownChanged) {
-      toggleDrawer('')
-      return false
-    }
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 
@@ -222,36 +189,35 @@ function ManageSOBDrawer(props) {
       "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
       "WeightedNetLandedCost": WeightedCost,
       "AveragShareOfBusinessPercentage": GridData.length !== 1 ? sum : 100,
-      "BoughtOutPartVendorList": GridData
+      "BoughtOutPartVendorList": GridData,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     }
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success('BOP Vendors SOB has been updated.')
-        props.closeDrawer('')
+        Toaster.success('Insert Vendors SOB updated successfully.')
+        props.closeDrawer('a', 'submit')
       }
     }))
   }
-
-
 
   /**
   * @method render
   * @description Renders the component
   */
   return (
+
     <>
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        {isLoader && <LoaderCustom />}
         <Container className="sob-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>Update SOB %</h3>
+                  <h3>Update SOB(%)</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -261,7 +227,34 @@ function ManageSOBDrawer(props) {
             </Row>
 
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <Row className='pl-3'>
+                <Col md="3">
+                  <div className="inputbox date-section">
+                    <label> Effective Date<span className="asterisk-required">*</span></label>
+                    <DatePicker
+                      name="EffectiveDate"
+                      selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                      onChange={handleEffectiveDateChange}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      showMonthDropdown
+                      showYearDropdown
+                      dateFormat="dd/MM/yyyy"
+                      mandatory={true}
+                      rules={{ required: true }}
+                      dropdownMode="select"
+                      placeholderText="Select date"
+                      className="withBorder"
+                      autoComplete={"off"}
+                      disabledKeyboardNavigation
+                      onChangeRaw={(e) => e.preventDefault()}
+                      disabled={isDisable ? true : false}
+                      errors={errors.EffectiveDate}
+                    />
+                  </div>
+                </Col>
+              </Row>
               <Row className="pl-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">
@@ -269,7 +262,7 @@ function ManageSOBDrawer(props) {
                       <tr>
                         <th style={{ width: '100px' }}>{`Vendor Name`}</th>
                         <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
-                        <th style={{ width: '155px' }}>{`SOB%`}</th>
+                        <th style={{ width: '155px' }}>{`SOB(%)`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
                     </thead>
@@ -281,7 +274,7 @@ function ManageSOBDrawer(props) {
                             <tr key={index}>
                               <td>{item.BoughtOutPartVendorName}</td>
                               <td>{item.NetLandedCost}</td>
-                              <td className="cr-select-height">
+                              <td className="cr-select-height pr-4">
                                 <TextFieldHookForm
                                   label={''}
                                   name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
@@ -316,6 +309,7 @@ function ManageSOBDrawer(props) {
                                 />
                               </td>
                               <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+
                             </tr>
                           )
                         })
@@ -325,8 +319,8 @@ function ManageSOBDrawer(props) {
                         GridData && <tr className="sob-background">
                           <td>{'Insert Cost'}</td>
                           <td>{''}</td>
-                          <td>{`Net Cost(Weighted Average)`}</td>
-                          <td>{`:${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
+                          <td>{`Net Cost (Weighted Average):`}</td>
+                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
 
@@ -343,18 +337,17 @@ function ManageSOBDrawer(props) {
 
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mt25 mx-0">
+              <Row className="sf-btn-footer no-gutters justify-content-between mt-1 mx-0">
                 <div className="col-sm-12 text-right">
-
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
-                    onClick={cancel} >
+                    onClick={() => { cancel('cancel') }} >
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                   <button
                     type={'submit'}
-                    className="submit-button mr5 save-btn">
+                    className="submit-button save-btn">
                     <div className={"save-icon"}></div>
                     {'Update'}
                   </button>

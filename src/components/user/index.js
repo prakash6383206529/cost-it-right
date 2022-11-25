@@ -4,14 +4,16 @@ import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstr
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
+import { getConfigurationKey } from '../../helper/auth';
+import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
+import { reactLocalStorage } from 'reactjs-localstorage';
+
+var isFirstTabActive = false
 
 class User extends Component {
   constructor(props) {
@@ -45,7 +47,7 @@ class User extends Component {
 
       const userPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === USER)
       const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
-      const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DEPARTMENT)
+      const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
@@ -54,21 +56,46 @@ class User extends Component {
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
 
       if (userData !== undefined) {
-        this.setState({
-          ViewUserAccessibility: userData && userData.View ? userData.View : false,
-          ViewRoleAccessibility: roleData && roleData.View ? roleData.View : false,
-          ViewDepartmentAccessibility: departmentData && departmentData.View ? departmentData.View : false,
-          ViewLevelAccessibility: levelsData && levelsData.View ? levelsData.View : false,
-          activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
-        })
+
+        for (var prop in userData) {
+          if (userData[prop] === true) {
+            isFirstTabActive = true
+            this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+          }
+        }
       }
+
+      if (roleData !== undefined) {
+        for (var propRole in roleData) {
+          if (roleData[propRole] === true) {
+            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' })
+          }
+        }
+      }
+
+      if (departmentData !== undefined) {
+        for (var propDepart in departmentData) {
+          if (departmentData[propDepart] === true) {
+            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+          }
+        }
+      }
+
+      if (levelsData !== undefined) {
+        for (var propLevel in levelsData) {
+          if (levelsData[propLevel] === true) {
+            this.setState({ ViewLevelAccessibility: true })
+          }
+        }
+      }
+
     }
   }
 
   componentDidMount() {
     this.topAndLeftMenuFunction()
-  }
 
+  }
 
   componentDidUpdate() {
     if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {

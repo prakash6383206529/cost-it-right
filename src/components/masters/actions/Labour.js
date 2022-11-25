@@ -9,11 +9,13 @@ import {
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
     config,
-    GET_LABOUR_DATA_LIST
+    GET_LABOUR_DATA_LIST,
+    GET_LABOUR_TYPE_FOR_MACHINE_TYPE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import DayTime from '../../common/DayTimeWrapper';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createLabour
@@ -21,7 +23,7 @@ const headers = config
  */
 export function createLabour(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createLabour, data, headers);
+        const request = axios.post(API.createLabour, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -44,7 +46,7 @@ export function getLabourDataList(isAPICall, data, callback) {
         if (isAPICall) {
 
             const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
-            const request = axios.get(`${API.getLabourDataList}?${queryParams}`, headers);
+            const request = axios.get(`${API.getLabourDataList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
 
@@ -75,7 +77,7 @@ export function getLabourData(labourId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (labourId !== '') {
-            axios.get(`${API.getLabourData}/${labourId}`, headers)
+            axios.get(`${API.getLabourData}/${labourId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -105,7 +107,7 @@ export function getLabourData(labourId, callback) {
 export function deleteLabour(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteLabour}/${Id}`, headers)
+        axios.delete(`${API.deleteLabour}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -122,7 +124,7 @@ export function deleteLabour(Id, callback) {
 export function updateLabour(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabour}`, requestData, headers)
+        axios.put(`${API.updateLabour}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -139,7 +141,7 @@ export function updateLabour(requestData, callback) {
  */
 export function labourTypeVendorSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.labourTypeVendorSelectList}`, headers);
+        const request = axios.get(`${API.labourTypeVendorSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -163,7 +165,7 @@ export function labourTypeVendorSelectList(callback) {
 export function getLabourTypeByPlantSelectList(ID, callback) {
     return (dispatch) => {
         if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, headers);
+            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -192,10 +194,11 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
  * @method getLabourTypeByMachineTypeSelectList
  * @description GET LABOUR TYPE BY MACHINE TYPE
  */
-export function getLabourTypeByMachineTypeSelectList(ID, callback) {
+export function getLabourTypeByMachineTypeSelectList(data, callback) {
     return (dispatch) => {
-        if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, headers);
+        const queryParams = `machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}`
+        if (data.machineTypeId !== '') {
+            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -225,7 +228,7 @@ export function getLabourTypeByMachineTypeSelectList(ID, callback) {
  */
 export function labourBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.labourBulkUpload, data, headers);
+        const request = axios.post(API.labourBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -235,5 +238,57 @@ export function labourBulkUpload(data, callback) {
             apiErrors(error);
             callback(error);
         });
+    };
+}
+
+/**
+ * @method getLabourTypeDetailsForMachineType
+ * @description get labour type for machine type
+ */
+export function getLabourTypeDetailsForMachineType(ID, callback) {
+    return (dispatch) => {
+
+        if (ID !== '') {
+            const request = axios.get(`${API.getLabourTypeDetailsForMachineType}/${ID}`, config());
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_TYPE_FOR_MACHINE_TYPE,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateLabour
+ * @description update labour
+ */
+export function updateLabourTypeForMachineType(requestData, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(API.updateLabourTypeForMachineType, requestData, config())
+
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
     };
 }

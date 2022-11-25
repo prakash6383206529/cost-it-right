@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
@@ -30,9 +29,12 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { VERSION } from '../../config/constants';
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
+import { SIMULATION, VERSION } from '../../config/constants';
+import _ from "lodash";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { MESSAGES } from "../../config/message";
 
 class SideBar extends Component {
   constructor(props) {
@@ -88,7 +90,11 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
 
-      this.props.getTopAndLeftMenuData(() => { })
+      this.props.getTopAndLeftMenuData((res) => {
+        this.simulationPermission(res?.data?.Data, 1)
+        this.simulationPermission(res?.data?.Data, 0)
+        this.simulationPermission(res?.data?.Data, 2)
+      })
     }
 
     const loginUserId = loggedInUserId();
@@ -101,14 +107,35 @@ class SideBar extends Component {
   }
 
   /**
+  * @method simulationPermission
+  * @description permission for add and view simulation
+  */
+  simulationPermission(Data, index) {
+    let simulationIndex = Data && Data?.findIndex(item => item?.ModuleName === SIMULATION)
+
+    if (simulationIndex !== -1 && simulationIndex !== undefined) {
+      let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
+      let simulationArray = simulationPages && simulationPages.filter((item) => {
+        if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
+        return null
+      })
+      if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
+        localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 0) {                          // 0 IS FOR ADD PERMISSION 
+        localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 2) {                          // 2 IS FOR Run PERMISSION 
+        localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      }
+    }
+  }
+
+  /**
    * @method toggleMenue
    * @description Toggle the visibility of sidebar menue.
    */
   toggleMenue = () => {
     this.setState({ menu: !this.state.menu })
   }
-
-
 
 
   /**
@@ -191,19 +218,11 @@ class SideBar extends Component {
     reactLocalStorage.set("ModuleId", ModuleId);
   };
 
-
-  setModuleId = (ModuleId) => {
-    reactLocalStorage.set('ModuleId', ModuleId)
-  }
-
   /**
   * @method setLeftMenu
   * @description Used to set left menu and Redirect to first menu.
   */
   SetMenu = (ModuleId) => {
-    if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
-      this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
-    }
     reactLocalStorage.set("MenuModuleId", ModuleId);
   };
 
@@ -257,15 +276,18 @@ class SideBar extends Component {
   renderMaster = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+            return null
+          })
+        }
+        return null
+      })
 
     return (
       topAndLeftMenuData &&
@@ -355,15 +377,18 @@ class SideBar extends Component {
 
     const { topAndLeftMenuData } = this.props
 
-
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+            return null
+          })
+        }
+        return null
+      })
 
     return (
       topAndLeftMenuData &&
@@ -428,21 +453,24 @@ class SideBar extends Component {
   renderReportAnalytics = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props;
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+            return null
+          })
+        }
+        return null
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -451,7 +479,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "costing-detail-report",
+                    PageName: "Costing Breakup Details",
                     PageURL: el.LandingPageURL,
                   },
                 }}
@@ -463,6 +491,25 @@ class SideBar extends Component {
                 />
                 <span>Report</span>
               </Link>
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  {
+                    el && el.Pages && el.Pages.map((item, i) => {
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+              </div>
             </li>
           );
         }
@@ -540,14 +587,18 @@ class SideBar extends Component {
   renderSimulation = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+            return null
+          })
+        }
+        return null
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -588,7 +639,7 @@ class SideBar extends Component {
                             onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: localStorage.getItem('ModuleId'), PageName: item.PageName, PageURL: item.NavigationURL }   // CHECK
                             }}
                           >{item.PageName}</Link>
                         </li>
@@ -627,15 +678,18 @@ class SideBar extends Component {
   renderUser = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+            return null
+          })
+        }
+        return null
+      })
 
     return (
       topAndLeftMenuData &&
@@ -734,24 +788,19 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 ">
-                <img
-                  src={Logo}
-                  // src={require("../../assests/images/sipl-logo.jpg")}
-                  alt="Systematix"
-                  height="40"
-                />
-              </a>
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={cirLogo} alt="Cost It Right" height="40" />
-              </a>
-              <button
-                className="navbar-toggler p-0 border-0"
-                type="button"
-                data-toggle="offcanvas"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </button>
+              <div className="logo-container">
+                <button className="btn btn-no-border" >
+                  <img
+                    src={Logo}
+                    alt="Minda"
+                    height="40"
+                  />
+                </button>
+                <div className="border-left"></div>
+                <button className="btn btn-no-border">
+                  <img src={cirLogo} alt="Cost It Right" height="40" />
+                </button>
+              </div>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
@@ -800,14 +849,15 @@ class SideBar extends Component {
                     </div>
                   </li>
                   {isLoggedIn ? (
-                    <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
+                    <li className="nav-item d-xl-inline-block cr-logout-btn p-relative">
+                      {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
+                      <button className="btn btn-no-border" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
-                          alt=""
+                          alt="logout"
                         />
-                      </a>
+                      </button>
                     </li>
                   ) : (
                     ""
@@ -818,7 +868,8 @@ class SideBar extends Component {
           </div>
 
           {isLoggedIn && (
-            <div className="nav-scroller bg-white shadow-sm header-secondry w100">
+            <div className="nav-scroller bg-white shadow-sm header-secondry w100 p-relative">
+              {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
               <nav className="navbar navbar-expand-lg pl-0">
                 <ul className="navbar-nav mr-auto">
                   {topAndLeftMenuData &&
@@ -844,9 +895,10 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData }
+  const { disabledClass } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
 }
 
 /**

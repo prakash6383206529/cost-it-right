@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
-import { renderText, } from "../../layout/FormInputs";
+import { required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
+import { focusOnError, renderText, } from "../../layout/FormInputs";
 import { createBOPCategory } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -102,7 +102,7 @@ class AddBOPCategory extends Component {
                                             name={"Category"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -164,4 +164,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddBOPCategory',
     enableReinitialize: true,
+    touchOnChange: true,
+    onSubmitFail: errors => {
+        focusOnError(errors);
+    },
 })(AddBOPCategory));

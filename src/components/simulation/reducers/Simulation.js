@@ -1,7 +1,6 @@
 import {
     API_REQUEST,
     GET_SELECTLIST_MASTERS,
-    GET_SIMULATION_HISTORY,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
     GET_SIMULATION_APPROVAL_LIST,
@@ -9,7 +8,6 @@ import {
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
-    GET_AMMENDENT_STATUS_COSTING,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
@@ -19,12 +17,18 @@ import {
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
-    SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_AMMENDENT_STATUS_COSTING,
+    GET_MASTER_SELECT_LIST_SIMUALTION,
+    SET_SELECTED_ROW_FOR_PAGINATION,
+    GET_SIMULATION_APPROVAL_LIST_DRAFT
+
 } from '../../../config/constants';
 
 const initialState = {
-
+    selectedRowForPagination: [],
+    costingSimulationList: [],
+    keysForDownloadSummary: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -55,12 +59,33 @@ export default function SimulationReducer(state = initialState, action) {
         case GET_SIMULATION_APPROVAL_LIST:
 
             action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
-                if (item.Status === 'Draft') {
+                if (item.Status === 'Draft' || item.Status === 'Linked' || item.Status === 'Rejected') {
                     item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
                 }
-                else if (item.Status === 'Approved') {
+                else if (item.Status === 'POUpdated') {
                     item.ProvisionalStatus = 'R'
                 } else {
+                    // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED, ERROR
+                    item.ProvisionalStatus = 'U'
+                }
+                return null;
+            })
+
+            return {
+                ...state,
+                loading: false,
+                simualtionApprovalList: action.payload
+            }
+        case GET_SIMULATION_APPROVAL_LIST_DRAFT:
+
+            action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
+                if (item.Status === 'Draft' || item.Status === 'Linked' || item.Status === 'Rejected') {
+                    item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
+                }
+                else if (item.Status === 'POUpdated') {
+                    item.ProvisionalStatus = 'R'
+                } else {
+                    // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED, ERROR
                     item.ProvisionalStatus = 'U'
                 }
                 return null;
@@ -70,7 +95,7 @@ export default function SimulationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                simualtionApprovalList: action.payload
+                simualtionApprovalListDraft: action.payload
             }
         case SET_SELECTED_MASTER_SIMULATION:
             return {
@@ -165,7 +190,18 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 tokenForSimulation: action.payload
             }
-
+        case GET_MASTER_SELECT_LIST_SIMUALTION:                     //THIS CODE IS FOR SELECTING MASTER LIST IN SIMULATION
+            return {
+                ...state,
+                loading: false,
+                masterSelectListSimulation: action.payload
+            }
+        case SET_SELECTED_ROW_FOR_PAGINATION:
+            return {
+                ...state,
+                loading: false,
+                selectedRowForPagination: action.payload
+            }
         default:
             return state;
     }

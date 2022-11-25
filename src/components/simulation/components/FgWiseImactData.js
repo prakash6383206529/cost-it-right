@@ -4,20 +4,19 @@ import { useDispatch, useSelector } from 'react-redux'
 // import { getFgWiseImpactData } from '../actions/Simulation'
 import { checkForDecimalAndNull } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
-
-
+import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import TooltipCustom from '../../common/Tooltip'
+import DayTime from '../../common/DayTimeWrapper'
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
+    const { headerName, dataForAssemblyImpact, impactType, tooltipEffectiveDate } = props
     const [loader, setLoader] = useState(false)
     const [count, setCount] = useState(0)
 
-    const impactData = useSelector((state) => state.simulation.impactData)
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
 
     const dispatch = useDispatch()
@@ -53,6 +52,20 @@ export function Fgwiseimactdata(props) {
                 }
                 break;
             case 'FgWise':
+                //  DON'T REMOVE THE CODE IT WILL USE FOR GF WISE DATA IN FUTURE
+                // if (approvalSummaryTrue) {
+                //     dispatch(getFgWiseImpactDataForCosting(SimulationId, (res) => {
+
+                //         if (res && res.data && res.data.Result) {
+                //             setshowTableData(true)
+                //         }
+                //         else if (res?.response?.status !== "200") {
+                //             setshowTableData(false)
+                //         }
+                //     }))
+                // }
+
+                //   else {
                 // dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
                 //     if (res && res.data && res.data.Result) {
@@ -63,6 +76,7 @@ export function Fgwiseimactdata(props) {
                 //     }
                 // }))
                 // }
+                //  DON'T REMOVE THE CODE IT WILL USE FOR GF WISE DATA IN FUTURE
                 break;
             default:
                 break;
@@ -75,13 +89,6 @@ export function Fgwiseimactdata(props) {
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-
-    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
-
-        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
-
-    }
-
     return (
         <>
             {/* FG wise Impact section start */}
@@ -89,7 +96,7 @@ export function Fgwiseimactdata(props) {
             <Row className="mb-3">
                 <Col md="12">
                     {/* {impactType} */}
-                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
+                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} ${loader ? 'dynamic-border' : ''}`}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 {loader && <LoaderCustom />}
@@ -105,7 +112,7 @@ export function Fgwiseimactdata(props) {
                                     {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
                                     {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
                                     {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
-                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span></th>}
+                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span><TooltipCustom customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></th>}
                                     {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
                                     {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
 
@@ -135,7 +142,6 @@ export function Fgwiseimactdata(props) {
                                                     </tr>
                                                 </tbody>
                                             </>)
-                                        break;
                                     case 'AssemblySummary':
                                         return (
                                             <>
@@ -158,7 +164,6 @@ export function Fgwiseimactdata(props) {
                                                     </tr>
                                                 </tbody>
                                             </>)
-                                        break;
                                     case 'FgWise':
 
                                         // ***********  THIS IS FOR RE | IN FUTURE MAY COME IN BASE  ***********
@@ -207,7 +212,7 @@ export function Fgwiseimactdata(props) {
                                     default:
                                         break;
                                 }
-
+                                return null
                             })
                             }
 

@@ -17,12 +17,13 @@ import {
     SET_ACTUAL_BOM_DATA,
     GET_PRODUCT_DATA_LIST,
     GET_PRODUCT_UNIT_DATA,
+    GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
     PRODUCT_GROUPCODE_SELECTLIST
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
-
+    productDataList: []
 };
 
 export default function partReducer(state = initialState, action) {
@@ -89,13 +90,28 @@ export default function partReducer(state = initialState, action) {
 
             let arrNew = []
             arrNew = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: 01/03/2021  BUT WE WERE RECEIVING DATE IN '2021-03-01T00:00:00'
+                el.EffectiveDateNew = DayTime(el.EffectiveDate)                                //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID FOR PAGINATION IN PART MASTER
+                return true
+            })
+
+            return {
+                ...state,
+                newPartsListing: arrNew,
+                loading: false,
+                error: false
+            };
+        }
+        case GET_ALL_NEW_PARTS_SUCCESS_PAGINATION: {
+
+            let arrNew = []
+            arrNew = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: 01/03/2021  BUT WE WERE RECEIVING DATE IN '2021-03-01T00:00:00'
                 el.EffectiveDateNew = DayTime(el.EffectiveDate).format("DD/MM/YYYY")                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID FOR PAGINATION IN PART MASTER
                 return true
             })
 
             return {
                 ...state,
-                newPartsListing: arrNew,        
+                allNewPartsListing: arrNew,
                 loading: false,
                 error: false
             };
@@ -155,11 +171,21 @@ export default function partReducer(state = initialState, action) {
                 error: true
             };
         case GET_PRODUCT_DATA_LIST:
+
+            let temp = action.payload && action.payload.map((item) => {
+                if (item.IsConsideredForMBOM === true) {
+                    item.IsConsideredForMBOM = 'YES'
+                } else {
+                    item.IsConsideredForMBOM = 'NO'
+                }
+                return item
+            })
+
             return {
                 ...state,
                 loading: false,
                 error: true,
-                productDataList: action.payload
+                productDataList: temp
             }
         case GET_PRODUCT_UNIT_DATA:
             return {

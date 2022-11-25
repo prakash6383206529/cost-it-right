@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
@@ -14,19 +14,17 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
-import { useHistory } from "react-router-dom";
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingSummary(props) {
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, handleSubmit, control, setValue, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const dispatch = useDispatch()
-  let history = useHistory();
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
@@ -48,6 +46,7 @@ function CostingSummary(props) {
   const [titleObj, setTitleObj] = useState({})
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
+  const [isLoader, setIsLoader] = useState(false);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
@@ -95,7 +94,7 @@ function CostingSummary(props) {
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
-          setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
+          setTechnologyId(Data?.TechnologyId)
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
@@ -211,7 +210,7 @@ function CostingSummary(props) {
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
                   setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
-                  setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
+                  setTechnologyId(Data?.TechnologyId)
                   setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
@@ -220,6 +219,7 @@ function CostingSummary(props) {
                   newValue.partNumber = newValue.label
                   newValue.partId = newValue.value
                   // const prNAme = (newValue.label).replace('/', '%2F')
+                  setIsLoader(true)
                   dispatch(storePartNumber(newValue))
                   dispatch(
                     getCostingSummaryByplantIdPartNo(
@@ -227,10 +227,11 @@ function CostingSummary(props) {
                       '00000000-0000-0000-0000-000000000000',
                       (res) => {
 
-                        if (res.data.Result == true) {
+                        if (res.data.Result === true) {
                           if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
                             setShowWarningMsg(true)
-                            dispatch(setCostingViewData(temp))
+                            dispatch(setCostingViewData([]))
+                            setIsLoader(false)
                           } else {
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
@@ -238,10 +239,12 @@ function CostingSummary(props) {
                                 let dataFromAPI = res.data.Data
                                 const tempObj = formViewData(dataFromAPI)
                                 dispatch(setCostingViewData(tempObj))
+                                setIsLoader(false)
                               }
                             },
                             ))
                           }
+
                         }
                       },
                     ),
@@ -249,7 +252,7 @@ function CostingSummary(props) {
                 }),
               )
             } else {
-              dispatch(getPartInfo('', () => { }))
+              dispatch(getPartInfo('', () => { setIsLoader(false) }))
               setValue('PartName', '')
               setValue('Description', '')
               setValue('ECNNumber', '')
@@ -346,6 +349,7 @@ function CostingSummary(props) {
   }, [partSelectListByTechnology])
 
 
+  const loaderObj = { isLoader: inputLoader }
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -407,9 +411,8 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly No./Part No."}
+                          label={"Assembly/Part No."}
                           name={"Part"}
                           placeholder={"Enter"}
                           Controller={Controller}
@@ -419,7 +422,7 @@ function CostingSummary(props) {
                           defaultValue={part.length !== 0 ? part : ""}
                           asyncOptions={promiseOptions}
                           mandatory={true}
-                          isLoading={false}
+                          isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           NoOptionMessage={"Please enter first few digits to see the part numbers"}
@@ -460,6 +463,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.PartName}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -479,6 +483,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.Description}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -496,6 +501,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ECNNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -513,6 +519,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.DrawingNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -530,6 +537,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.RevisionNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -547,6 +555,7 @@ function CostingSummary(props) {
                           customClassName={'withBorder'}
                           errors={errors.ShareOfBusiness}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
 
@@ -564,7 +573,7 @@ function CostingSummary(props) {
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText="-"
                               className="withBorder"
                               autoComplete={'off'}
                               disabledKeyboardNavigation
@@ -599,14 +608,16 @@ function CostingSummary(props) {
             </div>
           </Col>
         </Row>
+        {isLoader && <LoaderCustom customClass="costing-summary-loader" />}
       </div>
-
       {partNumber !== "" && <CostingSummaryTable
         resetData={resetData}
         showDetail={props.showDetail}
         technologyId={TechnologyId}
         showWarningMsg={showWarningMsg}
         selectedTechnology={technology.label}
+        costingSummaryMainPage={true}
+        setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
       />}
 
       {IsBulkOpen && <BOMUpload

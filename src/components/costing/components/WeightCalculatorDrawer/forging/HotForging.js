@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Fragment, useContext } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 import {
 
@@ -19,6 +18,7 @@ import {
 } from '../../../../../helper'
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
+import { debounce } from 'lodash'
 
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
@@ -113,8 +113,8 @@ function HotForging(props) {
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
   const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
+  const [isDisable, setIsDisable] = useState(false)
 
-  const costData = useContext(costingInfoContext)
   useEffect(() => {
     if (!CostingViewMode) {
       calculateForgeWeight()
@@ -279,7 +279,8 @@ function HotForging(props) {
    * @description Form submission Function
    */
 
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
+    setIsDisable(true)
     let obj = {}
     obj.LayoutType = 'Hot'
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
@@ -319,13 +320,15 @@ function HotForging(props) {
 
 
     dispatch(saveRawMaterialCalculationForForging(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', obj)
       }
     }))
-  }
+  }), 500);
+
   const TotalMachiningStock = (value) => {
     setTotalMachiningStock(value)
   }
@@ -410,12 +413,19 @@ function HotForging(props) {
     }
   }
 
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form"
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
+          >
             <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
@@ -423,7 +433,7 @@ function HotForging(props) {
                     <Row>
                       <Col md="3">
                         <NumberFieldHookForm
-                          label={`Finished Weight (kg)`}
+                          label={`Finished Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -433,7 +443,7 @@ function HotForging(props) {
                             required: true,
                             pattern: {
                               value: /^\d{0,4}(\.\d{0,7})?$/i,
-                              message: 'Maximum length for interger is 4 and for decimal is 7',
+                              message: 'Maximum length for integer is 4 and for decimal is 7',
                             },
 
                           }}
@@ -464,7 +474,7 @@ function HotForging(props) {
 
                 <Col md="3" className='mt10 px-0'>
                   <NumberFieldHookForm
-                    label={`Forged Weight (Kg)`}
+                    label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
                     Controller={Controller}
                     control={control}
@@ -500,7 +510,7 @@ function HotForging(props) {
             <Row className='mt20'>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Diameter (mm)`}
+                  label={`Billet Diameter(mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
@@ -510,7 +520,7 @@ function HotForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -524,7 +534,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length (mm)`}
+                  label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -534,7 +544,7 @@ function HotForging(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for interger is 6 and for decimal is 4',
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -548,7 +558,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Input Length (mm)`}
+                  label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
@@ -564,7 +574,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`No Of Parts Per Length`}
+                  label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
                   Controller={Controller}
                   control={control}
@@ -597,7 +607,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`End Bit Loss (Kg)`}
+                  label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
                   control={control}
@@ -614,7 +624,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Total Input Weight (Kg)`}
+                  label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
                   control={control}
@@ -630,7 +640,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Weight (Kg)`}
+                  label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
                   control={control}
@@ -646,7 +656,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Recovery Percentage`}
+                  label={`Scrap Recovery(%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
                   control={control}
@@ -690,7 +700,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Net RM Cost/ Component`}
+                  label={`Net RM Cost/Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}
@@ -717,13 +727,12 @@ function HotForging(props) {
                 CANCEL
               </button>
               <button
-                type="submit"
-                // onClick={(e)=>{handleSubmit(onSubmit)}}
-                disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
+                <div className={'save-icon'}>
                 </div>
                 {'SAVE'}
               </button>

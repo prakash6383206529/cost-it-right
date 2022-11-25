@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -11,14 +10,13 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
+    getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
-import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -31,17 +29,15 @@ import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
+import { disabledClass } from '../../../actions/Common';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import _ from 'lodash';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class VendorListing extends Component {
     constructor(props) {
@@ -59,6 +55,7 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -76,20 +73,20 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
+            showPopupToggle: false,
             isLoader: false,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
+            disableFilter: true,
+            disableDownload: false,
+            noData: false,
+            dataCount: 0
         }
     }
 
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getAllVendorSelectList()
-        this.props.fetchCountryDataAPI(() => { })
+
+    componentWillUnmount() {
+        this.props.setSelectedRowForPagination([])
     }
 
     componentDidMount() {
@@ -106,7 +103,9 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
+        if (this.props.supplierDataList?.length !== 0) {
+            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -117,10 +116,6 @@ class VendorListing extends Component {
         onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
-    resetState = () => {
-        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
-
-    }
 
     onBtPrevious = () => {
         onBtPrevious(this, "Vendor")       //COMMON PAGINATION FUNCTION
@@ -130,7 +125,6 @@ class VendorListing extends Component {
         onBtNext(this, "Vendor")   // COMMON PAGINATION FUNCTION
 
     };
-
 
 
     /**
@@ -144,6 +138,7 @@ class VendorListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
+
                 this.setState({
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -167,19 +162,17 @@ class VendorListing extends Component {
     * @description GET VENDOR DATA LIST
     */
     getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj, isPagination) => {
-        let filterData = {
-            vendorType: vendorType,
-            vendorName: vendorName,
-            country: country,
-        }
-        this.setState({ isLoader: true })
+
+        this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-            this.setState({ isLoader: false })
+            setTimeout(() => {
+                this.setState({ isLoader: false })
+            }, 300);
+            this.setState({ noData: false })
             if (res.status === 202) {
-                this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
 
                 return
@@ -196,7 +189,19 @@ class VendorListing extends Component {
 
             }
 
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-vendor')
+                    button && button.click()
+                }, 500);
+            }
+
             if (res) {
+                if (res && res.status === 204) {
+                    this.setState({ totalRecordCount: 0, pageNo: 0 })
+                }
                 if (res && res.data && res.data.DataList.length > 0) {
                     this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                 }
@@ -210,53 +215,22 @@ class VendorListing extends Component {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
 
                 }, 300);
+
                 setTimeout(() => {
                     this.setState({ warningMessage: false })
-                }, 330);
+                }, 335);
+
                 setTimeout(() => {
-                    this.setState({ isFilterButtonClicked: false, })
+                    this.setState({ isFilterButtonClicked: false })
                 }, 600);
-
-
             }
 
         });
-    }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { countryList, vendorTypeList, vendorSelectList } = this.props;
-
-        const temp = [];
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorType') {
-            vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorList') {
-            vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
     }
 
     /**
@@ -300,6 +274,10 @@ class VendorListing extends Component {
     }
     closePopUp = () => {
         this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
     }
     /**
     * @method buttonFormatter
@@ -307,14 +285,13 @@ class VendorListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.value;
-        const rowData = props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -327,25 +304,48 @@ class VendorListing extends Component {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedRowForPagination?.length > 0) {
+            this.props.selectedRowForPagination.map((item) => {
+                if (item.VendorId === props.node.data.VendorId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
+
     handleChange = (cell, row) => {
         let data = {
             Id: row.VendorId,
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
+    }
+    confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
-                //this.getTableListData(null, null, null)
                 this.filterList()
             }
         })
+        this.setState({ showPopupToggle: false })
     }
-
     /**
     * @method handleVendorType
     * @description Used to handle vendor type
@@ -397,38 +397,30 @@ class VendorListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const { ActivateAccessibility } = this.state;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className="normal-switch" >
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
-    }
 
+        const { ActivateAccessibility } = this.state;
+        if (rowData.UserId === loggedInUserId()) return null;
+        showTitleForActiveToggle(props?.rowIndex)
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
+                    />
+                </label>
+            </>
+        )
+    }
 
     /**
     * @method indexFormatter
@@ -467,14 +459,9 @@ class VendorListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { vendorType, vendorName, country } = this.state;
-        const vType = vendorType && vendorType != null ? vendorType.value : null;
-        const vName = vendorName && vendorName != null ? vendorName.value : null;
-        const Country = country && country != null ? country.value : null;
-
 
         this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
-        //this.getTableListData(vType, vName, Country)
+
     }
 
     /**
@@ -487,8 +474,6 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
-            this.props.getVendorTypesSelectList()
-            this.props.getAllVendorSelectList()
             this.getTableListData(null, null, null)
         })
     }
@@ -497,15 +482,18 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
+
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -520,7 +508,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1367 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -529,8 +517,66 @@ class VendorListing extends Component {
         onPageSizeChanged(this, newPageSize, "Vendor", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
+    resetState = () => {
+        this.props.setSelectedRowForPagination([])
+        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+        this.setState({ dataCount: 0 })
+    }
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+        this.props.disabledClass(true)
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                this.props.disabledClass(false)
+                let button = document.getElementById('Excel-Downloads-vendor')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+    onRowSelect = (event) => {
+        let selectedRows = this.state.gridApi?.getSelectedRows()
+
+        if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = this.props.selectedRowForPagination
+        } else if (this.props.selectedRowForPagination && this.props.selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < this.props.selectedRowForPagination.length; i++) {
+                    if (this.props.selectedRowForPagination[i].VendorId === event.data.VendorId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(this.props.selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = this.props.selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "VendorId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        this.props.setSelectedRowForPagination(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+        this.setState({ dataCount: uniqeArray.length })
+        this.setState({ selectedRowData: selectedRows })
+
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allSupplierDataList ? this.props.allSupplierDataList : [])
         return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -544,6 +590,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
+            // if (item.IsActive === true) {
+            //     item.IsActive = 'Active'
+            // }
+            // else if (item.IsActive === false) {
+            //     item.IsActive = 'In Active'
+            // }
             return item
         })
         return (
@@ -554,10 +606,8 @@ class VendorListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
-
         this.state.gridApi.setQuickFilter(e.target.value);
     }
-
 
 
     /**
@@ -565,30 +615,21 @@ class VendorListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
-
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -596,147 +637,84 @@ class VendorListing extends Component {
             customNoRowsOverlay: NoContentFound,
             indexFormatter: this.indexFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            checkBoxRenderer: this.checkBoxRenderer,
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-
+            <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
-                <form
+                <Row>
+                    <Col md="12" className="d-flex justify-content-between">
+                        <h1 className="mb-0">Vendor Master</h1>
+                    </Col>
+                </Row>
+                <Row className="py-4 no-filter-row zindex-2">
+                    <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
+                    <Col md="9">
+                        <div className="d-flex justify-content-end bd-highlight w100 ">
+                            {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
 
-                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    noValidate
-                >
-                    <Row>
-                        <Col md="12" className="d-flex justify-content-between">
-                            <h1 className="mb-0">Vendor Master</h1>
-                        </Col>
-                    </Row>
-                    {this.state.isLoader && <LoaderCustom />}
-                    <Row className="pt-2 align-items-center">
-                        {this.state.shown && (
-                            <Col md="12" lg="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Type"}
-                                            options={this.renderListing("vendorType")}
-
-                                            validate={
-                                                this.state.vendorType == null ||
-                                                    this.state.vendorType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorType}
-                                            valueDescription={this.state.vendorType}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Vendors"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            options={this.renderListing("vendorList")}
-
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-                                        <button
-                                            type="button"
-
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
-
-                        <Col md="12">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div className="warning-message d-flex align-items-center">
-                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                </div>
-                                <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-                                            <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
-
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                </div>
+                            <div className="warning-message d-flex align-items-center">
+                                {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                        </Col>
-                    </Row>
-                </form>
-                <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className='d-flex'>
+                                <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.formToggle}
+                                        title="Add"
+                                    >
+                                        <div className={"plus mr-0"}></div>
+                                        {/* ADD */}
+                                    </button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                </button>
+
+                                                <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+                                        }
+                                    </>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+                {this.state.isLoader && <LoaderCustom />}
+                {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                    <div className="ag-grid-header col-md-4 pl-0">
+                        <SelectRowWrapper className={"mt-3"} dataCount={this.state.dataCount} />
+                    </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found vendor-listing" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -749,26 +727,27 @@ class VendorListing extends Component {
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
+                            rowSelection={'multiple'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            onRowSelected={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                             enablePivot={true}
+                            enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
+                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                             <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" width={"230px"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
 
                         <div className="button-wrapper">
-
-
 
                             {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                             <div className="d-flex pagination-button-container">
@@ -785,10 +764,13 @@ class VendorListing extends Component {
                         <div className="text-right pb-3">
                             <WarningMessage message="All the above details of supplier is entered through SAP." />
                         </div>
+                        <div className="text-right pb-3">
+                            <WarningMessage message="All the above details of supplier is entered through SAP." />
+                        </div>
                         {/* <WarningMessage dClass={"vendorListingMessage"} textClass={'vendorListingText'} message={'All the above details of supplier is entered through SAP.'} /> */}
 
                     </div>
-                </div>
+                </div>}
 
 
                 {
@@ -820,6 +802,9 @@ class VendorListing extends Component {
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
                 }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`} />
+                }
             </div >
         );
     }
@@ -830,12 +815,13 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier, auth, }) {
-    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
+function mapStateToProps({ comman, supplier, auth, simulation }) {
+    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
+    const { selectedRowForPagination } = simulation;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, topAndLeftMenuData };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
 
 /**
@@ -849,15 +835,15 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorTypesSelectList,
-    fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getAllVendorSelectList,
-    getVendorTypeByVendorSelectList
+    getVendorTypeByVendorSelectList,
+    setSelectedRowForPagination,
+    disabledClass
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VendorListing));

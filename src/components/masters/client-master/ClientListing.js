@@ -5,11 +5,11 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -20,16 +20,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
+import { PaginationWrapper } from '../../common/commonPagination';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class ClientListing extends Component {
     constructor(props) {
@@ -40,7 +37,7 @@ class ClientListing extends Component {
             tableData: [],
             ID: '',
             isViewMode: false,
-
+            ViewAccessibility: false,
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -52,13 +49,15 @@ class ClientListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader:false
-
+            isLoader: false,
+            selectedRowData: false,
+            noData: false,
+            dataCount: 0
         }
     }
 
     componentDidMount() {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
@@ -84,6 +83,7 @@ class ClientListing extends Component {
             if (permmisionData !== undefined) {
                 this.setState({
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
@@ -107,13 +107,14 @@ class ClientListing extends Component {
             companyName: companyName,
         }
         this.props.getClientDataList(filterData, res => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
+                    isLoader: false
                 })
             } else {
 
@@ -169,14 +170,13 @@ class ClientListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {<button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -251,16 +251,24 @@ class ClientListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData(null, null)
+            if (type === 'submit')
+                this.getTableListData(null, null)
         })
     }
 
+    /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+    onFloatingFilterChanged = (value) => {
+        this.props.clientDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }
     /**
     * @name onSubmit
     * @param values
@@ -278,18 +286,18 @@ class ClientListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows?.length })
+    }
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, this.props.clientDataList)
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.clientDataList ? this.props.clientDataList : [])
+        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -313,6 +321,7 @@ class ClientListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -323,29 +332,22 @@ class ClientListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            // onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+        const isFirstColumn = (params) => {
 
-        };
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -380,9 +382,12 @@ class ClientListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" title="Download" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                            <>
+                                                <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" title="Download" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+
                                         </>
 
                                     }
@@ -399,11 +404,13 @@ class ClientListing extends Component {
 
 
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.clientDataList && this.props.clientDataList?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.clientDataList && this.props.clientDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <SelectRowWrapper dataCount={this.state.dataCount} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -413,31 +420,28 @@ class ClientListing extends Component {
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={defaultPageSize}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                onFilterModified={this.onFloatingFilterChanged}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
                                 }}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={this.onRowSelect}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="CompanyName" headerName="Company"></AgGridColumn>
+                                <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                                 <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+                            {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                         </div>
                     </div>
 
@@ -465,11 +469,10 @@ class ClientListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth, client }) {
-    const { loading, } = comman;
+function mapStateToProps({ auth, client }) {
     const { leftMenuData, topAndLeftMenuData } = auth;
     const { clientDataList } = client;
-    return { loading, leftMenuData, clientDataList, topAndLeftMenuData };
+    return { leftMenuData, clientDataList, topAndLeftMenuData };
 }
 
 /**
@@ -487,4 +490,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ClientListing));

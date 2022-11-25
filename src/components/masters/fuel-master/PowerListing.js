@@ -4,13 +4,11 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import {
-  getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
-  getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
+  getPowerDetailDataList, getVendorPowerDetailDataList, getPlantListByState,
+  deletePowerDetail, deleteVendorPowerDetail,
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { searchableSelect } from "../../layout/FormInputs";
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -25,11 +23,11 @@ import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from 
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { li } from 'react-dom-factories';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -52,7 +50,10 @@ class PowerListing extends Component {
       vendorPlant: [],
       showPopup: false,
       deletedId: '',
-      isLoader: false
+      isLoader: false,
+      selectedRowData: false,
+      noData: false,
+      dataCount: 0
     }
   }
 
@@ -61,10 +62,12 @@ class PowerListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getZBCPlantList(() => { })
-    this.props.getStateSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { });
-    this.getDataList()
+    setTimeout(() => {
+      if (!this.props.stopApiCallOnCancel) {
+        this.getDataList()
+      }
+    }, 300);
+
   }
 
   getDataList = () => {
@@ -79,11 +82,11 @@ class PowerListing extends Component {
         this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          this.setState({ tableData: Data })
+          this.setState({ tableData: Data, isLoader: false })
         } else if (res && res.response && res.response.status === 412) {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         } else {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         }
       })
 
@@ -110,14 +113,16 @@ class PowerListing extends Component {
   }
 
   /**
-  * @method editItemDetails
-  * @description edit material type
-  */
-  editItemDetails = (Id) => {
+ * @method viewOrEditItemDetails
+ * @description edit or view material type
+ */
+  viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: Id,
+      Id: this.state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
       IsVendor: this.state.IsVendor,
+      isViewMode: isViewMode,
+      plantId: Id?.PlantId
     }
     this.props.getDetails(data);
   }
@@ -136,12 +141,13 @@ class PowerListing extends Component {
   */
   confirmDelete = (ID) => {
     if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID, (res) => {
+      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
+      this.setState({ showPopup: false })
     } else {
       this.props.deletePowerDetail(ID, (res) => {
         if (res.data.Result === true) {
@@ -171,19 +177,30 @@ class PowerListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.props;
+    const rowData = props?.data;
+    let obj = {}
+    obj.PowerId = rowData?.PowerId
+    obj.PlantId = rowData?.PlantId
+    obj.PowerDetailId = rowData?.PowerDetailId
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, true)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, false)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
       </>
     )
   };
 
+
+  /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
 
   /**
   * @method costingHeadFormatter
@@ -221,9 +238,8 @@ class PowerListing extends Component {
   }
 
   costFormatterForVBC = (props) => {
-    const { initialConfiguration } = this.props
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
+    return cellValue != null ? cellValue : '';
   }
 
   /**
@@ -238,7 +254,13 @@ class PowerListing extends Component {
     return <>Effective <br />Date</>
   }
 
-
+  /**
+     * @method onFloatingFilterChanged
+     * @description Filter data when user type in searching input
+     */
+  onFloatingFilterChanged = (value) => {
+    this.props.powerDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+  }
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -287,27 +309,22 @@ class PowerListing extends Component {
     params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+  }
   onBtExport = () => {
     let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
-    //   tempArr.push(item.data)
-    // }))
-
-    let listing = []
-    let downloadTemp = ''
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
     if (this.state.IsVendor) {
-      listing = this.props.vendorPowerDataList && this.props.vendorPowerDataList
-      downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.vendorPowerDataList ? this.props.vendorPowerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_VENDOR_DOWNLOAD_EXCEL, tempArr)
     } else {
-      listing = this.props.powerDataList && this.props.powerDataList
-      downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
     }
-    return this.returnExcelColumn(downloadTemp, listing)
   };
 
   onFilterTextBoxChanged(e) {
@@ -315,6 +332,7 @@ class PowerListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -324,36 +342,55 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
-    const { isEditFlag, } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const { isEditFlag, noData, dataCount } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
+    var filterParams = {
+      date: "",
+      comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+          Number(dateParts[2]),
+          Number(dateParts[1]) - 1,
+          Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+          return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+          return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+          return 1;
+        }
+      },
+      browserDatePicker: true,
+      minValidYear: 2000,
     };
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
-
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // effectiveDateRenderer: this.effectiveDateFormatter,
-      // costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
+      effectiveDateRenderer: this.effectiveDateFormatter,
       customNoRowsOverlay: NoContentFound,
-      // freightCostFormatter: this.freightCostFormatter,
-      // shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      effectiveDateFormatter: this.effectiveDateFormatter,
     };
 
     return (
@@ -420,8 +457,6 @@ class PowerListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                       <div className="refresh mr-0"></div>
@@ -437,12 +472,14 @@ class PowerListing extends Component {
           <Col>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.powerDataList && this.props.powerDataList?.length <= 0) || noData || this.state.tableData.length === 0 ? "overlay-contain" : ""}`}>
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -459,11 +496,15 @@ class PowerListing extends Component {
                       title: EMPTY_DATA,
                       imagClass: 'imagClass power-listing'
                     }}
+                    rowSelection={'multiple'}
+                    onFilterModified={this.onFloatingFilterChanged}
+                    onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
+                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
@@ -476,7 +517,7 @@ class PowerListing extends Component {
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
@@ -492,13 +533,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
                     <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
-                <div className="paging-container d-inline-block float-right">
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
             </div>
           </Col>
@@ -533,15 +568,12 @@ function mapStateToProps({ fuel, comman, supplier, auth }) {
 export default connect(mapStateToProps, {
   getPowerDetailDataList,
   getVendorPowerDetailDataList,
-  getFuelComboData,
   getPlantListByState,
-  getZBCPlantList,
-  getStateSelectList,
-  getVendorWithVendorCodeSelectList,
   getPlantBySupplier,
   deletePowerDetail,
   deleteVendorPowerDetail,
 })(reduxForm({
   form: 'PowerListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(PowerListing));

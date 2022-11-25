@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
-import values from 'redux-form/lib/values';
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function Icc(props) {
 
@@ -29,6 +29,7 @@ function Icc(props) {
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
+    const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
 
@@ -49,6 +50,7 @@ function Icc(props) {
         callInventoryAPI(value)
 
         dispatch(gridDataAdded(true))
+        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -59,9 +61,10 @@ function Icc(props) {
     const callInventoryAPI = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
-                VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor,
-                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
+                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+                isVendor: costData.IsVendor,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
@@ -221,8 +224,6 @@ function Icc(props) {
                 default:
                     break;
             }
-
-            dispatch(isOverheadProfitDataChange(true))
         }
     }
 
@@ -306,7 +307,7 @@ function Icc(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
@@ -328,7 +329,7 @@ function Icc(props) {
                                             message: 'Invalid Number.'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

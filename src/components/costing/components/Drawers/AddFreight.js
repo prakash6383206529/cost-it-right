@@ -8,7 +8,6 @@ import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import Switch from "react-switch";
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 
 function AddFreight(props) {
@@ -173,7 +172,7 @@ function AddFreight(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
-      calculateCost(newValue.value)
+      calculateCost(newValue.label)
     } else {
       setApplicability([])
     }
@@ -185,13 +184,13 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost } = headCostData;
 
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
     const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) + ConversionCostForCalculation;
-    const BOPCC = checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
+    const RMCC = checkForNull(NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
+    const BOPCC = checkForNull(NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation)
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
@@ -222,8 +221,8 @@ function AddFreight(props) {
         setFreightCost(totalFreightCost)
         break;
       case 'CC':
-        totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), getConfigurationKey().NoOfDecimalForPrice))
+        totalFreightCost = (ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull((totalFreightCost), getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
 
@@ -343,7 +342,7 @@ function AddFreight(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Update Freight' : 'ADD Freight'}</h3>
+                  <h3>{isEditFlag ? 'Update Freight' : 'Add Freight'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -427,7 +426,7 @@ function AddFreight(props) {
                     <SearchableSelectHookForm
                       label={'Capacity'}
                       name={'Capacity'}
-                      placeholder={'-Select-'}
+                      placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: (freightType !== Fixed && freightType !== Percentage) ? true : false }}
@@ -445,7 +444,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Applicability'}
                         name={'Applicability'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -461,7 +460,7 @@ function AddFreight(props) {
                       <SearchableSelectHookForm
                         label={'Rate Criteria'}
                         name={'Criteria'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: freightType !== Fixed ? true : false }}
@@ -536,13 +535,11 @@ function AddFreight(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
                       rules={{
-                        required: true,
                         pattern: {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
-                        },
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

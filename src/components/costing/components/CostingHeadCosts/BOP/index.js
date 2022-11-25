@@ -1,14 +1,13 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
 
 function BoughtOutPart(props) {
-  const { children, item } = props;
+  const { item } = props;
 
   const dispatch = useDispatch()
-  const [IsOpen, setIsOpen] = useState(false);
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -31,10 +30,6 @@ function BoughtOutPart(props) {
     }
   }, [])
 
-  const toggle = () => {
-    setIsOpen(!IsOpen)
-  }
-
   /**
   * @method render
   * @description Renders the component
@@ -42,8 +37,8 @@ function BoughtOutPart(props) {
   return (
     <>
       <tr>
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow'>
+          <span title={item && item.PartNumber} style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}
           </span>
         </td>

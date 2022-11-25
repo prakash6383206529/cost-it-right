@@ -37,7 +37,7 @@
 //     //     dispatch(setAttachmentFileData(obj, () => { }))
 //     // }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
 
-//     //  const setAttachmentForSimulation = 
+//     //  const setAttachmentForSimulation =
 
 //     useEffect(() => {
 //         Attachements && Attachements.map(item => {
@@ -65,12 +65,7 @@
 
 
 
-//     // attacment section 
-//     // specify upload params and url for your files
-//     const getUploadParams = ({ file, meta }) => {
-//         return { url: 'https://httpbin.org/post', }
-//     }
-
+//     // attacment section
 //     // called every time a file's `status` changes
 //     const handleChangeStatus = ({ meta, file }, status) => {
 
@@ -240,7 +235,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 Toaster.success('File has been deleted successfully.')
+//                 Toaster.success('File deleted successfully.')
 //                 let tempArr = files && files.filter(item => item.FileId !== FileId)
 //                 setFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -259,7 +254,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 Toaster.success('File has been deleted successfully.')
+//                 Toaster.success('File deleted successfully.')
 //                 let tempArr = otherFiles && otherFiles.filter(item => item.FileId !== FileId)
 //                 setOtherFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -279,7 +274,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 Toaster.success('File has been deleted successfully.')
+//                 Toaster.success('File deleted successfully.')
 //                 let tempArr = supplierFiles && supplierFiles.filter(item => item.FileId !== FileId)
 //                 setSupplierFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -299,7 +294,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 Toaster.success('File has been deleted successfully.')
+//                 Toaster.success('File deleted successfully.')
 //                 let tempArr = invoiceFiles && invoiceFiles.filter(item => item.FileId !== FileId)
 //                 setInvoiceFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -319,7 +314,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 Toaster.success('File has been deleted successfully.')
+//                 Toaster.success('File deleted successfully.')
 //                 let tempArr = attachmentFiles && attachmentFiles.filter(item => item.FileId !== FileId)
 //                 setAttachmentFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -364,11 +359,10 @@
 //                             <label>Upload Attachment (upload up to 2 files)</label>
 //                             {files && files.length >= 2 ? (
 //                                 <div class="alert alert-danger" role="alert">
-//                                     Maximum file upload limit has been reached.
+//                                     Maximum file upload limit reached.
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeStatus}
 //                                     PreviewComponent={Preview}
 //                                     // onSubmit={handleImapctSubmit}
@@ -450,11 +444,10 @@
 //                             <label>Upload Attachment (upload up to 2 files)</label>
 //                             {supplierFiles && supplierFiles.length >= 2 ? (
 //                                 <div class="alert alert-danger" role="alert">
-//                                     Maximum file upload limit has been reached.
+//                                     Maximum file upload limit reached.
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeSupplierConfirmationStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -537,11 +530,10 @@
 //                             <label>Upload Attachment (upload up to 10 files)</label>
 //                             {invoiceFiles && invoiceFiles.length >= 10 ? (
 //                                 <div class="alert alert-danger" role="alert">
-//                                     Maximum file upload limit has been reached.
+//                                     Maximum file upload limit reached.
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeInvoiceBackupStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -623,11 +615,10 @@
 //                             <label>Upload Attachment (upload up to 10 files)</label>
 //                             {otherFiles && otherFiles.length >= 10 ? (
 //                                 <div class="alert alert-danger" role="alert">
-//                                     Maximum file upload limit has been reached.
+//                                     Maximum file upload limit reached.
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleOtherChangeStatus}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}
@@ -709,11 +700,10 @@
 //                             <label>Upload Attachment (upload up to 4 files)</label>
 //                             {attachmentFiles && attachmentFiles.length >= 4 ? (
 //                                 <div class="alert alert-danger" role="alert">
-//                                     Maximum file upload limit has been reached.
+//                                     Maximum file upload limit reached.
 //                                 </div>
 //                             ) : (
 //                                 <Dropzone
-//                                     getUploadParams={getUploadParams}
 //                                     onChangeStatus={handleChangeAttachment}
 //                                     PreviewComponent={Preview}
 //                                     //onSubmit={this.handleSubmit}

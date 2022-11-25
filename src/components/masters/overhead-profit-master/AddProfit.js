@@ -3,23 +3,23 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
+import { onFocus, showDataOnHover } from '../../../helper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -37,7 +37,7 @@ class AddProfit extends Component {
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
-
+      singlePlantSelected: [],
       ModelType: [],
       vendorName: [],
       client: [],
@@ -60,25 +60,32 @@ class AddProfit extends Component {
       DropdownChanged: true,
       DataToChange: [],
       uploadAttachements: true,
-      showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false,
       inputLoader: false,
       minEffectiveDate: '',
-      isDataChanged: this.props.data.isEditFlag
+      isDataChanged: this.props.data.isEditFlag,
+      attachmentLoader: false,
+      vendorCode: "",
+      showErrorOnFocus: false,
+      showErrorOnFocusDate: false
     }
   }
 
+
   /**
    * @method componentDidMount
-   * @description Called after rendering the component
+   * @description Called after rendering the component   
    */
   componentDidMount() {
-    this.props.fetchModelTypeAPI('--Model Types--', res => { });
-    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    this.props.getClientSelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
+    if (!this.state.isViewMode) {
+      this.props.fetchModelTypeAPI('--Model Types--', res => { });
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.props.getClientSelectList(() => { })
+    }
     this.getDetails();
   }
 
@@ -141,12 +148,9 @@ class AddProfit extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
+            const { costingHead } = this.props;
 
-            const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-            const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
-            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
 
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -162,14 +166,16 @@ class AddProfit extends Component {
               // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
-              ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
-              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
-              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
+              client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : "",
+              selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
+              singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -240,8 +246,16 @@ class AddProfit extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null
+      })
+      return temp
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
@@ -260,15 +274,6 @@ class AddProfit extends Component {
     }
   };
 
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue });
-    } else {
-      this.setState({ plant: [] })
-    }
-    this.setState({ DropdownChanged: false })
-  }
-
   /**
   * @method handleClient
   * @description called
@@ -280,6 +285,17 @@ class AddProfit extends Component {
       this.setState({ client: [] })
     }
   };
+  /** 
+   * @method handlePlant
+   * @description Used handle plants
+   */
+  handlePlant = (e) => {
+    this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
+  }
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
@@ -536,13 +552,6 @@ class AddProfit extends Component {
     })
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -550,7 +559,7 @@ class AddProfit extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -558,7 +567,7 @@ class AddProfit extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false, setDisable: true })
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -616,7 +625,7 @@ class AddProfit extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteProfit(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -643,7 +652,7 @@ class AddProfit extends Component {
   * @method cancel
   * @description used to Cancel form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -655,7 +664,7 @@ class AddProfit extends Component {
       profitAppli: [],
     })
     this.props.getProfitData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -663,10 +672,20 @@ class AddProfit extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, ModelType, vendorName, client, profitAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant, uploadAttachements } = this.state;
+    const { costingHead, IsVendor, ModelType, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
+    let plantArray = []
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    } else {
+
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
+        return plantArray
+      })
+    }
     if (vendorName.length <= 0) {
 
       if (IsVendor && costingHead === 'vendor') {
@@ -698,10 +717,10 @@ class AddProfit extends Component {
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })
@@ -720,7 +739,7 @@ class AddProfit extends Component {
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
         VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
         ClientId: costingHead === 'client' ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
@@ -728,14 +747,25 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        PlantId: plant?.value
+        Plants: plantArray
+        // PlantId: plant?.value
       }
       if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please update the effective date')
+          this.setState({ setDisable: false })
+          return false
+        }
+        this.props.updateProfit(requestData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+            this.cancel('submit')
+          }
+        });
       }
-
 
 
     } else {
@@ -757,32 +787,21 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        PlantId: plant.value
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        Plants: plantArray
+        // PlantId: plant.value
       }
 
       this.props.createProfit(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
   }, 500)
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateProfit(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-        this.cancel()
-      }
-    });
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -796,7 +815,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, isEditFlag, costingHead,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -827,10 +846,7 @@ class AddProfit extends Component {
                 <div className="shadow-lgg login-formg">
                   <div className="row">
                     <div className="col-md-6">
-                      <h1>
-                        {isEditFlag
-                          ? `Update Profit Details`
-                          : `Add Profit Details`}
+                      <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
                       </h1>
                     </div>
                   </div>
@@ -893,7 +909,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Model Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("ModelType")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
@@ -911,10 +927,10 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <>
-                            <Col md="3">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
+                          <Col md="3">
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <div className='p-relative'>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
                                 ref={this.myRef}
@@ -923,33 +939,59 @@ class AddProfit extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
-                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
-                            </Col>
-                            <Col md="3" >
-                              <Field
-                                name="Plant"
-                                type="text"
-                                label={"Plant"}
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("plant")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.plant == null ||
-                                    this.state.plant.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handlePlant}
-                                valueDescription={this.state.plant}
-                                disabled={isEditFlag ? true : false}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
                               />
-                            </Col>
-                          </>
+                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                            </div>
+                          </Col>
                         )}
+                        {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                          <Col md="3">
+                            <Field
+                              label="Plant"
+                              name="Plant"
+                              placeholder={"Select"}
+                              title={showDataOnHover(this.state.selectedPlants)}
+                              selection={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handlePlant}
+                              validate={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              disabled={isEditFlag || isViewMode}
+                              className="multiselect-with-border"
+                              valueDescription={this.state.selectedPlants}
+                            />
+                          </Col>)
+                        )}
+                        {
+                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          <Col md="3">
+                            <Field
+                              label={'Plant'}
+                              name="DestinationPlant"
+                              placeholder={"Select"}
+                              options={this.renderListing("singlePlant")}
+                              handleChangeDescription={this.handleSinglePlant}
+                              validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                              required={true}
+                              component={searchableSelect}
+                              valueDescription={this.state.singlePlantSelected}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag || isViewMode}
+                            />
+                          </Col>
+                        }
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="3">
                             <Field
@@ -957,7 +999,7 @@ class AddProfit extends Component {
                               type="text"
                               label={"Client Name"}
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -980,7 +1022,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Profit Applicability"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing(
                               "ProfitApplicability"
                             )}
@@ -1006,12 +1048,12 @@ class AddProfit extends Component {
                               name={"ProfitPercentage"}
                               type="text"
                               placeholder={
-                                !isProfitPercent ? "Enter" : ""
+                                isProfitPercent || isViewMode ? "-" : "Enter"
                               }
                               validate={
                                 !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
-                              component={renderText}
+                              component={renderNumberInputField}
                               onBlur={this.handlePercent}
                               required={!isProfitPercent ? true : false}
                               onChange={(event) => this.handleChangeProfitPercentage(event.target.value)}
@@ -1028,10 +1070,10 @@ class AddProfit extends Component {
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
-                              placeholder={!isRM ? "Enter" : ""}
+                              placeholder={isRM || isViewMode ? "-" : "Enter"}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
@@ -1042,13 +1084,13 @@ class AddProfit extends Component {
                         {!isHideCC && (
                           <Col md="3">
                             <Field
-                              label={`Profit on CC (Machining) (%)`}
+                              label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
-                              placeholder={!isCC ? "Enter" : ""}
+                              placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
                               className=""
@@ -1063,10 +1105,10 @@ class AddProfit extends Component {
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
-                              placeholder={!isBOP ? "Enter" : ""}
+                              placeholder={isBOP || isViewMode ? "-" : "Enter"}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
                               className=""
@@ -1093,7 +1135,10 @@ class AddProfit extends Component {
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
+                              placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
+                              onFocus={() => onFocus(this, true)}
                             />
+                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                           </div>
                         </Col>
                       </Row>
@@ -1108,7 +1153,7 @@ class AddProfit extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"
@@ -1123,12 +1168,11 @@ class AddProfit extends Component {
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
-                              getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               disabled={isViewMode}
@@ -1167,6 +1211,7 @@ class AddProfit extends Component {
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>
+                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {this.state.files &&
                               this.state.files.map((f) => {
                                 const withOutTild = f.FileURL.replace(
@@ -1209,7 +1254,7 @@ class AddProfit extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -1230,9 +1275,6 @@ class AddProfit extends Component {
               </div>
             </div>
           </div>
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
         </div>
       </>
     );
@@ -1265,7 +1307,9 @@ function mapStateToProps(state) {
     }
   }
 
-  return { modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList, plantSelectList, filedObj, initialValues, }
+  return {
+    modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList, filedObj, initialValues, plantSelectList
+  }
 
 }
 
@@ -1281,6 +1325,7 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   getClientSelectList,
   createProfit,
+  getPlantSelectListByType,
   updateProfit,
   getProfitData,
   fileUploadProfit,

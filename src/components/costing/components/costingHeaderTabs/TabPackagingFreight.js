@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -12,8 +12,8 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
-import { Link } from 'react-scroll';
 import { createToprowObjAndSave } from '../../CostingUtil';
+import { debounce } from 'lodash';
 
 function TabPackagingFreight(props) {
 
@@ -72,7 +72,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.FreightNetCost + packageTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
         i.CostingPartDetails.CostingPackagingDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -92,7 +92,7 @@ function TabPackagingFreight(props) {
   */
   const packageTotalCost = (item) => {
     let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
+    cost = item && item?.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.PackagingCost);
     }, 0)
     return cost;
@@ -118,7 +118,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.PackagingNetCost + freightTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
         i.CostingPartDetails.CostingFreightDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -138,7 +138,7 @@ function TabPackagingFreight(props) {
   */
   const freightTotalCost = (item) => {
     let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
+    cost = item && item?.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.FreightCost);
     }, 0)
     return cost;
@@ -148,7 +148,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
+  const saveCosting = debounce(handleSubmit(() => {
 
     if (checkIsFreightPackageChange) {
 
@@ -165,17 +165,18 @@ function TabPackagingFreight(props) {
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
-        //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+        // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
+
       if (costData.IsAssemblyPart === true) {
 
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-
       }
+
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
@@ -184,8 +185,7 @@ function TabPackagingFreight(props) {
         }
       }))
     }
-
-  }
+  }), 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -193,12 +193,6 @@ function TabPackagingFreight(props) {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
 
   return (
     <>
@@ -217,7 +211,6 @@ function TabPackagingFreight(props) {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(onSubmit)}
               >
                 <Row>
                   <Col md="12">
@@ -233,13 +226,13 @@ function TabPackagingFreight(props) {
                         {PackageAndFreightTabData && PackageAndFreightTabData.map((item, index) => {
                           return (
                             <>
-                              <tr class="accordian-row" key={index} id="costing-header">
-                                <td>{item.PartNumber}</td>
-                                <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                                <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <tr class="accordian-row" key={index} >
+                                <td>{item?.PartNumber}</td>
+                                <td>{item?.CostingPartDetails?.PackagingNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               </tr>
                               <tr>
-                                <td colSpan={3} className="cr-innerwrap-td ">
+                                <td colSpan={3} className="cr-innerwrap-td">
                                   <div>
                                     <PackageAndFreight
                                       index={index}
@@ -258,14 +251,14 @@ function TabPackagingFreight(props) {
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
-                  {!CostingViewMode && <Link to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
+                  {!CostingViewMode && <button
                     type={"button"}
-                    className="submit-button mr5 save-btn"
+                    className="submit-button save-btn"
                     onClick={saveCosting}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
-                  </button> </Link>}
+                  </button>}
                 </div>
               </form>
             </div>

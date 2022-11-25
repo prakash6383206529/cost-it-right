@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Row, Col } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { APPROVED, PENDING, REJECTED } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
@@ -102,19 +102,6 @@ function ViewDrawer(props) {
                   })}
               </div>
             }
-            {/* </Row> */}
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={toggleDrawer}
-                >
-                  <div className={'cancel-icon'}></div>{' '}
-                  {'Cancel'}
-                </button>
-              </div>
-            </Row>
           </div>
         </div>
         {/* </Container> */}

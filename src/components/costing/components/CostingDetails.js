@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, NCC } from '../../../config/constants';
+import { EMPTY_DATA, NCC, REJECTED_BY_SYSTEM } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -18,12 +18,12 @@ import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
-import BOMUpload from '../../massUpload/BOMUpload';
+import BOMUploadDrawer from '../../massUpload/BOMUpload';
+
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
@@ -33,6 +33,10 @@ import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
+export const CopyCostingContext = React.createContext()
+export const VbcExistingCosting = React.createContext()
+export const CostingStatusContext = React.createContext()
+export const CostingTypeContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -44,6 +48,7 @@ function IsolateReRender(control) {
 }
 
 function CostingDetails(props) {
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -56,31 +61,30 @@ function CostingDetails(props) {
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
   const [isVBCSOBEnabled, setVBCEnableSOBField] = useState(true);
-
   const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
   const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
   const [zbcPlantOldArray, setzbcPlantOldArray] = useState([]);
-  const [editRow, setEditRow] = useState({});
-
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
   const [isNCCDrawerOpen, setIsNCCDrawerOpen] = useState(false)
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [nccGrid, setNccGrid] = useState([])
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
-
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
   const [stepTwo, setStepTwo] = useState(Object.keys(props.costingData).length > 0 ? true : false);
   const [IsShowNextBtn, setShowNextBtn] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
-
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
+  const [isZBCLoader, setIsZBCLoader] = useState(false)
+  const [isVBCLoader, setIsVBCLoader] = useState(false)
+  const [costingType, setCostingType] = useState("")
 
   // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
   const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
+  const [approvalStatus, setApprovalStatus] = useState('')
 
   //ROLE AND PERMISSION
   const [ViewAccessibility, setViewAccessibility] = useState(true)
@@ -96,12 +100,14 @@ function CostingDetails(props) {
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
   // FOR EDIT MODE COSTING
   const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
+  // FOR COPY COSTING MODE
+  const [IsCopyCostingMode, setIsCopyCostingMode] = useState(false)
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
 
 
-  const fieldValues = IsolateReRender(control);
+  IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
   const [costingObj, setCostingObj] = useState({
     item: {},
@@ -111,6 +117,7 @@ function CostingDetails(props) {
   const [titleObj, setTitleObj] = useState({})
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
+  const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
 
   const dispatch = useDispatch()
 
@@ -123,8 +130,8 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-      localStorage.setItem('costingArray', [])
-      localStorage.setItem('surfaceCostingArray', [])
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -358,9 +365,9 @@ function CostingDetails(props) {
   }
 
   // client based costing start 
-  const toggleCLientCosting = () => {
-    setClientDrawer(true)
-  }
+  // const toggleCLientCosting = () => {
+  //   setClientDrawer(true)
+  // }
 
   const closeCLientCostingDrawer = () => {
     setClientDrawer(false)
@@ -373,28 +380,44 @@ function CostingDetails(props) {
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
+    setIsZBCLoader(true)
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
           setZBCPlantGrid(Data)
           setzbcPlantOldArray(Data)
+          setIsZBCLoader(false)
         }
       }))
-
+      setIsVBCLoader(true)
       dispatch(getVBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
-          setVBCVendorGrid(Data)
+          let vbcArray = []
+          let nccArray = []
+
+          Data && Data.map((item) => {
+            if (item.CostingHead === NCC) {
+              nccArray.push(item)
+            } else if (item.CostingHead === VBC) {
+              vbcArray.push(item)
+            }
+          })
+
+          setNccGrid(nccArray)
+          setVBCVendorGrid(vbcArray)
           setvbcVendorOldArray(Data)
+          setIsVBCLoader(false)
         }
       }))
-
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
+      // setIsNCCLoader(true)
       // dispatch(getNCCExistingCosting(part.value,(res=>{
       //   if(res.data.Result){
       //     let Data = res.data.DataList
       //     setNccGrid(Data)
+      //     setIsNCCLoader(false)
       //   }
       // })))
 
@@ -438,12 +461,11 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ShareOfBusinessPercent: parseInt(event.target.value),
+        ShareOfBusinessPercent: event.target.value,
         isSOBChanged: checkIsZBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
-      setEditRow({ EditIndex: index, type: ZBC })
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
     }
@@ -470,6 +492,26 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const handleCostingChange = (newValue, type, index) => {
+
+    let tempObject = []
+    if (type === ZBC) {
+      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
+    } else if (type === VBC) {
+      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
+    } else if (type === NCC) {
+      // NCC GRID AT PLACE OF vbcVendorGrid
+      tempObject = nccGrid && nccGrid[index]?.CostingOptions
+    }
+
+    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
+
+    let costingOptionsSelectedObjectTemp = {
+      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
+      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
+    }
+    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
+    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
+
     let tempArray = []
 
     if (type === ZBC && newValue !== '') {
@@ -503,6 +545,22 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
+    }
+
+    if (type === NCC && newValue !== '') {
+      let tempData = nccGrid[index]
+      let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
+
+      tempData = {
+        ...tempData,
+        SelectedCostingVersion: newValue,
+        Status: selectedOptionObj.Status,
+        DisplayStatus: selectedOptionObj.DisplayStatus,
+        CostingId: newValue.value,
+        Price: selectedOptionObj.Price,
+      }
+      tempArray = Object.assign([...nccGrid], { [index]: tempData })
+      setNccGrid(tempArray)
     }
   }
 
@@ -571,6 +629,7 @@ function CostingDetails(props) {
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
+    setCostingOptionsSelectedObject({})
     setIsCopyCostingDrawer(false)
     dispatch(getBriefCostingById('', (res) => { }))
 
@@ -608,12 +667,11 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ShareOfBusinessPercent: parseInt(event.target.value),
+        ShareOfBusinessPercent: event.target.value,
         isSOBChanged: checkIsVBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
-      setEditRow({ EditIndex: index, type: VBC })
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
     }
@@ -640,8 +698,6 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const checkSOBTotal = () => {
-    // const { zbcPlantGridFields, vbcGridFields } = fieldValues
-
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
@@ -654,8 +710,20 @@ function CostingDetails(props) {
     }, 0)
 
     return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
-    // return true;
+  }
 
+  /**
+   * @method checkSOBNegativeExist
+   * @description HANDLE COSTING CHANGE
+   */
+  const checkSOBNegativeExist = (costingHead, array) => {
+    let checkIfNegative = false
+    array && array.length > 0 && array.filter(el => {
+      if (el.ShareOfBusinessPercent < 0) {
+        checkIfNegative = true
+      }
+    }, 0)
+    return checkIfNegative
   }
 
   /**
@@ -666,8 +734,11 @@ function CostingDetails(props) {
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       return tempData.SelectedCostingVersion !== undefined ? true : false
-    } else {
+    } else if (type === VBC) {
       let tempData = vbcVendorGrid[index]
+      return tempData.SelectedCostingVersion !== undefined ? true : false
+    } else {
+      let tempData = nccGrid[index]
       return tempData.SelectedCostingVersion !== undefined ? true : false
     }
   }
@@ -691,7 +762,7 @@ function CostingDetails(props) {
   const warningMessageHandle = (warningType) => {
     switch (warningType) {
       case 'SOB_WARNING':
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
         break
       case 'SOB_SAVED_WARNING':
         Toaster.warning('Please save SOB percentage.')
@@ -716,6 +787,8 @@ function CostingDetails(props) {
    */
   const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
+    setCostingOptionsSelectedObject({})
+    setCostingType(type)
 
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
@@ -741,11 +814,11 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         IsAssemblyPart: partInfo.IsAssemblyPart,
         PartNumber: partInfo.PartNumber,
-        PartName: getValues('PartName'),
-        Description: getValues('Description'),
-        ECNNumber: getValues('ECNNumber'),
-        RevisionNumber: getValues('RevisionNumber'),
-        DrawingNumber: getValues('DrawingNumber'),
+        PartName: partInfo.PartName,
+        Description: partInfo.Description,
+        ECNNumber: partInfo.ECNNumber,
+        RevisionNumber: partInfo.RevisionNumber,
+        DrawingNumber: partInfo.DrawingNumber,
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
       }
@@ -764,8 +837,14 @@ function CostingDetails(props) {
         }
       }),
       )
-    } else if (checkSOBTotal() && type === VBC) {
-      let tempData = vbcVendorGrid[index]
+    } else if ((checkSOBTotal() && type === VBC) || (type === NCC)) {
+
+      let tempData;
+      if (type === VBC) {
+        tempData = vbcVendorGrid[index]
+      } else {
+        tempData = nccGrid[index]
+      }
 
       const data = {
         PartId: part.value,
@@ -793,6 +872,8 @@ function CostingDetails(props) {
         DrawingNumber: partInfo.DrawingNumber,
         Price: partInfo.Price,
         EffectiveDate: effectiveDate,
+        CostingHead: type
+
       }
 
       dispatch(createVBCCosting(data, (res) => {
@@ -800,6 +881,7 @@ function CostingDetails(props) {
           dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setIsCostingViewMode(false)
             setIsCostingEditMode(false)
+            setIsCopyCostingMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -808,65 +890,9 @@ function CostingDetails(props) {
         }
       }),
       )
-    } else if (type === NCC) {
-      let tempData = nccGrid[index]
-
-      const data = {
-        PartId: part.value,
-        PartTypeId: partInfo.PartTypeId,
-        PartType: partInfo.PartType,
-        TechnologyId: technology.value,
-        ZBCId: userDetail.ZBCSupplierInfo.VendorId,
-        UserId: loggedInUserId(),
-        LoggedInUserId: loggedInUserId(),
-        PlantId: tempData.PlantId,
-        PlantName: tempData.PlantName,
-        PlantCode: tempData.PlantCode,
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
-        IsAssemblyPart: partInfo.IsAssemblyPart,
-        PartNumber: partInfo.PartNumber,
-        PartName: getValues('PartName'),
-        Description: getValues('Description'),
-        ECNNumber: getValues('ECNNumber'),
-        RevisionNumber: getValues('RevisionNumber'),
-        DrawingNumber: getValues('DrawingNumber'),
-        Price: partInfo.Price,
-        EffectiveDate: effectiveDate,
-      }
-
-      // remove it
-      dispatch(createZBCCosting(data, (res) => {
-        if (res.data.Result) {
-          setPartInfo(res.data.Data)
-          setCostingData({ costingId: res.data.Data.CostingId, type })
-          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
-            setIsCostingViewMode(false)
-            setIsCostingEditMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }))
-        }
-      }),
-      )
-
-      dispatch(createNCCCosting(data, (res) => {
-        if (res.data.Result) {
-          setPartInfo(res.data.Data)
-          setCostingData({ costingId: res.data.Data.CostingId, type })
-          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
-            setIsCostingViewMode(false)
-            setIsCostingEditMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }))
-        }
-      }))
     }
-
     else {
-      Toaster.warning('SOB Should not be greater than 100.')
+      Toaster.warning('SOB should not be greater than 100.')
     }
   }, 500)
 
@@ -875,6 +901,7 @@ function CostingDetails(props) {
    * @description VIEW COSTING DETAILS IN READ ONLY MODE
    */
   const viewDetails = (index, type) => {
+    setCostingType(type)
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
       return false;
@@ -887,6 +914,7 @@ function CostingDetails(props) {
     } else {
       setIsCostingViewMode(true)
       setIsCostingEditMode(false)
+      setIsCopyCostingMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -896,6 +924,7 @@ function CostingDetails(props) {
    * @description EDIT COSTING DETAILS
    */
   const editCosting = (index, type) => {
+    setCostingType(type)
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
       return false;
@@ -908,6 +937,7 @@ function CostingDetails(props) {
     } else {
       setIsCostingViewMode(false)
       setIsCostingEditMode(true)
+      setIsCopyCostingMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -924,82 +954,17 @@ function CostingDetails(props) {
       if (el.isSOBChanged) {
         IsSOBChanged = true;
       }
+      return null
     })
 
     vbcVendorGrid && vbcVendorGrid.map((el) => {
       if (el.isSOBChanged) {
         IsSOBChanged = true;
       }
+      return null
     })
 
     return IsSOBChanged;
-  }
-
-  /**
-   * @method editCostingAlert
-   * @description CONFIRM EDIT COSTING FOR SOB CHANGE CONFIRMATION
-   */
-  const editCostingAlert = (index, type) => {
-
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmUpdateCosting(index, type)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    }
-    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
-  }
-
-  /**
-   * @method confirmUpdateCosting
-   * @description CONFIRM UPDATE AND MOVE TO STEP TWO
-   */
-  const confirmUpdateCosting = (index, type) => {
-
-    if (type === ZBC) {
-      let tempData = zbcPlantGrid[index]
-      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      const data = {
-        CostingId: tempData.SelectedCostingVersion.value,
-        PlantId: tempData.PlantId,
-        PartId: part.value,
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
-        LoggedInUserId: loggedInUserId(),
-      }
-      dispatch(updateZBCSOBDetail(data, (res) => {
-        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
-          resetSOBChanged()
-          setStepTwo(true)
-          setStepOne(false)
-        }))
-      }))
-    }
-
-    if (type === VBC) {
-      let tempData = vbcVendorGrid[index]
-      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      const data = {
-        CostingId: tempData.SelectedCostingVersion.value,
-        PlantId: tempData.PlantId,
-        PartId: part.value,
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
-        LoggedInUserId: loggedInUserId(),
-        VendorId: tempData.VendorId,
-        VendorPlantId: tempData.VendorPlantId,
-        DestinationPlantId: tempData.DestinationPlantId
-      }
-      dispatch(updateVBCSOBDetail(data, (res) => {
-        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
-
-
-          resetSOBChanged()
-          setStepTwo(true)
-          setStepOne(false)
-        }))
-      }))
-    }
-
   }
 
   /**
@@ -1050,6 +1015,7 @@ function CostingDetails(props) {
    * @description COPY EXIS COSTING
    */
   const copyCosting = (index, type) => {
+    setCostingType(type)
     /*Commented because of error*/
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
@@ -1069,6 +1035,7 @@ function CostingDetails(props) {
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
+      setIsCopyCostingMode(true)
 
       if (type === ZBC) {
         const tempcopyCostingData = zbcPlantGrid[index]
@@ -1089,7 +1056,8 @@ function CostingDetails(props) {
         const tempcopyCostingData = nccGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
-          zbcCosting: getValues(`${nccGridFields}[${index}]CostingVersion`),
+          zbcCosting: '',
+          nccCosting: getValues(`${nccGridFields}[${index}]CostingVersion`),
           vbcCosting: '',
         })
       }
@@ -1103,6 +1071,7 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
+    setCostingType(type)
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
 
@@ -1117,6 +1086,7 @@ function CostingDetails(props) {
     dispatch(deleteDraftCosting(reqData, () => {
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
+      setIsCopyCostingMode(false)
       let tempArray = []
 
       if (type === ZBC) {
@@ -1129,6 +1099,7 @@ function CostingDetails(props) {
           CostingId: Item.CostingId,
           DisplayStatus: '',
           Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
@@ -1177,6 +1148,7 @@ function CostingDetails(props) {
 * @description CONFIRM DELETE COSTINGS
 */
   const deleteRowItem = (index, type) => {
+    setCostingType(type)
 
     if (type === ZBC) {
       let tempArr = zbcPlantGrid && zbcPlantGrid.filter((el, i) => {
@@ -1236,8 +1208,9 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getBriefCostingById('', (res) => { }))
-    localStorage.setItem('costingArray', [])
-    localStorage.setItem('surfaceCostingArray', [])
+
+    reactLocalStorage.setObject('costingArray', [])
+    reactLocalStorage.setObject('surfaceCostingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 
@@ -1263,6 +1236,7 @@ function CostingDetails(props) {
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
+    dispatch(setSurfaceCostData({}, () => { }))
 
     setTimeout(() => {
 
@@ -1279,6 +1253,13 @@ function CostingDetails(props) {
       setValue("ShareOfBusiness", Data.Price)
       setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
+    setCostingOptionsSelectedObject({})
+    dispatch(setProcessGroupGrid([]))
+    dispatch(savePartNumber(''))
+    dispatch(saveBOMLevel(''))
+    dispatch(setPartNumberArrayAPICALL([]))
+    dispatch(isDataChange(false))
+    dispatch(saveAssemblyNumber([]))
 
   }
 
@@ -1323,7 +1304,7 @@ function CostingDetails(props) {
     if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -1372,41 +1353,9 @@ function CostingDetails(props) {
     // return Toaster.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
-  /**
-   * @method setPreviousSOBValue
-   * @description SET OLD SOB VALUE
-   */
-  const setPreviousSOBValue = () => {
-    if (editRow.type === ZBC) {
-      let tempDataOld = zbcPlantOldArray[editRow.EditIndex];
-      let tempData = zbcPlantGrid[editRow.EditIndex]
-
-      if (tempData) {
-        tempData = { ...tempData, ShareOfBusinessPercent: tempDataOld.ShareOfBusinessPercent, }
-        let tempArray = Object.assign([...zbcPlantGrid], { [editRow.EditIndex]: tempData })
-        setZBCPlantGrid(tempArray)
-        setTimeout(() => {
-          setValue(`${zbcPlantGridFields}[${editRow.EditIndex}]ShareOfBusinessPercent`, tempDataOld.ShareOfBusinessPercent)
-        }, 200)
-      }
-
-    }
-
-    if (editRow.type === VBC) {
-      let tempDataOld = vbcVendorOldArray[editRow.EditIndex];
-      let tempData = vbcVendorGrid[editRow.EditIndex]
-
-      if (tempData) {
-        tempData = { ...tempData, ShareOfBusinessPercent: tempDataOld.ShareOfBusinessPercent, }
-        let tempArray = Object.assign([...vbcVendorGrid], { [editRow.EditIndex]: tempData })
-        setVBCVendorGrid(tempArray)
-        setTimeout(() => {
-          setValue(`vbcGridFields[${editRow.EditIndex}]ShareOfBusinessPercent`, tempDataOld.ShareOfBusinessPercent)
-        }, 200)
-      }
-    }
+  const setCostingOptionSelect = () => {
+    setCostingOptionsSelectedObject({})
   }
-
   /**
    * @method confirmSOBUpdate
    * @description CONFIRM SOB UPDATE
@@ -1469,7 +1418,7 @@ function CostingDetails(props) {
     if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        Toaster.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
 
         let tempArr = []
@@ -1558,10 +1507,20 @@ function CostingDetails(props) {
    * @description UPDATE isZBCSOBEnabled STATE
    */
   const updateZBCState = () => {
-    let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-    if (findIndex !== -1) {
-      Toaster.warning('SOB could not be empty.')
-      return false;
+    if (!isZBCSOBEnabled) {
+      let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+      if (!checkSOBTotal()) {
+        Toaster.warning('SOB should not be greater than 100.')
+        return false
+      } else if (checkSOBNegativeExist(ZBC, zbcPlantGrid)) {
+        Toaster.warning('SOB could not be negative.')
+        return false;
+      } else if (findIndex !== -1) {
+        Toaster.warning('SOB could not be empty.')
+        return false;
+      } else {
+        setZBCEnableSOBField(!isZBCSOBEnabled)
+      }
     } else {
       setZBCEnableSOBField(!isZBCSOBEnabled)
     }
@@ -1572,10 +1531,20 @@ function CostingDetails(props) {
    * @description UPDATE isVBCSOBEnabled STATE
    */
   const updateVBCState = () => {
-    let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-    if (findIndex !== -1) {
-      Toaster.warning('SOB could not be empty.')
-      return false;
+    if (!isVBCSOBEnabled) {
+      let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+      if (!checkSOBTotal()) {
+        Toaster.warning('SOB should not be greater than 100.')
+        return false
+      } else if (checkSOBNegativeExist(VBC, vbcVendorGrid)) {
+        Toaster.warning('SOB could not be negative.')
+        return false;
+      } else if (findIndex !== -1) {
+        Toaster.warning('SOB could not be empty.')
+        return false;
+      } else {
+        setVBCEnableSOBField(!isVBCSOBEnabled)
+      }
     } else {
       setVBCEnableSOBField(!isVBCSOBEnabled)
     }
@@ -1617,7 +1586,7 @@ function CostingDetails(props) {
       resolve(filterList(inputValue));
     });
 
-
+  const loaderObj = { isLoader: inputLoader, }
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1639,10 +1608,10 @@ function CostingDetails(props) {
           </button> */}
 
           {/* COMMENTED FOR NOW 29-06-2021 */}
-          {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <div className="add-rounded m-auto"></div>
             <span className="d-block mt-1">ADD BOM</span>
-          </button>} */}
+          </button>}
         </div>
       </span>
       <div className="login-container signup-form costing-details-page">
@@ -1674,7 +1643,6 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -1686,7 +1654,7 @@ function CostingDetails(props) {
                           defaultValue={part.length !== 0 ? part : ""}
                           asyncOptions={promiseOptions}
                           mandatory={true}
-                          isLoading={false}
+                          isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0 || inputLoader) ? true : false}
@@ -1735,6 +1703,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.PartName}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1753,6 +1722,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.Description}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1769,6 +1739,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.ECNNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1785,6 +1756,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.DrawingNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1801,6 +1773,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.RevisionNumber}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1817,6 +1790,7 @@ function CostingDetails(props) {
                           customClassName={"withBorder"}
                           errors={errors.ShareOfBusiness}
                           disabled={true}
+                          placeholder="-"
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1833,12 +1807,13 @@ function CostingDetails(props) {
                               dateFormat="dd/MM/yyyy"
                               // maxDate={new Date()}
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText="-"
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
                               disabled={true}
+                              placeholder="-"
                             />
                           </div>
                         </div>
@@ -1889,13 +1864,11 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
+                                {isZBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
 
-                                    let displayCopyBtn = (item.Status === DRAFT ||
-                                      item.Status === PENDING ||
-                                      item.Status === WAITING_FOR_APPROVAL ||
-                                      item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
+                                    let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -2004,7 +1977,7 @@ function CostingDetails(props) {
                                 className={"user-btn"}
                                 onClick={nccDrawerToggle}
                               >
-                                <div className={"plus"}></div>Vendor/Plant
+                                <div className={"plus"}></div>Vendor
                               </button>
                             ) : (
                               ""
@@ -2032,18 +2005,13 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {nccGrid && nccGrid.map((item, index) => {
-                                  let displayCopyBtn = (item.Status === DRAFT ||
-                                    item.Status === PENDING ||
-                                    item.Status === WAITING_FOR_APPROVAL ||
-                                    item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
-
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.PlantName ? `${item.PlantName}(${item.PlantCode})` : ''}</td>
+                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
                                       <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
 
                                       <td className="cr-select-height w-100px">
@@ -2058,7 +2026,7 @@ function CostingDetails(props) {
                                           defaultValue={item.SelectedCostingVersion}
                                           options={renderCostingOption(item.CostingOptions)}
                                           mandatory={false}
-                                          handleChange={(newValue) => handleCostingChange(newValue, VBC, index)}
+                                          handleChange={(newValue) => handleCostingChange(newValue, NCC, index)}
                                           errors={`${nccGridFields}[${index}]CostingVersion`}
                                         />
                                       </td>
@@ -2073,7 +2041,7 @@ function CostingDetails(props) {
                                           {AddAccessibility && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCC)} />)}
-                                          {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
                                           {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCC)} />)}
                                           {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCC)} />}
                                         </div>
@@ -2138,21 +2106,17 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
+                                {isVBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
-                                  let displayCopyBtn = (item.Status === DRAFT ||
-                                    item.Status === PENDING ||
-                                    item.Status === WAITING_FOR_APPROVAL ||
-                                    item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
-
                                   let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
                                   let displayEditBtn = (item.Status === DRAFT) ? true : false;
-
+                                  let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                   return (
                                     <tr key={index}>
-                                      <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
@@ -2210,31 +2174,34 @@ function CostingDetails(props) {
                                           {AddAccessibility && displayAddButton && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                          {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                           {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                           {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                         </div>
                                       </td>
-                                    </tr>
+                                    </tr >
                                   );
                                 })}
-                                {vbcVendorGrid.length === 0 && (
-                                  <tr>
-                                    <td colSpan={7}>
-                                      <NoContentFound
-                                        title={EMPTY_DATA}
-                                      />
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </Table>
-                          </Col>
-                        </Row>
+                                {
+                                  vbcVendorGrid.length === 0 && (
+                                    <tr>
+                                      <td colSpan={7}>
+                                        <NoContentFound
+                                          title={EMPTY_DATA}
+                                        />
+                                      </td>
+                                    </tr>
+                                  )
+                                }
+                              </tbody >
+                            </Table >
+                          </Col >
+                        </Row >
                       </>
                     )}
 
-                    {!IsOpenVendorSOBDetails &&
+                    {
+                      !IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
                           <button type={"button"} className="reset-btn" onClick={cancel} >
@@ -2247,32 +2214,42 @@ function CostingDetails(props) {
                               <div className={"next-icon"}></div>
                             </button>}
                         </div>
-                      </Row>}
+                      </Row>
+                    }
 
 
                   </>
                 )}
                 {stepTwo && (
-                  <ViewCostingContext.Provider value={IsCostingViewMode} >
-                    <EditCostingContext.Provider value={IsCostingEditMode} >
-                      <CostingDetailStepTwo
-                        backBtn={backToFirstStep}
-                        partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                        costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                        toggle={props.toggle}
-                        IsCostingViewMode={IsCostingViewMode}
-                      />
-                    </EditCostingContext.Provider>
-                  </ViewCostingContext.Provider>
+                  <CostingTypeContext.Provider value={costingType}>
+                    <ViewCostingContext.Provider value={IsCostingViewMode} >
+                      <EditCostingContext.Provider value={IsCostingEditMode} >
+                        <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                          <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                            <CostingStatusContext.Provider value={approvalStatus}>
+                              <CostingDetailStepTwo
+                                backBtn={backToFirstStep}
+                                partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                                costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                                toggle={props.toggle}
+                                IsCostingViewMode={IsCostingViewMode}
+                                IsCopyCostingMode={IsCopyCostingMode}
+                              />
+                            </CostingStatusContext.Provider>
+                          </VbcExistingCosting.Provider>
+                        </CopyCostingContext.Provider>
+                      </EditCostingContext.Provider>
+                    </ViewCostingContext.Provider>
+                  </CostingTypeContext.Provider>
                 )}
               </form>
             </div>
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
             }
-          </Col>
-        </Row>
-      </div>
+          </Col >
+        </Row >
+      </div >
 
       {IsPlantDrawerOpen && (
         <AddPlantDrawer
@@ -2285,26 +2262,30 @@ function CostingDetails(props) {
         />
       )}
 
-      {IsVendorDrawerOpen && (
-        <AddVendorDrawer
-          isOpen={IsVendorDrawerOpen}
-          closeDrawer={closeVendorDrawer}
-          isEditFlag={false}
-          vbcVendorGrid={vbcVendorGrid}
-          ID={""}
-          anchor={"right"}
-        />
-      )}
-      {isNCCDrawerOpen && (
-        <AddNCCDrawer
-          isOpen={isNCCDrawerOpen}
-          closeDrawer={closeNCCDrawer}
-          isEditFlag={false}
-          nccGrid={nccGrid}
-          ID={""}
-          anchor={"right"}
-        />
-      )}
+      {
+        IsVendorDrawerOpen && (
+          <AddVendorDrawer
+            isOpen={IsVendorDrawerOpen}
+            closeDrawer={closeVendorDrawer}
+            isEditFlag={false}
+            vbcVendorGrid={vbcVendorGrid}
+            ID={""}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        isNCCDrawerOpen && (
+          <AddNCCDrawer
+            isOpen={isNCCDrawerOpen}
+            closeDrawer={closeNCCDrawer}
+            isEditFlag={false}
+            nccGrid={nccGrid}
+            ID={""}
+            anchor={"right"}
+          />
+        )
+      }
 
       {isCopyCostingDrawer && (
         <CopyCosting
@@ -2313,15 +2294,17 @@ function CostingDetails(props) {
           copyCostingData={copyCostingData}
           zbcPlantGrid={zbcPlantGrid}
           vbcVendorGrid={vbcVendorGrid}
+          nccGrid={nccGrid}
           partNo={getValues("Part")}
           type={type}
           selectedCostingId={costingIdForCopy}
           //isEditFlag={false}
           anchor={"right"}
+          setCostingOptionSelect={setCostingOptionSelect}
         />
       )}
 
-      {IsBulkOpen && <BOMUpload
+      {IsBulkOpen && <BOMUploadDrawer
         isOpen={IsBulkOpen}
         closeDrawer={closeBulkUploadDrawer}
         isEditFlag={false}
@@ -2335,9 +2318,23 @@ function CostingDetails(props) {
           isOpen={clientDrawer}
           closeDrawer={closeCLientCostingDrawer}
           isEditFlag={false}
+          fileName={'BOM'}
+          messageLabel={'BOM'}
           anchor={'right'}
         />
-      )}
+      )
+      }
+
+      {
+        clientDrawer && (
+          <Clientbasedcostingdrawer
+            isOpen={clientDrawer}
+            closeDrawer={closeCLientCostingDrawer}
+            isEditFlag={false}
+            anchor={'right'}
+          />
+        )
+      }
     </>
   );
 }

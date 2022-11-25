@@ -2,17 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
+import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
 
 
 
 function Rejection(props) {
 
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
+    const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
@@ -20,20 +22,12 @@ function Rejection(props) {
 
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { RMCCutOffObj } = useSelector(state => state.costing)
     const costingHead = useSelector(state => state.comman.costingHead)
     const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
+    const [percentageLimit, setPercentageLimit] = useState(false)
 
-    const defaultValues = {
-
-        //REJECTION FIELDS
-        Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
-        RejectionPercentage: CostingRejectionDetail && CostingRejectionDetail.RejectionPercentage !== null ? CostingRejectionDetail.RejectionPercentage : '',
-        RejectionCost: CostingRejectionDetail && CostingRejectionDetail.RejectionCost !== null ? CostingRejectionDetail.RejectionCost : '',
-        RejectionTotalCost: CostingRejectionDetail && CostingRejectionDetail.RejectionTotalCost !== null ? CostingRejectionDetail.RejectionTotalCost : '',
-    }
     const dispatch = useDispatch()
 
     const rejectionFieldValues = useWatch({
@@ -51,23 +45,24 @@ function Rejection(props) {
 
     useEffect(() => {
         dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+        setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === 'Fixed' ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
     }, [])
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-     
+
 
     }, [rejectionFieldValues]);
 
 
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
-                "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
+                "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ?rejectionObj.RejectionTotalCost : '',
+                "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
 
@@ -75,7 +70,7 @@ function Rejection(props) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    },[rejectionObj])
+    }, [rejectionObj])
 
 
     /**
@@ -87,7 +82,7 @@ function Rejection(props) {
 
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value === '0' || item.Text ==='Net Cost') return false;
+                if (item.Value === '0' || item.Text === 'Net Cost') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -102,11 +97,9 @@ function Rejection(props) {
       */
     const checkRejectionApplicability = (Text) => {
         if (headerCosts && Text !== '') {
-            const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
 
             const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-
 
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
@@ -213,7 +206,7 @@ function Rejection(props) {
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: '-',
+                        RejectionCost: checkForNull(RejectionPercentage),
                         RejectionTotalCost: checkForNull(RejectionPercentage)
                     })
                     break;
@@ -223,9 +216,12 @@ function Rejection(props) {
             }
         }
 
-        dispatch(isOverheadProfitDataChange(true))
     }
 
+    const handleChangeRejectionPercentage = (event) => {
+        setPercentageLimit(decimalAndNumberValidationBoolean(event.target.value))
+        dispatch(isOverheadProfitDataChange(true))
+    }
 
     /**
       * @method handleApplicabilityChange
@@ -242,6 +238,7 @@ function Rejection(props) {
             setApplicability([])
             checkRejectionApplicability('')
         }
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     return (
@@ -258,7 +255,7 @@ function Rejection(props) {
                     <SearchableSelectHookForm
                         label={'Applicability'}
                         name={'Applicability'}
-                        placeholder={'-Select-'}
+                        placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: false }}
@@ -285,7 +282,7 @@ function Rejection(props) {
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                                 max: { value: 100, message: 'Percentage cannot be greater than 100' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -294,24 +291,26 @@ function Rejection(props) {
                         />
                         :
                         //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
-                        <NumberFieldHookForm
-                            label={`Rejection`}
-                            name={'RejectionPercentage'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                            }}
-                            handleChange={() => { }}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            // errors={errors.RejectionPercentage}   //MANUAL CSS TO BE APPLIED FOR ERROR VALIDATION MESSAGE
-                            disabled={CostingViewMode ? true : false}
-                        />}
+                        <div className='p-relative error-wrapper'>
+                            <NumberFieldHookForm
+                                label={`Rejection`}
+                                name={'RejectionPercentage'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                    required: false,
+                                    pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                                }}
+                                handleChange={(e) => handleChangeRejectionPercentage(e)}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                disabled={CostingViewMode ? true : false}
+                            />
+                            {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                        </div>}
                 </Col>
                 {applicability.label !== 'Fixed' &&
                     <Col md="3">

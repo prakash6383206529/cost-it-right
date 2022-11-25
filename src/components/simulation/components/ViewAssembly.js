@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
-import { Fgwiseimactdata } from './FgWiseImactData';
-import { EMPTY_GUID } from '../../../config/constants';
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 function ViewAssembly(props) {
 
-    const { impactType, simulationId } = props
+    const { simulationId } = props
     // const [impactTypeState, setImpactTypeState] = useState('');
 
     // const dataForAssemblyImpact = {

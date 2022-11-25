@@ -3,17 +3,16 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantZbc } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -22,6 +21,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
+import { searchNocontentFilter, showTitleForActiveToggle } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -47,15 +49,15 @@ class ZBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
-            isLoader:false
+            isLoader: false,
+            selectedRowData: false,
+            noData: false,
+            dataCount: 0
         }
     }
 
     componentDidMount() {
-
-        this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-
     }
 
     /**
@@ -66,7 +68,7 @@ class ZBCPlantListing extends Component {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data, isLoader:false })
+                this.setState({ tableData: Data, isLoader: false })
             }
         })
     }
@@ -133,14 +135,12 @@ class ZBCPlantListing extends Component {
   */
     buttonFormatter = (props) => {
         const cellValue = props?.value;
-        const rowData = props?.data;
-
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -151,20 +151,12 @@ class ZBCPlantListing extends Component {
             IsActive: !cell, //Status of the user.
         }
         this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeactivateItem(data, cell)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
@@ -185,36 +177,27 @@ class ZBCPlantListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { ActivateAccessibility } = this.props;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className="normal-switch">
-                        {/* <span>Switch with default style</span> */}
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
+        if (rowData.UserId === loggedInUserId()) return null;
+        showTitleForActiveToggle(props?.rowIndex)
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
+                    />
+                </label>
+            </>
+        )
     }
 
     /**
@@ -327,7 +310,7 @@ class ZBCPlantListing extends Component {
     filterList = () => {
 
         const { country, state, city, } = this.state;
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         let filterData = {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
@@ -335,13 +318,14 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
-         this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
+                    isLoader: false
                 })
             } else {
 
@@ -365,15 +349,26 @@ class ZBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            //this.getTableListData()
-            this.filterList()
+            if (type === 'submit') {
+                this.filterList()
+                this.setState({ noData: false })
+            }
         })
+
+    }
+
+    /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+    onFloatingFilterChanged = (value) => {
+        this.props.plantDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
     }
 
     /**
@@ -391,33 +386,26 @@ class ZBCPlantListing extends Component {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
-
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+    }
     onBtExport = () => {
-        let tempArr = this.props.plantDataList && this.props.plantDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.plantDataList ? this.props.plantDataList : [])
         return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        // let temp = []
-        // TempData.map((item) => {
-        //     if (item.ECNNumber === null) {
-        //         item.ECNNumber = ' '
-        //     } else if (item.RevisionNumber === null) {
-        //         item.RevisionNumber = ' '
-        //     } else if (item.DrawingNumber === null) {
-        //         item.DrawingNumber = ' '
-        //     } else if (item.Technology === '-') {
-        //         item.Technology = ' '
-        //     } else {
-        //         return false
-        //     }
-        //     return item
-        // })
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            return temp;
+        })
         return (
 
             <ExcelSheet data={TempData} name={PlantZbc}>
@@ -431,8 +419,10 @@ class ZBCPlantListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        window.screen.width >= 1600 && this.state.gridApi.sizeColumnsToFit()
     }
 
 
@@ -441,27 +431,22 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor, isDeletePopoup, isTogglePopup } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+        const { isEditFlag, isOpenVendor, noData } = this.state;
+        const isFirstColumn = (params) => {
 
-        };
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -517,11 +502,13 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                    {!this.state.isLoader && < div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -529,7 +516,7 @@ class ZBCPlantListing extends Component {
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
-                            paginationPageSize={10}
+                            paginationPageSize={defaultPageSize}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -537,37 +524,37 @@ class ZBCPlantListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            rowSelection={'multiple'}
+                            suppressRowClickSelection={true}
+                            onSelectionChanged={this.onRowSelect}
+                            onFilterModified={this.onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn  field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-                    </div>
+                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                    </div>}
                 </div>
 
-                {isOpenVendor && (
-                    <AddZBCPlant
-                        isOpen={isOpenVendor}
-                        closeDrawer={this.closeVendorDrawer}
-                        isEditFlag={isEditFlag}
-                        isViewMode={this.state.isViewMode}
-                        ID={this.state.ID}
-                        anchor={"right"}
-                    />
-                )}
+                {
+                    isOpenVendor && (
+                        <AddZBCPlant
+                            isOpen={isOpenVendor}
+                            closeDrawer={this.closeVendorDrawer}
+                            isEditFlag={isEditFlag}
+                            isViewMode={this.state.isViewMode}
+                            ID={this.state.ID}
+                            anchor={"right"}
+                        />
+                    )
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
 
@@ -576,7 +563,7 @@ class ZBCPlantListing extends Component {
                 {
                     this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
                 }
-            </div>
+            </div >
         );
     }
 }
@@ -605,7 +592,6 @@ export default connect(mapStateToProps, {
     getPlantDataAPI,
     deletePlantAPI,
     activeInactiveStatus,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getFilteredPlantList,
@@ -615,4 +601,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ZBCPlantListing));

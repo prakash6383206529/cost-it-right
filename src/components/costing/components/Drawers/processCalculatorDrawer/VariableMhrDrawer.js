@@ -3,14 +3,14 @@ import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import Facing from './Facing'
 import UomTimeProcessDefaultCalculator from './UomTimeProcessDefaultCalculator'
-import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, } from '../../../../../config/masterData'
+import { SHEETMETAL, PLASTIC, MACHINING, Non_Ferrous_HPDC, BROACHING } from '../../../../../config/masterData'
 import { TIME } from '../../../../../config/constants'
 
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData, item } = props
+
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const calculateMachineTime = (time, formValue) => {
 
@@ -58,6 +58,7 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
+
     if (technology === MACHINING) {
       return (
         <SheetMetalBaicDrawer
@@ -69,6 +70,7 @@ function VariableMhrDrawer(props) {
       )
 
     } else if (technology === SHEETMETAL) {
+
       switch (process) {
         case 'Facing':
           return (

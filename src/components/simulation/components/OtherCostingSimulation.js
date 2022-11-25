@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
-import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -23,6 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 
@@ -33,11 +33,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { getValues, setValue } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
-
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
@@ -46,12 +41,9 @@ function OtherCostingSimulation(props) {
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
-    const [id, setId] = useState('')
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
-    const [material, setMaterial] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
-    const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -209,11 +201,9 @@ function OtherCostingSimulation(props) {
 
     const viewCosting = (id, data, rowIndex) => {
         let obj = {
-            simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
             costingId: data.CostingId
         }
-        setId(id)
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
             CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
@@ -442,10 +432,6 @@ function OtherCostingSimulation(props) {
 
     }
 
-    useEffect(() => {
-
-    }, [isView])
-
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = SimulationUtils(TempData)
@@ -576,8 +562,7 @@ function OtherCostingSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -776,14 +761,7 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
-
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
-                                                </div>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                             </div>
                                         </div>
                                     </Col>

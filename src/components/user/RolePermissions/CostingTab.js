@@ -8,7 +8,8 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
-import Switch from "react-switch";
+import { renderActionCommon } from '../userUtil';
+import { scrollReset } from '../../../helper/util';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -21,25 +22,31 @@ class CostingTab extends Component {
       Modules: [],
       actionData: [],
       actionSelectList: [],
-      checkBox: true
+      checkBox: false
     }
   }
 
-  /**
-  * @method componentDidMount
-  * @description used to called after mounting component
-  */
-  componentDidMount() {
 
-  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
-      const { data, actionData, actionSelectList } = nextProps;
+      const { data, actionData, actionSelectList, scrollRef } = nextProps;
+      if (scrollRef) {
+        scrollReset('costingTab')
+      } else {
+        scrollReset('costingTab')
+      }
       this.setState({
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
+      })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Costing') {
+          this.setState({ checkBox: ele.SelectAll })
+        }
+        return null
       })
     }
   }
@@ -68,51 +75,33 @@ class CostingTab extends Component {
   * @description used to add more permission for user
   */
   renderActionHeads = (actionHeads) => {
+
     const { actionData } = this.state;
-    let count = 0;
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
 
-          if (item.Text == "Reject" || item.Text == "Bulk Upload") { return false }
-          else {
-            if (item.Text == 'SOB') { count++; }
+          if (item.Text === 'Reject') {
+            return (
+              <th className="crud-label">
+                <div className={'CancelIcon'}></div>
+                {item.Text}
+              </th>
+            )
 
-            if (count > 0) {
-              return (
-                <>
-                  <th className="crud-label">
-                    <div className={item.Text}></div>
-                    {item.Text}
-                  </th>
+          } else {
 
-                  <th className="crud-label">
-                    <div className='Bulk Upload'></div>
-                    Bulk Upload
-                  </th>
-
-                  <th className="crud-label">
-                    <div className='CancelIcon'></div>
-                    Reject
-                  </th>
-                </>
-              )
-
-            }
-            else {
-              return (
-                <th className="crud-label">
-                  <div className={item.Text}></div>
-                  {item.Text}
-                </th>
-              )
-
-            }
-
+            return (
+              <th className="crud-label">
+                <div className={item.Text}></div>
+                {item.Text}
+              </th>
+            )
           }
         }
+        return null
       })
     }
   }
@@ -122,6 +111,7 @@ class CostingTab extends Component {
   * @description used to checked module
   */
   moduleHandler = (index) => {
+
     //alert('hi')
     const { Modules, } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
@@ -138,7 +128,7 @@ class CostingTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       actionArray = actionRow && actionRow.map((item, index) => {
         item.IsChecked = true;
@@ -147,7 +137,7 @@ class CostingTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
@@ -177,7 +167,6 @@ class CostingTab extends Component {
 
   selectAllHandler = (parentIndex, actionRows) => {
     const { Modules, } = this.state;
-    //const { actionSelectList } = this.props;
 
     let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
@@ -190,23 +179,23 @@ class CostingTab extends Component {
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       let actionArray = actionRows && actionRows.map((item, index) => {
         item.IsChecked = true;
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
   selectAllHandlerEvery = () => {
-    const { Modules, checkBox } = this.state;
+    const { Modules } = this.state;
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
-    let tempArray = [];
-    let isCheckedSelectAll = checkBox
+
+    let isCheckedSelectAll = !booleanVal
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
       if (item.Sequence === 0) {
@@ -219,7 +208,13 @@ class CostingTab extends Component {
         } else {
           item1.IsChecked = isCheckedSelectAll;
         }
+        return null
       })
+      if (item?.Sequence === 0) {
+        item.IsChecked = false
+      } else {
+        item.IsChecked = isCheckedSelectAll
+      }
       return actionRows;
     })
     this.setState({ Modules: actionArray, })
@@ -230,92 +225,9 @@ class CostingTab extends Component {
   * @description used to render row of actions
   */
   renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.state;
 
-    return actionSelectList && actionSelectList.map((el, i) => {
-      if (el.Value == 0) return false;
-      return actions && actions.map((item, index) => {
-        if (el.Value !== item.ActionId) return false;
+    return renderActionCommon(actions, parentIndex, this, COSTING)
 
-        if (item.ActionName == 'Reject') {
-
-          return (
-            <>
-             <td className="text-center">
-              {
-                <label htmlFor="normal-switch" className="normal-switch">
-                  <Switch
-                    onChange={() => this.actionCheckHandler(parentIndex, index)}
-                    checked={item.IsChecked}
-                    value={item.ActionId}
-                    id="normal-switch"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#959CB6"
-                    checkedIcon={false}
-                    uncheckedIcon={false}
-                    height={18}
-                    width={40}
-                  />
-                </label>
-              }
-            </td>
-            </>
-          )
-
-        } 
-        
-        if (item.ActionName == 'Bulk Upload') {
-
-          return (
-            <>
-            <td colSpan='7'></td>
-              <td  className="text-center">
-              {
-                <label htmlFor="normal-switch" className="normal-switch">
-                  <Switch
-                    onChange={() => this.actionCheckHandler(parentIndex, index)}
-                    checked={item.IsChecked}
-                    value={item.ActionId}
-                    id="normal-switch"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#959CB6"
-                    checkedIcon={false}
-                    uncheckedIcon={false}
-                    height={18}
-                    width={40}
-                  />
-                </label>
-              }
-            </td>
-            </>
-          )
-        }
-
-        return (
-          <td className="text-center">
-            {
-              <label htmlFor="normal-switch" className="normal-switch">
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
   }
 
   /**
@@ -354,111 +266,97 @@ class CostingTab extends Component {
     this.props.permissions(Modules, COSTING)
   }
 
-  /**
-  * @method cancel
-  * @description used to cancel role edit
-  */
-  cancel = () => {
-
-  }
-
-  clearForm = () => {
-
-  }
-
   render() {
     const { actionSelectList } = this.state;
     return (
       <div>
         <div className="row form-group grant-user-grid user-costing-tab">
-          <div className="col-md-12 px-0">
-            <Table className="table table-bordered" size="sm">
-              <thead>
-                <tr>
-                  <th>{`Module`}</th>
-                  <th className=" pr-2">
-                    <label className="custom-checkbox align-middle select-all-label">
-                      <input
-                        type="checkbox"
-                        value={"All"}
-                        // className={
-                        //     this.isCheckAll(item, item)
-                        //         ? "selected-box"
-                        //         : "not-selected-box"
-                        // }
-                        // checked={this.isCheckAll(
-                        //     index,
-                        //     item.Actions
-                        // )}
-                        onClick={() =>
-                          this.selectAllHandlerEvery()
-                        }
-                      />
-                      <span className=" before-box pl-0">Select All</span>
-                    </label>
-                  </th>
-                  {this.renderActionHeads(actionSelectList)}
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.Modules &&
-                  this.state.Modules.map((item, index) => {
-                    if (item.Sequence === 0) return false
-                    return (
-                      <tr key={index}>
-                        <td>
-                          {
-                            <label
-                              className="custom-checkbox"
-                              onChange={() => this.moduleHandler(index)}
-                            >
-                              {item.PageName}
-                              <input
-                                type="checkbox"
-                                value={"All"}
-                                checked={this.isCheckModule(item.Actions)}
-                              />
-                              <span
-                                className=" before-box"
-                                checked={this.isCheckModule(item.Actions)}
-                                onChange={() => this.moduleHandler(index)}
-                              />
-                            </label>
+          <div className="col-md-12">
+            <div className='overflow-auto' id="costingTab">
+              <Table className="table table-bordered" size="sm">
+                <thead>
+                  <tr>
+                    <th>{`Module`}</th>
+                    <th className="select-all-block pr-2">
+                      <label className="custom-checkbox align-middle">
+                        <input
+                          type="checkbox"
+                          value={"All"}
+                          checked={this.state.checkBox}
+                          onClick={() =>
+                            this.selectAllHandlerEvery()
                           }
-                        </td>
-                        <td className="select-all-block">
-                          <label className="custom-checkbox">
+                        />
+                        <span className=" before-box pl-0">Select All</span>
+                      </label>
+                    </th>
+                    {this.renderActionHeads(actionSelectList)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.Modules &&
+                    this.state.Modules.map((item, index) => {
+                      if (item.Sequence === 0) return false
+                      return (
+                        <tr key={index}>
+                          <td>
                             {
-                              <input
-                                type="checkbox"
-                                value={"All"}
-                                className={
-                                  this.isCheckAll(index, item.Actions)
-                                    ? "selected-box"
-                                    : "not-selected-box"
-                                }
-                                checked={this.isCheckAll(
-                                  index,
-                                  item.Actions
-                                )}
-                                onClick={() =>
-                                  this.selectAllHandler(index, item.Actions)
-                                }
-                              />
+                              <label
+                                className="custom-checkbox"
+                                onChange={() => this.moduleHandler(index)}
+                              >
+                                {item.PageName}
+                                <input
+                                  type="checkbox"
+                                  value={"All"}
+                                  checked={this.isCheckModule(item.Actions)}
+                                />
+                                <span
+                                  className=" before-box"
+                                  checked={this.isCheckModule(item.Actions)}
+                                  onChange={() => this.moduleHandler(index)}
+                                />
+                              </label>
                             }
-                            <span className=" before-box">Select All</span>
-                          </label>
-                        </td>
+                          </td>
+                          <td className="select-all-block">
+                            <label className="custom-checkbox">
+                              {
+                                <input
+                                  type="checkbox"
+                                  value={"All"}
+                                  className={
+                                    this.isCheckAll(index, item.Actions)
+                                      ? "selected-box"
+                                      : "not-selected-box"
+                                  }
+                                  checked={this.isCheckAll(
+                                    index,
+                                    item.Actions
+                                  )}
+                                  onClick={() =>
+                                    this.selectAllHandler(index, item.Actions)
+                                  }
+                                />
+                              }
+                              <span className=" before-box">Select All</span>
+                            </label>
+                          </td>
 
-                        {this.renderAction(item.Actions, index)}
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </Table>
-            {this.state.Modules.length === 0 && (
-              <NoContentFound title={EMPTY_DATA} />
-            )}
+                          {this.renderAction(item.Actions, index)}
+                        </tr>
+                      );
+                    })}
+                  {this.state.Modules.length === 0 && (
+                    <tr>
+                      <td colSpan={"12"}>
+                        <NoContentFound title={EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </div>
           </div>
         </div>
       </div>
