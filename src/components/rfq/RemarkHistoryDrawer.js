@@ -91,7 +91,6 @@ function RemarkHistoryDrawer(props) {
                 anchor={props.anchor}
                 open={props.isOpen}
                 onClose={(e) => cancel}
-                className='rfq-container-drawer'
             >
                 <Container>
                     <div className={`drawer-wrapper drawer-700px min-320`}>
