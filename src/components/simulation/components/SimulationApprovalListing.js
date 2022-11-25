@@ -129,7 +129,7 @@ function SimulationApprovalListing(props) {
 
 
     useEffect(() => {
-        if (props.activeTab === '2') {
+        if (props.activeTab === '2' || isDashboard) {
             getTableData(0, defaultPageSize, true, floatingFilterData)
         }
         dispatch(isResetClick(false))
