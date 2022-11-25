@@ -64,6 +64,8 @@ function RfqListing(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+        gridApi.sizeColumnsToFit();
+        gridApi.deselectAll()
     }
 
 
@@ -151,7 +153,7 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-
+        params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -336,7 +338,7 @@ function RfqListing(props) {
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                         <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
                                         <AgGridColumn field="Status" headerName="Status"></AgGridColumn>
-                                        {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        {<AgGridColumn field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                     </AgGridReact>
                                     <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

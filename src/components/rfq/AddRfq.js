@@ -647,7 +647,7 @@ function AddRfq(props) {
                         <Row className="drawer-heading">
                             <Col className='pl-0'>
                                 <div className={"header-wrapper d-flex justify-content-between right"}>
-                                    <h3>{"Add RFQ"}</h3>
+                                    <h3>{isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} RFQ</h3>
                                     <div
                                         onClick={cancel}
                                         className={"close-button right"}
