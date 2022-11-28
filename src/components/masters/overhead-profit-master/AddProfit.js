@@ -903,8 +903,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {/* MAY BE USED LATER */}
-                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -917,9 +916,9 @@ class AddProfit extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Customer Based</span>
-                          </Label> */}
-                        </Col>
-                      </Row>
+                          </Label>}
+                        </Col >
+                      </Row >
                       <Row>
                         <Col md="3" >
                           <Field
@@ -1266,7 +1265,7 @@ class AddProfit extends Component {
                           </div>
                         </Col>
                       </Row>
-                    </div>
+                    </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
@@ -1288,15 +1287,15 @@ class AddProfit extends Component {
                         </button>
                       </div>
                     </Row>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </form >
+                </div >
+              </div >
+            </div >
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-        </div>
+        </div >
       </>
     );
   }

@@ -922,7 +922,7 @@ class AddBOPDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -935,7 +935,7 @@ class AddBOPDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Customer Based</span>
-                            </Label>
+                            </Label>}
                           </Col>
                         </Row>
 
