@@ -756,8 +756,8 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
-                                    <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>

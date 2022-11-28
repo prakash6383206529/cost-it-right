@@ -902,8 +902,8 @@ function RMImportListing(props) {
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
-                    <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
-                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                    <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                     <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
@@ -913,7 +913,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

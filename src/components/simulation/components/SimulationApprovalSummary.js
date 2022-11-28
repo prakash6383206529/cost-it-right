@@ -962,13 +962,13 @@ function SimulationApprovalSummary(props) {
                                             <th>Parts Supplied:</th>
                                             <th>Department Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
-                                            <th>Vendor Name:</th>
+                                            <th>Vendor (Code):</th>
                                             <th>No. of Costing:</th>
                                             <th>Reason:</th>
                                             <th>Master:</th>
                                             <th>Effective Date:</th>
-                                            <th>Impact for Quarter(INR):</th>
-                                            <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                                            <th>Impact for Quarter (INR):</th>
+                                            <th>Total Budgeted Price Impact/Quarter (INR):</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1131,8 +1131,8 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
+                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
 
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}

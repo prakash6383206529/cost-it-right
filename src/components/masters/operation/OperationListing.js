@@ -859,8 +859,8 @@ class OperationListing extends Component {
                                 {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>}
                                 <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant(Code)"  ></AgGridColumn>
-                                <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant (Code)"  ></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
