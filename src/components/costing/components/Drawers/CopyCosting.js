@@ -412,7 +412,7 @@ function CopyCosting(props) {
           saveCopyCosting(obj, (res) => {
             setIsDisable(false)
             if ((res.status = 200)) {
-              Toaster.success("Copy costing done sucessfully!")
+              Toaster.success("Copy costing done successfully!")
               const { CostingId } = res.data.Data
               props.closeDrawer('', CostingId, type)
             }
@@ -434,7 +434,7 @@ function CopyCosting(props) {
       saveCopyCosting(updatedObj, (res) => {
         setDisablePopup(false)
         if ((res.status = 200)) {
-          Toaster.success("Copy costing done sucessfully!")
+          Toaster.success("Copy costing done successfully!")
           const { CostingId } = res.data.Data
           props.closeDrawer('', CostingId, type)
 
