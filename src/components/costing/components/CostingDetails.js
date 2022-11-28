@@ -1996,8 +1996,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Plant`}</th>
-                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
+                                  <th className='vendor'>{`Plant (Code)`}</th>
+                                  <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                   <th className="costing-version" >{`Costing Version`}</th>
                                   <th className="text-center costing-status" >{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -2135,8 +2135,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className="destination-plant">{`Plant`}</th>
-                                  <th className='vendor'>{`Vendor`}</th>
+                                  <th className="destination-plant">{`Plant (Code)`}</th>
+                                  <th className='vendor'>{`Vendor (Code)`}</th>
 
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
@@ -2237,9 +2237,9 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Vendor`}</th>
-                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant`}</th>}
-                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
+                                  <th className='vendor'>{`Vendor (Code)`}</th>
+                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
+                                  <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -2368,8 +2368,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Customer`}</th>
-                                  {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant`}</th>}
+                                  <th className='vendor'>{`Customer (Code)`}</th>
+                                  {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>

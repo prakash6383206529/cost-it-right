@@ -38,9 +38,9 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -133,7 +133,6 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-
     const { data } = this.props
     this.getDetails(data)
     if (!this.state.isViewFlag) {
@@ -1185,8 +1184,6 @@ class AddRMDomestic extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
 
-
-
   // sendForMasterApproval = () => {
 
   // }
@@ -1290,7 +1287,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission'))) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1303,7 +1300,7 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Customer Based</span>
-                            </Label>
+                            </Label>}
                           </Col>
                         </Row>
                         <Row>
