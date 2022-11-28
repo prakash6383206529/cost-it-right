@@ -294,7 +294,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates })
-          if (Data.MachineLabourRates.length !== 0) {
+          if (Data.MachineLabourRates && Data.MachineLabourRates.length !== 0) {
             this.setState({ disableMachineType: true })
           }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
