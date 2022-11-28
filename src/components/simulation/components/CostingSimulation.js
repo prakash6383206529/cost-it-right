@@ -1298,7 +1298,7 @@ function CostingSimulation(props) {
 
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" headerName='Vendor(Code)'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>

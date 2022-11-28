@@ -502,7 +502,7 @@ class PowerListing extends Component {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
-                    <AgGridColumn field="PlantName"></AgGridColumn>
+                    <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -526,8 +526,8 @@ class PowerListing extends Component {
                     }}
                     frameworkComponents={frameworkComponents}
                   >
-                    <AgGridColumn field="VendorName"></AgGridColumn>
-                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName"></AgGridColumn>}
+                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName" headerName="Plant (Code)"></AgGridColumn>}
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
                     <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
