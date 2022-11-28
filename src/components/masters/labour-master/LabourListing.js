@@ -536,8 +536,8 @@ class LabourListing extends Component {
                 suppressRowClickSelection={true}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>

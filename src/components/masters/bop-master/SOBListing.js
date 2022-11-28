@@ -456,8 +456,8 @@ class SOBListing extends Component {
                   <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                   <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
-                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

@@ -940,7 +940,7 @@ function RMImportListing(props) {
 
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
-                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

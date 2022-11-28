@@ -769,8 +769,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate (INR)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (INR)"></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
 

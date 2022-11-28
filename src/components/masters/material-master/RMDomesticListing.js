@@ -909,9 +909,9 @@ function RMDomesticListing(props) {
 
                                         <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
 
-                                        <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
+                                        <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
 
-                                        <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                        <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
                                         <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

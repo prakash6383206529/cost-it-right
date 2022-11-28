@@ -984,8 +984,8 @@ function ReportListing(props) {
                             <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                             <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='Plant' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='Vendor' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -1013,10 +1013,10 @@ function ReportListing(props) {
                             <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead} ></AgGridColumn>
-                            <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage (Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit} ></AgGridColumn>
-                            <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage (Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='RejectionApplicability' cellClass={"customDropdown"} headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
