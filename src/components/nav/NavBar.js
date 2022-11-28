@@ -33,10 +33,11 @@ import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
-import { SIMULATION, VERSION } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VERSION } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
+import { checkForNull } from "../../helper";
 
 class SideBar extends Component {
   constructor(props) {
@@ -91,6 +92,20 @@ class SideBar extends Component {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
         this.simulationPermission(res?.data?.Data, 2)
+
+        let Data = res?.data?.Data
+        let costingIndex = Data && Data?.findIndex(item => item?.ModuleName === COSTING)
+        let cbcCostingData = Data[costingIndex].Pages.filter(item => item.PageName === CBC_COSTING)
+        let cbcCostingPermission
+
+        if (checkForNull(cbcCostingData.length) === 0) {
+          cbcCostingPermission = true
+          reactLocalStorage.setObject('cbcCostingPermission', JSON.stringify(cbcCostingPermission))
+        }
+        else {
+          cbcCostingPermission = false
+          reactLocalStorage.setObject('cbcCostingPermission', JSON.stringify(cbcCostingPermission))
+        }
       })
     }
 
@@ -128,6 +143,7 @@ class SideBar extends Component {
         localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       }
     }
+
   }
 
   /**
