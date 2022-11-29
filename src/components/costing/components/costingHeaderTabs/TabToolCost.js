@@ -407,6 +407,10 @@ function TabToolCost(props) {
     setDrawerOpen(false)
   }
 
+  const disableToggle = (value) => {
+    setDisableSwitch(value)
+  }
+
   return (
     <>
       <div className="login-container signup-form">
@@ -493,6 +497,7 @@ function TabToolCost(props) {
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}
                                         setToolCost={setToolCost}
                                         saveCosting={saveCosting}
+                                        disableToggle={disableToggle}
                                       />
                                     </div>
                                   </td>

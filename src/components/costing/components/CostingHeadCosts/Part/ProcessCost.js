@@ -446,10 +446,18 @@ function ProcessCost(props) {
       }, 0)
 
       let apiArr = formatMainArr(tempArr)
+      let ProcessCostTotalAssemblytechnology = 0
+      ProcessCostTotalAssemblytechnology = apiArr && apiArr.reduce((accummlator, el) => {
+        if (!(el?.IsChild === true)) {
+          return checkForNull(accummlator) + checkForNull(el.ProcessCost)
+        }
+        return checkForNull(accummlator)
+      }, 0)
+
       let tempArr2 = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0,) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
+        ProcessCostTotal: isAssemblyTechnology ? ProcessCostTotalAssemblytechnology : ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
       setIsFromApi(false)
