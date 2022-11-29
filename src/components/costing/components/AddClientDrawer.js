@@ -155,7 +155,7 @@ function AddClientDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Customer"}
+                    label={"Customer (Code)"}
                     name={"Customer"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -175,7 +175,7 @@ function AddClientDrawer(props) {
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Destination Plant"}
+                      label={"Destination Plant (Code)"}
                       name={"DestinationPlant"}
                       placeholder={"Select"}
                       Controller={Controller}

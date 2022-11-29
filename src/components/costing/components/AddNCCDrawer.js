@@ -189,7 +189,7 @@ function AddNCCDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant"}
+                    label={"Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -205,7 +205,7 @@ function AddNCCDrawer(props) {
                 </Col>
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor"}
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}

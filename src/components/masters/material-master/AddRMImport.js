@@ -1411,7 +1411,7 @@ class AddRMImport extends Component {
                           {((costingTypeId === ZBCTypeId) && (
                             <Col md="3">
                               <Field
-                                label="Plant"
+                                label="Plant (Code)"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
                                 title={showDataOnHover(this.state.selectedPlants)}
@@ -1437,7 +1437,7 @@ class AddRMImport extends Component {
                             ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                                 name="DestinationPlant"
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}
@@ -1457,7 +1457,7 @@ class AddRMImport extends Component {
                               <Field
                                 name="clientName"
                                 type="text"
-                                label={"Customer Name"}
+                                label={"Customer (Code)"}
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 options={this.renderListing("ClientList")}

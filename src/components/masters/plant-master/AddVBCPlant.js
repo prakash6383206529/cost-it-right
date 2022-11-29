@@ -333,7 +333,7 @@ class AddVBCPlant extends Component {
                     <Field
                       name="VendorId"
                       type="text"
-                      label="Vendor Name"
+                      label="Vendor (Code)"
                       component={searchableSelect}
                       placeholder={"Select Vendor"}
                       options={this.selectType("vendors")}

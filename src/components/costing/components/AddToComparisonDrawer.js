@@ -840,7 +840,7 @@ function AddToComparisonDrawer(props) {
                     {getConfigurationKey().IsDestinationPlantConfigure && (
                       <Col md="12">
                         <SearchableSelectHookForm
-                          label={"Destination Plant"}
+                          label={"Destination Plant (Code)"}
                           name={"destinationPlant"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -861,7 +861,7 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Customer Name"}
+                        label={"Customer (Code)"}
                         name={"clientName"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -878,7 +878,7 @@ function AddToComparisonDrawer(props) {
                     {getConfigurationKey().IsCBCApplicableOnPlant && (
                       <Col md="12">
                         <SearchableSelectHookForm
-                          label={"Plant"}
+                          label={"Plant (Code)"}
                           name={"plant"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -899,7 +899,7 @@ function AddToComparisonDrawer(props) {
                   {getConfigurationKey().IsDestinationPlantConfigure && (
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Destination Plant"}
+                        label={"Destination Plant (Code)"}
                         name={"destinationPlant"}
                         placeholder={"Select"}
                         Controller={Controller}

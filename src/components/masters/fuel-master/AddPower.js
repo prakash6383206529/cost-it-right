@@ -1374,7 +1374,7 @@ class AddPower extends Component {
                           <>
                             <Col md="3">
 
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
                                   {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1454,7 +1454,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label="Plant"
+                                    label="Plant (Code)"
                                     name="Plant"
                                     title={showDataOnHover(this.state.selectedPlants)}
                                     placeholder="Select"

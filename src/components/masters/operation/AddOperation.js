@@ -949,7 +949,7 @@ class AddOperation extends Component {
                       {(costingTypeId === ZBCTypeId) && (
                         <Col md="3">
                           <Field
-                            label="Plant"
+                            label="Plant (Code)"
                             name="Plant"
                             title={showDataOnHover(this.state.selectedPlants)}
                             placeholder={isEditFlag ? '-' : 'Select'}
@@ -967,7 +967,7 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {costingTypeId === VBCTypeId && (
-                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                        <Col md="3"><label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1001,7 +1001,7 @@ class AddOperation extends Component {
                         ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
                           <Field
-                            label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
+                            label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                             name="DestinationPlant"
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("singlePlant")}
@@ -1021,7 +1021,7 @@ class AddOperation extends Component {
                           <Field
                             name="clientName"
                             type="text"
-                            label={"Customer Name"}
+                            label={"Customer (Code)"}
                             component={searchableSelect}
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("ClientList")}
