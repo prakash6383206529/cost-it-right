@@ -289,13 +289,14 @@ const CostingSummaryTable = (props) => {
     let rejectData = viewCostingData[index]?.netRejectionCostView
     let modelType = viewCostingData[index]?.modelType
     let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
+    let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
 
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
-    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
+    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType, isRmCutOffApplicable: isRmCutOffApplicable })
   }
 
   /**
