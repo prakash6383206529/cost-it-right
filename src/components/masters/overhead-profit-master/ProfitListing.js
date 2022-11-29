@@ -718,7 +718,7 @@ function ProfitListing(props) {
 
                                             rowData={overheadProfitList}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={globalTake}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
