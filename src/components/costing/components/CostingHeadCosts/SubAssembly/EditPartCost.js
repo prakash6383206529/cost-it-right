@@ -121,7 +121,7 @@ function EditPartCost(props) {
         if (sum > 100) {
             Toaster.warning('Total SOB Percent should not be greater than 100');
             setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
+            editedObject.SOBPercentage = 0
         }
 
         // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
@@ -133,6 +133,9 @@ function EditPartCost(props) {
             netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
             editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (editedObject.DeltaSign === undefined) {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
