@@ -192,7 +192,8 @@ function Sheet(props) {
     const setNoOfComponent = () => {
         const stripNo = getValues('StripsNumber')
         const componentPerStrip = getValues('ComponentPerStrip')
-        const noOfComponent = stripNo * componentPerStrip
+        const Cavity = getValues('Cavity')
+        const noOfComponent = stripNo * componentPerStrip * Cavity
         setValue('NoOfComponent', checkForNull(noOfComponent))
     }
 
@@ -536,24 +537,6 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip)'} />
-                                    <NumberFieldHookForm
-                                        label={`Total Components/Sheet`}
-                                        name={'NoOfComponent'}
-                                        id={'total-component'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfComponent}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
@@ -575,6 +558,24 @@ function Sheet(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
                                         disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                    <NumberFieldHookForm
+                                        label={`Total Components/Sheet`}
+                                        name={'NoOfComponent'}
+                                        id={'total-component'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfComponent}
+                                        disabled={true}
                                     />
                                 </Col>
                             </Row>
