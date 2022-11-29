@@ -969,7 +969,13 @@ function AddRfq(props) {
                                         placeholder={isViewFlag ? '-' : "Type here..."}
                                         Controller={Controller}
                                         control={control}
-                                        rules={{ required: true }}
+                                        rules={{
+                                            required: true,
+                                            maxLength: {
+                                                value: 256,
+                                                message: "Remark should be less than 256 words"
+                                            },
+                                        }}
                                         register={register}
                                         //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                         // options={renderListing("DestinationPlant")}
