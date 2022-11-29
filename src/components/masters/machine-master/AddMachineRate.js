@@ -1437,7 +1437,7 @@ class AddMachineRate extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId &&
                           <Col md="3">
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -1462,7 +1462,7 @@ class AddMachineRate extends Component {
                             <Field
                               name="Plant"
                               type="text"
-                              label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
+                              label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                               component={searchableSelect}
                               placeholder={(isEditFlag || isViewMode || isViewFlag) ? '-' : 'Select'}
                               options={this.renderListing('plant')}
@@ -1479,7 +1479,7 @@ class AddMachineRate extends Component {
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Customer Name"}
+                              label={"Customer (Code)"}
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("ClientList")}

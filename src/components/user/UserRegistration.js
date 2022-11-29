@@ -1633,7 +1633,7 @@ function UserRegistration(props) {
                               <AsyncSearchableSelectHookForm
                                 name="Vendor"
                                 type="text"
-                                label="Vendor"
+                                label="Vendor (Code)"
                                 errors={errors.Vendor}
                                 Controller={Controller}
                                 control={control}

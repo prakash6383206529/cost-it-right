@@ -134,7 +134,7 @@ function AddPlantDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant"}
+                    label={"Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}
