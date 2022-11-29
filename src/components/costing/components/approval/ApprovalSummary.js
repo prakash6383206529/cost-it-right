@@ -365,7 +365,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.CostingTypeId === VBCTypeId && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
+                      {approvalDetails.CostingTypeId === VBCTypeId && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}` : '-'}</td>}
                       {approvalDetails.CostingTypeId === CBCTypeId && <td> {(approvalDetails.CustomerName || approvalDetails.CustomerCode) ? `${approvalDetails.CustomerName}(${approvalDetails.CustomerCode})` : '-'}</td>}
                       {/* </td> */}
                       {
