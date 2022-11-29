@@ -27,6 +27,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -58,6 +59,8 @@ class BOPImportListing extends Component {
             disableFilter: true,
             disableDownload: false,
             inRangeDate: [],
+            analyticsDrawer: false,
+            selectedRowData: [],
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
@@ -312,6 +315,9 @@ class BOPImportListing extends Component {
         })
     }
 
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowData: rowData, analyticsDrawer: true })
+    }
 
     /**
     * @method renderPaginationShowsTotal
@@ -351,6 +357,7 @@ class BOPImportListing extends Component {
 
         return (
             <>
+                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -554,6 +561,9 @@ class BOPImportListing extends Component {
             return thisIsFirstColumn;
         }
 
+        const closeAnalyticsDrawer = () => {
+            this.setState({ analyticsDrawer: false })
+        }
 
         const defaultColDef = {
             resizable: true,
@@ -774,6 +784,23 @@ class BOPImportListing extends Component {
                         isFinalApprovar={this.state.isFinalApprovar}
                     />
                 }
+
+                {
+                    this.state.analyticsDrawer &&
+                    <AnalyticsDrawer
+                        isOpen={this.state.analyticsDrawer}
+                        ModeId={2}
+                        closeDrawer={closeAnalyticsDrawer}
+                        anchor={"right"}
+                        importEntry={true}
+                        isReport={this.state.analyticsDrawer}
+                        selectedRowData={this.state.selectedRowData}
+                        isSimulation={true}
+                        //cellValue={cellValue}
+                        rowData={this.state.selectedRowData}
+                    />
+                }
+
             </div >
         );
     }

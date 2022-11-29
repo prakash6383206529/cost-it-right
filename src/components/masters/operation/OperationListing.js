@@ -33,6 +33,7 @@ import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -67,6 +68,8 @@ class OperationListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
+            analyticsDrawer: false,
+            selectedRowDataAnalytics: [],
 
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
@@ -369,6 +372,12 @@ class OperationListing extends Component {
     closePopUp = () => {
         this.setState({ showPopup: false })
     }
+
+
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowDataAnalytics: rowData, analyticsDrawer: true })
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -399,6 +408,7 @@ class OperationListing extends Component {
 
         return (
             <>
+                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -730,6 +740,10 @@ class OperationListing extends Component {
             }
         }
 
+        const closeAnalyticsDrawer = () => {
+            this.setState({ analyticsDrawer: false })
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
@@ -893,6 +907,23 @@ class OperationListing extends Component {
                         anchor={'right'}
                         isFinalApprovar={this.state.isFinalApprovar}
                     />}
+
+                    {
+                        this.state.analyticsDrawer &&
+                        <AnalyticsDrawer
+                            isOpen={this.state.analyticsDrawer}
+                            ModeId={3}
+                            closeDrawer={closeAnalyticsDrawer}
+                            anchor={"right"}
+                            isReport={this.state.analyticsDrawer}
+                            selectedRowData={this.state.selectedRowDataAnalytics}
+                            isSimulation={true}
+                            //cellValue={cellValue}
+                            rowData={this.state.selectedRowDataAnalytics}
+                        />
+                    }
+
+
                 </div>
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
