@@ -2,15 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
-import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
+// import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
+import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
 
+let counter = 0;
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
     const headerCosts = useContext(netHeadCostContext);
@@ -24,6 +28,7 @@ function PaymentTerms(props) {
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
+    const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -248,6 +253,23 @@ function PaymentTerms(props) {
         }
     }
 
+    const handleChangeInterestRateFixedLimit = (event) => {
+        if (decimalAndNumberValidationBoolean(event?.target?.value)) {
+            setInterestRateFixedLimit(true)
+        } else {
+            setInterestRateFixedLimit(false)
+        }
+        dispatch(isOverheadProfitDataChange(true))
+    }
+
+    if (Object.keys(errors).length > 0 && counter < 2) {
+        counter = counter + 1;
+        dispatch(setOverheadProfitErrors(errors))
+    } else if (Object.keys(errors).length === 0 && counter > 0) {
+        counter = 0
+        dispatch(setOverheadProfitErrors({}))
+    }
+
     return (
         <>
             <Row className="mt-15 pt-15">
@@ -323,27 +345,29 @@ function PaymentTerms(props) {
                                     disabled={CostingViewMode ? true : false}
                                 />
                                 :
-                                <NumberFieldHookForm
-                                    label={`Interest Rate`}
-                                    name={'RepaymentPeriodPercentage'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                    }}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodPercentage}
-                                    disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                                />}
+                                <div className='p-relative error-wrapper'>
+                                    <NumberFieldHookForm
+                                        label={`Interest Rate`}
+                                        name={'RepaymentPeriodPercentage'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+                                                value: /^\d*\.?\d*$/,
+                                                message: 'Invalid Number.'
+                                            },
+                                        }}
+                                        handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                    />
+                                    {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                </div>}
                         </Col>
                         <Col md="3">
                             <TextFieldHookForm

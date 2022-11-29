@@ -6,13 +6,12 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNu
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
-import { isOverheadProfitDataChange } from '../../../actions/Costing';
+import { isOverheadProfitDataChange, setOverheadProfitErrors } from '../../../actions/Costing';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
-import { ASSEMBLYNAME } from '../../../../../config/constants';
-import { ASSEMBLY } from '../../../../../config/masterData';
 
+let counter = 0;
 function Rejection(props) {
 
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
@@ -90,6 +89,14 @@ function Rejection(props) {
             });
             return temp;
         }
+    }
+
+    if (Object.keys(errors).length > 0 && counter < 2) {
+        dispatch(setOverheadProfitErrors(errors))
+        counter++;
+    } else if (Object.keys(errors).length === 0 && counter > 0) {
+        dispatch(setOverheadProfitErrors({}))
+        counter = 0
     }
 
 
@@ -267,6 +274,7 @@ function Rejection(props) {
             setApplicability([])
             checkRejectionApplicability('')
         }
+        setPercentageLimit(false)
         dispatch(isOverheadProfitDataChange(true))
     }
 

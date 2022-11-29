@@ -340,3 +340,36 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   }
   return temp
 }
+
+const calcEdit = () => {
+  // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+  // let costPerPieceTotal = 0
+  // let CostPerAssemblyBOPTotal = 0
+
+  // tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+  //     costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+  //     CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+  //     return null
+  // })
+}
+
+export const errorCheck = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (tempObject[prop]?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+
+export const errorCheckObject = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (Object.keys(tempObject[prop])?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+

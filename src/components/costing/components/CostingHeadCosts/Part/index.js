@@ -21,7 +21,7 @@ import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
-import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../../CostingUtil';
+import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 
 
@@ -37,7 +37,7 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CloseOpenAccordion } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CloseOpenAccordion, ErrorObjRMCC, ErrorObjOverheadProfit } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -46,6 +46,9 @@ function PartCompoment(props) {
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -193,11 +196,11 @@ function PartCompoment(props) {
 
   }, [IsOpen])
 
-  // const InjectDiscountAPICall = () => {                 
-  //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-  //     dispatch(setComponentDiscountOtherItemData({}, () => { }))
-  //   }))
-  // }
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
+  }
 
   /**
    * @method render
