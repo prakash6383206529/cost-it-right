@@ -41,6 +41,9 @@ import {
   SET_SURFACE_COST_FOR_REJECTION_DATA,
   ZBCTypeId,
   SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
+  SET_OVERHEAD_PROFIT_ERRORS,
+  SET_TOOLS_ERRORS,
+  SET_DISCOUNT_ERRORS,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2441,3 +2444,42 @@ export function createMultiTechnologyCosting(data, callback) {
     })
   }
 }
+
+/**
+ * @method setOverheadProfitErrors
+ * @description setOverheadProfitErrors  
+ */
+export function setOverheadProfitErrors(errObj) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_ERRORS,
+      payload: errObj,
+    });
+  }
+};
+
+/**
+ * @method setToolsErrors
+ * @description setToolsErrors
+ */
+export function setToolsErrors(errObj) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOLS_ERRORS,
+      payload: errObj,
+    });
+  }
+};
+
+/**
+ * @method setDiscountErrors
+ * @description setDiscountErrors  
+ */
+export function setDiscountErrors(errObj) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_DISCOUNT_ERRORS,
+      payload: errObj,
+    });
+  }
+};
