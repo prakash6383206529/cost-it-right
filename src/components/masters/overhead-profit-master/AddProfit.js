@@ -945,7 +945,7 @@ class AddProfit extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId && (
                           <Col md="3">
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -969,7 +969,7 @@ class AddProfit extends Component {
                         {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
-                              label="Plant"
+                              label="Plant (Code)"
                               name="Plant"
                               placeholder={"Select"}
                               title={showDataOnHover(this.state.selectedPlants)}
@@ -994,7 +994,7 @@ class AddProfit extends Component {
                           ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                           <Col md="3">
                             <Field
-                              label={'Plant'}
+                              label={'Plant (Code)'}
                               name="DestinationPlant"
                               placeholder={"Select"}
                               options={this.renderListing("singlePlant")}
@@ -1014,7 +1014,7 @@ class AddProfit extends Component {
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Customer Name"}
+                              label={"Customer (Code)"}
                               component={searchableSelect}
                               placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
