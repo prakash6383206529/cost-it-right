@@ -884,7 +884,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="2">
-                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Other Cost Applicability * Percentage / 100"} />}
+                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}

@@ -608,7 +608,7 @@ function Broaching(props) {
 
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cyle-time-min'} tooltipText={'Total Cycle Time(Min) = Cutting Time + Chip to Chip + Tool Non-Cutting + Indexing table + Loading & Unloading'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cyle-time-min'} tooltipText={'Total Cycle Time(Min) = (Cutting Time + Chip to Chip + Tool Non-Cutting + Indexing table + Loading & Unloading)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
@@ -627,7 +627,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'broaching-cyle-time-sec'} tooltipText={'Total Cycle Time(Sec) = Total Cycle Time in Mins * 60'} />
+                                            <TooltipCustom disabledIcon={true} id={'broaching-cyle-time-sec'} tooltipText={'Total Cycle Time(Sec) = (Total Cycle Time in Mins * 60)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(sec)`}
                                                 name={'TotalCycleTimeSec'}
@@ -694,7 +694,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'broaching-process-cost'} tooltipText={'Process Cost = Machine Rate / Parts per Hour'} />
+                                            <TooltipCustom disabledIcon={true} id={'broaching-process-cost'} tooltipText={'Process Cost = (Machine Rate / Parts per Hour)'} />
                                             <NumberFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
