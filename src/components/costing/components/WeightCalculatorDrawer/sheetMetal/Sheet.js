@@ -192,8 +192,8 @@ function Sheet(props) {
     const setNoOfComponent = () => {
         const stripNo = getValues('StripsNumber')
         const componentPerStrip = getValues('ComponentPerStrip')
-        const cavity = getValues('Cavity')
-        const noOfComponent = stripNo * componentPerStrip * cavity
+        const Cavity = getValues('Cavity')
+        const noOfComponent = stripNo * componentPerStrip * Cavity
         setValue('NoOfComponent', checkForNull(noOfComponent))
     }
 
@@ -537,24 +537,6 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip)'} />
-                                    <NumberFieldHookForm
-                                        label={`Total Components/Sheet`}
-                                        name={'NoOfComponent'}
-                                        id={'total-component'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfComponent}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
@@ -579,9 +561,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
                                     <NumberFieldHookForm
                                         label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
+                                        id={'total-component'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -593,9 +577,8 @@ function Sheet(props) {
                                         errors={errors.NoOfComponent}
                                         disabled={true}
                                     />
-                                </Col>
-
-                            </Row>
+                                </Col >
+                            </Row >
 
                             <hr className="mx-n4 w-auto" />
                             <Row>
@@ -685,7 +668,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                             </Row>
-                        </div>
+                        </div >
 
                         {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
                             <button
@@ -702,11 +685,12 @@ function Sheet(props) {
                                 <div className={'save-icon'}></div>
                                 {'Save'}
                             </button>
-                        </div>}
+                        </div>
+                        }
 
-                    </form>
-                </div>
-            </div>
+                    </form >
+                </div >
+            </div >
         </>
     )
 }
