@@ -767,6 +767,7 @@ export function formViewData(costingSummary, header = '') {
   obj.netProcessCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
   obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
+  obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
   temp.push(obj)
   return temp
 }
