@@ -27,6 +27,7 @@ import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { useRef } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -56,6 +57,8 @@ function RMDomesticListing(props) {
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
     const [dateArray, setDateArray] = useState([])
+    const [analyticsDrawer, setAnalyticsDrawer] = useState(false);
+    const [selectedRowData, setSelectedRowData] = useState([]);
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -482,6 +485,7 @@ function RMDomesticListing(props) {
 
         return (
             <>
+                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
                 {ViewRMAccessibility && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItem(cellValue)} />}
@@ -769,6 +773,15 @@ function RMDomesticListing(props) {
         }
     }
 
+    const closeAnalyticsDrawer = () => {
+        setAnalyticsDrawer(false)
+    }
+
+    const showAnalytics = (cell, rowData) => {
+        setSelectedRowData(rowData)
+        setAnalyticsDrawer(true)
+    }
+
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
@@ -959,6 +972,25 @@ function RMDomesticListing(props) {
                     />
                 )
             }
+
+
+            {
+                analyticsDrawer &&
+                <AnalyticsDrawer
+                    isOpen={analyticsDrawer}
+                    ModeId={1}
+                    closeDrawer={closeAnalyticsDrawer}
+                    anchor={"right"}
+                    isReport={analyticsDrawer}
+                    selectedRowData={selectedRowData}
+                    isSimulation={true}
+                    //cellValue={cellValue}
+                    rowData={selectedRowData}
+                />
+            }
+
+
+
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

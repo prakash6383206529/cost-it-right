@@ -972,6 +972,7 @@ export const API = {
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
   getCostingBenchMarkBopReport: `${BASE_URL}/reports/get-bop-cost-benchmarking-report`,
+  getCostMovementReport: `${BASE_URL}/reports/get-cost-movement-report-by-master`,
 
 
   //RFQ
