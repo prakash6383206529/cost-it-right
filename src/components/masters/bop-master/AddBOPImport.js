@@ -1115,7 +1115,7 @@ class AddBOPImport extends Component {
                           {((costingTypeId === ZBCTypeId) || (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (
                             <Col md="3">
                               <Field
-                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                                 name="Plant"
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
@@ -1138,7 +1138,7 @@ class AddBOPImport extends Component {
                               <Field
                                 name="clientName"
                                 type="text"
-                                label={"Client Name"}
+                                label={"Customer(Code)"}
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 options={this.renderListing("ClientList")}
@@ -1166,7 +1166,7 @@ class AddBOPImport extends Component {
                                 <div className="left-border">{"Vendor:"}</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

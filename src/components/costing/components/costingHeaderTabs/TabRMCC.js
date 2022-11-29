@@ -1590,7 +1590,7 @@ function TabRMCC(props) {
 
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
-                    <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />
+                    {!(Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false || !checkIsDataChange)) && <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />}
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
