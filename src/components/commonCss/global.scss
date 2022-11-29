@@ -935,6 +935,10 @@ a:hover {
       color: #3d4465;
     }
 
+    .ag-header-cell-text {
+      white-space: normal !important;
+    }
+
     .justify-content-center {
 
       .ag-header-cell-label,
@@ -2684,6 +2688,7 @@ td,
   .POUpdated,
   .Draft,
   .Linked,
+  .Under.Approval,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2693,6 +2698,7 @@ td,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
+  .Cancelled,
   .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
@@ -2707,7 +2713,8 @@ td,
     vertical-align: middle;
   }
 
-  [class^="Pending"] {
+  [class^="Pending"],
+  .Under.Approval {
     background-color: #f8a000;
   }
 
@@ -2731,7 +2738,8 @@ td,
   }
 
   .Rejected,
-  .RejectedBySystem {
+  .RejectedBySystem,
+  .Cancelled {
     background-color: #fc5774;
   }
 
