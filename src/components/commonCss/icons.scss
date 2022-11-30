@@ -67,6 +67,11 @@
     @include extra-icon-styles;
 }
 
+.pie-chart {
+    @include icons("../../assests/images/pie-chart.svg");
+    @include extra-icon-styles;
+}
+
 .add-process {
     @include icons("../../assests/images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
@@ -276,10 +281,6 @@
 
 .cross-light {
     @include icons("../../assests/images/cross_light.svg", 14px, 14px);
-}
-
-.pie-chart {
-    @include icons("../../assests/images/Activate.svg");
 }
 
 .Bulk {
