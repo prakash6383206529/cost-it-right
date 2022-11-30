@@ -9,6 +9,8 @@ const color7 = "#D6DDEB";
 // graph colors end
 
 // graph colors start
+export const primaryColor = '#256bd1';
+export const secondryColor = '#1adcb3';
 export const graphColor1 = "#F199CE";
 export const graphColor2 = "#78AAD8";
 export const graphColor3 = "#73B0F4";
