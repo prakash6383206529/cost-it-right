@@ -377,7 +377,7 @@ function AddToComparisonDrawer(props) {
           obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
           obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
 
-          obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'
+          obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : 0
           obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
           obj.otherDiscountValue = {
             discountPercentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0,

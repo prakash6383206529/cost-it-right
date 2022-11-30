@@ -27,13 +27,14 @@ import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
 import { IdForMultiTechnology } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
+import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6 } from '../../dashboard/ChartsDashboard'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -114,6 +115,7 @@ const CostingSummaryTable = (props) => {
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
+  const [pieChartDataArray, setPieChartDataArray] = useState([])
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -146,9 +148,22 @@ const CostingSummaryTable = (props) => {
       }
     })
 
+
   }, [viewCostingData])
 
-
+  const viewPieData = debounce((index) => {
+    let temp = []
+    let tempObj = viewCostingData[index]
+    temp = [checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+    ]
+    setPieChartDataArray(temp)
+  }, [400])
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
   }, [topAndLeftMenuData, selectedTechnology])
@@ -1004,6 +1019,57 @@ const CostingSummaryTable = (props) => {
     }
   }
 
+  const pieChartData = {
+    labels: ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC'],
+    datasets: [
+      {
+        label: '',
+        data: pieChartDataArray,
+        backgroundColor: [
+          graphColor1,
+          graphColor2,
+          graphColor3,
+          graphColor4,
+          graphColor5,
+          graphColor6,
+          graphColor4,
+        ],
+        borderColor: [
+          '#fff',
+          '#fff',
+          '#fff',
+          '#fff',
+          '#fff',
+          '#fff',
+          '#fff',
+        ],
+        borderWidth: 1,
+      },
+    ],
+
+  };
+  const pieChartOption = {
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 15,
+          borderWidth: 1,
+          borderColor: [
+            graphColor1,
+            graphColor2,
+            graphColor3,
+            graphColor4,
+            graphColor5,
+            graphColor6,
+            graphColor4,
+          ],
+        }
+      },
+    },
+  }
+
+
   return (
     <Fragment>
       {
@@ -1169,7 +1235,7 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span className="d-flex justify-content-between">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})<span><button className='pie-chart'><span className='tooltiptext graph-tooltip'><Costratiograph /></span></button></span></span>
+                                    <span className="d-flex justify-content-between">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"}){(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && <span><button className='pie-chart' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><Costratiograph data={pieChartData} options={pieChartOption} /></span></button></span>}</span>
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
