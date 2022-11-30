@@ -1202,6 +1202,7 @@ function OverheadProfit(props) {
     setProfitObj({})
   }
   useEffect(() => {
+
     if (Object.keys(errors).length > 0 && counter < 2) {
       counter = counter + 1;
       dispatch(setOverheadProfitErrors(errors))
@@ -1209,9 +1210,7 @@ function OverheadProfit(props) {
       counter = 0
       dispatch(setOverheadProfitErrors({}))
     }
-
   })
-
 
   /**
   * @method onSubmit
