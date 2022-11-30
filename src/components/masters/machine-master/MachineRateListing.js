@@ -364,7 +364,7 @@ class MachineRateListing extends Component {
 
         return (
             <>
-                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
+                <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> </button>
                 {this.state.isProcessGroup && <button className="group-process" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
                 {ViewAccessibility && <button title="View" className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}

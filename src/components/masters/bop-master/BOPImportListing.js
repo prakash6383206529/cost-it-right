@@ -357,7 +357,8 @@ class BOPImportListing extends Component {
 
         return (
             <>
-                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
+
+                <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}

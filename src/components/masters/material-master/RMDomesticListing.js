@@ -479,7 +479,7 @@ function RMDomesticListing(props) {
 
         return (
             <>
-                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
+                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
                 {ViewRMAccessibility && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItem(cellValue)} />}

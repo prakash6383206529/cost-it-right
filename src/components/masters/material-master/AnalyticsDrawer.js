@@ -5,14 +5,14 @@ import { useDispatch } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../config/constants'
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph'
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../dashboard/ChartsDashboard'
+import { primaryColor, secondryColor } from '../../dashboard/ChartsDashboard'
 import { Line, Bar } from 'react-chartjs-2';
 import DayTime from '../../common/DayTimeWrapper';
 import { getCostMovementReport } from '../../../actions/Common';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { Controller, useForm } from "react-hook-form";
 import RenderGraphList from '../../common/RenderGraphList';
-
+import HeaderTitle from '../../common/HeaderTitle';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 
 function AnalyticsDrawer(props) {
@@ -42,6 +42,7 @@ function AnalyticsDrawer(props) {
     const [gridData, setGridData] = useState([])
     const [dateRangeArray, setDateRangeArray] = useState([])
     const [netLandedCostArray, setNetLandedCostArray] = useState([])
+    const [gridApi, setGridApi] = useState(null);
 
 
     useEffect(() => {
@@ -165,10 +166,11 @@ function AnalyticsDrawer(props) {
                 label: `Landed Rate (${uomValue})`,
                 fill: false,
                 lineTension: 0,
-                backgroundColor: 'rgba(75,192,192,1)',
-                borderColor: 'rgba(0,0,0,1)',
+                backgroundColor: secondryColor,
+                borderColor: primaryColor,
                 borderWidth: 2,
-                data: netLandedCostArray
+                data: netLandedCostArray,
+                pointBackgroundColor: secondryColor
             },
 
         ]
@@ -184,9 +186,10 @@ function AnalyticsDrawer(props) {
             {
                 type: 'bar',
                 label: `Landed Rate (${uomValue})`,
-                backgroundColor: graphColor4,
+                backgroundColor: primaryColor,
                 data: netLandedCostArray,
                 maxBarThickness: 25,
+                borderColor: primaryColor
             },
 
         ],
@@ -199,7 +202,9 @@ function AnalyticsDrawer(props) {
 
 
     }
-
+    const onPageSizeChanged = (newPageSize) => {
+        gridApi.paginationSetPageSize(Number(newPageSize));
+    };
 
     const frameworkComponents = {
 
@@ -209,6 +214,8 @@ function AnalyticsDrawer(props) {
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
+        setGridApi(params.api)
+        params.api.sizeColumnsToFit();
     };
 
     const hyphenFormatter = (props) => {
@@ -230,10 +237,10 @@ function AnalyticsDrawer(props) {
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
-                        <div className={"drawer-wrapper drawer-1500px simulation-costing-details-drawers"}>
+                        <div className={"drawer-wrapper drawer-1500px "}>
                             <form noValidate className="form">
-                                <Row className="drawer-heading">
-                                    <Col>
+                                <Row className="drawer-heading mb-0">
+                                    <Col className='px-0'>
                                         <div className={"header-wrapper left"}>
                                             <h3>
                                                 {ModeId === 1 ? " RM History" : (ModeId === 2 ? "BOP History" : ModeId === 3 ? "Operation History" : "Machine History")}
@@ -246,86 +253,65 @@ function AnalyticsDrawer(props) {
                                     </Col>
                                 </Row>
 
-
-                                <RenderGraphList valueChanged={valueChanged} />
-                                {/* 
-                                <div onChange={onChangeValue}>
-                                    <Col>
-
-                                        <input className="mr-1" type="radio" value="List" name="graph" defaultChecked /> List
-
-
-                                        <input className="ml-4 mr-1" type="radio" value="BarGraph" name="graph" /> Bar-Graph
-
-
-                                        <input className="ml-4 mr-1" type="radio" value="LineGraph" name="graph" /> Line-Graph
-
-                                    </Col>
-                                </div> */}
-
-                                <div className='mt-3 mb-3'>
-                                    <h7>{ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}</h7>
+                                <div className='analylics-drawer'>
+                                    <HeaderTitle customClass="mb-0"
+                                        title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
+                                    />
+                                    <RenderGraphList valueChanged={valueChanged} />
+                                    {/* <h7>{ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}</h7> */}
                                 </div>
-
-
-
                                 {showList &&
-
                                     < Row >
-                                        <Col>
+                                        <Col className='pr-0'>
+                                            <div className='ag-grid-react'>
+                                                <div className="ag-grid-wrapper height-width-wrapper">
+                                                    <div className="ag-grid-header">
 
-                                            <div className="ag-grid-wrapper height-width-wrapper">
-                                                <div className="ag-grid-header">
-
-                                                </div>
-                                                <div
-                                                    className="ag-theme-material"
-                                                >
-
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        domLayout='autoHeight'
-                                                        suppressRowTransform={true}
-
-                                                        rowData={gridData}
-                                                        pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                            imagClass: 'imagClass'
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        rowSelection={'multiple'}
-
+                                                    </div>
+                                                    <div
+                                                        className="ag-theme-material"
                                                     >
 
-                                                        {/* {ModeId == 1 && <AgGridColumn field="RawMaterialCode" headerName="RM Code" rowSpan={rowSpan} showRowGroup={true}
+                                                        <AgGridReact
+                                                            defaultColDef={defaultColDef}
+                                                            domLayout='autoHeight'
+                                                            suppressRowTransform={true}
+
+                                                            rowData={gridData}
+                                                            pagination={true}
+                                                            paginationPageSize={10}
+                                                            onGridReady={onGridReady}
+                                                            gridOptions={gridOptions}
+
+                                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                            noRowsOverlayComponentParams={{
+                                                                title: EMPTY_DATA,
+                                                                imagClass: 'imagClass'
+                                                            }}
+                                                            frameworkComponents={frameworkComponents}
+                                                            rowSelection={'multiple'}
+
+                                                        >
+
+                                                            {/* {ModeId == 1 && <AgGridColumn field="RawMaterialCode" headerName="RM Code" rowSpan={rowSpan} showRowGroup={true}
                                                             cellClassRules={{
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>} */}
-                                                        {<AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" ></AgGridColumn>}
-                                                        {ModeId == 1 && <AgGridColumn field="RMFreightCost" headerName="Freight" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                        {ModeId == 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing" cellRenderer={hyphenFormatter} ></AgGridColumn>}
-                                                        {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)"></AgGridColumn>}
+                                                            {<AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" ></AgGridColumn>}
+                                                            {ModeId == 1 && <AgGridColumn field="RMFreightCost" headerName="Freight" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                            {ModeId == 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)"></AgGridColumn>}
 
-                                                        {(ModeId == 1 || ModeId == 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)"></AgGridColumn>}
+                                                            {(ModeId == 1 || ModeId == 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)"></AgGridColumn>}
 
-                                                        {<AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>}
-                                                        {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
+                                                            {<AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>}
+                                                            {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
-
-
-
-
-                                                    </AgGridReact>
-
+                                                        </AgGridReact>
+                                                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
+                                                    </div>
                                                 </div>
                                             </div>
-
                                         </Col>
                                     </Row>
 
@@ -333,7 +319,7 @@ function AnalyticsDrawer(props) {
 
                                 {showBarGraph &&
                                     <Row className="mt-4">
-                                        <Col md="12">
+                                        <Col md="12" className='pr-0'>
                                             <Costmovementgraph graphData={data1} graphHeight={120} />
                                         </Col>
                                     </Row>
@@ -344,39 +330,28 @@ function AnalyticsDrawer(props) {
 
                                 {showLineGraph &&
 
-                                    <div>
-                                        <Line
-                                            data={state}
-                                            height={120}
-                                            options={{
-                                                title: {
-                                                    display: true,
-                                                    text: 'Average Rainfall per month',
-                                                    fontSize: 10
-                                                },
-                                                legend: {
-                                                    display: true,
-                                                    position: 'right'
-                                                }
-                                            }}
-                                        />
-                                    </div>
+                                    <Row>
+                                        <Col className='pr-0'>
+                                            <Line
+                                                data={state}
+                                                height={120}
+                                                options={{
+                                                    title: {
+                                                        display: true,
+                                                        text: 'Average Rainfall per month',
+                                                        fontSize: 10
+                                                    },
+                                                    legend: {
+                                                        display: true,
+                                                        position: 'right'
+                                                    },
+
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
                                 }
-
-
-
                             </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 px-3">
-                                    <div className="text-right px-3">
-
-                                        <button type={"button"} className="cancel-btn" onClick={cancel}>
-                                            <div className={"cancel-icon"}></div>{" "}
-                                            {"CANCEL"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Row>
                         </div >
                     </Container >
                 </Drawer >
