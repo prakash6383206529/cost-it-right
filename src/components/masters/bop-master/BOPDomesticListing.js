@@ -419,7 +419,7 @@ class BOPDomesticListing extends Component {
 
         return (
             <>
-                <button className="mr-1 btn-history-remark" type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
+                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
