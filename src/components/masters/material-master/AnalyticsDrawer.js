@@ -80,20 +80,20 @@ function AnalyticsDrawer(props) {
 
     const valueChanged = (event) => {
 
-        if (Number(event.value) === Number(1)) {
+        if (Number(event.value) === Number(1)) { //FOR LISTING
             setShowList(true)
             setShowLineGraph(false)
             setShowBarGraph(false)
         }
 
-        if (Number(event.value) === Number(2)) {
+        if (Number(event.value) === Number(2)) { //FOR BAR CHART
 
             setShowList(false)
             setShowLineGraph(false)
             setShowBarGraph(true)
         }
 
-        if (Number(event.value) === Number(3)) {
+        if (Number(event.value) === Number(3)) { //FOR LINE CHART
 
             setShowList(false)
             setShowLineGraph(true)
@@ -248,8 +248,8 @@ function AnalyticsDrawer(props) {
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>} */}
                                                             {(ModeId === 1 || ModeId === 2) && <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                            {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
 
