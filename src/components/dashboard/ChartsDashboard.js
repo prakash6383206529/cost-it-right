@@ -210,7 +210,7 @@ export const data4 = {
         '#fff',
         '#fff',
       ],
-      borderWidth: 2,
+      borderWidth: 1,
     },
   ],
 };
