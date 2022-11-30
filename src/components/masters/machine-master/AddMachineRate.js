@@ -350,7 +350,7 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
             }, () => {
               this.setState({ isLoader: false })
@@ -1445,7 +1445,7 @@ class AddMachineRate extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={true}
-                            disabled={isViewMode ? true : false}
+                            disabled={(isViewMode || isEditFlag) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
