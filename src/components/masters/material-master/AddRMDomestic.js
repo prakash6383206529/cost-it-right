@@ -38,9 +38,9 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -133,7 +133,6 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-
     const { data } = this.props
     this.getDetails(data)
     if (!this.state.isViewFlag) {
@@ -1185,8 +1184,6 @@ class AddRMDomestic extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
 
-
-
   // sendForMasterApproval = () => {
 
   // }
@@ -1290,7 +1287,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission'))) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1303,7 +1300,7 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Customer Based</span>
-                            </Label>
+                            </Label>}
                           </Col>
                         </Row>
                         <Row>
@@ -1429,7 +1426,7 @@ class AddRMDomestic extends Component {
                           {((costingTypeId === ZBCTypeId) && (
                             <Col md="3">
                               <Field
-                                label="Plant"
+                                label="Plant (Code)"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
                                 title={showDataOnHover(this.state.selectedPlants)}
@@ -1453,7 +1450,7 @@ class AddRMDomestic extends Component {
                             ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={costingTypeId === VBCTypeId ? 'Destination Plant' : 'Plant'}
+                                label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                                 name="DestinationPlant"
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}
@@ -1473,7 +1470,7 @@ class AddRMDomestic extends Component {
                               <Field
                                 name="clientName"
                                 type="text"
-                                label={"Customer Name"}
+                                label={"Customer (Code)"}
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 options={this.renderListing("ClientList")}
@@ -1521,7 +1518,7 @@ class AddRMDomestic extends Component {
                                 </div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1690,7 +1687,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
-                            <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate + Freight Cost + Shearing Cost"} />
+                            <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = (Basic Rate + Freight Cost + Shearing Cost)"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label)}
                               name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -20,13 +20,15 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
-import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
+
+let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -52,7 +54,7 @@ function TabDiscountOther(props) {
   const headerCosts = useContext(netHeadCostContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount } = useSelector(state => state.costing)
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -398,6 +400,8 @@ function TabDiscountOther(props) {
         setOtherCostType(newValue)
         setValue('AnyOtherCost', 0)
         setValue('PercentageOtherCost', 0)
+        errors.AnyOtherCost = {}
+        errors.PercentageOtherCost = {}
         setDiscountObj({
           ...discountObj,
           AnyOtherCost: 0,
@@ -419,6 +423,8 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountValue', 0)
         setValue('HundiOrDiscountPercentage', 0)
         setValue('HundiDiscountType', newValue.value)
+        errors.HundiOrDiscountValue = {}
+        errors.HundiOrDiscountPercentage = {}
         setDiscountObj({
           ...discountObj,
           DiscountCostType: newValue.value
@@ -646,7 +652,7 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
 
-    if (errors && Object.keys(errors).length > 0) return false;
+    if (errorCheckObject(ErrorObjDiscount)) return false;
 
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
@@ -768,6 +774,15 @@ function TabDiscountOther(props) {
     })
   }
   const isLoaderObj = { isLoader: isInputLoader, loaderClass: "align-items-center" }
+
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    counter = counter + 1;
+    dispatch(setDiscountErrors(errors))
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    counter = 0
+    dispatch(setDiscountErrors({}))
+  }
+
   return (
     <>
       <div className="login-container signup-form">
@@ -884,7 +899,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="2">
-                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Other Cost Applicability * Percentage / 100"} />}
+                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
@@ -896,8 +911,8 @@ function TabDiscountOther(props) {
                         rules={{
                           //required: true,
                           pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: "Invalid Number.",
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
                           },
                         }}
                         handleChange={(e) => {
@@ -993,8 +1008,8 @@ function TabDiscountOther(props) {
                         mandatory={false}
                         rules={{
                           pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: "Invalid Number.",
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
                           },
                         }}
                         handleChange={(e) => {

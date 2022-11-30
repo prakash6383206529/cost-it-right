@@ -927,7 +927,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -940,7 +940,7 @@ class AddOverhead extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Customer Based</span>
-                          </Label>
+                          </Label>}
                         </Col>
                       </Row>
                       <Row>
@@ -968,7 +968,7 @@ class AddOverhead extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId && (
                           <Col md="3" >
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -992,7 +992,7 @@ class AddOverhead extends Component {
                         {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
-                              label="Plant"
+                              label="Plant (Code)"
                               name="Plant"
                               placeholder={"Select"}
                               title={showDataOnHover(this.state.selectedPlants)}
@@ -1016,7 +1016,7 @@ class AddOverhead extends Component {
                           ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                           <Col md="3">
                             <Field
-                              label={'Plant'}
+                              label={'Plant (Code)'}
                               name="DestinationPlant"
                               placeholder={"Select"}
                               options={this.renderListing("singlePlant")}
@@ -1036,7 +1036,7 @@ class AddOverhead extends Component {
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Customer Name"}
+                              label={"Customer (Code)"}
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("ClientList")}

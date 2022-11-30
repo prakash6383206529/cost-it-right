@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1005/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -1445,6 +1445,9 @@ export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
 export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
 export const SET_PROCESS_ID = 'SET_PROCESS_ID'
 export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
+export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
+export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
+export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -2124,4 +2127,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V1.2.647";
+export const VERSION = "V2.1.2";

@@ -446,10 +446,18 @@ function ProcessCost(props) {
       }, 0)
 
       let apiArr = formatMainArr(tempArr)
+      let ProcessCostTotalAssemblytechnology = 0
+      ProcessCostTotalAssemblytechnology = apiArr && apiArr.reduce((accummlator, el) => {
+        if (!(el?.IsChild === true)) {
+          return checkForNull(accummlator) + checkForNull(el.ProcessCost)
+        }
+        return checkForNull(accummlator)
+      }, 0)
+
       let tempArr2 = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0,) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
+        ProcessCostTotal: isAssemblyTechnology ? ProcessCostTotalAssemblytechnology : ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
       setIsFromApi(false)
@@ -1000,6 +1008,29 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
+  const processNetCostFormula = (value) => {
+    console.log('value: ', value);
+    let processNetCostFormulaText;
+    switch (value) {
+      case 'Hours':
+        processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)/3600'
+        break;
+      case 'Minutes':
+        processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)/60'
+        break;
+      case undefined:
+        processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+        break;
+      case null:
+        processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+        break;
+      default:
+        processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)'
+        break;
+    }
+    return processNetCostFormulaText
+  }
+
   const renderSingleProcess = (process, parentIndex) => {
     return (
       process.ProcessList && process.ProcessList.map((item, index) => {
@@ -1010,7 +1041,7 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
+            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
             <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
@@ -1057,22 +1088,26 @@ function ProcessCost(props) {
             </td>
             <td style={{ width: 100 }}>
               {
-                <TextFieldHookForm
-                  label=""
-                  name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
-                  className=""
-                  customClassName={'withBorder'}
-                  handleChange={(e) => {
-                    e.preventDefault()
-                  }}
-                  // errors={}
-                  disabled={true}
-                />
+                <>
+                  <TooltipCustom disabledIcon={true} id={`process-net-cost-single${index}`} tooltipText={processNetCostFormula(item.UOM)} />
+                  <TextFieldHookForm
+                    label=""
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
+                    Controller={Controller}
+                    id={`process-net-cost-single${index}`}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                    className=""
+                    customClassName={'withBorder'}
+                    handleChange={(e) => {
+                      e.preventDefault()
+                    }}
+                    // errors={}
+                    disabled={true}
+                  />
+                </>
               }
             </td>
             <td>
@@ -1122,7 +1157,6 @@ function ProcessCost(props) {
    * @description Renders the component
    */
   const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds.</div> <div>For all others UOMs, please enter the actual quantity.</div></div>;
-  const processNetCostFormula = <div><div>If UOM is in hours, Net Cost = (Quantity * Machine Rate)/3600</div><div>If UOM is in Minutes, Net Cost = (Quantity * Machine Rate)/60</div><div>For all others UOMs, Net Cost = Quantity * Machine Rate</div></div>
   return (
     <>
       <div className="user-page p-0">
@@ -1170,7 +1204,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
-                    <th style={{ width: "110px" }} >{`Net Cost`}<TooltipCustom tooltipClass={'process-net-cost'} customClass={"header-tooltip"} id="process-net-cost" tooltipText={processNetCostFormula} /></th>
+                    <th style={{ width: "110px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -1196,7 +1230,7 @@ function ProcessCost(props) {
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
-                            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
+                            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
                             <td >
                               {
 
@@ -1242,28 +1276,30 @@ function ProcessCost(props) {
                                     }
                                   </div>
                                 </div>
-
-
                               }
                             </td>
                             <td>
                               {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${ProcessGridFields}.${index}.ProcessCost`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                  }}
-                                  // errors={}
-                                  disabled={true}
-                                />
+                                <>
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM)} />
+                                  <TextFieldHookForm
+                                    label=""
+                                    name={`${ProcessGridFields}.${index}.ProcessCost`}
+                                    Controller={Controller}
+                                    id={`process-net-cost${index}`}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    handleChange={(e) => {
+                                      e.preventDefault()
+                                    }}
+                                    // errors={}
+                                    disabled={true}
+                                  />
+                                </>
                               }
                             </td>
                             <td>

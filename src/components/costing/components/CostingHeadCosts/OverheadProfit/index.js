@@ -5,7 +5,7 @@ import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
+import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, EMPTY_GUID, VBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
@@ -16,6 +16,7 @@ import { Link } from 'react-scroll'
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
 
+let counter = 0;
 function OverheadProfit(props) {
   const { data } = props;
 
@@ -1200,6 +1201,15 @@ function OverheadProfit(props) {
     setOverheadObj({})
     setProfitObj({})
   }
+
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    counter = counter + 1;
+    dispatch(setOverheadProfitErrors(errors))
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    counter = 0
+    dispatch(setOverheadProfitErrors({}))
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1322,13 +1332,9 @@ function OverheadProfit(props) {
                           rules={{
                             required: false,
                             pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.'
+                              value: /^\d{0,6}(\.\d{0,6})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 6.',
                             },
-                            // max: {
-                            //   value: 100,
-                            //   message: 'Percentage cannot be greater than 100'
-                            // },
                           }}
                           handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                           defaultValue={overheadObj.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -1675,13 +1681,9 @@ function OverheadProfit(props) {
                           rules={{
                             required: false,
                             pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.'
+                              value: /^\d{0,6}(\.\d{0,6})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 6.',
                             },
-                            // max: {
-                            //   value: 100,
-                            //   message: 'Percentage cannot be greater than 100'
-                            // },
                           }}
                           handleChange={() => { }}
                           defaultValue={profitObj.ProfitFixedPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : ''}

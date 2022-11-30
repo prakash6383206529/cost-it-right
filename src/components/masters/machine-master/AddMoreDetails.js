@@ -294,7 +294,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates })
-          if (Data.MachineLabourRates.length !== 0) {
+          if (Data.MachineLabourRates && Data.MachineLabourRates.length !== 0) {
             this.setState({ disableMachineType: true })
           }
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
@@ -2438,7 +2438,7 @@ class AddMoreDetails extends Component {
                           <Field
                             name="Plant"
                             type="text"
-                            label="Plant"
+                            label="Plant (Code)"
                             component={searchableSelect}
                             placeholder={(isEditFlag || isViewFlag) || (isMachineAssociated) ? '-' : 'Select'}
                             options={this.renderListing('plant')}
@@ -2669,7 +2669,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = Machine Cost + Accessories Cost + Installation Charges"} />
+                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
                             label={`Total Cost(INR)`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}

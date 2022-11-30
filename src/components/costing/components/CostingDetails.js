@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1396,7 +1396,10 @@ function CostingDetails(props) {
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(isDataChange(false))
     dispatch(saveAssemblyNumber([]))
-
+    dispatch(setRMCCErrors({}))
+    dispatch(setOverheadProfitErrors({}))
+    dispatch(setToolsErrors({}))
+    dispatch(setDiscountErrors({}))
   }
 
   /**
@@ -1996,8 +1999,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Plant`}</th>
-                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
+                                  <th className='vendor'>{`Plant (Code)`}</th>
+                                  <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                   <th className="costing-version" >{`Costing Version`}</th>
                                   <th className="text-center costing-status" >{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -2135,8 +2138,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className="destination-plant">{`Plant`}</th>
-                                  <th className='vendor'>{`Vendor`}</th>
+                                  <th className="destination-plant">{`Plant (Code)`}</th>
+                                  <th className='vendor'>{`Vendor (Code)`}</th>
 
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
@@ -2237,9 +2240,9 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Vendor`}</th>
-                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant`}</th>}
-                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
+                                  <th className='vendor'>{`Vendor (Code)`}</th>
+                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
+                                  <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -2368,8 +2371,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th className='vendor'>{`Customer`}</th>
-                                  {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant`}</th>}
+                                  <th className='vendor'>{`Customer (Code)`}</th>
+                                  {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>

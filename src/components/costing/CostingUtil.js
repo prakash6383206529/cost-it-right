@@ -344,3 +344,24 @@ const calcEdit = () => {
   //     return null
   // })
 }
+
+export const errorCheck = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (tempObject[prop]?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+
+export const errorCheckObject = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (Object.keys(tempObject[prop])?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+

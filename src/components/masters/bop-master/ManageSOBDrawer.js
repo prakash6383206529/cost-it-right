@@ -230,7 +230,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>Update SOB(%)</h3>
+                  <h3>Update SOB (%)</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -273,9 +273,9 @@ function ManageSOBDrawer(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th style={{ width: '100px' }}>{`Vendor Name`}</th>
+                        <th style={{ width: '100px' }}>{`Vendor (Code)`}</th>
                         <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
-                        <th style={{ width: '155px' }}>{`SOB(%)`}</th>
+                        <th style={{ width: '155px' }}>{`SOB (%)`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
                     </thead>

@@ -415,13 +415,17 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={applicability.label === 'Fixed' ? true : false}
                       rules={{
-                        required: true,
+                        required: applicability.label === 'Fixed' ? true : false,
                         pattern: {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
+                        min: {
+                          value: 0.00001,
+                          message: 'Cost should not be zero.'
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

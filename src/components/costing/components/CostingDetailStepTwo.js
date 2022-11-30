@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -400,6 +400,10 @@ function CostingDetailStepTwo(props) {
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(saveBOMLevel(''))
     dispatch(saveAssemblyNumber([]))
+    dispatch(setRMCCErrors({}))
+    dispatch(setOverheadProfitErrors({}))
+    dispatch(setToolsErrors({}))
+    dispatch(setDiscountErrors({}))
 
     props.backBtn()
   }
@@ -428,10 +432,10 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
-                      {(costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}(${costingData.VendorCode})`}</span></p></div></td>}
-                      {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer:</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}
-                      {((costingData.CostingTypeId === VBCTypeId && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}(${costingData.DestinationPlantCode})`}</span></p></div></td>}
-                      {costingData.CostingTypeId === ZBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue "
+                      {(costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}(${costingData.VendorCode})`}</span></p></div></td>}
+                      {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer (Code):</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}
+                      {((costingData.CostingTypeId === VBCTypeId && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant (Code):</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}(${costingData.DestinationPlantCode})`}</span></p></div></td>}
+                      {costingData.CostingTypeId === ZBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
                         title={`${costingData.PlantName}(${costingData.PlantCode})`}>
                         {`${costingData.PlantName}(${costingData.PlantCode})`}</span></p></div></td>}
 
