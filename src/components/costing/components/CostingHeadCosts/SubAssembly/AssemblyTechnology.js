@@ -34,6 +34,7 @@ function AssemblyTechnology(props) {
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
+        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
         if (PartType === 'Assembly') {
             // WHEN TOGGLE BUTTON IS PRESSED AT THAT TIME VALUES SHOULD BE CALCULATED UNTIL THEN VALUES SHOULD BE 0
             setIsOpen(!IsOpen)

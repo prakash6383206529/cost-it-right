@@ -411,7 +411,6 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
-                                                <AgGridColumn field="ProcessCode" editable='false' headerName="Process Code" minWidth={140}></AgGridColumn>
                                                 {
                                                     !isImpactedMaster &&
                                                     <>

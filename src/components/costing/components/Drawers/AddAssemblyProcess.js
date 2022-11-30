@@ -16,7 +16,6 @@ function AddAssemblyProcess(props) {
   const { item } = props;
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const [processGrid, setProcessGrid] = useState(subAssemblyTechnologyArray ? { CostingProcessCostResponse: subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse, ProcessCostTotal: subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost } : []);
-  const [totalProcessCost, setTotalProcessCost] = useState(0);
   const dispatch = useDispatch()
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext)
@@ -51,7 +50,6 @@ function AddAssemblyProcess(props) {
 
   const getValuesOfProcess = (gridData, ProcessCostTotal) => {
     setProcessGrid(gridData)
-    setTotalProcessCost(ProcessCostTotal)
   }
 
   /**
@@ -75,10 +73,14 @@ function AddAssemblyProcess(props) {
       costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
       return null
     })
+    let tempArr = processGrid.CostingProcessCostResponse
     let TotalProcessCost = 0
-    TotalProcessCost = processGrid.CostingProcessCostResponse.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el?.ProcessCost)
-    }, 0)
+    tempArr && tempArr.map((item) => {
+      if (!(item?.IsChild)) {
+        TotalProcessCost = checkForNull(TotalProcessCost) + checkForNull(item?.ProcessCost)
+      }
+      return null
+    })
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
       checkForNull(costPerPieceTotal) +
