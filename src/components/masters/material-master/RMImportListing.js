@@ -31,6 +31,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import AnalyticsDrawer from './AnalyticsDrawer';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -58,6 +59,8 @@ function RMImportListing(props) {
   const [showPopupBulk, setShowPopupBulk] = useState(false)
   const [disableDownload, setDisableDownload] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
+  const [analyticsDrawer, setAnalyticsDrawer] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState([]);
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -466,12 +469,24 @@ function RMImportListing(props) {
 
     return (
       <>
+        <button className="mr-1 btn-history-remark" type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> <div className='history-remark'></div></button>
         {ViewRMAccessibility && <button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };
+
+
+  const closeAnalyticsDrawer = () => {
+    setAnalyticsDrawer(false)
+  }
+
+  const showAnalytics = (cell, rowData) => {
+    setSelectedRowData(rowData)
+    setAnalyticsDrawer(true)
+  }
+
 
   /**
   * @method costingHeadFormatter
@@ -953,6 +968,25 @@ function RMImportListing(props) {
           />
         )
       }
+
+      {
+        analyticsDrawer &&
+        <AnalyticsDrawer
+          isOpen={analyticsDrawer}
+          ModeId={1}
+          closeDrawer={closeAnalyticsDrawer}
+          anchor={"right"}
+          isReport={analyticsDrawer}
+          importEntry={true}
+          selectedRowData={selectedRowData}
+          isSimulation={true}
+          //cellValue={cellValue}
+          rowData={selectedRowData}
+        />
+      }
+
+
+
       {
         showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
       }
