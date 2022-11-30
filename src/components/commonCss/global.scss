@@ -41,7 +41,7 @@ body button {
 }
 
 body a:hover {
-  color: $colorgraylighter  !important;
+  color: $colorgraylighter !important;
 }
 
 ul,
@@ -247,11 +247,11 @@ a:hover {
 
 .secondary-btn {
   @extend .user-btn;
-  background-color: $secondaryBtn  !important;
+  background-color: $secondaryBtn !important;
   border: 1px solid $colorPrimary;
 
   &:hover {
-    background-color: $colorPrimary  !important;
+    background-color: $colorPrimary !important;
     transition: 0.1s all ease-in-out;
   }
 }
@@ -677,7 +677,8 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
-        .ag-center-cols-clipper, .ag-pinned-left-cols-container {
+        .ag-center-cols-clipper,
+        .ag-pinned-left-cols-container {
           .ag-cell {
             &:first-child {
               border-left: 1px solid #e5eaf9;
@@ -969,7 +970,7 @@ a:hover {
   transition: all linear;
 
   &:first-child:focus {
-    border-left: 1px solid$colorPrimary  !important;
+    border-left: 1px solid$colorPrimary !important;
   }
 }
 
@@ -989,7 +990,7 @@ a:hover {
 
   input {
     .form-control {
-      font-weight: $font-light  !important;
+      font-weight: $font-light !important;
     }
   }
 
@@ -1661,7 +1662,7 @@ p {
       &:hover {
         border: none;
         background: transparent;
-        color: $highlightcolor  !important;
+        color: $highlightcolor !important;
         border-bottom: $highlightcolor 2px solid;
       }
     }
@@ -1826,7 +1827,7 @@ button .fas {
   color: #87939f;
 
   &:hover {
-    color: $text-hover  !important;
+    color: $text-hover !important;
   }
 }
 
@@ -2544,7 +2545,7 @@ input:disabled,
 
 .flowpoint {
   margin-top: 10px;
-  border: 2px solid$colorPrimary  !important;
+  border: 2px solid$colorPrimary !important;
 
   .flowpoint-header {
     border-bottom: 1px solid$colorPrimary;
@@ -3264,12 +3265,12 @@ body {
 //<--------------START Input and button focus CSS------->
 @keyframes example {
   from {
-    box-shadow: 0 0 0px$colorPrimary  !important;
+    box-shadow: 0 0 0px$colorPrimary !important;
     border: 1px solid$colorPrimary;
   }
 
   to {
-    box-shadow: 0 0 5px$colorPrimary  !important;
+    box-shadow: 0 0 5px$colorPrimary !important;
   }
 }
 
@@ -3288,8 +3289,8 @@ button,
 }
 
 @mixin focusMixin($shadowColor: #256bd1, $borderColor: #256bd1) {
-  box-shadow: 0 0 5px $shadowColor  !important;
-  border: 1px solid $borderColor  !important;
+  box-shadow: 0 0 5px $shadowColor !important;
+  border: 1px solid $borderColor !important;
   animation-name: example;
   animation-duration: 0.3s;
 }
@@ -3344,8 +3345,10 @@ input:focus,
       @media screen and (min-width: $middleDesktop) {
         min-height: calc(100vh - 385px) !important;
       }
+
       &.assembly-simulaiton {
         min-height: calc(100vh - 416px) !important;
+
         @media screen and (min-width: $middleDesktop) {
           min-height: calc(100vh - 416px) !important;
         }
@@ -3374,8 +3377,8 @@ input:focus,
     }
 
     &:focus {
-      box-shadow: 0 0 5px $colorPrimary  !important;
-      border: 1px solid $colorPrimary  !important;
+      box-shadow: 0 0 5px $colorPrimary !important;
+      border: 1px solid $colorPrimary !important;
       animation-name: example;
       animation-duration: 0.3s;
     }
@@ -3409,7 +3412,7 @@ input:focus,
     padding-right: 5px !important;
 
     p {
-      color: $grid-font  !important;
+      color: $grid-font !important;
       border: 1px solid $borderColor;
       border-radius: 5px;
       padding: 7px 10px;
