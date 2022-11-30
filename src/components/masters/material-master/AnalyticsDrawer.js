@@ -6,10 +6,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../config/constants'
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph'
 import { primaryColor, secondryColor } from '../../dashboard/ChartsDashboard'
-import { Line, Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import DayTime from '../../common/DayTimeWrapper';
 import { getCostMovementReport } from '../../../actions/Common';
-import { Controller, useForm } from "react-hook-form";
 import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
@@ -18,13 +17,6 @@ import { PaginationWrapper } from '../../common/commonPagination';
 function AnalyticsDrawer(props) {
 
     const { ModeId, rowData, importEntry } = props
-
-
-
-    const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
 
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -47,17 +39,14 @@ function AnalyticsDrawer(props) {
 
     useEffect(() => {
 
-
         setUomValue(props.rowData?.UOM)
-        setValue('singleDropDown', { label: "List", value: "1" })
-
         let obj = {}
         obj.ModeId = props.ModeId
         obj.MasterIdList = [{
             MasterId: ModeId === 1 ? props.rowData.RawMaterialId : ModeId === 2 ? props.rowData.BoughtOutPartId : ModeId === 3 ? props.rowData.OperationId : props.rowData.MachineId,
+            ProcessId: ModeId === 4 ? props.rowData?.ProcessId : ""
 
         }]
-
 
         dispatch(getCostMovementReport(obj, (res) => {
             if (res?.data?.Result) {
@@ -72,7 +61,6 @@ function AnalyticsDrawer(props) {
                 //     sampleGrid.push(item)
                 // })
 
-
                 let arr = res.data.Data.MasterData
                 let dateArray = []
                 let netLandedCostArray = []
@@ -82,50 +70,15 @@ function AnalyticsDrawer(props) {
                 })
                 setNetLandedCostArray(netLandedCostArray)
                 setDateRangeArray(dateArray)
-
             }
         }))
 
     }, [])
 
 
-
-
     const gridOptions = {};
-    const cancel = (e = '') => {
-        toggleDrawer(e)
-    }
-
-
-
-    const onChangeValue = (e) => {
-
-
-        if (e.target.value === "List") {
-            setShowList(true)
-            setShowLineGraph(false)
-            setShowBarGraph(false)
-        }
-
-        if (e.target.value === "BarGraph") {
-            setShowList(false)
-            setShowLineGraph(false)
-            setShowBarGraph(true)
-        }
-        if (e.target.value === "LineGraph") {
-            setShowList(false)
-            setShowLineGraph(true)
-            setShowBarGraph(false)
-        }
-
-
-
-    }
-
 
     const valueChanged = (event) => {
-
-
 
         if (Number(event.value) === Number(1)) {
             setShowList(true)
@@ -158,7 +111,6 @@ function AnalyticsDrawer(props) {
     };
 
 
-
     const state = {
         labels: dateRangeArray,
         datasets: [
@@ -172,10 +124,8 @@ function AnalyticsDrawer(props) {
                 data: netLandedCostArray,
                 pointBackgroundColor: secondryColor
             },
-
         ]
     }
-
 
 
 
@@ -223,9 +173,9 @@ function AnalyticsDrawer(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? cellValue : '-';
     }
 
-    const rowSpan = (params) => {
-        return 5
-    }
+    // const rowSpan = (params) => { //DONT DELETE
+    //     return 5
+    // }
 
 
     return (
@@ -297,14 +247,13 @@ function AnalyticsDrawer(props) {
                                                             cellClassRules={{
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>} */}
-                                                            {<AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" ></AgGridColumn>}
-                                                            {ModeId == 1 && <AgGridColumn field="RMFreightCost" headerName="Freight" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {ModeId == 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing" cellRenderer={hyphenFormatter} ></AgGridColumn>}
-                                                            {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)"></AgGridColumn>}
+                                                            {(ModeId === 1 || ModeId === 2) && <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                            {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                            {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
 
-                                                            {(ModeId == 1 || ModeId == 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)"></AgGridColumn>}
-
-                                                            {<AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>}
+                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
                                                         </AgGridReact>
@@ -327,9 +276,7 @@ function AnalyticsDrawer(props) {
                                 }
 
 
-
                                 {showLineGraph &&
-
                                     <Row>
                                         <Col className='pr-0'>
                                             <Line
