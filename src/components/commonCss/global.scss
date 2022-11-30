@@ -757,6 +757,12 @@ a:hover {
                 justify-content: center;
               }
             }
+            .ag-react-container {
+              .attachment.images {
+                border-bottom: none;
+                font-size: $font-14;
+              } 
+            }
           }
         }
       }
@@ -892,7 +898,9 @@ a:hover {
       }
     }
   }
-
+ .ag-selection-checkbox.ag-invisible {
+  display: none;
+ }
   --ag-foreground-color: #8a91ac;
 
   .ag-paging-button:hover {

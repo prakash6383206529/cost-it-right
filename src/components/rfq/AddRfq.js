@@ -232,6 +232,7 @@ function AddRfq(props) {
             setDisableTechnology(false)
         }
         setPartList(arr)
+        onResetPartNoTable()
     }
 
     const deleteItemVendorTable = (gridData, props) => {
@@ -245,6 +246,7 @@ function AddRfq(props) {
         })
 
         setVendorList(arr)
+        onResetVendorTable()
     }
 
     const editItemVendorTable = (gridData, props) => {
@@ -433,6 +435,7 @@ function AddRfq(props) {
 
     const addRowVendorTable = () => {
 
+        let isDuplicateEntry = false
         let data = {}
         let temp = []
         partList && partList.map((item) => {
@@ -462,9 +465,23 @@ function AddRfq(props) {
                     return false;
                 }
 
+
+                if (!updateButtonVendorTable) {
+                    vendorList && vendorList.map((item) => {
+                        if (item.VendorId === obj.VendorId) {
+                            isDuplicateEntry = true
+                        }
+                    })
+                }
+
+                if (isDuplicateEntry) {
+                    Toaster.warning("This vendor is already added.")
+                    return false;
+                }
+
                 let arr = [...vendorList, obj]
 
-                if (updateButtonVendorTable) {
+                if (updateButtonVendorTable) {       //EDIT CASE
                     arr = []
                     vendorList && vendorList.map((item) => {
                         if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
@@ -473,6 +490,19 @@ function AddRfq(props) {
                             arr.push(item)
                         }
                     })
+
+                    arr.map((item) => {
+                        if (item.VendorId === obj.VendorId) {
+                            isDuplicateEntry = true
+                        }
+
+                    })
+
+                    if (isDuplicateEntry) {
+                        Toaster.warning("This vendor is already added.")
+                        return false;
+                    }
+
                     arr.push(obj)
                 }
 
@@ -480,7 +510,6 @@ function AddRfq(props) {
                 setValue('vendor', "")
                 setValue('contactPerson', "")
                 setUpdateButtonVendorTable(false)
-
             }
 
         }))
@@ -490,6 +519,7 @@ function AddRfq(props) {
 
     const addRowPartNoTable = () => {
 
+        let isDuplicateEntry = false
         let obj = {}
         obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
@@ -500,6 +530,19 @@ function AddRfq(props) {
             return false;
         }
 
+        if (!updateButtonPartNoTable) {
+            partList && partList.map((item) => {
+                if (item.PartNo === obj.PartNo) {
+                    isDuplicateEntry = true
+                }
+            })
+        }
+
+        if (isDuplicateEntry) {
+            Toaster.warning("This part no is already added.")
+            return false;
+        }
+
         if (obj.PartId === null || obj.PartId === undefined || obj.Quantity === null || obj.Quantity === undefined || isNaN(obj.Quantity)) {
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
@@ -507,7 +550,7 @@ function AddRfq(props) {
 
         let arr = [...partList, obj]
 
-        if (updateButtonPartNoTable) {
+        if (updateButtonPartNoTable) {   //EDIT CASE
             arr = []
             partList && partList.map((item) => {
                 if (JSON.stringify(selectedRowPartNoTable) === JSON.stringify(item)) {
@@ -516,6 +559,18 @@ function AddRfq(props) {
                     arr.push(item)
                 }
             })
+
+            arr.map((item) => {
+                if (item.PartNo === obj.PartNo) {
+                    isDuplicateEntry = true
+                }
+            })
+
+            if (isDuplicateEntry) {
+                Toaster.warning("This part no is already added.")
+                return false;
+            }
+
             arr.push(obj)
         }
 
@@ -647,7 +702,7 @@ function AddRfq(props) {
                         <Row className="drawer-heading">
                             <Col className='pl-0'>
                                 <div className={"header-wrapper d-flex justify-content-between right"}>
-                                    <h3>{"Add RFQ"}</h3>
+                                    <h3>{isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} RFQ</h3>
                                     <div
                                         onClick={cancel}
                                         className={"close-button right"}
@@ -731,7 +786,7 @@ function AddRfq(props) {
                                         disableErrorOverflow={true}
                                         mandatory={true}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: { postiveNumber }
                                         }}
                                         handleChange={() => { }}

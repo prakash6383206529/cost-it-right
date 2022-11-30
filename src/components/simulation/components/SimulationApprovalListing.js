@@ -129,7 +129,7 @@ function SimulationApprovalListing(props) {
 
 
     useEffect(() => {
-        if (props.activeTab === '2') {
+        if (props.activeTab === '2' || isDashboard) {
             getTableData(0, defaultPageSize, true, floatingFilterData)
         }
         dispatch(isResetClick(false))
@@ -746,7 +746,7 @@ function SimulationApprovalListing(props) {
 
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

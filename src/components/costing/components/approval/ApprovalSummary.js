@@ -325,7 +325,7 @@ function ApprovalSummary(props) {
                     <tr>
                       <th>{`Costing ID:`}</th>
                       {approvalDetails.CostingTypeId === VBCTypeId && (
-                        <th>{`ZBC/Vendor Name:`}</th>
+                        <th>{`ZBC/Vendor (Code):`}</th>
                       )}
                       {approvalDetails.CostingTypeId === CBCTypeId && (
                         <th>{`Customer (Code)`}</th>
@@ -336,11 +336,11 @@ function ApprovalSummary(props) {
                           {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
-                      {(getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) && <th>{`Plant(Code):`}</th>}
+                      {(getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) && <th>{`Plant (Code):`}</th>}
 
-                      {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant(Code):`} </th>}
+                      {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
 
-                      <th>{`SOB(%):`}</th>
+                      <th>{`SOB (%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
