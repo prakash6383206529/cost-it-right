@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -167,8 +167,9 @@ function SurfaceTreatment(props) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         } else if (partType) {
           setTimeout(() => {
-            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(gridDataAdded(true))
           }, 500);
         }
 

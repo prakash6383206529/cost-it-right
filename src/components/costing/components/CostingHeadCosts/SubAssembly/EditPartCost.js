@@ -12,7 +12,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, setCostingViewData } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 
@@ -32,7 +32,7 @@ function EditPartCost(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
+    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge, CostingEffectiveDate } = useSelector(state => state.costing)
 
 
     const { register, handleSubmit, control, setValue, getValues } = useForm({
@@ -331,8 +331,9 @@ function EditPartCost(props) {
                 checkForNull(DiscountCostData?.AnyOtherCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(gridDataAdded(true))
         }
         props.closeDrawer('')
 
