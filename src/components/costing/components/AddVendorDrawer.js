@@ -58,8 +58,9 @@ function AddVendorDrawer(props) {
         ...data,
         DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
+        VendorName: `${data.VendorName} (${data.VendorCode})`
       })
   };
 
