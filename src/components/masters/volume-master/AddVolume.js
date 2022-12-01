@@ -324,7 +324,6 @@ class AddVolume extends Component {
   budgetedQuantity = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const value = this.beforeSaveCell(cell)
-
     return (
       <>
         <span>{value ? Number(cell) : 0}</span>
@@ -373,14 +372,18 @@ class AddVolume extends Component {
 
   deleteItem = (ID) => {
     const { tableData } = this.state;
+    this.setState({ isLoader: true })
     let tempData = tableData.filter((item, i) => {
       if (item.VolumeApprovedDetailId === ID) {
-        return false;
+        item.BudgetedQuantity = 0
+        item.ApprovedQuantity = 0
       }
-      return true;
+      return item;
     });
-    this.setState({ tableData: tempData })
-    this.setState({ DataToChange: false })
+    setTimeout(() => {
+      this.setState({ tableData: tempData, isLoader: false })
+      this.setState({ DataToChange: false })
+    }, 300);
   }
   /**
    * @method getDetail
@@ -438,7 +441,7 @@ class AddVolume extends Component {
               // isLoader: false,
               costingTypeId: Data.CostingTypeId,
               selectedPlants: plantArray,
-              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
               part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
@@ -755,228 +758,226 @@ class AddVolume extends Component {
       actualQuantity: this.actualQuantity
     };
 
-
-
     return (
       <>
         <div className={`ag-grid-react`}>
           <div className="container-fluid">
-            {this.state.isLoader && <LoaderCustom />}
-            <div className="login-container signup-form">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="shadow-lgg login-formg">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="form-heading mb-0">
-                          <h1>
-                            {this.state.isEditFlag
-                              ? "Update Volume"
-                              : "Add Volume"}
-                          </h1>
+            {this.state.isLoader ? <LoaderCustom customClass={"loader-center"} /> :
+              <div className="login-container signup-form">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="shadow-lgg login-formg">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-heading mb-0">
+                            <h1>
+                              {this.state.isEditFlag
+                                ? "Update Volume"
+                                : "Add Volume"}
+                            </h1>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <form
-                      noValidate
-                      className="form"
-                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                    >
-                      <div className="add-min-height">
-                        <Row>
-                          <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                              <input
-                                type="radio"
-                                name="costingHead"
-                                checked={
-                                  costingTypeId === ZBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(ZBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
-                              />{" "}
-                              <span>Zero Based</span>
-                            </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                              <input
-                                type="radio"
-                                name="costingHead"
-                                checked={
-                                  costingTypeId === VBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(VBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
-                              />{" "}
-                              <span>Vendor Based</span>
-                            </Label>
-                            {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
-                              <input
-                                type="radio"
-                                name="costingHead"
-                                checked={
-                                  costingTypeId === CBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(CBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
-                              />{" "}
-                              <span>Customer Based</span>
-                            </Label>}
-                          </Col>
-                        </Row>
+                      <form
+                        noValidate
+                        className="form"
+                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                      >
+                        <div className="add-min-height">
+                          <Row>
+                            <Col md="12">
+                              <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingTypeId === ZBCTypeId ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(ZBCTypeId)
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                <span>Zero Based</span>
+                              </Label>
+                              <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingTypeId === VBCTypeId ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(VBCTypeId)
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                <span>Vendor Based</span>
+                              </Label>
+                              {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingTypeId === CBCTypeId ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(CBCTypeId)
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                <span>Customer Based</span>
+                              </Label>}
+                            </Col>
+                          </Row>
 
-                        <Row>
-                          {(costingTypeId === ZBCTypeId && (
+                          <Row>
+                            {(costingTypeId === ZBCTypeId && (
+                              <Col md="3">
+                                <Field
+                                  name="Plant"
+                                  type="text"
+                                  label="Plant (Code)"
+                                  component={searchableSelect}
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  options={this.renderListing("plant")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.selectedPlants == null ||
+                                      this.state.selectedPlants.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={this.handlePlants}
+                                  valueDescription={this.state.selectedPlants}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>)
+                            )}
+                            {costingTypeId === VBCTypeId && (
+                              <Col md="3">
+                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                                  <div className="fullinput-icon p-relative">
+                                    {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="vendorName"
+                                      ref={this.myRef}
+                                      key={this.state.updateAsyncDropdown}
+                                      loadOptions={vendorFilterList}
+                                      onChange={(e) => this.handleVendorName(e)}
+                                      value={this.state.vendorName}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                      isDisabled={(isEditFlag) ? true : false}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                      onBlur={() => onFocus(this)}
+                                    />
+                                  </div>
+                                  {!isEditFlag && (
+                                    <div
+                                      onClick={this.vendorToggler}
+                                      className={"plus-icon-square  right"}
+                                    ></div>
+                                  )}
+                                </div>
+                                {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                              </Col>
+
+                            )}
+                            {
+                              ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
+                              <Col md="3">
+                                <Field
+                                  label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
+                                  name="DestinationPlant"
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  // selection={
+                                  //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                  options={this.renderListing("plant")}
+                                  handleChangeDescription={this.handleDestinationPlant}
+                                  validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
+                                  required={true}
+                                  // optionValue={(option) => option.Value}
+                                  // optionLabel={(option) => option.Text}
+                                  component={searchableSelect}
+                                  valueDescription={this.state.destinationPlant}
+                                  mendatory={true}
+                                  className="multiselect-with-border"
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                            }
+                            {costingTypeId === CBCTypeId && (
+                              <Col md="3">
+                                <Field
+                                  name="clientName"
+                                  type="text"
+                                  label={"Customer (Code)"}
+                                  component={searchableSelect}
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  options={this.renderListing("ClientList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.client == null ||
+                                      this.state.client.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={this.handleClient}
+                                  valueDescription={this.state.client}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                            )}
                             <Col md="3">
-                              <Field
-                                name="Plant"
-                                type="text"
-                                label="Plant (Code)"
-                                component={searchableSelect}
-                                placeholder={isEditFlag ? '-' : "Select"}
-                                options={this.renderListing("plant")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handlePlants}
-                                valueDescription={this.state.selectedPlants}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>)
-                          )}
-                          {costingTypeId === VBCTypeId && (
-                            <Col md="3">
-                              <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                              <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                              <label>{"Part No.(Revision No.)"}<span className="asterisk-required">*</span></label>
+                              <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
-                                  {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                   <AsyncSelect
-                                    name="vendorName"
+                                    name="PartNumber"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={vendorFilterList}
-                                    onChange={(e) => this.handleVendorName(e)}
-                                    value={this.state.vendorName}
+                                    loadOptions={partFilterList}
+                                    onChange={(e) => this.handlePartName(e)}
+                                    value={this.state.part}
                                     noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
-                                    isDisabled={(isEditFlag) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
-                                    onBlur={() => onFocus(this)}
+                                    isDisabled={isEditFlag ? true : false}
+                                    onBlur={() => this.setState({ showErrorOnFocusPart: true })}
                                   />
+                                  {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                                 </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
-                                )}
                               </div>
-                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
-
-                          )}
-                          {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                             <Col md="3">
                               <Field
-                                label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
-                                name="DestinationPlant"
-                                placeholder={isEditFlag ? '-' : "Select"}
-                                // selection={
-                                //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                options={this.renderListing("plant")}
-                                handleChangeDescription={this.handleDestinationPlant}
-                                validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
-                                required={true}
-                                // optionValue={(option) => option.Value}
-                                // optionLabel={(option) => option.Text}
-                                component={searchableSelect}
-                                valueDescription={this.state.destinationPlant}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          }
-                          {costingTypeId === CBCTypeId && (
-                            <Col md="3">
-                              <Field
-                                name="clientName"
+                                name="FinancialYear"
                                 type="text"
-                                label={"Customer (Code)"}
+                                label="Year"
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : "Select"}
-                                options={this.renderListing("ClientList")}
+                                options={this.renderListing("yearList")}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
-                                  this.state.client == null ||
-                                    this.state.client.length === 0
+                                  this.state.year == null ||
+                                    this.state.year.length === 0
                                     ? [required]
                                     : []
                                 }
                                 required={true}
-                                handleChangeDescription={this.handleClient}
-                                valueDescription={this.state.client}
+                                handleChangeDescription={this.handleFinancialYear}
+                                valueDescription={this.state.year}
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>
-                          )}
-                          <Col md="3">
-                            <label>{"Part No.(Revision No.)"}<span className="asterisk-required">*</span></label>
-                            <div className="d-flex justify-space-between align-items-center async-select">
-                              <div className="fullinput-icon p-relative">
-                                <AsyncSelect
-                                  name="PartNumber"
-                                  ref={this.myRef}
-                                  key={this.state.updateAsyncDropdown}
-                                  loadOptions={partFilterList}
-                                  onChange={(e) => this.handlePartName(e)}
-                                  value={this.state.part}
-                                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
-                                  onKeyDown={(onKeyDown) => {
-                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                  }}
-                                  isDisabled={isEditFlag ? true : false}
-                                  onBlur={() => this.setState({ showErrorOnFocusPart: true })}
-                                />
-                                {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                              </div>
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              name="FinancialYear"
-                              type="text"
-                              label="Year"
-                              component={searchableSelect}
-                              placeholder={isEditFlag ? '-' : "Select"}
-                              options={this.renderListing("yearList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.year == null ||
-                                  this.state.year.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handleFinancialYear}
-                              valueDescription={this.state.year}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
-                          {/* <Col md="3">
+                            {/* <Col md="3">
                             <Field
                               label={`Budgeted Price`}
                               name={" BudgetedPrice"}
@@ -991,77 +992,77 @@ class AddVolume extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>  UNCOMMENT WHEN CODE DEPLYED FROM BACKEND*/}
-                        </Row>
+                          </Row>
 
-                        <Row>
-                          <Col md="12">
-                            <div className="left-border">{"Quantity:"}</div>
-                          </Col>
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">{"Quantity:"}</div>
+                            </Col>
 
-                          <Col>
-                            <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
-                              {/* <Col md="12"> */}
-                              <div
-                                className="ag-theme-material"
+                            <Col>
+                              <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                {/* <Col md="12"> */}
+                                <div
+                                  className="ag-theme-material"
 
-                              >
-                                <AgGridReact
-                                  style={{ height: '100%', width: '100%' }}
-                                  defaultColDef={defaultColDef}
-                                  domLayout='autoHeight'
-                                  // columnDefs={c}
-                                  rowData={this.state.tableData}
-                                  onCellValueChanged={this.onCellValueChanged}
-                                  pagination={true}
-                                  paginationPageSize={12}
-                                  onGridReady={this.onGridReady}
-                                  gridOptions={gridOptions}
-                                  loadingOverlayComponent={'customLoadingOverlay'}
-                                  noRowsOverlayComponent={'customNoRowsOverlay'}
-                                  noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                  }}
-                                  frameworkComponents={frameworkComponents}
-                                  stopEditingWhenCellsLoseFocus={true}
                                 >
-                                  <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
-                                  <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
-                                  <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity"></AgGridColumn>
-                                  <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
-                                  <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
-                                  <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
-                                </AgGridReact>
+                                  <AgGridReact
+                                    style={{ height: '100%', width: '100%' }}
+                                    defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
+                                    // columnDefs={c}
+                                    rowData={this.state.tableData}
+                                    onCellValueChanged={this.onCellValueChanged}
+                                    pagination={true}
+                                    paginationPageSize={12}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                      title: EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                    stopEditingWhenCellsLoseFocus={true}
+                                  >
+                                    <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
+                                    <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
+                                    <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity"></AgGridColumn>
+                                    <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
+                                    <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
+                                    <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
+                                  </AgGridReact>
+                                </div>
                               </div>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
-                          <button
-                            type={"button"}
-                            className="mr15 cancel-btn"
-                            onClick={this.cancelHandler}
-                            disabled={setDisable}
-                          >
-                            <div className={"cancel-icon"}></div>{" "}
-                            {"Cancel"}
-                          </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                            disabled={setDisable}
-                          >
-                            <div className={"save-icon"}> </div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                            </Col>
+                          </Row>
                         </div>
-                      </Row>
-                    </form></div>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="mr15 cancel-btn"
+                              onClick={this.cancelHandler}
+                              disabled={setDisable}
+                            >
+                              <div className={"cancel-icon"}></div>{" "}
+                              {"Cancel"}
+                            </button>
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={setDisable}
+                            >
+                              <div className={"save-icon"}> </div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          </div>
+                        </Row>
+                      </form></div>
+                  </div>
                 </div>
-              </div>
 
-            </div>
+              </div>}
             {isOpenVendor && (
               <AddVendorDrawer
                 isOpen={isOpenVendor}
