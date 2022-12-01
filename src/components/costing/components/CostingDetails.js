@@ -2043,7 +2043,7 @@ function CostingDetails(props) {
 
                                     return (
                                       <tr key={index}>
-                                        <td>{`${item.PlantName}(${item.PlantCode})`}</td>
+                                        <td>{`${item.PlantName}`}</td>
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
@@ -2175,8 +2175,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
-                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
+                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>
+                                      <td>{item.VendorName ? `${item.VendorName}` : '-'}</td>
 
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
@@ -2279,8 +2279,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      <td className='break-word'>{item.VendorName}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
@@ -2412,7 +2412,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
-                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}

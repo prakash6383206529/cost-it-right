@@ -759,7 +759,7 @@ export function formViewData(costingSummary, header = '') {
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
   obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
-  obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName} (${dataFromAPI.PlantCode})` : `${dataFromAPI.DestinationPlantName} (${dataFromAPI.DestinationPlantCode})`
+  obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
 
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
