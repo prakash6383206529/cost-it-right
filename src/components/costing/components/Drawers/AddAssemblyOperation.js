@@ -177,8 +177,8 @@ function AddAssemblyOperation(props) {
     if (isAssemblyTechnology) {
       item.TotalOperationCost = operationCostAssemblyTechnology
       let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
-      // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
-      // }))
+      dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
+      }))
       dispatch(gridDataAdded(true))
 
       props?.setOperationCostFunction(operationCostAssemblyTechnology, operationGridData)
