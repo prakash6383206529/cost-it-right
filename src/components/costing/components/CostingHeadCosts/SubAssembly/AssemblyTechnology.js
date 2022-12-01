@@ -10,7 +10,7 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData } from '../../../actions/Costing';
+import { getRMCCTabData, gridDataAdded } from '../../../actions/Costing';
 import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblyTechnology(props) {
@@ -206,8 +206,9 @@ function AssemblyTechnology(props) {
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(gridDataAdded(true))
     }
 
     /**
