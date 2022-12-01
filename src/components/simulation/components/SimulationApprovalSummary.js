@@ -626,7 +626,7 @@ function SimulationApprovalSummary(props) {
 
     const plantFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const temp = `${row.PlantName}(${row.PlantCode})`
+        const temp = `${row.PlantName}`
         return temp
     }
 

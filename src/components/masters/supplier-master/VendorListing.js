@@ -29,10 +29,11 @@ import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, isResetClick } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash';
+import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -85,6 +86,12 @@ class VendorListing extends Component {
     }
 
 
+    floatingFilterVendorType = {
+        maxValue: 6,
+        suppressFilterButton: true,
+        component: "vendorType"
+    }
+
     componentWillUnmount() {
         this.props.setSelectedRowForPagination([])
     }
@@ -99,6 +106,18 @@ class VendorListing extends Component {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
             this.applyPermission(nextProps.topAndLeftMenuData)
         }
+
+
+        setTimeout(() => {
+            if (this.props.statusColumnData?.data) {
+                this.setState({ disableFilter: false, warningMessage: true })
+            } else {
+                this.setState({ warningMessage: false })
+            }
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, VendorType: (this.props.statusColumnData?.data) ? (this.props.statusColumnData?.data) : "" } })
+        }, 500);
+
+
     }
 
 
@@ -522,6 +541,7 @@ class VendorListing extends Component {
 
     resetState = () => {
         this.props.setSelectedRowForPagination([])
+        this.props.isResetClick(true, "vendorType")
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -644,10 +664,11 @@ class VendorListing extends Component {
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
+            valuesFloatingFilter: MultiDropdownFloatingFilter,
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -736,7 +757,7 @@ class VendorListing extends Component {
                             enablePivot={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterVendorType}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                             <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -805,11 +826,11 @@ class VendorListing extends Component {
 */
 function mapStateToProps({ comman, supplier, auth, simulation }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
-    const { countryList } = comman;
+    const { countryList, statusColumnData } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
     const { selectedRowForPagination } = simulation;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
+    return { statusColumnData, loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
 
 /**
@@ -826,7 +847,8 @@ export default connect(mapStateToProps, {
     getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList,
     setSelectedRowForPagination,
-    disabledClass
+    disabledClass,
+    isResetClick
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {

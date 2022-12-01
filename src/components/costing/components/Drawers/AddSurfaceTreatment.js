@@ -194,7 +194,7 @@ function AddSurfaceTreatment(props) {
                     <h3>{'ADD Surface Treatment:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>

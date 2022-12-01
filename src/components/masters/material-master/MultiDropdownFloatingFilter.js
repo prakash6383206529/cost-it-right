@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    agGridStatus, fetchCostingHeadsAPI,
+    agGridStatus, fetchCostingHeadsAPI, isResetClick,
 } from '../../../actions/Common';
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
 import { statusOptions } from "../../../config/constants";
+import { getVendorTypesSelectList } from "../actions/Supplier";
 
 
 function MultiDropdownFloatingFilter(props) {
@@ -14,6 +15,7 @@ function MultiDropdownFloatingFilter(props) {
     const [showInputData, setShowInputData] = useState([])
     const [currentValue, setCurrentValue] = useState(0)
     const [dropdownData, setDropdownData] = useState([])
+    const [vendorDropdownData, setVendorDropdownData] = useState([])
     const [selectedPlants, setSelectedPlants] = useState([])
     const [activate, setActivate] = useState(true)
     const [gridHeight, setGridHeight] = useState(0)
@@ -40,23 +42,48 @@ function MultiDropdownFloatingFilter(props) {
 
 
     useEffect(() => {
+        if (props?.component === "costingReport") {
+            dispatch(fetchCostingHeadsAPI('master', res => {
+                if (res) {
+                    let temp = []
+                    res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                        if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                        temp.push({ label: item.Text, value: item.Value })
+                        return null;
+                    })
+                    setDropdownData(temp)
+                }
+            }))
+        }
+        if (props?.component === "vendorType") {
+            dispatch(getVendorTypesSelectList(res => {
+                if (res) {
+                    let temp = []
+                    res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                        if (item.Value === '0') return false;
+                        temp.push({ label: item.Text, value: item.Value })
+                        return null;
+                    })
+                    setVendorDropdownData(temp)
+                }
+            }))
+        }
 
-        dispatch(fetchCostingHeadsAPI('master', res => {
-            if (res) {
-                let temp = []
-                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
-                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                })
-                setDropdownData(temp)
-            }
-        }))
-
-        if (isReset && isReset.component == "applicablity") {
+        if (isReset && isReset?.component == "applicablity") {
             setActivate(false)
         }
 
+
+
+        if (isReset && isReset.data && isReset.component == "vendorType") {
+
+            dispatch(agGridStatus())
+            setTimeout(() => {
+                dispatch(isResetClick(false, "vendorType"))
+                setValue('multiDropDown', [])
+            }, 1000);
+
+        }
 
     }, [])
 
@@ -95,8 +122,8 @@ function MultiDropdownFloatingFilter(props) {
     }
 
     const onFocus = () => {
-        if (getGridHeight.component === props.component) {
-            setGridHeight(getGridHeight.value)
+        if (getGridHeight?.component === props?.component) {
+            setGridHeight(getGridHeight?.value)
         }
     }
     const onParentModelChanged = (parentModel) => {
@@ -119,7 +146,6 @@ function MultiDropdownFloatingFilter(props) {
     }
     let temparr = showInputData && showInputData.map(item => item.label)
     let showHoverData = temparr && temparr?.join(', ')
-
     return (
 
         <div className="ag-grid-multi">
@@ -136,8 +162,10 @@ function MultiDropdownFloatingFilter(props) {
                     onFocus={onFocus}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                    options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
-                    isMulti={activate || props?.maxValue == 5 ? false : true}
+                    // options={activate||props?.maxValue == 5 ? statusOptions : dropdownData} //FOR LATER PREFERENCE
+                    options={props?.maxValue == 5 ? statusOptions : props?.component === "vendorType" ? vendorDropdownData : dropdownData}
+                    // isMulti={activate || props?.maxValue == 5 ? false : true} //FOR LATER PREFERENCE
+                    isMulti={props?.maxValue == 5 ? false : true}
                     dropDownClass={true}
                     mandatory={true}
                     handleChange={(e) => {
