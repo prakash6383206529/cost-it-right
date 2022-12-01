@@ -41,6 +41,7 @@ function CostingBenchmarkReport(props) {
     const [dropDown, setDropDown] = useState(true)
     const [blueDivison, setblueDivison] = useState(false)
     const [dateArray, setDateArray] = useState([])
+    const [disableRunReport, setDisableRunReport] = useState(true)
 
     const dispatch = useDispatch()
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -59,6 +60,20 @@ function CostingBenchmarkReport(props) {
             setShowMasterList(false)
         }
     }, [])
+
+
+    useEffect(() => {
+
+        if (selectedRowForPagination) {
+
+            if (selectedRowForPagination.length > 0) {
+                setDisableRunReport(false)
+            } else {
+                setDisableRunReport(true)
+            }
+        }
+
+    }, [selectedRowForPagination])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
 
@@ -162,7 +177,10 @@ function CostingBenchmarkReport(props) {
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+
+                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process') {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null
             })
             return temp
@@ -226,7 +244,7 @@ function CostingBenchmarkReport(props) {
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
 
                                     {cancelButton && <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>}
-                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
+                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={disableRunReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
 
                                 </div>
 
