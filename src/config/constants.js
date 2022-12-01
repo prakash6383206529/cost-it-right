@@ -1830,7 +1830,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendor: 'Vendor (Code)',
+  vendorName: 'Vendor (Code)',
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
