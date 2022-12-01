@@ -7,7 +7,7 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10 } from '../.././helper/validation'
+import { postiveNumber, maxLength10, nonZero } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -787,7 +787,7 @@ function AddRfq(props) {
                                         mandatory={true}
                                         rules={{
                                             required: false,
-                                            validate: { postiveNumber, maxLength10 }
+                                            validate: { postiveNumber, maxLength10, nonZero }
                                         }}
                                         handleChange={() => { }}
                                         disabled={isEditFlag}
