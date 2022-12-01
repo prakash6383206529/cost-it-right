@@ -50,7 +50,7 @@ class AddVendorDrawer extends Component {
     */
     UNSAFE_componentWillMount() {
         if (!this.props.isViewMode) {
-            this.props.getVendorTypesSelectList()
+            this.props.getVendorTypesSelectList(() => { })
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
