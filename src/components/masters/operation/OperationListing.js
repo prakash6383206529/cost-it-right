@@ -183,7 +183,7 @@ class OperationListing extends Component {
                 this.props?.changeTokenCheckBox(false)
             }
 
-            if (Number(this?.props?.isOperationST) === Number(SURFACETREATMENT)) {
+            if (Number(this?.props?.isOperationST) === Number(SURFACETREATMENT)) {   //CONDITION TO GET SURFACETREATMENT LISTING DATA
                 filterData.OperationType = 'surfacetreatment'
             } else if ((Number(this?.props?.isOperationST) === Number(OPERATIONS))) {
                 filterData.OperationType = 'operation'

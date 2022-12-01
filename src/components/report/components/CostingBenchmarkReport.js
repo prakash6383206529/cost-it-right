@@ -6,7 +6,7 @@ import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
 import MachineRateListing from '../../masters/machine-master/MachineRateListing'
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing'
@@ -88,9 +88,12 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(true)
         setblueDivison(true)
 
-        setShowMasterList(true)
-        setMaster(value)
+        setShowMasterList(false)
+        setTimeout(() => {
+            setShowMasterList(true)
+        }, 300);
 
+        setMaster(value)
     }
 
 
@@ -102,6 +105,7 @@ function CostingBenchmarkReport(props) {
 
 
     const renderModule = (value) => {
+
 
         switch (value.value) {
             case RMDOMESTIC:
@@ -117,7 +121,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} />)
+            case SURFACETREATMENT:
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -126,6 +132,7 @@ function CostingBenchmarkReport(props) {
 
 
     const renderInsights = (value) => {
+
 
         switch (value.value) {
             case RMDOMESTIC:
@@ -141,7 +148,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:
-                return (<OperationInsights />)
+                return (<OperationInsights data={selectedRowForPagination} />)
+            case SURFACETREATMENT:
+                return (<OperationInsights data={selectedRowForPagination} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
