@@ -282,7 +282,7 @@ export const clearCosting = (dispatch) => {
 
 }
 
-export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}) => {
+export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date()) => {
   let Arr = tabData
   let assemblyWorkingRow = []
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
@@ -325,7 +325,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetOtherCost": DiscountCostData?.AnyOtherCost,
       "NetDiscounts": DiscountCostData?.HundiOrDiscountValue,
       "TotalCostINR": totalCost,
-      "EffectiveDate": "2022-10-18T10:25:38.896Z"
+      "EffectiveDate": CostingEffectiveDate
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
