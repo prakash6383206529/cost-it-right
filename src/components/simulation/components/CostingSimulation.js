@@ -823,7 +823,7 @@ function CostingSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        return `${props.value}(${props.data.PlantCode})`
+        return `${props.value}`
     }
 
     const impactPerQuarterFormatter = (props) => {
