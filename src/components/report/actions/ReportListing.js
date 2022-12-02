@@ -162,3 +162,34 @@ export function getCostingBenchMarkBopReport(data, callback) {
 }
 
 
+export function getRevisionNoFromPartId(PartId, callback) {
+    return (dispatch) => {
+        if (PartId !== '') {
+            const request = axios.get(`${API.getRevisionNoFromPartId}?partId=${PartId}`, config(),)
+            request.then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE })
+                // apiErrors(error)
+            })
+        }
+    }
+}
+
+
+export function getCostMovementReportByPart(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostMovementReportByPart}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
