@@ -68,8 +68,15 @@ const CustomHeader = {
 
 const Detail = userDetails()
 
-if (Detail && Object.keys(Detail).length > 0) {
-  window.setInterval(() => {
+function tokenAPICall() {
+  let currentTime = new Date()
+  let loginTime = new Date(reactLocalStorage.getObject("loginTime"))
+  let differenceTime = ((currentTime?.getTime() - loginTime?.getTime()) / 1000) + 120;
+  let waitFor = Detail.expires_in - differenceTime
+  if ((Detail.expires_in - differenceTime) < 0) {
+    waitFor = ''
+  }
+  setTimeout(() => {
     let reqParams = {
       IsRefreshToken: true,
       refresh_token: JSON.parse(localStorage.getItem("userDetail")).RefreshToken,
@@ -82,14 +89,21 @@ if (Detail && Object.keys(Detail).length > 0) {
     axios.post(API.login, queryParams, CustomHeader)
       .then((response) => {
         if (response && response.status === 200) {
-          let userDetail = formatLoginResult(response.data.Data);
-
+          let userDetail = formatLoginResult(response.data);
+          reactLocalStorage.setObject("loginTime", new Date());
           localStorage.setItem("userDetail", JSON.stringify(userDetail))
         }
       }).catch((error) => {
 
       });
-  }, (Detail.expires_in - 60) * 1000);
+    setTimeout(() => {
+      tokenAPICall();
+    }, 500);
+  }, waitFor * 1000);
+}
+
+if (Detail && Object.keys(Detail).length > 0) {
+  tokenAPICall();
 }
 
 class Main extends Component {
