@@ -451,7 +451,7 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${partType ? "Part Cost/ Assembly" : `${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Insert Cost/ Assembly' : 'Insert Cost/ Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '180px' }}><span className="font-weight-500">{`Net RMC + CC`}</span></th>
