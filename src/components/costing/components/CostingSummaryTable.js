@@ -39,7 +39,7 @@ import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphC
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist } = props
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -1063,7 +1063,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && <LoaderCustom />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom />)}
           <Row>
             {!viewMode && (
               <Col md="4">

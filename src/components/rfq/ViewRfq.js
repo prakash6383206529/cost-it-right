@@ -672,7 +672,8 @@ function RfqListing(props) {
                                 // costingID={approvalDetails.CostingId}
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                simulationMode={false} />
+                                simulationMode={false}
+                                costingIdExist={true} />
                         )}
                     </div>
                 }
