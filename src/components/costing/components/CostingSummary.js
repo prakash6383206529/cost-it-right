@@ -50,6 +50,7 @@ function CostingSummary(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
+  const [costingIdExist, setCostingIdExist] = useState(true);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
@@ -234,7 +235,9 @@ function CostingSummary(props) {
                             setShowWarningMsg(true)
                             dispatch(setCostingViewData([]))
                             setIsLoader(false)
+                            setCostingIdExist(false)
                           } else {
+                            setCostingIdExist(true)
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                               if (res.data.Data) {
@@ -627,6 +630,7 @@ function CostingSummary(props) {
         selectedTechnology={technology.label}
         costingSummaryMainPage={true}
         setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
+        costingIdExist={costingIdExist}
       />}
 
       {IsBulkOpen && <BOMUpload
