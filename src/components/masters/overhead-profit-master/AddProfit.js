@@ -441,6 +441,7 @@ class AddProfit extends Component {
 
     switch (profitAppli.label) {
       case 'RM':
+      case 'Part Cost':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -485,6 +486,7 @@ class AddProfit extends Component {
           isHideBOP: true,
         })
       case 'RM + CC':
+      case 'Part Cost + CC':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -496,6 +498,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -518,6 +521,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         return this.setState({
           isRM: false,
           isCC: false,
