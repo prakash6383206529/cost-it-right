@@ -70,7 +70,8 @@ class AddProfit extends Component {
       vendorCode: "",
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -109,6 +110,9 @@ class AddProfit extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
+      if (newValue.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -1086,7 +1090,7 @@ class AddProfit extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Profit on RM (%)`}
+                              label={`Profit on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
