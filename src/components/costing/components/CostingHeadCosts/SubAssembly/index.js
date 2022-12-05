@@ -12,6 +12,7 @@ import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { useEffect } from 'react';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -20,6 +21,7 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+  const [isBOPExists, setIsBOPExists] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
 
@@ -135,6 +137,11 @@ function AssemblyPart(props) {
     return null
   })
 
+  useEffect(() => {
+    let final = _.map(item && item?.CostingChildPartDetails, 'PartType')
+    setIsBOPExists(final.includes('BOP'))
+  }, [item])
+
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
     return <AssemblyPart
@@ -222,12 +229,12 @@ function AssemblyPart(props) {
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
 
-              <button
+              {isBOPExists && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
                 <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
-
+              </>}
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
                   type="button"
