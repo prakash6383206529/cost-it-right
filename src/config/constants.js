@@ -1656,7 +1656,7 @@ export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 
 // MASTER APPROVAL STATUS ID
-export const APPROVED_STATUS = '3'
+export const APPROVED_STATUS = '3,5'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1802,7 +1802,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendor: 'Vendor (Code)',
+  vendorName: 'Vendor (Code)',
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
@@ -2127,4 +2127,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.4";
+export const VERSION = "V2.1.7";
