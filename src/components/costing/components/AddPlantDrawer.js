@@ -36,7 +36,10 @@ function AddPlantDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', data)
+    props.closeDrawer('', {
+      ...data,
+      PlantName: `${data.PlantName} (${data.PlantCode})`
+    })
   };
 
   /**
