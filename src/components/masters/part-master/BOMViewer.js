@@ -87,7 +87,7 @@ class BOMViewer extends Component {
   }
 
   childDrawerToggle = () => {
-    this.setState({ isOpenChildDrawer: true })
+    this.setState({ isOpenChildDrawer: true, displayDeleteIcon: false, displayEditIcon: false })
   }
 
   zoomOut = () => {
