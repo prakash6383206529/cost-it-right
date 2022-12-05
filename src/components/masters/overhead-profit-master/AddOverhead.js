@@ -73,7 +73,8 @@ class AddOverhead extends Component {
       attachmentLoader: false,
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -112,6 +113,9 @@ class AddOverhead extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
+      if (newValue.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -1110,7 +1114,7 @@ class AddOverhead extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on RM (%)`}
+                              label={`Overhead on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
