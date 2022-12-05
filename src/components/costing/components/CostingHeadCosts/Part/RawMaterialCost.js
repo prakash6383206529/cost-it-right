@@ -1239,7 +1239,7 @@ function RawMaterialCost(props) {
                                   onClick={() => deleteItem(index)}
                                 />}
                                 <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
-                                  position="top center">
+                                  position="top left">
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${rmGridFields}.${index}.remarkPopUp`}

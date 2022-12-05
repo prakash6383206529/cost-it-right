@@ -430,7 +430,7 @@ function OperationCost(props) {
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                                 <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
-                                  position={`${props.IsAssemblyCalculation ? 'top right' : 'top center'}`}>
+                                  position={'top right'}>
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}
