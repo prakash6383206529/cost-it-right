@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1396,7 +1396,10 @@ function CostingDetails(props) {
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(isDataChange(false))
     dispatch(saveAssemblyNumber([]))
-
+    dispatch(setRMCCErrors({}))
+    dispatch(setOverheadProfitErrors({}))
+    dispatch(setToolsErrors({}))
+    dispatch(setDiscountErrors({}))
   }
 
   /**
@@ -2020,7 +2023,7 @@ function CostingDetails(props) {
 
                                     return (
                                       <tr key={index}>
-                                        <td>{`${item.PlantName}(${item.PlantCode})`}</td>
+                                        <td>{`${item.PlantName}`}</td>
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
@@ -2152,8 +2155,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
-                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
+                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>
+                                      <td>{item.VendorName ? `${item.VendorName}` : '-'}</td>
 
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
@@ -2255,8 +2258,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      <td className='break-word'>{item.VendorName}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
@@ -2386,7 +2389,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
-                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}

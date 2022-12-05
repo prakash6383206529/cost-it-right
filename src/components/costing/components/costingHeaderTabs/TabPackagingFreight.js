@@ -195,7 +195,7 @@ function TabPackagingFreight(props) {
           checkForNull(DiscountCostData?.AnyOtherCost)) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
 
       }

@@ -259,9 +259,6 @@ function RfqListing(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: true ? isFirstColumn : false,
-        headerCheckboxSelectionFilteredOnly: true,
-        checkboxSelection: isFirstColumn,
     };
 
 

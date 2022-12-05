@@ -626,7 +626,7 @@ function SimulationApprovalSummary(props) {
 
     const plantFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const temp = `${row.PlantName}(${row.PlantCode})`
+        const temp = `${row.PlantName}`
         return temp
     }
 
@@ -1241,7 +1241,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row>
                             <Col md="12" className="costing-summary-row">
-                                {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
+                                {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} />}
                             </Col>
                         </Row>
                         <Row className='mt-2'>

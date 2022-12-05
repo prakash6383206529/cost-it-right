@@ -6,7 +6,7 @@ import { checkForNull, loggedInUserId } from '../../../../helper';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { saveAssemblyCostingRMCCTab } from '../../actions/Costing';
+import { gridDataAdded, saveAssemblyCostingRMCCTab } from '../../actions/Costing';
 import { useContext } from 'react';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
@@ -16,7 +16,6 @@ function AddAssemblyProcess(props) {
   const { item } = props;
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const [processGrid, setProcessGrid] = useState(subAssemblyTechnologyArray ? { CostingProcessCostResponse: subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse, ProcessCostTotal: subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost } : []);
-  const [totalProcessCost, setTotalProcessCost] = useState(0);
   const dispatch = useDispatch()
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext)
@@ -51,7 +50,6 @@ function AddAssemblyProcess(props) {
 
   const getValuesOfProcess = (gridData, ProcessCostTotal) => {
     setProcessGrid(gridData)
-    setTotalProcessCost(ProcessCostTotal)
   }
 
   /**
@@ -75,10 +73,14 @@ function AddAssemblyProcess(props) {
       costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
       return null
     })
+    let tempArr = processGrid.CostingProcessCostResponse
     let TotalProcessCost = 0
-    TotalProcessCost = processGrid.CostingProcessCostResponse.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el?.ProcessCost)
-    }, 0)
+    tempArr && tempArr.map((item) => {
+      if (!(item?.IsChild)) {
+        TotalProcessCost = checkForNull(TotalProcessCost) + checkForNull(item?.ProcessCost)
+      }
+      return null
+    })
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
       checkForNull(costPerPieceTotal) +
@@ -103,8 +105,9 @@ function AddAssemblyProcess(props) {
       checkForNull(DiscountCostData?.AnyOtherCost)) -
       checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
     dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+    dispatch(gridDataAdded(true))
 
     let requestData = {
       "CostingId": item.CostingId,

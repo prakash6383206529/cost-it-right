@@ -289,9 +289,9 @@ function TabToolCost(props) {
           checkForNull(DiscountCostData?.AnyOtherCost)) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-
+        dispatch(gridDataAdded(true))
       }
 
       dispatch(saveToolTab(data, res => {
@@ -407,6 +407,10 @@ function TabToolCost(props) {
     setDrawerOpen(false)
   }
 
+  const disableToggle = (value) => {
+    setDisableSwitch(value)
+  }
+
   return (
     <>
       <div className="login-container signup-form">
@@ -493,6 +497,7 @@ function TabToolCost(props) {
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}
                                         setToolCost={setToolCost}
                                         saveCosting={saveCosting}
+                                        disableToggle={disableToggle}
                                       />
                                     </div>
                                   </td>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, } from 'react';
+import React, { useContext, useEffect, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
@@ -10,8 +10,9 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData } from '../../../actions/Costing';
+import { getRMCCTabData, gridDataAdded } from '../../../actions/Costing';
 import { EMPTY_GUID } from '../../../../../config/constants';
+import _ from 'lodash';
 
 function AssemblyTechnology(props) {
     const { children, item, index } = props;
@@ -23,6 +24,7 @@ function AssemblyTechnology(props) {
     const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
     const [tabAssemblyIndividualPartDetail, setTabAssemblyIndividualPartDetail] = useState({})
     const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+    const [isBOPExists, setIsBOPExists] = useState(false)
 
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
@@ -34,6 +36,7 @@ function AssemblyTechnology(props) {
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
+        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
         if (PartType === 'Assembly') {
             // WHEN TOGGLE BUTTON IS PRESSED AT THAT TIME VALUES SHOULD BE CALCULATED UNTIL THEN VALUES SHOULD BE 0
             setIsOpen(!IsOpen)
@@ -127,6 +130,11 @@ function AssemblyTechnology(props) {
         setPartCostDrawer(false)
     }
 
+    useEffect(() => {
+        let final = _.map(subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails, 'PartType')
+        setIsBOPExists(final.includes('BOP'))
+    }, [subAssemblyTechnologyArray])
+
     const nestedAssembly = children && children.map(el => {
         // SAME COMPONENT WILL RENDER PART AND ASSEMBLY
         if (el.PartType === 'Sub Assembly' || el.PartType === 'Part') {
@@ -205,8 +213,9 @@ function AssemblyTechnology(props) {
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(gridDataAdded(true))
     }
 
     /**
@@ -263,13 +272,15 @@ function AssemblyTechnology(props) {
 
                 {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
                     <div className='assembly-button-container'>
-                        <button
-                            type="button"
-                            className={'user-btn add-oprn-btn'}
-                            title={"Add BOP Handling"}
-                            onClick={() => { setIsOpenBOPDrawer(true) }}
-                        >
-                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                        {isBOPExists && <>
+                            <button
+                                type="button"
+                                className={'user-btn add-oprn-btn'}
+                                title={"Add BOP Handling"}
+                                onClick={() => { setIsOpenBOPDrawer(true) }}
+                            >
+                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                        </>}
                         <button
                             type="button"
                             className={'user-btn '}

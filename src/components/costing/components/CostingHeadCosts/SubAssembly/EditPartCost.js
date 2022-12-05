@@ -12,7 +12,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, setCostingViewData } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 
@@ -32,7 +32,7 @@ function EditPartCost(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
+    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge, CostingEffectiveDate } = useSelector(state => state.costing)
 
 
     const { register, handleSubmit, control, setValue, getValues } = useForm({
@@ -121,7 +121,7 @@ function EditPartCost(props) {
         if (sum > 100) {
             Toaster.warning('Total SOB Percent should not be greater than 100');
             setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
+            editedObject.SOBPercentage = 0
         }
 
         // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
@@ -133,6 +133,9 @@ function EditPartCost(props) {
             netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
             editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (editedObject.DeltaSign === undefined) {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
@@ -148,6 +151,25 @@ function EditPartCost(props) {
     }
 
     const handleDeltaSignChange = (value, index) => {
+        if (value?.label === '-') {
+            if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
+                Toaster.warning('Delta value should be less than settled price')
+
+                let tempGrid = gridData[index]
+                tempGrid.DeltaSign = value
+                tempGrid.DeltaValue = 0
+                tempGrid.NetCost = 0
+                let arr = Object.assign([...gridData], { [index]: tempGrid })
+                setGridData(arr)
+
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                    setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                    setValue(`${PartCostFields}.${index}.DeltaSign`, value)
+                }, 200);
+                return false
+            }
+        }
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);
@@ -228,13 +250,7 @@ function EditPartCost(props) {
     }
 
     const addGrid = () => {
-        let differenceCosting = _.intersection(_.map(gridData, 'value'), _.map(costingForMultiTechnology, 'BaseCostingIdRef'))
-        if (differenceCosting?.includes(costingNumberData?.value)) {
-            Toaster.warning('Please select another Costing Number')
-            setValue('CostingNumber', {})
-            setCostingNumberData({})
-            return false
-        } else if (Object.keys(costingNumberData).length > 0) {
+        if (Object.keys(costingNumberData).length > 0) {
             setGridData([...gridData, costingNumberData])
             setValue('CostingNumber', {})
             setCostingNumberData({})
@@ -251,10 +267,11 @@ function EditPartCost(props) {
     }
 
     const renderListing = (value) => {
+        let final = _.map(gridData, 'label')
         if (value === 'CostingNumber') {
             let temp = []
             costingForMultiTechnology && costingForMultiTechnology.map(item => {
-                if (item?.Value === '0') return false;
+                if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
                     SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
@@ -333,8 +350,9 @@ function EditPartCost(props) {
                 checkForNull(DiscountCostData?.AnyOtherCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(gridDataAdded(true))
         }
         props.closeDrawer('')
 
@@ -400,6 +418,7 @@ function EditPartCost(props) {
                                     <thead>
                                         <tr >
                                             <th>Vendor Name</th>
+                                            <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
                                             <th>Delta</th>
@@ -413,6 +432,7 @@ function EditPartCost(props) {
                                                 <>
                                                     <tr key={index} >
                                                         <td>{item?.VendorName}</td>
+                                                        <td>{item?.label}</td>
                                                         <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                                                         <td>
                                                             <NumberFieldHookForm
@@ -507,6 +527,7 @@ function EditPartCost(props) {
                                                                 type="button"
                                                                 className={'Delete mr-2 align-middle'}
                                                                 onClick={() => deleteDetails(item, index)}
+                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
                                                             >
                                                             </button>
                                                         </td>

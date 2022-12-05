@@ -52,10 +52,10 @@ function AddNCCDrawer(props) {
       ...data,
       VendorCode: Object.keys(vendor).length > 0 ? vendor.VendorCode : '',
       VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
-      VendorName: Object.keys(vendor).length > 0 ? vendor.VendorName : '',
+      VendorName: Object.keys(vendor).length > 0 ? `${vendor.VendorName} (${vendor.VendorCode})` : '',
       Vendor: vendor,
+      DestinationPlantName: `${data.DestinationPlantName} (${data.DestinationPlantCode})`
     })
-
   };
 
   /**
@@ -189,7 +189,7 @@ function AddNCCDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant"}
+                    label={"Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -205,7 +205,7 @@ function AddNCCDrawer(props) {
                 </Col>
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor"}
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}

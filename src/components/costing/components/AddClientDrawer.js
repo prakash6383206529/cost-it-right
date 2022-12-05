@@ -57,7 +57,7 @@ function AddClientDrawer(props) {
         ...data,
         DestinationPlantCode: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.PlantCode : userDetailsCosting.Plants[0].PlantCode,
         DestinationPlantId: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.value : userDetailsCosting.Plants[0].PlantId,
-        DestinationPlantName: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.PlantName : userDetailsCosting.Plants[0].PlantName,                 //PlantName
+        DestinationPlantName: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.label : userDetailsCosting.Plants[0].PlantName,                 //PlantName
         DestinationPlant: DestinationPlant ? DestinationPlant : userDetailsCosting.Plants,
         CustomerName: customer.label,
         CustomerId: customer.value
@@ -155,7 +155,7 @@ function AddClientDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Customer"}
+                    label={"Customer (Code)"}
                     name={"Customer"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -175,7 +175,7 @@ function AddClientDrawer(props) {
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Destination Plant"}
+                      label={"Destination Plant (Code)"}
                       name={"DestinationPlant"}
                       placeholder={"Select"}
                       Controller={Controller}

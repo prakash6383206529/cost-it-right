@@ -58,8 +58,9 @@ function AddVendorDrawer(props) {
         ...data,
         DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
+        VendorName: `${data.VendorName} (${data.VendorCode})`
       })
   };
 
@@ -198,7 +199,7 @@ function AddVendorDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor"}
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -220,7 +221,7 @@ function AddVendorDrawer(props) {
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Destination Plant"}
+                      label={"Destination Plant (Code)"}
                       name={"DestinationPlant"}
                       placeholder={"Select"}
                       Controller={Controller}
