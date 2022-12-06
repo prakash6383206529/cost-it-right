@@ -25,6 +25,7 @@ function AddTool(props) {
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
   }
 
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -219,7 +220,7 @@ function AddTool(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Tool'}</h3>
+                  <h3>{isEditFlag ? 'Update Tool' : 'ADD Tool'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
