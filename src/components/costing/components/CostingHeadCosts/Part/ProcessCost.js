@@ -403,6 +403,9 @@ function ProcessCost(props) {
    */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setTimeout(() => {
+      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
+    }, 500);
     setDrawerOpen(true)
   }
 
@@ -1114,7 +1117,7 @@ function ProcessCost(props) {
               <div className='action-btn-wrapper'>
                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
-                  position="top center">
+                  position="top right">
                   <TextAreaHookForm
                     label="Remark:"
                     name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
@@ -1306,7 +1309,7 @@ function ProcessCost(props) {
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                                 {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
-                                  position="top center">
+                                  position="top right">
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${ProcessGridFields}.${index}.remarkPopUp`}
