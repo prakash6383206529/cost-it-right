@@ -6,6 +6,9 @@ import { getToolCategoryList } from '../../actions/Costing';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
+import {
+  maxLength5, checkWhiteSpaces, postiveNumber, maxLength25,
+} from "../../../../helper/validation";
 
 function AddTool(props) {
 
@@ -224,7 +227,7 @@ function AddTool(props) {
                 </div>
               </Col>
             </Row>
-            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)}>
+            <form noValidate className="form" onSubmit={handleSubmit(addRow)}>
               <>
                 <Row className="pl-3">
                   <Col md="12">
@@ -273,11 +276,10 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
+                        validate: {
+                          maxLength25,
+                          checkWhiteSpaces
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -298,11 +300,11 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
+                        validate: {
+                          maxLength5,
+                          checkWhiteSpaces,
+                          postiveNumber
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -324,10 +326,9 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,5}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 5 and for decimal is 6',
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -349,10 +350,9 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,5}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 5 and for decimal is 6',
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -399,7 +399,7 @@ function AddTool(props) {
                     </button>
 
                     <button
-                      type={'button'}
+                      type={'submit'}
                       className="submit-button save-btn"
                       onClick={addRow}
                       disabled={CostingViewMode}
