@@ -72,6 +72,7 @@ class Login extends Component {
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
+        reactLocalStorage.setObject("loginTime", new Date());
         this.setState({ isLoader: false, isSubmitted: false });
 
         let userDetail = formatLoginResult(res.data);
