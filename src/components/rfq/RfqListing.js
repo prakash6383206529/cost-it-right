@@ -153,7 +153,7 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        params.api.sizeColumnsToFit();
+        window.screen.width >= 1440 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -202,6 +202,11 @@ function RfqListing(props) {
             return cell ? cell : "-"
 
         }
+    }
+    const statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return <div className={cell}>{row.Status}</div>
     }
 
     const attachmentFormatter = (props) => {
@@ -260,7 +265,8 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
-        attachmentFormatter: attachmentFormatter
+        attachmentFormatter: attachmentFormatter,
+        statusFormatter: statusFormatter
     }
 
 
@@ -269,7 +275,7 @@ function RfqListing(props) {
             {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                 <>
                     <h1 className='mb-0'>RFQ</h1>
-                    <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                    <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -326,16 +332,16 @@ function RfqListing(props) {
                                         rowSelection={'multiple'}
                                         suppressRowClickSelection={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ Id' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                        <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                        <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                         <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
-                                        <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                         <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
-                                        <AgGridColumn field="CostingReceived" headerName='No. Of Quotation Received'></AgGridColumn>
-                                        <AgGridColumn field="Status" headerName="Status"></AgGridColumn>
-                                        {<AgGridColumn field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                        <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
+                                        {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                     </AgGridReact>
                                     <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
