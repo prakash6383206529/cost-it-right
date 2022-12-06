@@ -5,7 +5,8 @@ import {
     GET_REPORT_LIST, config, EMPTY_GUID,
     GET_ALL_REPORT_LIST,
     GET_BENCHMARK_RM_LIST,
-    GET_BENCHMARK_MASTER_LIST
+    GET_BENCHMARK_MASTER_LIST,
+    GET_COST_RATIO_REPORT
 } from '../../../config/constants';
 
 // const config() = config
@@ -160,5 +161,42 @@ export function getCostingBenchMarkBopReport(data, callback) {
 
     };
 }
+export function getCostRatioReport(data, callback) {
 
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostRatioReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_COST_RATIO_REPORT,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
+
+export function getRevisionNoFromPartId(PartId, callback) {
+    console.log('PartId: ', PartId);
+    return (dispatch) => {
+
+        if (PartId !== '') {
+            const request = axios.get(`${API.getRevisionNoFromPartId}?partId=${PartId}`, config(),)
+            request.then((response) => {
+                console.log('response: ', response);
+
+                if (response.data.Result) {
+                    callback(response)
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE })
+                // apiErrors(error)
+            })
+        }
+    }
+}
 

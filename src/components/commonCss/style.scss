@@ -3120,6 +3120,14 @@ button:disabled,
   }
 }
 
+.view-pie-button {
+  @extend .tooltip-n;
+
+  .tooltiptext:after {
+    display: none;
+  }
+}
+
 .refresh-icon.tooltip-n {
   .tooltiptext {
     left: -130px;
