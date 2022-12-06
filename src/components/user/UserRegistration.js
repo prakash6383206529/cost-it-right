@@ -1820,7 +1820,7 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-                    <div className="input-group col-md-3 input-withouticon">
+                    <div className="input-group col-md-3 input-withouticon ">
                       <TextFieldHookForm
                         label="Address 2"
                         name={"AddressLine2"}
@@ -1835,11 +1835,12 @@ function UserRegistration(props) {
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
+                        disableErrorOverflow={true}
                         //validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                         //component={renderText}
                         //required={true}
                         // maxLength={45}
-                        customClassName={'withBorder'}
+                        customClassName={'withBorder addresss2-field'}
                       />
                     </div>
                     <div className="col-md-3">
