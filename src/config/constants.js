@@ -993,6 +993,8 @@ export const API = {
   getCostMovementReport: `${BASE_URL}/reports/get-cost-movement-report-by-master`,
   getRevisionNoFromPartId: `${BASE_URL}/masters-part/select-list-revision-number-by-part-id`,
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
+  getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
+
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
@@ -1661,6 +1663,7 @@ export const GET_SIMULATION_INSIGHT_REPORT = 'GET_SIMULATION_INSIGHT_REPORT'
 export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
 export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
+export const GET_COST_RATIO_REPORT = 'GET_COST_RATIO_REPORT'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1755,6 +1758,7 @@ export const COSTING_BREAKUP_DETAILS_REPORT = 'Costing Breakup Details'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
+export const COST_RATIO_REPORT = 'Cost Ratio'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';

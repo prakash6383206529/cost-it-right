@@ -1,0 +1,77 @@
+@import "cssVariable.scss";
+
+.costing-ratio-report {
+    table {
+        position: relative;
+
+        th,
+        td {
+            padding: 0 !important;
+            border-bottom: 0px solid transparent !important;
+            min-width: 225px;
+
+            .column-data {
+                height: 40px;
+                border-bottom: 1px solid $agGridBorder;
+                border-right: 1px solid $agGridBorder;
+                padding: 1px 10px;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                font-size: 15px;
+
+                .code-specific {
+                    max-width: 480px;
+                    display: flex;
+                    grid-gap: 3px;
+
+                    .name {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    @media screen and (max-width: $middleDesktop) {
+                        max-width: 380px;
+                    }
+
+                    &.max-height-reduce {
+                        max-width: 210px;
+                    }
+                }
+            }
+
+            &:nth-child(odd) {
+                background-color: #ffffef;
+            }
+
+            &:first-child {
+                max-width: 120px;
+                position: sticky;
+                left: -1px;
+                background-color: #eef3f8;
+                z-index: 1;
+                box-shadow: 0px 3px 8px rgb(0, 0, 0 / 8%) !important;
+
+
+                .column-data {
+                    border-left: 1px solid $agGridBorder;
+                    padding-left: 15px;
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .right-position:nth-child(2) {
+            .view-pie-button .tooltiptext.graph-tooltip {
+                right: unset !important;
+                left: 107% !important;
+            }
+        }
+
+    }
+}
+
+.cost-ratio-report {
+    min-height: calc(100vh - 289px);
+}

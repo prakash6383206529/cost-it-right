@@ -11,13 +11,22 @@ const color7 = "#D6DDEB";
 // graph colors start
 export const primaryColor = '#256bd1';
 export const secondryColor = '#1adcb3';
-export const graphColor1 = "#F199CE";
-export const graphColor2 = "#78AAD8";
-export const graphColor3 = "#73B0F4";
-export const graphColor4 = "#3E88CB";
-export const graphColor5 = "#B1CEEE";
-export const graphColor6 = "#76E2C5";
-export const graphColor7 = "#D6DDEB";
+export const graphColor1 = "#007ed6";
+export const graphColor2 = "#e01e84";
+export const graphColor3 = "#8e6cef";
+export const graphColor4 = "#26d7ae";
+export const graphColor5 = "#97d9ff";
+export const graphColor6 = "#52d726";
+export const graphColor7 = "#ffec00";
+export const graphColor8 = "#8399eb";
+export const graphColor9 = "#ff7300";
+export const graphColor10 = "#7cdddd";
+export const graphColor11 = "#ffaf00";
+export const graphColor12 = "#19aa2d";
+export const graphColor13 = "#5fb7d4";
+export const graphColor14 = "#ff0000";
+export const graphColor15 = "#9f9f9f";
+export const graphColor16 = "#c758d0";
 // graph colors end
 
 
