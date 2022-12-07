@@ -599,7 +599,7 @@ function ViewConversionCost(props) {
         anchor={props.anchor}
         open={props.isOpen}
         className="conversion-cost"
-      >
+        BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
         <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
