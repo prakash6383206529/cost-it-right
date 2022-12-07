@@ -161,6 +161,25 @@ export function getCostingBenchMarkBopReport(data, callback) {
     };
 }
 
+export function getCostingBenchMarkOperationReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostingBenchMarkOperationReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_BENCHMARK_MASTER_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
+
 
 export function getRevisionNoFromPartId(PartId, callback) {
     return (dispatch) => {

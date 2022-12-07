@@ -18,7 +18,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { checkForDecimalAndNull, userDepartmetList, getConfigurationKey } from '../../../helper'
+import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -727,6 +727,7 @@ class OperationListing extends Component {
             }
 
             this.setState({ selectedRowData: selectedRows })
+
         }
 
         const isFirstColumn = (params) => {
@@ -750,7 +751,7 @@ class OperationListing extends Component {
             sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props.benchMark) ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
