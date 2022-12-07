@@ -70,7 +70,7 @@ class OperationListing extends Component {
             disableDownload: false,
             analyticsDrawer: false,
             selectedRowDataAnalytics: [],
-
+            inRangeDate: [],
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
             warningMessage: false,
@@ -657,6 +657,7 @@ class OperationListing extends Component {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
                 setDate(newDate)
+                handleDate(newDate)// FOR COSTING BENCHMARK OPERATION REPORT
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
                 var cellDate = new Date(
@@ -677,6 +678,21 @@ class OperationListing extends Component {
             browserDatePicker: true,
             minValidYear: 2000,
         };
+
+        var handleDate = (newDate) => {
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+        }
 
 
         var setDate = (date) => {
