@@ -181,14 +181,14 @@ class AssemblyPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
                 {ViewAccessibility && <button title='View BOM' className="hirarchy-btn" type={'button'} onClick={() => this.visualAdDetails(cellValue)} />}
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {DeleteAccessibility && rowData?.IsAssociate && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
