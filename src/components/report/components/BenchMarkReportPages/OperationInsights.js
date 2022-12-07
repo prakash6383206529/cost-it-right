@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
-import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
 import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
@@ -18,16 +16,10 @@ import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
 function OperationInsights(props) {
-    const { register, handleSubmit, control, formState: { errors } } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
+
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showListing, setShowListing] = useState(false);
-    const [techSelected, setTechSelected] = useState(false);
-    const [materialSelected, setMaterialSelected] = useState(false);
-    const [gradeSelected, setGradeSelected] = useState(false);
     const [dynamicGrpahData, setDynamicGrpahData] = useState()
     const [averageGrpahData, setAverageGrpahData] = useState()
     const [minimumGrpahData, setMinimumGrpahData] = useState()
@@ -41,7 +33,6 @@ function OperationInsights(props) {
 
     let operationBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
-
     useEffect(() => {
 
         let arr = []
@@ -52,8 +43,8 @@ function OperationInsights(props) {
             return arr
         })
         let data = {
-            FromDate: null,
-            ToDate: null,
+            FromDate: props.dateArray[0] ? props.dateArray[0] : null,
+            ToDate: props.dateArray[1] ? props.dateArray[1] : null,
             IsSurfaceTreatmentOperation: props?.surfaceTreatMent,
             OperationBenchMarkingReports: arr
         }
@@ -74,7 +65,6 @@ function OperationInsights(props) {
         let uniqueVendors = []
 
         //////////////////////////////////////////////////////////////////////////////////////
-
 
         operationBenchmarkList && operationBenchmarkList?.OperationChildDetails?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
@@ -167,44 +157,40 @@ function OperationInsights(props) {
         setRowDataNew(temp)
 
 
-        let arr = [{               //SETTING DYNAMIC COLUMN DEFINATIONS
+        let arr = [               //SETTING DYNAMIC COLUMN DEFINATIONS
 
-            field: "Specification",
-            pinned: "left",
-            width: "115"
+            {
 
-        }, {
+                field: "Minimum",
+                pinned: "left",
+                width: "115"
 
-            field: "Minimum",
-            pinned: "left",
-            width: "115"
+            },
+            {
+                field: "Maximum",
+                pinned: "left",
+                width: "115"
 
-        },
-        {
-            field: "Maximum",
-            pinned: "left",
-            width: "115"
+            }, {
+                field: "Average",
+                pinned: "left",
+                width: "115",
+                cellRendererFramework: (params) => checkForDecimalAndNull(params.value, 4),
 
-        }, {
-            field: "Average",
-            pinned: "left",
-            width: "115",
-            cellRendererFramework: (params) => checkForDecimalAndNull(params.value, 4),
+            },
+            {
+                field: "WeightedAverage",
+                pinned: "left",
+                width: "130",
+                cellRendererFramework: (params) => checkForDecimalAndNull(params.value, 4),
 
-        },
-        {
-            field: "WeightedAverage",
-            pinned: "left",
-            width: "130",
-            cellRendererFramework: (params) => checkForDecimalAndNull(params.value, 4),
-
-        },
-        {
-            field: "EffectiveDate",
-            pinned: "left",
-            width: "130",
-            cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
-        }
+            },
+            {
+                field: "EffectiveDate",
+                pinned: "left",
+                width: "130",
+                cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
+            }
 
         ]
 
@@ -277,86 +263,11 @@ function OperationInsights(props) {
         }, 500);
     }, [operationBenchmarkList]);
 
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    const gradeSelectList = useSelector(state => state.material.gradeSelectList)
-    const filterRMSelectList = useSelector(state => state.material.filterRMSelectList.RawMaterials)
-    // 
 
-
-    const handleTechnologyChange = (value) => {
-        // setTechnology(value)
-        if (value && value !== '') {
-            setTechSelected(true)
-        }
-        else {
-            setTechSelected(false)
-        }
-    }
-
-    const handleMaterialChange = (value) => {
-        // setTechnology(value)
-        if (value && value !== '') {
-            setMaterialSelected(true)
-        }
-        else {
-            setMaterialSelected(false)
-        }
-    }
-
-    const handleGradeChange = (value) => {
-        // setTechnology(value)
-        if (value && value !== '') {
-            setGradeSelected(true)
-        }
-        else {
-            setGradeSelected(false)
-        }
-    }
-
-    const submitDropdown = () => {
-        if (techSelected && materialSelected && gradeSelected) {
-            setShowListing(true)
-            setDynamicGrpahData(rowData[0].graphData);
-            setAverageGrpahData(rowData[0].averageData);
-            setMinimumGrpahData(rowData[0].minimumData);
-            setMaximumGrpahData(rowData[0].maximumData);
-
-        }
-        else {
-            setShowListing(false)
-        }
-    }
-
-
-    const rowData = [
-        {
-            Specification: 'OP1', Minimum: '10', Maximum: '80', Average: '45', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
-            graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [10, 10, 10, 10, 10, 10, 10, 10], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
-        },
-        {
-            Specification: 'OP2', Minimum: '40', Maximum: '160', Average: '100', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
-            graphData: [40, 80, 100, 80, 120, 160, 120, 40], averageData: [22, 45, 85, 62, 101, 85, 66, 25], minimumData: [40, 40, 40, 40, 40, 40, 40, 40], maximumData: [160, 160, 160, 160, 160, 160, 160, 160],
-
-        },
-        {
-            Specification: 'OP3', Minimum: '50', Maximum: '170', Average: '110', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
-            graphData: [50, 90, 110, 90, 130, 170, 130, 50], averageData: [12, 55, 65, 72, 111, 45, 76, 25], minimumData: [20, 20, 20, 20, 20, 20, 20, 20], maximumData: [170, 170, 170, 170, 170, 170, 170, 170],
-        },
-        {
-            Specification: 'OP4', Minimum: '20', Maximum: '80', Average: '500', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
-            graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [20, 20, 20, 20, 20, 20, 20, 20], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
-        },
-        {
-            Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
-            graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [10, 10, 10, 10, 10, 10, 10, 10], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
-        },
-    ];
 
     const onSelectionChanged = (event) => {
 
         let labelArr = []
-
-
         tableHeaderColumnDefs?.map((item, index) => {
 
             if (index > 5) {
@@ -406,48 +317,14 @@ function OperationInsights(props) {
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
 
-        // 
+
     }
 
-    const renderListing = (label) => {
-        let temp = []
-        if (label && label !== '') {
-            if (label === 'technology') {
-                technologySelectList && technologySelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-                return temp
-            }
-            if (label === 'material') {
-                filterRMSelectList && filterRMSelectList.map(item => {
-                    if (item.Value === '0') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                });
-                return temp;
-            }
-            if (label === 'grade') {
-                gradeSelectList && gradeSelectList.map(item => {
-                    if (item.Value === '0') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                });
-                return temp;
-            }
-        }
-        else {
-            // 
-        }
-    }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: false,
-        // headerCheckboxSelection: isFirstColumn,
-        // checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -511,79 +388,10 @@ function OperationInsights(props) {
     };
 
 
-
-
     return (
         <>
             <div className="container-fluid rminsights_page">
-                <form onSubmit={handleSubmit} noValidate >
-                    {false && <Row className="pt-4">
-                        <Col md="12" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Technology:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Technology'}
-                                        placeholder={'Technology'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('technology')}
-                                        mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
-
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Raw Material:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Raw Material'}
-                                        placeholder={'Raw Material'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('material')}
-                                        mandatory={false}
-                                        handleChange={handleMaterialChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
-
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Grade:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Grade'}
-                                        placeholder={'Grade'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('grade')}
-                                        mandatory={false}
-                                        handleChange={handleGradeChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
-                            <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
-                        </Col>
-                    </Row>}
+                <form noValidate >
 
                     {showListing && <>
                         <Row>
@@ -620,16 +428,6 @@ function OperationInsights(props) {
                                                     <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
                                                     <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
                                                 </AgGridColumn>
-                                                {/* <AgGridColumn headerName="Vendor2" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant3" headerName="Plant 3" />
-                                                    <AgGridColumn width="150" field="Plant4" headerName="Plant 4" />
-                                                    <AgGridColumn width="150" field="Plant5" headerName="Plant 5" />
-                                                </AgGridColumn> */}
-                                                {/* <AgGridColumn headerName="Vendor3" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant6" headerName="Plant 6" />
-                                                    <AgGridColumn width="150" field="Plant7" headerName="Plant 7" />
-                                                    <AgGridColumn width="150" field="Plant8" headerName="Plant 8" />
-                                                </AgGridColumn> */}
                                             </AgGridReact>
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
