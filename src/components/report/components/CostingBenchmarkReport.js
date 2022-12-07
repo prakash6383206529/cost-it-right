@@ -97,7 +97,7 @@ function CostingBenchmarkReport(props) {
     }
 
 
-    const handleRM = (data) => {
+    const handleDate = (data) => {
 
         let unique = data.filter((item, i, ar) => ar.indexOf(item) === i);
         setDateArray(unique)
@@ -109,21 +109,21 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case MACHINERATE:
                 return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} handleDate={handleDate} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} handleDate={handleDate} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -148,9 +148,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:
-                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={false} />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={false} dateArray={dateArray} />)
             case SURFACETREATMENT:
-                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={true} />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={true} dateArray={dateArray} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
