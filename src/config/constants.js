@@ -976,7 +976,8 @@ export const API = {
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
   getCostingBenchMarkBopReport: `${BASE_URL}/reports/get-bop-cost-benchmarking-report`,
   getCostMovementReport: `${BASE_URL}/reports/get-cost-movement-report-by-master`,
-
+  getRevisionNoFromPartId: `${BASE_URL}/masters-part/select-list-revision-number-by-part-id`,
+  getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -2128,4 +2129,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.4";
+export const VERSION = "V2.1.5";
