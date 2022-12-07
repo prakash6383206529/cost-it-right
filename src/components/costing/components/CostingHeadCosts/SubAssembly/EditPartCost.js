@@ -364,7 +364,8 @@ function EditPartCost(props) {
         <div>
             <Drawer className={`${props.costingSummary ? '' : 'bottom-drawer'}`}
                 anchor={props.anchor}
-                open={props.isOpen}>
+                open={props.isOpen}
+                BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         <Row className="drawer-heading sticky-top-0">
@@ -571,6 +572,7 @@ function EditPartCost(props) {
                     //   selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationDrawer={false}
+                    fromCostingSummary={props.costingSummary}
                 />
             }
         </div >

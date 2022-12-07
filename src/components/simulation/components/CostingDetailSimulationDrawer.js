@@ -52,8 +52,7 @@ function CostingDetailSimulationDrawer(props) {
                 <Drawer
                     anchor={props.anchor}
                     open={props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
-                >
+                    BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
                     <Container>
                         <div className={"drawer-wrapper drawer-1500px simulation-costing-details-drawers"}>
                             <form noValidate className="form">
@@ -201,7 +200,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row>
                                 }
                                 {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props.fromCostingSummary} />
                             </form>
                         </div>
                     </Container>

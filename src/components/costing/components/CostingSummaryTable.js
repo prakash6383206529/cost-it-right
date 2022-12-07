@@ -1075,7 +1075,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -2137,6 +2137,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            fromCostingSummary={props.fromCostingSummary}
           />
         )
       }
@@ -2153,6 +2154,7 @@ const CostingSummaryTable = (props) => {
             index={index}
             technologyId={technologyId}
             rmMBDetail={rmMBDetail}
+            fromCostingSummary={props.fromCostingSummary}
           />
         )
       }
