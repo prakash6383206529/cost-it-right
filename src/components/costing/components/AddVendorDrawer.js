@@ -198,7 +198,7 @@ function AddVendorDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor"}
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -220,7 +220,7 @@ function AddVendorDrawer(props) {
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Destination Plant"}
+                      label={"Destination Plant (Code)"}
                       name={"DestinationPlant"}
                       placeholder={"Select"}
                       Controller={Controller}

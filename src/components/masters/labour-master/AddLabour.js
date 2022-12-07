@@ -761,7 +761,7 @@ class AddLabour extends Component {
                       </Col>
                       {this.state.IsEmployeContractual && (
                         <Col md="3" className='mb-4'>
-                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="p-relative">
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
@@ -807,7 +807,7 @@ class AddLabour extends Component {
                           <Field
                             name="Plant"
                             type="text"
-                            label="Plant"
+                            label="Plant (Code)"
                             component={searchableSelect}
                             placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("plant")}

@@ -121,7 +121,7 @@ function EditPartCost(props) {
         if (sum > 100) {
             Toaster.warning('Total SOB Percent should not be greater than 100');
             setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
+            editedObject.SOBPercentage = 0
         }
 
         // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
@@ -133,6 +133,9 @@ function EditPartCost(props) {
             netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
             editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (editedObject.DeltaSign === undefined) {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
@@ -228,13 +231,7 @@ function EditPartCost(props) {
     }
 
     const addGrid = () => {
-        let differenceCosting = _.intersection(_.map(gridData, 'value'), _.map(costingForMultiTechnology, 'BaseCostingIdRef'))
-        if (differenceCosting?.includes(costingNumberData?.value)) {
-            Toaster.warning('Please select another Costing Number')
-            setValue('CostingNumber', {})
-            setCostingNumberData({})
-            return false
-        } else if (Object.keys(costingNumberData).length > 0) {
+        if (Object.keys(costingNumberData).length > 0) {
             setGridData([...gridData, costingNumberData])
             setValue('CostingNumber', {})
             setCostingNumberData({})
@@ -251,10 +248,11 @@ function EditPartCost(props) {
     }
 
     const renderListing = (value) => {
+        let final = _.map(gridData, 'label')
         if (value === 'CostingNumber') {
             let temp = []
             costingForMultiTechnology && costingForMultiTechnology.map(item => {
-                if (item?.Value === '0') return false;
+                if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
                     SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName

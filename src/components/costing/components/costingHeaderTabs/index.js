@@ -23,7 +23,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
-import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
+import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
@@ -35,6 +35,7 @@ function CostingHeaderTabs(props) {
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly } = useSelector(state => state.costing)
+  const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -269,6 +270,8 @@ function CostingHeaderTabs(props) {
   */
   const toggle = (tab) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
 
     if (activeTab !== tab) {
       setActiveTab(tab);
