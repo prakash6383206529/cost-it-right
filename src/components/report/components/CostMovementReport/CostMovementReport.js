@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { Col, Row } from "reactstrap"
-import { EMPTY_DATA, searchCount, ZBC } from "../../../../config/constants"
+import { EMPTY_DATA, searchCount } from "../../../../config/constants"
 import { MESSAGES } from "../../../../config/message"
 import { loggedInUserId } from "../../../../helper"
 import { autoCompleteDropdown } from "../../../common/CommonFunctions"
@@ -23,11 +23,8 @@ import { getPartSelectList } from '../../../masters/actions/Part'
 const gridOptions = {}
 function CostMovementReport(props) {
 
-    const [effectiveDate, setEffectiveDate] = useState('')
     const [gridApi, setGridApi] = useState(null)
     const [gridColumnApi, setGridColumnApi] = useState(null)
-    const [rowData, setRowData] = useState([])
-    const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [revisionNo, setRevisionNo] = useState([])
     const [startDate, setStartDate] = useState('')
@@ -40,17 +37,15 @@ function CostMovementReport(props) {
     const [partList, setPartList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
-    const [disableTechnology, setDisableTechnology] = useState(false)
     const [minDate, setMinDate] = useState('')
     const [maxDate, setMaxDate] = useState('')
 
     const dispatch = useDispatch()
 
-    const { handleSubmit, control, register, getValues, setValue, reset, formState: { errors } } = useForm({
+    const { control, register, getValues, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
 
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -59,11 +54,7 @@ function CostMovementReport(props) {
     }, [])
 
 
-    const onSubmit = () => {
-
-    }
-
-    const handleEffectiveDateChange = (value) => {
+    const handleFromEffectiveDateChange = (value) => {
         if (value) {
             setStartDate(DayTime(value).format('DD/MM/YYYY'))
             setMinDate(value)
@@ -134,7 +125,6 @@ function CostMovementReport(props) {
         })
 
         if (arr.length === 0) {
-            setDisableTechnology(false)
             setDisableRunReportButton(true)
         } else {
             setDisableRunReportButton(false)
@@ -148,12 +138,6 @@ function CostMovementReport(props) {
 
         if (newValue && newValue !== '') {
             setRevisionNo(newValue)
-            // reset({
-            //     Part: '',
-            //     Vendor: '',
-            //     Plant: '',
-            //     Revision: ''
-            // })
         }
     }
 
@@ -174,9 +158,7 @@ function CostMovementReport(props) {
 
         const resultInput = inputValue.slice(0, 3)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            //   setInputLoader(true)
             const res = await getPartSelectList(1, resultInput);
-            //   setInputLoader(false)
             setpartName(resultInput)
             let partDataAPI = res?.data?.SelectList
             reactLocalStorage.setObject('PartData', partDataAPI)
@@ -276,7 +258,7 @@ function CostMovementReport(props) {
         setValue('partNumber', "")
         setValue('Revision', "")
         setUpdateButtonPartNoTable(false)
-        setDisableTechnology(true)
+
     }
 
     const onResetPartNoTable = () => {
@@ -295,7 +277,7 @@ function CostMovementReport(props) {
 
         <>{reportListing &&
             < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <form noValidate>
 
                     <h1 className="mb-0">Cost Movement Report</h1>
                     {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
@@ -305,9 +287,8 @@ function CostMovementReport(props) {
                                 <DatePickerHookForm
                                     name={`fromDate`}
                                     label={'From Date'}
-                                    selected={effectiveDate !== "" ? DayTime(effectiveDate).format('DD/MM/YYYY') : ""}
                                     handleChange={(date) => {
-                                        handleEffectiveDateChange(date);
+                                        handleFromEffectiveDateChange(date);
                                     }}
                                     rules={{ required: false }}
                                     Controller={Controller}
@@ -316,7 +297,6 @@ function CostMovementReport(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    //maxDate={new Date()}
                                     dropdownMode="select"
                                     maxDate={maxDate}
                                     placeholderText="Select date"
@@ -336,7 +316,6 @@ function CostMovementReport(props) {
                                 <DatePickerHookForm
                                     name={`toDate`}
                                     label={'To Date'}
-                                    selected={effectiveDate !== "" ? DayTime(effectiveDate).format('DD/MM/YYYY') : ""}
                                     handleChange={(date) => {
                                         handleToEffectiveDateChange(date);
                                     }}
@@ -348,7 +327,6 @@ function CostMovementReport(props) {
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
                                     minDate={minDate}
-                                    //maxDate={new Date()}
                                     dropdownMode="select"
                                     placeholderText="Select date"
                                     customClassName="withBorder"
