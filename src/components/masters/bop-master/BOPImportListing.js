@@ -571,7 +571,7 @@ class BOPImportListing extends Component {
             filter: true,
             sortable: false,
             checkboxSelection: isFirstColumn,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props.benchMark) ? isFirstColumn : false,
         };
 
         const frameworkComponents = {

@@ -121,9 +121,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -148,9 +148,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:
-                return (<OperationInsights data={selectedRowForPagination} />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={false} />)
             case SURFACETREATMENT:
-                return (<OperationInsights data={selectedRowForPagination} />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={true} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }

@@ -13,7 +13,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkBopReport, getCostingBenchMarkRmReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkOperationReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -25,197 +25,42 @@ function OperationInsights(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showListing, setShowListing] = useState(false);
-
     const [techSelected, setTechSelected] = useState(false);
     const [materialSelected, setMaterialSelected] = useState(false);
     const [gradeSelected, setGradeSelected] = useState(false);
-
     const [dynamicGrpahData, setDynamicGrpahData] = useState()
     const [averageGrpahData, setAverageGrpahData] = useState()
     const [minimumGrpahData, setMinimumGrpahData] = useState()
     const [maximumGrpahData, setMaximumGrpahData] = useState()
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
-
     const [rowDataNew, setRowDataNew] = useState([])
     const [vendor, setVendor] = useState([])
-    const [plantName, setPlantName] = useState([])
-    const [uniqueVendors, setUniqueVendors] = useState([])
-
     const [labelArray, setLabelArray] = useState([])
-
     const gridOptions = {};
-
-    // const [technology, setTechnology] = useState({})
     const dispatch = useDispatch()
-    let bopBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
-
-
-
-    let obj4 = {
-        Identity: null,
-        Result: true,
-        Message: "Success",
-        Data: {},
-        DataList: [
-            {
-                BoughtOutPartId: "c16c308f-a862-41ed-a64a-e643fd378d45",
-                BOPSpecifications: [
-                    {
-                        BoughtOutPartCode: "Pin Nail1",
-                        BoughtOutPartName: "Bolt",
-                        BoughtOutPartCategory: "Blub123",
-                        Minimum: 99,
-                        Maximum: 99,
-                        Average: 99,
-                        WeightedAverage: 0,
-                        BOPVendorPrice: [
-                            {
-                                Vendor: "Ashokv",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "ashok plant",
-                                        Rate: 99,
-                                        IsVendor: false,
-                                        TotalQuantity: 22,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-11-05T00:00:00"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                BoughtOutPartId: "3ccf1eb6-0b60-4dbd-9a92-3d8f3fcaa75b",
-                BOPSpecifications: [
-                    {
-                        BoughtOutPartCode: "bop-test123",
-                        BoughtOutPartName: "bop-test123",
-                        BoughtOutPartCategory: "1234",
-                        Minimum: 120,
-                        Maximum: 120,
-                        Average: 120,
-                        WeightedAverage: 0,
-                        BOPVendorPrice: [
-                            {
-                                Vendor: "Flottweg SE",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "Flottweg SEP",
-                                        Rate: 120,
-                                        IsVendor: false,
-                                        TotalQuantity: 0,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-10-11T00:00:00"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                BoughtOutPartId: "fe2cafbc-0da9-4764-aa06-13029191e32c",
-                BOPSpecifications: [
-                    {
-                        BoughtOutPartCode: "BOP1",
-                        BoughtOutPartName: "BOP1",
-                        BoughtOutPartCategory: "BOP1",
-                        Minimum: 10,
-                        Maximum: 40,
-                        Average: 25,
-                        WeightedAverage: 0,
-                        BOPVendorPrice: [
-                            {
-                                Vendor: "V4",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "P1",
-                                        Rate: 40,
-                                        IsVendor: false,
-                                        TotalQuantity: 0,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-09-22T00:00:00"
-                                    }
-                                ]
-                            },
-                            {
-                                Vendor: "V3",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "P1",
-                                        Rate: 30,
-                                        IsVendor: false,
-                                        TotalQuantity: 0,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-09-22T00:00:00"
-                                    }
-                                ]
-                            },
-                            {
-                                Vendor: "V1",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "P1",
-                                        Rate: 10,
-                                        IsVendor: false,
-                                        TotalQuantity: 0,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-09-22T00:00:00"
-                                    }
-                                ]
-                            },
-                            {
-                                Vendor: "V2",
-                                BOPPlant: [
-                                    {
-                                        PlantName: "P1",
-                                        Rate: 20,
-                                        IsVendor: false,
-                                        TotalQuantity: 0,
-                                        TotalValue: 0,
-                                        EffectiveDate: "2022-09-22T00:00:00"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        SelectList: [],
-        DynamicData: null
-    }
+    let operationBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
 
     useEffect(() => {
 
-
         let arr = []
-
         props.data && props.data.map((item) => {
-
-
             arr.push({
-                BoughtOutPartId: item.BoughtOutPartId
-                ,
-                CategoryId: item.CategoryId ? item.CategoryId : "",
-
+                OperationId: item.OperationId
             })
             return arr
         })
         let data = {
             FromDate: null,
             ToDate: null,
-            bOPCostBenchMarkingReports: arr
+            IsSurfaceTreatmentOperation: props?.surfaceTreatMent,
+            OperationBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkBopReport(data, () => { }))
+        dispatch(getCostingBenchMarkOperationReport(data, () => { }))
 
     }, [])
-
 
 
     useEffect(() => {
@@ -229,20 +74,12 @@ function OperationInsights(props) {
         let uniqueVendors = []
 
         //////////////////////////////////////////////////////////////////////////////////////
-        let specification = []
 
 
-        Array.isArray(obj4.DataList) && obj4.DataList.map((item) => {
-
-            specification.push(item.BOPSpecifications[0])
-
-        })
-
-
-        true && specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        operationBenchmarkList && operationBenchmarkList?.OperationChildDetails?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+                Specification: item.OperationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -252,19 +89,18 @@ function OperationInsights(props) {
             }
 
 
-            item.BOPVendorPrice?.map((data, indx) => {
+            item.VendorPlantsDetail?.map((data, indx) => {
 
-                data.BOPPlant.map((ele, ind) => {
-                    let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val] = ele.Rate
+                data.PlantDetails.map((ele, ind) => {
+                    let Val = `plant${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val] = ele.Price
 
-                    let Val2 = `quantity${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val2] = ele.TotalQuantity
+                    let Val2 = `quantity${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val2] = ele.TotalOperationCostingQuantity
 
 
-                    let Val3 = `value${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val3] = ele.TotalValue
-
+                    let Val3 = `value${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val3] = ele.TotalVolume
 
                 })
 
@@ -277,12 +113,12 @@ function OperationInsights(props) {
 
             let obj2 = {}
             let arrSample = []
-            item.BOPVendorPrice?.map((ele, ind) => {
+            item.VendorPlantsDetail?.map((ele, ind) => {
 
                 obj2 = {}
-                obj2.vendor = ele.Vendor                    // OBJ2 
+                obj2.vendor = ele.VendorName                    // OBJ2 
 
-                ele.BOPPlant.map((el) => {
+                ele.PlantDetails.map((el) => {
                     plantTemp.push(el.PlantName)
 
                 })
@@ -290,7 +126,7 @@ function OperationInsights(props) {
                 plantTemp = []
 
                 arrSample.push(obj2)
-                uniqueVendors.push(ele.Vendor)
+                uniqueVendors.push(ele.VendorName)
 
             })
 
@@ -311,9 +147,7 @@ function OperationInsights(props) {
             let plants = []
 
             vendorTemp.map((element, indx) => {
-
                 element.map((e) => {
-
 
                     if (e.vendor == item) {
 
@@ -354,7 +188,8 @@ function OperationInsights(props) {
         }, {
             field: "Average",
             pinned: "left",
-            width: "115"
+            width: "115",
+            cellRendererFramework: (params) => checkForDecimalAndNull(params.value, 4),
 
         },
         {
@@ -407,8 +242,6 @@ function OperationInsights(props) {
 
                 }
 
-
-
                 let plantObj = {
                     headerName: ele,
                     // field: `plant${item.vendor}${ind}`,
@@ -442,7 +275,7 @@ function OperationInsights(props) {
 
             setShowListing(true)
         }, 500);
-    }, [bopBenchmarkList]);
+    }, [operationBenchmarkList]);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
@@ -493,10 +326,6 @@ function OperationInsights(props) {
             setShowListing(false)
         }
     }
-
-
-
-    let rowData2 = []
 
 
     const rowData = [
