@@ -7,12 +7,11 @@ import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { primaryColor, secondryColor, graphColor4 } from '../../../dashboard/ChartsDashboard'
 import { Line } from 'react-chartjs-2';
 import DayTime from '../../../common/DayTimeWrapper';
-import RenderGraphList from '../../../common/RenderGraphList';
+import RenderGraphList from '../../../common/RenderGraphList'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
 import { checkForDecimalAndNull } from '../../../../helper';
 import _ from 'lodash';
-
 
 function CostMovementGraph(props) {
     const { fromDate, toDate, tableData, ModeId, importEntry } = props
@@ -223,7 +222,6 @@ function CostMovementGraph(props) {
     };
 
     const onGridReady = (params) => {
-        // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
         setGridApi(params.api)
         params.api.sizeColumnsToFit();
