@@ -1,5 +1,5 @@
 import {
-    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT,
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -64,6 +64,11 @@ export default function ReportListingReducers(state = initialState, action) {
                 loading: false,
                 BenchmarkList: action.payload
 
+            }
+        case GET_COST_RATIO_REPORT:
+            return {
+                loading: false,
+                costRatioReportList: action.payload
             }
 
         default:

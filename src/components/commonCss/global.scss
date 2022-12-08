@@ -4,6 +4,7 @@
 @import "./masters.scss";
 @import "./costing.scss";
 @import "./rfq.scss";
+@import "./report.scss";
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
@@ -757,11 +758,12 @@ a:hover {
                 justify-content: center;
               }
             }
+
             .ag-react-container {
               .attachment.images {
                 border-bottom: none;
                 font-size: $font-14;
-              } 
+              }
             }
           }
         }
@@ -898,9 +900,11 @@ a:hover {
       }
     }
   }
- .ag-selection-checkbox.ag-invisible {
-  display: none;
- }
+
+  .ag-selection-checkbox.ag-invisible {
+    display: none;
+  }
+
   --ag-foreground-color: #8a91ac;
 
   .ag-paging-button:hover {
