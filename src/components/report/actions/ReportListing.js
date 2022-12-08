@@ -200,14 +200,11 @@ export function getCostingBenchMarkOperationReport(data, callback) {
 }
 
 export function getRevisionNoFromPartId(PartId, callback) {
-    console.log('PartId: ', PartId);
     return (dispatch) => {
 
         if (PartId !== '') {
             const request = axios.get(`${API.getRevisionNoFromPartId}?partId=${PartId}`, config(),)
             request.then((response) => {
-                console.log('response: ', response);
-
                 if (response.data.Result) {
                     callback(response)
                 }

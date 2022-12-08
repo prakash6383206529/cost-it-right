@@ -5,7 +5,10 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Table } from 'reactstrap';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
+import LoaderCustom from '../../../common/LoaderCustom';
+import NoContentFound from '../../../common/NoContentFound';
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13, graphColor14, graphColor15, graphColor16 } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
 import { getCostRatioReport } from '../../actions/ReportListing';
@@ -14,9 +17,10 @@ const CostRatioListing = (props) => {
     const { costRatioGridData } = props
     const [tableData, setTableData] = useState([])
     const [pieChartDataArray, setPieChartDataArray] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
     const dispatch = useDispatch()
 
-    const divRef = useRef()
+    const divRef = useRef()    // THIS IS CALCULATE  WIDTH OF THE PLANT AND VENDOR (CODE) 
     const { initialConfiguration } = useSelector(state => state.auth)
 
     useEffect(() => {
@@ -26,12 +30,15 @@ const CostRatioListing = (props) => {
             ToDate: costRatioGridData.toDate,
             CostingData: costRatioGridData.rowData
         }
-
+        setIsLoader(true)
         dispatch(getCostRatioReport(formData, (res) => {
-
+            setIsLoader(false)
             let Data = res.data && res.data.DataList
             if (res.status === 200) {
                 setTableData(Data)
+                setIsLoader(false)
+            } else {
+                setIsLoader(false)
             }
         }))
         setTimeout(() => {
@@ -43,6 +50,11 @@ const CostRatioListing = (props) => {
     const cancelReport = () => {
         props?.viewListing(false)
     }
+
+    /**
+   * @Method viewPieData
+   * @description Set the pie chart data
+   */
     const viewPieData = debounce((index) => {
         let temp = []
         let tempObj = tableData[index]
@@ -66,6 +78,11 @@ const CostRatioListing = (props) => {
         ]
         setPieChartDataArray(temp)
     }, [100])
+
+    /**
+    * @Object pieChartData
+    * @description In this object set the data and color for pie chart
+    */
     const pieChartData = {
         labels: ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.'],
         datasets: [
@@ -95,6 +112,11 @@ const CostRatioListing = (props) => {
         ],
 
     };
+
+    /**
+    * @Object pieChartOption
+    * @description In this object set the data bottom data and color in pie chart section
+    */
     const pieChartOption = {
         plugins: {
             legend: {
@@ -108,14 +130,18 @@ const CostRatioListing = (props) => {
     }
     return (
         <>
-            {<div className='container-fluid costing-ratio-report'>
-                <div className='row overflow-auto'>
-                    <Table className='border px-0 mb-0'>
+            <div className='container-fluid costing-ratio-report'>
+                {isLoader && <LoaderCustom />}
+                <div className='row overflow-auto report-height'>
+                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
                                 <th>
                                     <div className='column-data'> Costing Head</div>
                                     <div className='column-data'>Costing Number</div>
+                                    <div className='column-data'>Technology</div>
+                                    <div className='column-data'>Part No.</div>
+                                    <div className='column-data'>Revision No.</div>
                                     <div className='column-data'> Vendor (Code)</div>
                                     <div className='column-data'>Plant (Code)</div>
                                     <div className='column-data'> Net PO Price</div>
@@ -127,6 +153,9 @@ const CostRatioListing = (props) => {
                                         <th className={`${tableData?.length >= 3 ? 'right-position' : ''}`}>
                                             <div className='column-data'>{item.CostingHead ? item.CostingHead : '-'}</div>
                                             <div className='column-data'>{item.CostingNumber ? item.CostingNumber : '-'}</div>
+                                            <div className='column-data'>{item.Technology ? item.Technology : '-'} </div>
+                                            <div className='column-data'>{item.PartNumber ? item.PartNumber : '-'} </div>
+                                            <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
                                             <div className={`column-data code-container`} ref={divRef} >{(item.VendorName || item.VendorCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
@@ -182,7 +211,7 @@ const CostRatioListing = (props) => {
                                 })}
                             </tr>
                         </tbody>
-                    </Table>
+                    </Table>}
                 </div>
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
@@ -191,7 +220,7 @@ const CostRatioListing = (props) => {
                         </div>
                     </div>
                 </Row>
-            </div>}
+            </div>
         </>
 
     );
