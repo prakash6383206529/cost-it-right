@@ -161,6 +161,7 @@ function RfqListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
+        window.screen.width >= 1440 && gridApi.sizeColumnsToFit();
 
     };
 
