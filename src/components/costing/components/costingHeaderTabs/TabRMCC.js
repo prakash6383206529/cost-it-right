@@ -15,7 +15,7 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
-import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
+import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
@@ -26,7 +26,7 @@ function TabRMCC(props) {
   const { handleSubmit } = useForm()
   const dispatch = useDispatch()
 
-  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
+  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, ErrorObjOverheadProfit, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
     OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
@@ -848,6 +848,9 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
+
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
+
     let updatedArr = reactLocalStorage.getObject('costingArray')
     let tempPartNumber = []
     updatedArr && updatedArr.map((item) => {
@@ -1587,7 +1590,7 @@ function TabRMCC(props) {
 
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
-                    <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />
+                    {!(Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false || !checkIsDataChange)) && <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />}
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -400,6 +400,10 @@ function CostingDetailStepTwo(props) {
     dispatch(setPartNumberArrayAPICALL([]))
     dispatch(saveBOMLevel(''))
     dispatch(saveAssemblyNumber([]))
+    dispatch(setRMCCErrors({}))
+    dispatch(setOverheadProfitErrors({}))
+    dispatch(setToolsErrors({}))
+    dispatch(setDiscountErrors({}))
 
     props.backBtn()
   }

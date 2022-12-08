@@ -8,7 +8,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
-import { isToolDataChange, setComponentToolItemData } from '../../../actions/Costing';
+import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
@@ -16,7 +16,9 @@ import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
+import { errorCheckObject } from '../../../CostingUtil';
 
+let counter = 0;
 function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
@@ -27,7 +29,7 @@ function Tool(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList } = useSelector(state => state.costing)
+  const { CostingDataList, ErrorObjTools } = useSelector(state => state.costing)
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -41,10 +43,10 @@ function Tool(props) {
     ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
-    mode: 'onBlur',
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+    mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
+    defaultValues: defaultValues,
   });
 
   const [gridData, setGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
@@ -76,6 +78,14 @@ function Tool(props) {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, (res) => { }))
   }, [])
+
+  useEffect(() => {
+    if (checkForNull(getValues('NetToolCost')) !== 0) {
+      props.disableToggle(true)
+    } else {
+      props.disableToggle(false)
+    }
+  }, [getValues('NetToolCost')])
 
 
   const handleMaintainenceToolCostChange = (e) => {
@@ -277,6 +287,8 @@ function Tool(props) {
   */
   const onSubmit = debounce(handleSubmit((values) => {
 
+    if (errorCheckObject(ErrorObjTools)) return false;
+
     if (applicability.label !== "Fixed" && percentageLimit) {
       return false
     }
@@ -314,6 +326,7 @@ function Tool(props) {
       setApplicability([])
       setValueOfToolCost('')
     }
+    setValue('maintanencePercentage', 0)
   }
 
   const toolFieldValue = useWatch({
@@ -541,7 +554,19 @@ function Tool(props) {
     setValue('ToolMaintenanceCost', 0)
     setValue('maintanencePercentage', 0)
     setValue('toolCostType', '')
+    setValue('ToolCost', 0)
+    setValue('Life', 0)
+    setValue('ToolAmortizationCost', 0)
+    setValue('NetToolCost', 0)
 
+  }
+
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    counter = counter + 1;
+    dispatch(setToolsErrors(errors))
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    counter = 0
+    dispatch(setToolsErrors({}))
   }
 
   /**
@@ -652,7 +677,6 @@ function Tool(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          errors={errors.maintanencePercentage}
                           disabled={CostingViewMode ? true : false}
                         />
                         {percentageLimit && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Percentage cannot be greater than 100"} />}
@@ -669,7 +693,10 @@ function Tool(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                            pattern: {
+                              value: /^\d{0,6}(\.\d{0,6})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 6.',
+                            },
                           }}
                           handleChange={(e) => {
                             e.preventDefault()
@@ -701,6 +728,13 @@ function Tool(props) {
                         control={control}
                         register={register}
                         mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
+                          },
+                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -721,10 +755,9 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
+                        }
                       }}
                       defaultValue={''}
                       className=""
@@ -748,9 +781,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -775,9 +807,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -804,9 +835,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -828,7 +858,13 @@ function Tool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
+                        },
+                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}

@@ -57,6 +57,7 @@ import SimulationRoutes from './simulation/Routes'
 import CommonApproval from './masters/material-master/CommonApproval'
 import RfqListing from './rfq/RfqListing'
 import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
+import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -337,15 +338,12 @@ class Main extends Component {
                     <Route path="/simulation-history" component={AuthMiddleware(SimulationRoutes, Simulation_Page)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
-
                     <Route path="/simulation" component={SimulationRoutes} exact={true} />
-
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
-
-
                     <Route path="/costing-breakup-report" component={AuthMiddleware(CostingDetailReport, COSTING_BREAKUP_DETAILS_REPORT)} />
                     <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
                     <Route path="/master-benchmarking-report" component={CostingBenchmarkReport} />
+                    <Route path="/cost-movement-report" component={CostMovementReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />

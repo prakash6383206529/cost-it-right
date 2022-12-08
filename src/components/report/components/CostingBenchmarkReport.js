@@ -6,7 +6,7 @@ import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
 import MachineRateListing from '../../masters/machine-master/MachineRateListing'
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing'
@@ -41,6 +41,7 @@ function CostingBenchmarkReport(props) {
     const [dropDown, setDropDown] = useState(true)
     const [blueDivison, setblueDivison] = useState(false)
     const [dateArray, setDateArray] = useState([])
+    const [disableRunReport, setDisableRunReport] = useState(true)
 
     const dispatch = useDispatch()
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -60,6 +61,20 @@ function CostingBenchmarkReport(props) {
         }
     }, [])
 
+
+    useEffect(() => {
+
+        if (selectedRowForPagination) {
+
+            if (selectedRowForPagination.length > 0) {
+                setDisableRunReport(false)
+            } else {
+                setDisableRunReport(true)
+            }
+        }
+
+    }, [selectedRowForPagination])
+
     const masterList = useSelector(state => state.simulation.masterSelectList)
 
 
@@ -73,13 +88,16 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(true)
         setblueDivison(true)
 
-        setShowMasterList(true)
-        setMaster(value)
+        setShowMasterList(false)
+        setTimeout(() => {
+            setShowMasterList(true)
+        }, 300);
 
+        setMaster(value)
     }
 
 
-    const handleRM = (data) => {
+    const handleDate = (data) => {
 
         let unique = data.filter((item, i, ar) => ar.indexOf(item) === i);
         setDateArray(unique)
@@ -88,21 +106,24 @@ function CostingBenchmarkReport(props) {
 
     const renderModule = (value) => {
 
+
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleRM} benchMark={true} />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case MACHINERATE:
                 return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleRM} benchMark={true} />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} handleDate={handleDate} />)
+            case SURFACETREATMENT:
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} handleDate={handleDate} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -111,6 +132,7 @@ function CostingBenchmarkReport(props) {
 
 
     const renderInsights = (value) => {
+
 
         switch (value.value) {
             case RMDOMESTIC:
@@ -126,7 +148,9 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:
-                return (<OperationInsights />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={false} dateArray={dateArray} />)
+            case SURFACETREATMENT:
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={true} dateArray={dateArray} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -162,7 +186,10 @@ function CostingBenchmarkReport(props) {
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+
+                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process') {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null
             })
             return temp
@@ -226,7 +253,7 @@ function CostingBenchmarkReport(props) {
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
 
                                     {cancelButton && <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>}
-                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
+                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={disableRunReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
 
                                 </div>
 
