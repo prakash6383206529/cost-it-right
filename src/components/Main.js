@@ -212,6 +212,7 @@ class Main extends Component {
         location.pathname === DASHBOARDWITHGRAPH_PATH ||
         location.pathname === SIMULATION_PATH ||
         location.pathname === SIMULATION_HISTORY_PATH ||
+        location.pathname === USER_PATH ||
         location.pathname === RFQ_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY

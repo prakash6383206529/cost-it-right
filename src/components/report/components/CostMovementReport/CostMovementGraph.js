@@ -12,6 +12,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
 import { checkForDecimalAndNull } from '../../../../helper';
 import _ from 'lodash';
+import HeaderTitle from '../../../common/HeaderTitle';
 
 function CostMovementGraph(props) {
     const { fromDate, toDate, tableData, ModeId, importEntry } = props
@@ -238,25 +239,24 @@ function CostMovementGraph(props) {
 
 
     return (
-        <div>
-            {<>
-
-                <div className={"container-fluid"}>
+        <>
+            <div className={"container-fluid"}>
+                <div className='cost-ratio-report'>
                     <form noValidate className="form">
-                        <div className='analylics-drawer'>
+                        <div className='analytics-drawer'>
+                            <HeaderTitle customClass="mb-0"
+                                title={"Cost Movement:"}
+                            />
                             <RenderGraphList valueChanged={valueChanged} />
                         </div>
                         {showList &&
-                            < Row >
-                                <Col className='pr-0'>
+                            <Row>
+                                <Col>
                                     <div className='ag-grid-react'>
                                         <div className="ag-grid-wrapper height-width-wrapper">
                                             <div className="ag-grid-header">
-
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-                                            >
+                                            <div className="ag-theme-material">
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     domLayout='autoHeight'
@@ -329,20 +329,17 @@ function CostMovementGraph(props) {
                                 </Col>
                             </Row>
                         }
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-
-                            <div className="col-sm-12 text-right bluefooter-butn mt-3">
-
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-
-                                    <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>
-                                </div>
-                            </div>
-                        </Row>
                     </form>
                 </div >
-            </>}
-        </div >
+                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
+                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
+                            <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>
+                        </div>
+                    </div>
+                </Row>
+            </div>
+        </>
     );
 }
 
