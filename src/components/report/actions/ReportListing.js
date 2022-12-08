@@ -205,8 +205,6 @@ export function getRevisionNoFromPartId(PartId, callback) {
         if (PartId !== '') {
             const request = axios.get(`${API.getRevisionNoFromPartId}?partId=${PartId}`, config(),)
             request.then((response) => {
-                console.log('response: ', response);
-
                 if (response.data.Result) {
                     callback(response)
                 }
