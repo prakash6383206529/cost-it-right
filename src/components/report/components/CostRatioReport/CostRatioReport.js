@@ -25,8 +25,6 @@ import CostRatioListing from "./CostRatioListing"
 const gridOptions = {}
 function CostRatioReport(props) {
 
-    const [gridApi, setGridApi] = useState(null)
-    const [gridColumnApi, setGridColumnApi] = useState(null)
     const [rowData, setRowData] = useState([])
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
@@ -59,10 +57,12 @@ function CostRatioReport(props) {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
 
-        // dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
     }, [])
 
-
+    /**
+    * @Method onSubmit
+    * @description Insert data in the bottom table
+    */
     const onSubmit = () => {
         let obj = {}
         let isDuplicateEntry = false;
@@ -77,7 +77,6 @@ function CostRatioReport(props) {
         obj.Vendor = getValues('Vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
 
-
         rowData && rowData.map((item) => {
             if (item.TechnologyId === obj.TechnologyId && item.PartId === obj.PartId && item.RevisionNumber === obj.RevisionNumber && item.VendorId === obj.VendorId && item.PlantId === obj.PlantId) {
                 isDuplicateEntry = true
@@ -87,26 +86,50 @@ function CostRatioReport(props) {
             Toaster.warning("This data is already exist in the row.")
             return false
         }
-
         let arr = [...rowData, obj];
         setRowData(arr)
-
+        resetData()
     }
+
+    /**
+    * @Method handleFromDate
+    * @description Handle change for from date input field
+    */
     const handleFromDate = (value) => {
         setMinDate(value)
         setFromDate(value)
     }
+
+    /**
+    * @Method handleToDate
+    * @description Handle change for To date input field
+    */
     const handleToDate = (value) => {
         setMaxDate(value)
         setToDate(value)
     }
+
+    /**
+    * @Method resetRevisionVendorPlant
+    * @description Reset Revision Number, Plant and Vendor Field
+    */
+    const resetRevisionVendorPlant = () => {
+        setVendor([])
+        setPlant([])
+        setRevision([])
+        setValue('Revision', '')
+        setValue('Vendor', '')
+        setValue('Plant', '')
+    }
+
+    /**
+    * @Method renderListing
+    * @description Dropdown data list
+    */
     const renderListing = (label) => {
         const temp = []
-
         if (label === 'Technology') {
             technologySelectList && technologySelectList.map((item) => {
-
-
                 if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
@@ -131,7 +154,7 @@ function CostRatioReport(props) {
         }
         if (label === 'Revision') {
             revision && revision.map((item) => {
-                if (item.PlantId === '0') return false
+                if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
             })
@@ -145,37 +168,47 @@ function CostRatioReport(props) {
         headerCheckboxSelectionFilteredOnly: true,
     };
     const onGridReady = (params) => {
-        setGridApi(params.api)
         params.api.sizeColumnsToFit();
-        setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
     }
 
+
+    /**
+    * @Method handleTechnologyChange
+    * @description Change other field data basis of the technology change
+    */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
             setTechnology(newValue)
             setIsTechnologySelected(true)
             setPart([])
-            setVendor([])
-            setPlant([])
-            setRevision([])
             dispatch(getPartInfo('', () => { }))
             setValue('Part', '')
-            setValue('Revision', '')
-            setValue('Vendor', '')
-            setValue('Plant', '')
+            resetRevisionVendorPlant()
         } else {
             setTechnology([])
             setIsTechnologySelected(false)
         }
         reactLocalStorage.setObject('PartData', [])
     }
+
+    /**
+    * @Method handlePartChange
+    * @description Change other field data basis of the Part change
+    */
     const handlePartChange = (newValue) => {
         if (newValue && newValue !== '') {
             if (IsTechnologySelected) {
                 const data = { TechnologyId: technology.value, PartId: newValue.value }
+                resetRevisionVendorPlant()
                 dispatch(checkPartWithTechnology(data, (response) => {
-                    setPart(newValue)
+                    console.log('response: ', response);
+                    if (response.status === 412) {
+                        setPart([])
+                        setValue('Part', '')
+                    } else {
+                        setPart(newValue)
+                    }
                     if (response.data.Result) {
 
                         dispatch(getPartCostingVendorSelectList(newValue.value, () => { }))
@@ -203,13 +236,16 @@ function CostRatioReport(props) {
     const plantHandleChange = (value) => {
         setPlant(value)
     }
+
+    /**
+    * @Method filterList
+    * @description get data from backend after entering three char
+    */
     const filterList = async (inputValue) => {
 
         const resultInput = inputValue.slice(0, 3)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            //   setInputLoader(true)
             const res = await getPartSelectListByTechnology(technology.value, resultInput);
-            //   setInputLoader(false)
             setpartName(resultInput)
             let partDataAPI = res?.data?.SelectList
             reactLocalStorage.setObject('PartData', partDataAPI)
@@ -217,7 +253,6 @@ function CostRatioReport(props) {
             if (inputValue) {
                 partData = reactLocalStorage.getObject('PartData')
                 return autoCompleteDropdown(inputValue, partData)
-
             } else {
                 return partData
             }
@@ -236,11 +271,15 @@ function CostRatioReport(props) {
         }
 
     }
+
+    /**
+* @Method deleteItemFromTable
+* @description remove data from table on the click of delete icon
+*/
     const deleteItemFromTable = (gridData, props) => {
         let arr = []
-        gridData && gridData.map((item) => {
-
-            if (item?.PartId !== props?.node?.data?.PartId) {
+        gridData && gridData.map((item, index) => {
+            if (index !== props?.node?.rowIndex) {
                 arr.push(item)
             }
         })
@@ -259,20 +298,23 @@ function CostRatioReport(props) {
 
     };
 
+    /**
+    * @Method resetData
+    * @description Reset all field after click on reset button
+    */
     const resetData = () => {
         setPart([])
         setTechnology([])
-        setVendor([])
-        setPlant([])
-        setRevision([])
         dispatch(getPartInfo('', () => { }))
         setValue('Technology', '')
         setValue('Part', '')
-        setValue('Revision', '')
-        setValue('Vendor', '')
-        setValue('Plant', '')
+        resetRevisionVendorPlant()
     }
 
+    /**
+    * @Method runReport
+    * @description Run report hide current component and mount CostRatioListing component
+    */
     const runReport = () => {
         if (rowData.length === 0) {
             Toaster.warning("Please add atleast one row")
@@ -293,6 +335,11 @@ function CostRatioReport(props) {
 
         }
     }
+
+    /**
+    * @Method viewListingHandler
+    * @description callback function from CostRatioListing component on the click cancel button to hiding current component mount CostRatioReport
+    */
     const viewListingHandler = (value) => {
         setShowRatioListing(value)
 

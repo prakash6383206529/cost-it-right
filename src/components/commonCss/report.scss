@@ -1,6 +1,13 @@
 @import "cssVariable.scss";
 
+// THIS IS FOR COST RATIO REPORT LISTING UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .costing-ratio-report {
+
+    //TAKE MIN HEIGHT IF DATA IS NOT FOUND
+    .report-height {
+        min-height: calc(100vh - 290px);
+    }
+
     table {
         position: relative;
 
@@ -20,6 +27,7 @@
                 align-items: center;
                 font-size: 15px;
 
+                // OVERFLOW FOR THE PLANT AND VENDOR NAME
                 .code-specific {
                     max-width: 480px;
                     display: flex;
@@ -41,10 +49,12 @@
                 }
             }
 
+            //ALTERNATIVE COLOR ON THE COLUMN
             &:nth-child(odd) {
                 background-color: #ffffef;
             }
 
+            //FIRST HEADER FREEZE IF DATA IS OVERFLOW E.I. FIRST COLUMN
             &:first-child {
                 max-width: 120px;
                 position: sticky;
@@ -63,6 +73,8 @@
         }
 
         .right-position:nth-child(2) {
+
+            // FIRST PIE CHART FLOATING RIGHT DUE TO LESS SPACE IN LEFT SIDE
             .view-pie-button .tooltiptext.graph-tooltip {
                 right: unset !important;
                 left: 107% !important;
@@ -72,6 +84,7 @@
     }
 }
 
+// THIS IS FOR COST RATIO REPORT FIRST PAGE UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .cost-ratio-report {
     min-height: calc(100vh - 289px);
 }
