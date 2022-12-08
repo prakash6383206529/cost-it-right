@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -133,6 +134,7 @@ class MachineRateListing extends Component {
             plant_id: plant_id,
             StatusId: statusString
         }
+        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
             if (this.props.isSimulation) {
