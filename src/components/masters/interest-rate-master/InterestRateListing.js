@@ -27,6 +27,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -120,6 +121,7 @@ class InterestRateListing extends Component {
       vendor: vendor,
       icc_applicability: icc_applicability,
       payment_term_applicability: payment_term_applicability,
+      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
     }
     this.props.getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {

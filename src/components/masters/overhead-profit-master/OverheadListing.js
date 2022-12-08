@@ -26,6 +26,7 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -129,6 +130,7 @@ function OverheadListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
+        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         dispatch(getOverheadDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {

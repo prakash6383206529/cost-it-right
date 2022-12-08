@@ -26,6 +26,7 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -139,6 +140,7 @@ function ProfitListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
+        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let obj = { ...dataObj }
         dispatch(getProfitDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             setIsLoader(false)

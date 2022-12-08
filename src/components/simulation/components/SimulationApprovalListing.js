@@ -24,6 +24,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const gridOptions = {};
@@ -170,6 +171,7 @@ function SimulationApprovalListing(props) {
         if (isDashboard) {
             dataObj.DisplayStatus = props.status
         }
+        let IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -181,7 +183,7 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)

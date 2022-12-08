@@ -34,6 +34,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -191,6 +192,7 @@ class OperationListing extends Component {
                 filterData.OperationType = ''
             }
 
+            dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 this.setState({ noData: false })
                 if (this.props.isSimulation) {
