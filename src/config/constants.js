@@ -979,6 +979,7 @@ export const API = {
   getRevisionNoFromPartId: `${BASE_URL}/masters-part/select-list-revision-number-by-part-id`,
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
+  getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
