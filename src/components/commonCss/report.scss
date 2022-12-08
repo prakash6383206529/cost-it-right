@@ -88,3 +88,14 @@
 .cost-ratio-report {
     min-height: calc(100vh - 289px);
 }
+
+//THIS IS USED FOR DOUGHNUT GRAPH 
+.doughnut-graph-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .doughnut-graph {
+        width: 32%;
+    }
+}

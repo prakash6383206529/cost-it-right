@@ -19,8 +19,7 @@ import NoContentFound from "../../common/NoContentFound"
 const gridOptions = {}
 function SupplierContributionReport(props) {
 
-    const [gridApi, setGridApi] = useState(null)
-    const [gridColumnApi, setGridColumnApi] = useState(null)
+    const [totalCost, setTotalCost] = useState("")
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [reportListing, setReportListing] = useState(true)
@@ -78,7 +77,6 @@ function SupplierContributionReport(props) {
 
 
     const runReport = () => {
-
         if (startDate && endDate && isPlantSelected) {
             let data = {}
             setNoContent(true)
@@ -86,13 +84,14 @@ function SupplierContributionReport(props) {
             data.fromDate = startDate
             data.toDate = endDate
             data.plantId = getValues('plant').value
-
             dispatch(getSupplierContributionData(data, (res) => {
-
                 let vendors = []
                 let vendorPrice = []
-                setGraphListing(true)
+                setTimeout(() => {
+                    setGraphListing(true)
+                }, 500);
                 let Data = res.data.Data
+                setTotalCost(Data.TotalBuying)
                 Data.VendorWiseData.map((item) => {
                     vendors.push(item.Vendor)
                     vendorPrice.push(item.VendorBuying)
@@ -101,11 +100,9 @@ function SupplierContributionReport(props) {
                 setVendorData(vendorPrice)
                 setNoContent(false)
             }))
-
         } else {
             Toaster.warning("Please enter from date, to date & plant.")
         }
-
     }
 
 
@@ -144,7 +141,7 @@ function SupplierContributionReport(props) {
 
                     ],
                 }
-            },
+            }
         },
     };
 
@@ -173,21 +170,36 @@ function SupplierContributionReport(props) {
                     '#fff',
                     '#fff',
                 ],
-                borderWidth: 2,
+                borderWidth: 1,
             },
         ],
     };
+    const plugins = [{
 
+        beforeDraw: function (chart) {
+            var width = chart.width,
+                height = chart.height,
+                ctx = chart.ctx;
+            ctx.restore();
+            var fontSize = (width + 3) / width;
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "top";
+            var text = `${totalCost}`,
+                textX = width / 2.35,
+                textY = height / 2.35;
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+        }
+    }]
 
     return (
 
         <>{reportListing &&
             < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
                 <form noValidate >
-
                     <h1 className="mb-0">Supplier Contribution Report</h1>
-                    <Row className="pt-2 mb-5">
-                        <div className="form-group mb-0 col-md-3">
+                    <Row className="pt-3 mb-5">
+                        <Col md="3" className="form-group mb-0">
                             <div className="inputbox date-section">
                                 <DatePickerHookForm
                                     name={`fromDate`}
@@ -215,8 +227,8 @@ function SupplierContributionReport(props) {
                                     errors={errors && errors.fromDate}
                                 />
                             </div>
-                        </div>
-                        <div className="form-group mb-0 col-md-3">
+                        </Col>
+                        <Col md="3" className="form-group mb-0">
                             <div className="inputbox date-section">
                                 <DatePickerHookForm
                                     name={`toDate`}
@@ -244,14 +256,9 @@ function SupplierContributionReport(props) {
                                     errors={errors && errors.toDate}
                                 />
                             </div>
-                        </div>
-                    </Row>
-
-
-                    <Row className="part-detail-wrapper">
-
-                        <div className="ag-grid-multi">
-                            {
+                        </Col>
+                        <Col md="3">
+                            <div className="ag-grid-multi">
                                 <SearchableSelectHookForm
                                     label={"Plant"}
                                     name={"plant"}
@@ -268,27 +275,21 @@ function SupplierContributionReport(props) {
                                         valueChanged(e)
                                     }}
                                 />
-                            }
-                        </div>
-
-                        <Col md="4" className='d-flex align-items-center pb-1'>
+                            </div>
+                        </Col>
+                        <Col md="3" className="d-flex align-items-center mt-3">
                             <button
                                 type="button"
-                                className={'user-btn pull-left ml-2'}
-                                onClick={() => runReport()}
-
-                            >
-                                <div className={'plus'}></div>{"RUN"}
+                                className={'user-btn pull-left '}
+                                onClick={() => runReport()}>
+                                <div className={"Run-icon ml-n2"}></div>{"RUN"}
                             </button>
                             <button
                                 type="button"
-                                className={'user-btn pull-left ml-2'}
-                                onClick={() => resetReport()}
-
-                            >
-                                <div className={'plus'}></div>{"RESET"}
+                                className={"reset-btn pull-left  ml5"}
+                                onClick={() => resetReport()}>
+                                {"RESET"}
                             </button>
-
                         </Col>
                     </Row>
                 </form>
@@ -296,8 +297,10 @@ function SupplierContributionReport(props) {
             </div >}
 
             {graphListing &&
-                <div className="">
-                    <Doughnut data={data3} options={options3} />
+                <div className="doughnut-graph-container">
+                    <div className="doughnut-graph">
+                        <Doughnut type="doughnut" data={data3} options={options3} plugins={plugins} />
+                    </div>
                 </div>
 
             }
