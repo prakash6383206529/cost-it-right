@@ -525,7 +525,6 @@ function CostRatioReport(props) {
                     </form>
                     <div className={`ag-grid-wrapper height-width-wrapper ${(rowData && rowData?.length <= 0) ? "overlay-contain" : ""}`}>
                         < div className={`ag-theme-material `}>
-                            {false && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}

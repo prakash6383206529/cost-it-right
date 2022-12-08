@@ -5,7 +5,7 @@
 
     //TAKE MIN HEIGHT IF DATA IS NOT FOUND
     .report-height {
-        min-height: calc(100vh - 290px);
+        min-height: calc(100vh - 284px);
     }
 
     table {
@@ -87,4 +87,15 @@
 // THIS IS FOR COST RATIO REPORT FIRST PAGE UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .cost-ratio-report {
     min-height: calc(100vh - 289px);
+}
+
+//THIS IS USED FOR DOUGHNUT GRAPH 
+.doughnut-graph-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .doughnut-graph {
+        width: 32%;
+    }
 }
