@@ -25,6 +25,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -196,7 +197,9 @@ function VolumeListing(props) {
    */
   const getTableListData = (skip = 0, take = 10, isPagination = true) => {
     if (isPagination === true || isPagination === null) setIsLoader(true)
-    dispatch(getVolumeDataList(skip, take, isPagination, floatingFilterData, (res) => {
+    let dataObj = { ...floatingFilterData }
+    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+    dispatch(getVolumeDataList(skip, take, isPagination, dataObj, (res) => {
       if (isPagination === true || isPagination === null) setIsLoader(false)
 
       if (res && isPagination === false) {
