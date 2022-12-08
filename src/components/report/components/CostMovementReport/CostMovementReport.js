@@ -276,9 +276,8 @@ function CostMovementReport(props) {
     return (
 
         <>{reportListing &&
-            < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
-                <form noValidate>
-
+            <div className="container-fluid">
+                <form noValidate className="cost-ratio-report">
                     <h1 className="mb-0">Cost Movement Report</h1>
                     {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                     <Row className="pt-2 mb-5">
@@ -344,7 +343,7 @@ function CostMovementReport(props) {
 
 
                     <Row className="part-detail-wrapper">
-                        <Col md="4">
+                        <Col md="3">
                             <AsyncSearchableSelectHookForm
                                 label={"Part No"}
                                 name={"partNumber"}
@@ -366,7 +365,7 @@ function CostMovementReport(props) {
                             />
                         </Col>
 
-                        <Col md="4">
+                        <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Revision Number"}
                                 name={"Revision"}
@@ -384,7 +383,7 @@ function CostMovementReport(props) {
                             />
                         </Col>
 
-                        <Col md="4" className='d-flex align-items-center pb-1'>
+                        <Col md="4" className='d-flex align-items-center mt-2 pt-1'>
                             <button
                                 type="button"
                                 className={'user-btn pull-left ml-2'}
@@ -409,12 +408,12 @@ function CostMovementReport(props) {
                         {true && <div className={`ag-grid-react`}>
                             <Row>
                                 <Col>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain" : ""} `}>
+                                    <div className={`ag-grid-wrapper border-bottom height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain" : ""} `}>
 
-                                        <div className={`ag-theme-material  max-loader-height`}>
+                                        <div className={`ag-theme-material`}>
                                             <AgGridReact
                                                 defaultColDef={defaultColDef}
-                                                //floatingFilter={true}
+                                                floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={partList}
@@ -425,6 +424,7 @@ function CostMovementReport(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >

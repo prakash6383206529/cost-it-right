@@ -24,12 +24,10 @@
 
 .Add {
     @include icons("../../assests/images/Group 8861.svg");
-    @include extra-icon-styles;
 }
 
 .Edit {
     @include icons("../../assests/images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
-    @include extra-icon-styles;
 }
 
 .right-hand-arrow {
