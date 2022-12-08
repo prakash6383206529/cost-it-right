@@ -58,6 +58,7 @@ import CommonApproval from './masters/material-master/CommonApproval'
 import RfqListing from './rfq/RfqListing'
 import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
 import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
+import SupplierContributionReport from './report/components/SupplierContribution'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -345,6 +346,7 @@ class Main extends Component {
                     <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
                     <Route path="/master-benchmarking-report" component={CostingBenchmarkReport} />
                     <Route path="/cost-movement-report" component={CostMovementReport} />
+                    <Route path="/supplier-contribution-report" component={SupplierContributionReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
