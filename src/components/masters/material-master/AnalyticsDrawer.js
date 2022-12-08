@@ -203,7 +203,7 @@ function AnalyticsDrawer(props) {
                                     </Col>
                                 </Row>
 
-                                <div className='analylics-drawer'>
+                                <div className='analytics-drawer'>
                                     <HeaderTitle customClass="mb-0"
                                         title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />

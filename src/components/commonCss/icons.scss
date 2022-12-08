@@ -50,7 +50,7 @@
 
 .Delete {
     @include icons("../../assests/images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
-    @include extra-icon-styles;
+
 }
 
 .Comment-box {
@@ -59,23 +59,23 @@
 
 .View {
     @include icons("../../assests/images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-    @include extra-icon-styles;
+
 }
 
 .cost-movement {
     @include icons("../../assests/images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-    @include extra-icon-styles;
+
 }
 
 .pie-chart {
     @include icons("../../assests/images/pie-chart.svg");
-    @include extra-icon-styles;
+
 }
 
 .add-process {
     @include icons("../../assests/images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
-    @include extra-icon-styles;
+
 }
 
 .hirarchy-btn {
