@@ -113,7 +113,7 @@ function CostingBenchmarkReport(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case MACHINERATE:
-                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case BOPDOMESTIC:
                 return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case BOPIMPORT:
@@ -140,7 +140,7 @@ function CostingBenchmarkReport(props) {
             case RMIMPORT:
                 return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case MACHINERATE:
-                return (<MachineInsights />)
+                return (<MachineInsights data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPDOMESTIC:
                 return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPIMPORT:
