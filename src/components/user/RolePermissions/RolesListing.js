@@ -118,7 +118,7 @@ class RolesListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {!(rowData?.RoleName === 'RFQUser') && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -188,7 +188,7 @@ class RolesListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { ActivateAccessibility } = this.state;
-    if (rowData.UserId === loggedInUserId()) return null;
+    if (rowData.UserId === loggedInUserId() || rowData.RoleName === 'RFQUser') return null;
     showTitleForActiveToggle(props)
     return (
       <>
