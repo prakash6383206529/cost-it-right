@@ -658,7 +658,7 @@ function Tool(props) {
 
                       <div className='mb-2'>
                         <NumberFieldHookForm
-                          label={`Maintanence Tool Cost (%)`}
+                          label={`Maintenance Tool Cost (%)`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
                           control={control}
@@ -685,7 +685,7 @@ function Tool(props) {
                       //THIS FIELD WILL RENDER WHEN APPLICABILITY TYPE FIXED
                       <div className='mb-2'>
                         <NumberFieldHookForm
-                          label={`Maintanence Tool Cost`}
+                          label={`Maintenance Tool Cost`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
                           control={control}
@@ -743,9 +743,9 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintanence Cost = (Maintanence Cost(%) * Cost(Applicability) / 100)"} />}
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintenance Cost = (Maintenance Cost(%) * Cost(Applicability) / 100)"} />}
                     <TextFieldHookForm
-                      label="Tool Maintanence Cost"
+                      label="Tool Maintenance Cost"
                       name={`ToolMaintenanceCost`}
                       id={"tool-maintanence"}
                       Controller={Controller}
@@ -849,7 +849,7 @@ function Tool(props) {
                   </Col>
 
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={"Net Tool Cost = (Tool Maintanence Cost + Tool Amortization)"} />
+                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={"Net Tool Cost = (Tool Maintenance Cost + Tool Amortization)"} />
                     <TextFieldHookForm
                       label="Net Tool Cost"
                       name={`NetToolCost`}

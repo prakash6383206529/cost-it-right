@@ -1,8 +1,9 @@
 @import '../commonCss/cssVariable.scss';
-:not(.login-container.signup-form){
-    .simulation-history-page{
-        .react-bs-table-container{
-            .react-bs-table{
+
+:not(.login-container.signup-form) {
+    .simulation-history-page {
+        .react-bs-table-container {
+            .react-bs-table {
                 margin-top: 0px;
 
                 .react-bs-container-body {
@@ -101,6 +102,10 @@
     z-index: 10;
     background: rgba(255, 255, 255, 0.9);
 
+    &.hidden-loader {
+        background: rgba(255, 255, 255, 0);
+    }
+
     .img_loader {
         max-width: 330px;
         object-fit: contain;
@@ -129,6 +134,7 @@
         vertical-align: middle;
         pointer-events: none;
     }
+
     .message {
         position: absolute;
         margin-top: 110px;
@@ -370,60 +376,74 @@
         max-height: 160px;
     }
 }
+
 .costing-summary-loader {
     top: 257px;
     justify-content: flex-start;
+
     .loaderinner {
-       max-width: 190px;
-       margin-top: -40px;
+        max-width: 190px;
+        margin-top: -40px;
     }
 }
+
 .attachment-loader {
     .loaderinner {
         max-height: 160px;
     }
 }
+
 .report-costing {
     justify-content: start;
     padding-top: calc(100vh - 25rem);
+
     @media screen and (min-width:$middleDesktop) {
         padding-top: calc(100vh - 33rem);
     }
 }
+
 .input-loader {
     right: 1px;
     left: 1px;
     top: 1px;
     bottom: 1px;
     align-items: flex-end;
+
     .loaderinner {
         font-size: 30px;
         padding-right: 0;
         margin-right: -15px;
+
         .img_loader {
-          max-width: 70px;
-          user-select: none;
+            max-width: 70px;
+            user-select: none;
         }
-      }
- }
-.login-loader {
-   .loaderinner {
-      max-height: 100px;
-    .img_loader { 
-        margin-top: 25px;  
-        max-width: 90px;
     }
-   }
 }
+
+.login-loader {
+    .loaderinner {
+        max-height: 100px;
+
+        .img_loader {
+            margin-top: 25px;
+            max-width: 90px;
+        }
+    }
+}
+
 .p-relative .login-btn:focus {
-   box-shadow: none !important;
+    box-shadow: none !important;
 }
+
 .center-loader {
     justify-content: flex-start !important;
 }
+
 .loader-center {
     min-height: calc(100vh - 230px);
 }
+
 .simulation-loader {
     min-height: calc(100vh - 320px);
     right: -30px;
@@ -431,13 +451,15 @@
     z-index: 12;
     top: -10px;
 }
+
 //DOWNLOAD BUTTON LOADER SCSS
 .download-loader {
     .loaderinner {
         max-height: 60px;
+
         .img_loader {
             max-width: 80px;
             max-height: 100%;
         }
     }
- }
+}
