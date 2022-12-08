@@ -202,7 +202,6 @@ function CostRatioReport(props) {
                 const data = { TechnologyId: technology.value, PartId: newValue.value }
                 resetRevisionVendorPlant()
                 dispatch(checkPartWithTechnology(data, (response) => {
-                    console.log('response: ', response);
                     if (response.status === 412) {
                         setPart([])
                         setValue('Part', '')
@@ -525,7 +524,6 @@ function CostRatioReport(props) {
                     </form>
                     <div className={`ag-grid-wrapper height-width-wrapper ${(rowData && rowData?.length <= 0) ? "overlay-contain" : ""}`}>
                         < div className={`ag-theme-material `}>
-                            {false && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
