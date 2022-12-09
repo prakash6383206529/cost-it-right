@@ -100,7 +100,7 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
-    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}`
+    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}`
     axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -397,6 +397,6 @@ export function checkRegularizationLimit(obj, callback) {
       });
   };
 }
-export function getPartSelectListWtihRevNo(partName, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?partName=${partName}`, config());
+export function getPartSelectListWtihRevNo(partNumber, callback) {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?partNumber=${partNumber}`, config());
 }

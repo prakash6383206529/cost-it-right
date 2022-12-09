@@ -113,9 +113,6 @@ class AddOverhead extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
-      if (newValue.includes('Part Cost')) {
-        this.setState({ showPartCost: true })
-      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -331,6 +328,9 @@ class AddOverhead extends Component {
   handleOverheadChange = (newValue, actionMeta) => {
     this.resetFields();
     if (newValue && newValue !== '') {
+      if (newValue?.label?.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
       this.setState({ overheadAppli: newValue, isRM: false, isCC: false, isBOP: false, isOverheadPercent: false }, () => {
         this.checkOverheadFields()
       });
@@ -935,7 +935,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
