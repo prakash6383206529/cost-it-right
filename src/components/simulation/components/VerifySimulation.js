@@ -323,14 +323,12 @@ function VerifySimulation(props) {
 
     const renderPlant = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row?.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
 
     const renderVendor = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row?.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
 
     const renderPart = (props) => {

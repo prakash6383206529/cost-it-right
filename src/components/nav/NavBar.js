@@ -97,12 +97,12 @@ class SideBar extends Component {
         let cbcCostingPermission
 
         if (checkForNull(cbcCostingData.length) === 0) {
-          cbcCostingPermission = true
-          reactLocalStorage.setObject('cbcCostingPermission', JSON.stringify(cbcCostingPermission))
+          cbcCostingPermission = false
+          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
         }
         else {
-          cbcCostingPermission = false
-          reactLocalStorage.setObject('cbcCostingPermission', JSON.stringify(cbcCostingPermission))
+          cbcCostingPermission = true
+          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
         }
       })
     }

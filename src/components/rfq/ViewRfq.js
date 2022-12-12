@@ -25,6 +25,8 @@ import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
 import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
+import DayTime from '../common/DayTimeWrapper';
+import { hyphenFormatter } from '../masters/masterUtil';
 const gridOptions = {};
 
 
@@ -509,6 +511,10 @@ function RfqListing(props) {
         }
     }
 
+    const dateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
 
     const isRowSelectable = rowNode => rowNode.data ? (rowNode?.data?.CostingId !== null) : false;
 
@@ -520,12 +526,14 @@ function RfqListing(props) {
         headerCheckboxSelection: true ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn,
+        hyphenFormatter: hyphenFormatter
     };
 
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-        linkableFormatter: linkableFormatter
+        linkableFormatter: linkableFormatter,
+        dateFormatter: dateFormatter
     }
 
     const closeSendForApproval = () => {
@@ -603,6 +611,8 @@ function RfqListing(props) {
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
+                                            <AgGridColumn field="SubmissionDate" headerName='SubmissionDate' cellRenderer='dateFormatter'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName='EffectiveDate' cellRenderer='dateFormatter'></AgGridColumn>
                                             {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
@@ -672,7 +682,8 @@ function RfqListing(props) {
                                 // costingID={approvalDetails.CostingId}
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                simulationMode={false} />
+                                simulationMode={false}
+                                costingIdExist={true} />
                         )}
                     </div>
                 }

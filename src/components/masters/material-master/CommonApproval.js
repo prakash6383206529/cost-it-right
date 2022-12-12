@@ -22,6 +22,7 @@ import { hyphenFormatter } from '../masterUtil';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -143,6 +144,8 @@ function CommonApproval(props) {
         if (props.isDashboard) {
             dataObj.DisplayStatus = props.status
         }
+        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+
         setLoader(true)
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)

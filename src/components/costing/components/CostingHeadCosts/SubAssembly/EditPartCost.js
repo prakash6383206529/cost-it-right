@@ -151,6 +151,25 @@ function EditPartCost(props) {
     }
 
     const handleDeltaSignChange = (value, index) => {
+        if (value?.label === '-') {
+            if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
+                Toaster.warning('Delta value should be less than settled price')
+
+                let tempGrid = gridData[index]
+                tempGrid.DeltaSign = value
+                tempGrid.DeltaValue = 0
+                tempGrid.NetCost = 0
+                let arr = Object.assign([...gridData], { [index]: tempGrid })
+                setGridData(arr)
+
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                    setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                    setValue(`${PartCostFields}.${index}.DeltaSign`, value)
+                }, 200);
+                return false
+            }
+        }
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);
@@ -345,7 +364,8 @@ function EditPartCost(props) {
         <div>
             <Drawer className={`${props.costingSummary ? '' : 'bottom-drawer'}`}
                 anchor={props.anchor}
-                open={props.isOpen}>
+                open={props.isOpen}
+                BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         <Row className="drawer-heading sticky-top-0">
@@ -399,6 +419,7 @@ function EditPartCost(props) {
                                     <thead>
                                         <tr >
                                             <th>Vendor Name</th>
+                                            <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
                                             <th>Delta</th>
@@ -412,6 +433,7 @@ function EditPartCost(props) {
                                                 <>
                                                     <tr key={index} >
                                                         <td>{item?.VendorName}</td>
+                                                        <td>{item?.label}</td>
                                                         <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                                                         <td>
                                                             <NumberFieldHookForm
@@ -506,6 +528,7 @@ function EditPartCost(props) {
                                                                 type="button"
                                                                 className={'Delete mr-2 align-middle'}
                                                                 onClick={() => deleteDetails(item, index)}
+                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
                                                             >
                                                             </button>
                                                         </td>
@@ -549,6 +572,7 @@ function EditPartCost(props) {
                     //   selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationDrawer={false}
+                    fromCostingSummary={props.costingSummary}
                 />
             }
         </div >
