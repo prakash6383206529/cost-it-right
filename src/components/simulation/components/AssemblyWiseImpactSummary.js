@@ -211,6 +211,7 @@ function AssemblyWiseImpactSummary(props) {
                     isSimulation={true}
                     simulationDrawer={true}
                     isOldCosting={true}
+                    isSummaryDrawer={true}
                 />
             }
         </div >
