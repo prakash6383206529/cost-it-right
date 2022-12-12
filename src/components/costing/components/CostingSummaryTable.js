@@ -37,7 +37,7 @@ import TooltipCustom from '../../common/Tooltip'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist } = props
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -288,13 +288,14 @@ const CostingSummaryTable = (props) => {
     let rejectData = viewCostingData[index]?.netRejectionCostView
     let modelType = viewCostingData[index]?.modelType
     let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
+    let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
 
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
-    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
+    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType, isRmCutOffApplicable: isRmCutOffApplicable })
   }
 
   /**
@@ -995,7 +996,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && <LoaderCustom />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom />)}
           <Row>
             {!viewMode && (
               <Col md="4">

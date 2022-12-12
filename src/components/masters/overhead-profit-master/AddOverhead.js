@@ -73,7 +73,8 @@ class AddOverhead extends Component {
       attachmentLoader: false,
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -112,6 +113,9 @@ class AddOverhead extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
+      if (newValue.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -436,6 +440,7 @@ class AddOverhead extends Component {
     const { overheadAppli } = this.state;
     switch (overheadAppli.label) {
       case 'RM':
+      case 'Part Cost':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -480,6 +485,7 @@ class AddOverhead extends Component {
           isHideBOP: true,
         })
       case 'RM + CC':
+      case 'Part Cost + CC':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -491,6 +497,7 @@ class AddOverhead extends Component {
           isHideCC: false,
         })
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -513,6 +520,7 @@ class AddOverhead extends Component {
           isHideCC: false,
         })
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -1103,7 +1111,7 @@ class AddOverhead extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on RM (%)`}
+                              label={`Overhead on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}

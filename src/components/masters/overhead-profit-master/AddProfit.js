@@ -72,7 +72,8 @@ class AddProfit extends Component {
       vendorCode: "",
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -111,6 +112,9 @@ class AddProfit extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
+      if (newValue.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -443,6 +447,7 @@ class AddProfit extends Component {
 
     switch (profitAppli.label) {
       case 'RM':
+      case 'Part Cost':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -487,6 +492,7 @@ class AddProfit extends Component {
           isHideBOP: true,
         })
       case 'RM + CC':
+      case 'Part Cost + CC':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -498,6 +504,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -520,6 +527,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -1084,7 +1092,7 @@ class AddProfit extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Profit on RM (%)`}
+                              label={`Profit on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}

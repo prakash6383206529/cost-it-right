@@ -325,7 +325,16 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetOtherCost": DiscountCostData?.AnyOtherCost,
       "NetDiscounts": DiscountCostData?.HundiOrDiscountValue,
       "TotalCostINR": totalCost,
-      "EffectiveDate": CostingEffectiveDate
+      "EffectiveDate": CostingEffectiveDate,
+      "TransportationCost": surfaceTabData?.CostingPartDetails?.TransportationCost,
+      "SurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
+      "PackagingCost": packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost,
+      "FreightCost": packageAndFreightTabData?.CostingPartDetails?.FreightNetCost,
+      "OverheadCost": overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost,
+      "ProfitCost": overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost,
+      "RejectionCost": overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost,
+      "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
+      "PaymentTermCost": overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
