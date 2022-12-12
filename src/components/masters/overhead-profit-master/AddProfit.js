@@ -112,9 +112,6 @@ class AddProfit extends Component {
   handleModelTypeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ ModelType: newValue, });
-      if (newValue.includes('Part Cost')) {
-        this.setState({ showPartCost: true })
-      }
     } else {
       this.setState({ ModelType: [], })
     }
@@ -339,6 +336,9 @@ class AddProfit extends Component {
   handleProfitChange = (newValue, actionMeta) => {
     this.resetFields();
     if (newValue && newValue !== '') {
+      if (newValue?.label?.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
       this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
         this.checkProfitFields()
       });
@@ -911,7 +911,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
