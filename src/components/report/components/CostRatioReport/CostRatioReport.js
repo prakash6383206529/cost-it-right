@@ -39,7 +39,7 @@ function CostRatioReport(props) {
             {!showRatioListing && <div className="container-fluid ag-grid-react">
                 <div className="cost-ratio-report">
                     <h1 className="mb-0">Cost Ratio Report</h1>
-                    <CostReportForm rangeDate={true} />
+                    <CostReportForm isDateMandatory={true} />
                 </div>
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <Col md="12" className="text-right bluefooter-butn mt-3">

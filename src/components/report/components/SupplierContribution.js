@@ -282,7 +282,7 @@ function SupplierContributionReport(props) {
                                 type="button"
                                 className={'user-btn pull-left '}
                                 onClick={() => runReport()}>
-                                <div className={"Run-icon ml-n2"}></div>{"RUN"}
+                                <div className='save-icon mr-0'></div>
                             </button>
                             <button
                                 type="button"
