@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
-import { primaryColor, secondryColor, graphColor4 } from '../../../dashboard/ChartsDashboard'
+import { primaryColor, graphColor4, graphColor1, graphColor2, graphColor3, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13 } from '../../../dashboard/ChartsDashboard'
 import { Line } from 'react-chartjs-2';
 import DayTime from '../../../common/DayTimeWrapper';
 import RenderGraphList from '../../../common/RenderGraphList'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, getCurrencySymbol } from '../../../../helper';
 import _ from 'lodash';
 import HeaderTitle from '../../../common/HeaderTitle';
 
@@ -29,15 +29,34 @@ function CostMovementGraph(props) {
 
     const getGraphColour = (index) => {
 
+
         switch (index) {        //DYNAMICALLY RETURNING DIFFERENT COLOURS ON THE BASIS OF INDEX
             case 0:
-                return primaryColor
+                return graphColor1
             case 1:
-                return secondryColor
+                return graphColor2
             case 2:
+                return graphColor3
+            case 3:
                 return graphColor4
+            case 4:
+                return graphColor5
+            case 5:
+                return graphColor6
+            case 6:
+                return graphColor7
+            case 7:
+                return graphColor8
+            case 8:
+                return graphColor9
+            case 9:
+                return graphColor10
+            case 10:
+                return graphColor11
+            case 11:
+                return graphColor12
             default:
-                return primaryColor
+                return graphColor13
         }
     }
 
@@ -93,10 +112,26 @@ function CostMovementGraph(props) {
                 allEffectiveDates = allEffectiveDates.filter((v, i, a) => a.indexOf(v) === i);
                 setDateRangeArray(allEffectiveDates)            //WE HAVE UNIQUE DATES ARRAY HERE OUT OF ALL DATES
 
+
+                let uniquePartPlantVendor = []
+                res.data.Data && res.data.Data.map((item, index) => {
+
+                    item.Data.map((ele, i) => {
+                        uniquePartPlantVendor.push(`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}`)
+                    })
+                })
+
+                uniquePartPlantVendor = uniquePartPlantVendor.filter((v, i, a) => a.indexOf(v) === i);
+
+                let count = 1
                 res.data.Data && res.data.Data.map((item, index) => {
                     let dateIndex;
-                    item.Data.map((ele) => {
+                    let plantIndex = 0
+                    let uniquePlantLabel = ''
+
+                    item.Data.map((ele, i) => {
                         grid.push(ele)
+                        perPartData = []
 
                         allEffectiveDates.map((date, indexFromDate) => {
 
@@ -107,34 +142,45 @@ function CostMovementGraph(props) {
 
                         perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
 
-                    })
+                        uniquePartPlantVendor.map((value, PlantIndex) => {
 
-                    barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
+                            if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == value) {
+                                plantIndex = PlantIndex
+                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}(${getCurrencySymbol('INR')})`
+                            }
 
-                        type: 'bar',
-                        label: `Part Cost (${item.PartNumber})`,
-                        backgroundColor: getGraphColour(index),
-                        data: perPartData,
-                        maxBarThickness: 25,
-                        borderColor: getGraphColour(index)
+                        })
 
-                    })
+                        barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
 
-                    lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
+                            type: 'bar',
+                            label: `${count}) : ${uniquePlantLabel}`,
+                            backgroundColor: getGraphColour(plantIndex),
+                            data: perPartData,
+                            maxBarThickness: 25,
+                            borderColor: getGraphColour(plantIndex)
 
-                        label: `Part Cost (${item.PartNumber})`,
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: getGraphColour(index),
-                        borderColor: primaryColor,
-                        borderWidth: 2,
-                        data: perPartData,
-                        pointBackgroundColor: getGraphColour(index)
+                        })
 
+                        lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
+
+                            label: `${count}) : ${uniquePlantLabel}`,
+                            fill: false,
+                            lineTension: 1,
+                            backgroundColor: getGraphColour(plantIndex),
+                            borderColor: primaryColor,
+                            borderWidth: 2,
+                            data: perPartData,
+                            pointBackgroundColor: getGraphColour(plantIndex)
+
+                        })
+
+                        count++
                     })
 
                     perPartData = []
                 })
+
 
                 setGridData(grid)       // SETTING ALL DATA TO SHOW IN LISTING IN GRID
                 setBarDataSets(barDataSet)
@@ -191,7 +237,7 @@ function CostMovementGraph(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
 
     };
 
@@ -260,8 +306,8 @@ function CostMovementGraph(props) {
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     domLayout='autoHeight'
-                                                    suppressRowTransform={true}
-
+                                                    // suppressRowTransform={true}
+                                                    floatingFilter={true}
                                                     rowData={gridData}
                                                     pagination={true}
                                                     paginationPageSize={10}
@@ -282,11 +328,13 @@ function CostMovementGraph(props) {
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>}   //DONT DELETE (WILL BE USED FOR ROW MERGING LATER) */}
 
-                                                    {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                    {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                    {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="PlantCode" headerName="Plant Code" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
 
-                                                    {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
-                                                    {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
+                                                    {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
 
                                                 </AgGridReact>
                                                 <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
@@ -298,6 +346,7 @@ function CostMovementGraph(props) {
 
                         }
 
+                        { }
                         {showBarGraph &&
                             <Row className="mt-4">
                                 <Col md="12" className='pr-0'>
