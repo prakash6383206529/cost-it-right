@@ -27,11 +27,11 @@ function CostMovementGraph(props) {
     const [lineDataSets, setLineDataSets] = useState([]);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-    const CostReportFromData = useSelector(state => state.report.costReportFormGridData)
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
-    let tableData = CostReportFromData && CostReportFromData.gridData ? CostReportFromData.gridData : [];
-    let startDate = CostReportFromData && CostReportFromData.fromDate
-    let endDate = CostReportFromData && CostReportFromData.toDate
+    let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
 
     const getGraphColour = (index) => {
         let bgColor = '#' + Math.floor(16777215 * 0.34 + (index * 90146) + (index * 1310)).toString(16)

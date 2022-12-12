@@ -22,11 +22,11 @@ const CostRatioListing = (props) => {
 
     const divRef = useRef()    // THIS IS CALCULATE  WIDTH OF THE PLANT AND VENDOR (CODE) 
     const { initialConfiguration } = useSelector(state => state.auth)
-    const CostReportFromData = useSelector(state => state.report.costReportFormGridData)
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
-    let gridData = CostReportFromData && CostReportFromData.gridData ? CostReportFromData.gridData : [];
-    let startDate = CostReportFromData && CostReportFromData.fromDate
-    let endDate = CostReportFromData && CostReportFromData.toDate
+    let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
 
 
 
@@ -53,7 +53,7 @@ const CostRatioListing = (props) => {
                 setIsLoader(false)
             }
         }))
-        setGridDataState(CostReportFromData)
+        setGridDataState(costReportFormData)
     }, [])
 
     const cancelReport = () => {

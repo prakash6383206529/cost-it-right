@@ -12,8 +12,8 @@ function CostMovementReport(props) {
 
     const [reportListing, setReportListing] = useState(true)
     const [graphListing, setGraphListing] = useState(false)
-    const CostReportFromData = useSelector(state => state.report.costReportFormGridData)
-    let gridData = CostReportFromData && CostReportFromData.gridData ? CostReportFromData.gridData : [];
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
+    let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
 
     const dispatch = useDispatch()
 
