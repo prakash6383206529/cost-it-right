@@ -24,7 +24,7 @@ import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListi
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { rangeDate } = props
+    const { isDateMandatory } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -43,11 +43,11 @@ function CostReportForm(props) {
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
 
-    const CostReportFromData = useSelector(state => state.report.costReportFormGridData)
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
-    let gridData = CostReportFromData && CostReportFromData.gridData ? CostReportFromData.gridData : [];
-    let startDate = CostReportFromData && CostReportFromData.fromDate
-    let endDate = CostReportFromData && CostReportFromData.toDate
+    let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
 
 
 
@@ -341,7 +341,7 @@ function CostReportForm(props) {
                                 handleChange={(date) => {
                                     handleFromDate(date);
                                 }}
-                                rules={{ required: rangeDate }}
+                                rules={{ required: isDateMandatory }}
                                 maxDate={maxDate}
                                 Controller={Controller}
                                 control={control}
@@ -357,7 +357,7 @@ function CostReportForm(props) {
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
                                 // disabled={rowData.length !== 0}
-                                mandatory={rangeDate}
+                                mandatory={isDateMandatory}
                                 errors={errors && errors.fromDate}
                             />
                         </div>
@@ -370,7 +370,7 @@ function CostReportForm(props) {
                                 selected={toDate !== "" ? DayTime(toDate).format('DD/MM/YYYY') : ""}
                                 handleChange={handleToDate}
                                 minDate={minDate}
-                                rules={{ required: rangeDate }}
+                                rules={{ required: isDateMandatory }}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -385,7 +385,7 @@ function CostReportForm(props) {
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
                                 // disabled={rowData.length !== 0}
-                                mandatory={rangeDate}
+                                mandatory={isDateMandatory}
                                 errors={errors && errors.toDate}
                             />
                         </div>
