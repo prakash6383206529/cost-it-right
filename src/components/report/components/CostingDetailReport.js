@@ -474,7 +474,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setReportListingDataStateArray(reportListingData)
-        if (reportListingData.length > 0) {
+        if (reportListingData && reportListingData.length > 0) {
 
             setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
