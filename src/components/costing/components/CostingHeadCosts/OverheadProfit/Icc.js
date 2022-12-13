@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -12,6 +12,7 @@ import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { MESSAGES } from '../../../../../config/message';
 import WarningMessage from '../../../../common/WarningMessage';
+import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function Icc(props) {
@@ -34,6 +35,7 @@ function Icc(props) {
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -266,11 +268,15 @@ function Icc(props) {
     }, [tempInventoryObj])
 
     const handleChangeInterestRateFixedLimit = (event) => {
-        if (decimalAndNumberValidationBoolean(event?.target?.value)) {
+        let message = ''
+        if (decimalAndNumberValidationBoolean(event.target.value)) {
             setInterestRateFixedLimit(true)
-        } else {
-            setInterestRateFixedLimit(false)
+            message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+        } if (!isNumber(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = NoSignNoDecimalMessage
         }
+        setErrorMessage(message)
         dispatch(isOverheadProfitDataChange(true))
     }
 
@@ -316,7 +322,7 @@ function Icc(props) {
                         </Col>
                         <Col md="3">
                             {ICCapplicability.label !== 'Fixed' ?
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                     label={`Interest Rate (%)`}
                                     name={'InterestRatePercentage'}
                                     Controller={Controller}
@@ -325,14 +331,7 @@ function Icc(props) {
                                     mandatory={false}
                                     rules={{
                                         required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                        max: {
-                                            value: 100,
-                                            message: 'Percentage cannot be greater than 100'
-                                        },
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                                     }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
@@ -343,27 +342,20 @@ function Icc(props) {
                                 />
                                 :
                                 <div className='p-relative error-wrapper'>
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Interest Rate`}
                                         name={'InterestRatePercentage'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d{0,6}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 6 and for decimal is 6.',
-                                            },
-                                        }}
                                         handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         disabled={CostingViewMode ? true : false}
                                     />
-                                    {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                    {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                 </div>}
                         </Col>
                         {ICCapplicability.label !== 'Fixed' &&

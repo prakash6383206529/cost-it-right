@@ -9,6 +9,8 @@ import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
 import TooltipCustom from '../../../../common/Tooltip';
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation } from "../../../../../helper/validation";
+import { NUMBERMAXLENGTH } from '../../../../../config/masterData';
 
 function TransportationCost(props) {
 
@@ -115,11 +117,6 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
-        if (event.target.value > 100) {
-          Toaster.warning('Value should not be greater than 100.')
-          event.target.value = '';
-          return false
-        }
         setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
@@ -135,9 +132,6 @@ function TransportationCost(props) {
           setRate(event.target.value)
         }
       }
-    } else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
     }
   }
 
@@ -156,9 +150,6 @@ function TransportationCost(props) {
         setValue('TransportationCost', 0);
         setQuantity(event.target.value);
       }
-    } else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
     }
   }
 
@@ -166,10 +157,6 @@ function TransportationCost(props) {
     if (!isNaN(event.target.value)) {
       setTransportCost(event.target.value)
       setValue('TransportationCost', event.target.value)
-    }
-    else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
     }
   }
 
@@ -280,11 +267,11 @@ function TransportationCost(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        //value: /^[0-9]*$/i,
-                        value: (TransportationType === 'Percentage') ? /^((?:|0|[1-9]\d?|100)(?:\.\d{1,6})?)$/i : /^\d{0,6}(\.\d{0,6})?$/i,
-                        message: (TransportationType === 'Percentage') ? 'Percentage should not be greater than 100.' : 'Maximum length for integer is 6 and for decimal is 6'
-                      },
+                      validate: TransportationType === 'Percentage' ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      max: TransportationType === 'Percentage' ? {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      } : {},
                     }}
                     defaultValue={''}
                     className="mtn1"
@@ -307,12 +294,8 @@ function TransportationCost(props) {
                   register={register}
                   mandatory={false}
                   rules={{
-                    //required: true,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^\d{0,6}?$/i,
-                      message: 'Maximum length for integer is 6.'
-                    },
+                    validate: TransportationType === 'Percentage' ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                    maxLength: NUMBERMAXLENGTH
                   }}
                   defaultValue={''}
                   className=""
@@ -336,11 +319,7 @@ function TransportationCost(props) {
                   register={register}
                   mandatory={false}
                   rules={{
-                    //required: true,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,6})?$/,
-                      message: 'Maximum length for integer is 6 and for decimal is 6.'
-                    },
+                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                   }}
                   defaultValue={''}
                   className=""

@@ -14,6 +14,7 @@ import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
+import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function OverheadProfit(props) {
@@ -1297,10 +1298,7 @@ function OverheadProfit(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: {
-                              value: /^\d{0,6}(\.\d{0,6})?$/i,
-                              message: 'Maximum length for integer is 6 and for decimal is 6.',
-                            },
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                           }}
                           handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                           defaultValue={overheadObj.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -1646,10 +1644,7 @@ function OverheadProfit(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: {
-                              value: /^\d{0,6}(\.\d{0,6})?$/i,
-                              message: 'Maximum length for integer is 6 and for decimal is 6.',
-                            },
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                           }}
                           handleChange={() => { }}
                           defaultValue={profitObj.ProfitFixedPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : ''}

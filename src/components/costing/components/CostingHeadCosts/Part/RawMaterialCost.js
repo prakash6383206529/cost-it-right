@@ -6,7 +6,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA } from '../../../../../config/constants'
-import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -18,10 +18,11 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -833,6 +834,9 @@ function RawMaterialCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    if (errors.rmGridFields && errors.rmGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -1131,7 +1135,7 @@ function RawMaterialCost(props) {
                             }
                             <td>
                               <div className='costing-error-container'>
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${rmGridFields}.${index}.GrossWeight`}
                                   Controller={Controller}
@@ -1140,10 +1144,7 @@ function RawMaterialCost(props) {
                                   mandatory={false}
                                   rules={{
                                     required: true,
-                                    pattern: {
-                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
-                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
-                                    },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.GrossWeight}
                                   className=""
@@ -1159,7 +1160,7 @@ function RawMaterialCost(props) {
                             </td>
                             <td>
                               <div className='costing-error-container'>
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${rmGridFields}.${index}.FinishWeight`}
                                   Controller={Controller}
@@ -1168,10 +1169,7 @@ function RawMaterialCost(props) {
                                   mandatory={false}
                                   rules={{
                                     required: true,
-                                    pattern: {
-                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
-                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
-                                    },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.FinishWeight}
                                   className=""
@@ -1193,7 +1191,7 @@ function RawMaterialCost(props) {
                               isScrapRecoveryPercentageApplied &&
                               <td>
                                 <div className='costing-error-container'>
-                                  <NumberFieldHookForm
+                                  <TextFieldHookForm
                                     label=""
                                     name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
                                     Controller={Controller}
@@ -1202,10 +1200,7 @@ function RawMaterialCost(props) {
                                     mandatory={false}
                                     rules={{
                                       required: true,
-                                      pattern: {
-                                        value: /^\d*\.?\d*$/,
-                                        message: 'Invalid Number.',
-                                      },
+                                      validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                       max: {
                                         value: 100,
                                         message: 'Percentage should be less than 100'
@@ -1248,10 +1243,8 @@ function RawMaterialCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      validate: { checkWhiteSpaces },
+                                      maxLength: REMARKMAXLENGTH
                                     }}
                                     handleChange={(e) => { }}
                                     defaultValue={item.Remark ?? item.Remark}
@@ -1344,7 +1337,11 @@ function RawMaterialCost(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        validate: { checkWhiteSpaces, hashValidation },
+                        maxLength: STRINGMAXLENGTH
+                      }}
                       handleChange={(e) => { }}
                       defaultValue={""}
                       className=""
@@ -1361,7 +1358,10 @@ function RawMaterialCost(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      }}
                       handleChange={() => { }}
                       defaultValue={""}
                       className=""
@@ -1371,7 +1371,7 @@ function RawMaterialCost(props) {
                     />
                   </Col>
                   <Col md="2">
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label="Percentage"
                       name={`MBPercentage`}
                       Controller={Controller}
@@ -1379,11 +1379,8 @@ function RawMaterialCost(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
+                        required: false,
+                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
                         max: {
                           value: 100,
                           message: 'Percentage cannot be greater than 100'
