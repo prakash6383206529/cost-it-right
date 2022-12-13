@@ -37,10 +37,8 @@ function CostRatioReport(props) {
     return (
         <>
             {!showRatioListing && <div className="container-fluid ag-grid-react">
-                <div className="cost-ratio-report">
-                    <h1 className="mb-0">Cost Ratio Report</h1>
-                    <CostReportForm isDateMandatory={true} />
-                </div>
+                <h1 className="mb-0">Cost Ratio Report</h1>
+                <CostReportForm isDateMandatory={true} />
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <Col md="12" className="text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
