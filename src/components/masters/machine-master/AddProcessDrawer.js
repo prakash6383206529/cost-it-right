@@ -25,7 +25,7 @@ class AddProcessDrawer extends Component {
       ProcessId: '',
       effectiveDate: '',
       isLoader: false,
-      setDisable: false,
+      setDisable: true,
       DataToChange: [],
       processName: "",
       showPopup: false
@@ -83,7 +83,7 @@ class AddProcessDrawer extends Component {
       processCode: ""
 
     }
-    this.setState({ processName: value })
+    this.setState({ processName: value, setDisable: false })
 
     this.props.getProcessCode(obj, (res) => {
       if (res && res.data && res.data.Result) {
@@ -114,6 +114,10 @@ class AddProcessDrawer extends Component {
       }
     })
 
+  }
+
+  handleProcessName = (e) => {
+    this.setState({ setDisable: true })
   }
 
   /**
@@ -278,6 +282,7 @@ class AddProcessDrawer extends Component {
                       validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
+                      onChange={this.handleProcessName}
                       required={true}
                       className=" "
                       customClassName=" withBorder"

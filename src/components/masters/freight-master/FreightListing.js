@@ -19,6 +19,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -68,6 +69,7 @@ class FreightListing extends Component {
       vendor_id: vendor_id,
       source_city_id: source_city_id,
       destination_city_id: destination_city_id,
+      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
     }
     this.props.getFreightDataList(filterData, (res) => {
       this.setState({ isLoader: false })

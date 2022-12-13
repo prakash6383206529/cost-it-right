@@ -52,10 +52,10 @@ function AddNCCDrawer(props) {
       ...data,
       VendorCode: Object.keys(vendor).length > 0 ? vendor.VendorCode : '',
       VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
-      VendorName: Object.keys(vendor).length > 0 ? vendor.VendorName : '',
+      VendorName: Object.keys(vendor).length > 0 ? `${vendor.VendorName} (${vendor.VendorCode})` : '',
       Vendor: vendor,
+      DestinationPlantName: `${data.DestinationPlantName} (${data.DestinationPlantCode})`
     })
-
   };
 
   /**

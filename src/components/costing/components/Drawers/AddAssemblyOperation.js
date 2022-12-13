@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
+import { gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
@@ -178,9 +178,10 @@ function AddAssemblyOperation(props) {
     }
     if (isAssemblyTechnology) {
       item.TotalOperationCost = operationCostAssemblyTechnology
-      let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+      let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
       dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
       }))
+      dispatch(gridDataAdded(true))
 
       props?.setOperationCostFunction(operationCostAssemblyTechnology, operationGridData)
       dispatch(saveAssemblyCostingRMCCTab(requestData, res => {

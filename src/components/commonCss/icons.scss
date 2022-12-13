@@ -24,10 +24,12 @@
 
 .Add {
     @include icons("../../assests/images/Group 8861.svg");
+    @include extra-icon-styles;
 }
 
 .Edit {
     @include icons("../../assests/images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include extra-icon-styles;
 }
 
 .right-hand-arrow {
@@ -46,9 +48,9 @@
     @include icons("../../assests/images/WhitePencil-Icon.svg", 12px, 12px);
 }
 
+
 .Delete {
     @include icons("../../assests/images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
-
 }
 
 .Comment-box {
@@ -65,15 +67,23 @@
 
 }
 
+.Comment-box {
+    @include icons("../../assests/images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
+}
+
 .pie-chart {
     @include icons("../../assests/images/pie-chart.svg");
+}
 
+.View {
+    @include icons("../../assests/images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include extra-icon-styles;
 }
 
 .add-process {
     @include icons("../../assests/images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
-
+    @include extra-icon-styles;
 }
 
 .hirarchy-btn {
@@ -95,7 +105,6 @@
 
 .CancelIcon {
     @include icons("../../assests/images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
-    @include extra-icon-styles;
 }
 
 .CalculatorIcon {

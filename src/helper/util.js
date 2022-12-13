@@ -759,7 +759,7 @@ export function formViewData(costingSummary, header = '') {
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
   obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
-  obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName} (${dataFromAPI.PlantCode})` : `${dataFromAPI.DestinationPlantName} (${dataFromAPI.DestinationPlantCode})`
+  obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
 
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
@@ -767,6 +767,7 @@ export function formViewData(costingSummary, header = '') {
   obj.netProcessCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
   obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
+  obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
   temp.push(obj)
   return temp
 }

@@ -6,6 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
+import WarningMessage from '../../../common/WarningMessage';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -44,6 +45,8 @@ function AddPackaging(props) {
   const [packagingCost, setPackagingCost] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
+  const [showCostError, setShowCostError] = useState(false)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(0)
 
   const fieldValues = IsolateReRender(control)
 
@@ -245,8 +248,18 @@ function AddPackaging(props) {
     reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
-
+  const packingCostHandler = (e) => {
+    if (e.target.value <= 0) {
+      setPackagingCostDataFixed(e.target.value)
+      setShowCostError(true)
+    }
+    else setShowCostError(false)
+  }
   const onSubmit = data => {
+    if (showCostError || (applicability.label === 'Fixed' && packagingCostDataFixed === 0)) {
+      setShowCostError(true)
+      return false
+    }
     let formData = {
       PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
       IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
@@ -416,24 +429,14 @@ function AddPackaging(props) {
                       control={control}
                       register={register}
                       mandatory={applicability.label === 'Fixed' ? true : false}
-                      rules={{
-                        required: applicability.label === 'Fixed' ? true : false,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                        min: {
-                          value: 0.00001,
-                          message: 'Cost should not be zero.'
-                        }
-                      }}
-                      handleChange={() => { }}
+                      handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
+                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={"Cost should not be zero"} />}
                   </Col>
                 </Row>
 
