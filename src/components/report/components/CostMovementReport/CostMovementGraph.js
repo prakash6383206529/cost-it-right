@@ -266,7 +266,7 @@ function CostMovementGraph(props) {
     return (
         <>
             <div className={"container-fluid"}>
-                <div className='cost-ratio-report'>
+                <div className='cost-ratio-report h-298'>
                     <form noValidate className="form">
                         <div className='analytics-drawer'>
                             <HeaderTitle customClass="mb-0"
