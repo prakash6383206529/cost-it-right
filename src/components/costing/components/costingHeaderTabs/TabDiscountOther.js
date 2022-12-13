@@ -9,7 +9,7 @@ import {
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { ASSEMBLYNAME, FILE_URL } from '../../../../config/constants';
@@ -21,13 +21,14 @@ import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../config/masterData';
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
 
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -442,6 +443,7 @@ function TabDiscountOther(props) {
       } else {
         setOtherCostType([])
       }
+      errors.PercentageOtherCost = {}
     }
   }
   /**
@@ -464,6 +466,7 @@ function TabDiscountOther(props) {
       } else {
         setHundiDiscountType([])
       }
+      errors.HundiOrDiscountPercentage = {}
     }
   }
 
@@ -479,8 +482,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           OtherCostPercentage: checkForNull(event.target.value)
         })
-      } else {
-        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -886,8 +887,8 @@ function TabDiscountOther(props) {
                     }
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
-                        <NumberFieldHookForm
-                          label="Percentage (%)"
+                        <TextFieldHookForm
+                          label="Percentage(%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}
                           control={control}
@@ -895,10 +896,7 @@ function TabDiscountOther(props) {
                           mandatory={false}
                           rules={{
                             //required: true,
-                            pattern: {
-                              value: /^\d*\.?\d*$/,
-                              message: "Invalid Number.",
-                            },
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
                               message: 'Percentage cannot be greater than 100'
@@ -925,6 +923,8 @@ function TabDiscountOther(props) {
                         mandatory={false}
                         rules={{
                           required: false,
+                          validate: { checkWhiteSpaces, hashValidation },
+                          maxLength: STRINGMAXLENGTH
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
@@ -936,7 +936,7 @@ function TabDiscountOther(props) {
                     </Col>
                     <Col md="2">
                       {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
                         id="other-cost"
@@ -946,10 +946,7 @@ function TabDiscountOther(props) {
                         mandatory={false}
                         rules={{
                           //required: true,
-                          pattern: {
-                            value: /^\d{0,6}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 6 and for decimal is 6.',
-                          },
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                         }}
                         handleChange={(e) => {
                           e.preventDefault();
@@ -1012,10 +1009,7 @@ function TabDiscountOther(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: {
-                              value: /^\d*\.?\d*$/,
-                              message: 'Invalid Number.'
-                            },
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
                               message: 'Percentage cannot be greater than 100'
@@ -1043,10 +1037,7 @@ function TabDiscountOther(props) {
                         register={register}
                         mandatory={false}
                         rules={{
-                          pattern: {
-                            value: /^\d{0,6}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 6 and for decimal is 6.',
-                          },
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                         }}
                         handleChange={(e) => {
                           e.preventDefault();
@@ -1191,7 +1182,7 @@ function TabDiscountOther(props) {
                         rows={6}
                         mandatory={false}
                         rules={{
-
+                          validate: { checkWhiteSpaces },
                           maxLength: {
                             value: 500,
                             message: "Remark should be less than 500 words"

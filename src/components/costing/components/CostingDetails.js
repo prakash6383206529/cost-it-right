@@ -33,6 +33,7 @@ import { debounce } from 'lodash';
 import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { getUOMSelectList } from '../../../actions/Common';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -149,6 +150,8 @@ function CostingDetails(props) {
       // dispatch(getPartSelectListByTechnology('', '', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
+      dispatch(getUOMSelectList(() => { }))
+
     }
     return () => {
       reactLocalStorage.setObject('PartData', [])

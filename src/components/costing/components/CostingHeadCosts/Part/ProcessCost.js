@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
-import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
@@ -15,10 +15,11 @@ import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, set
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
-import { MACHINING, } from '../../../../../config/masterData'
+import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
+import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function ProcessCost(props) {
@@ -330,7 +331,10 @@ function ProcessCost(props) {
   }
 
 
-  const onRemarkPopUpClickk = (index) => {
+  const onRemarkPopUpClick = (index) => {
+    if (errors.rmGridFields && errors.rmGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -363,8 +367,9 @@ function ProcessCost(props) {
   }
 
   const onRemarkPopUpClickGroup = (index, parentIndex, list) => {
-
-
+    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let processTempData = gridData[parentIndex]
     let tempData = list[index]
@@ -391,7 +396,6 @@ function ProcessCost(props) {
     setTabData(tempArr)
     setGridData(processTemparr)
     dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-    ///////////////////
 
     if (getValues(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`)) {
       Toaster.success('Remark saved successfully')
@@ -804,43 +808,41 @@ function ProcessCost(props) {
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
-    } else {
-
-      const ProcessCost = tempData.MHR * 0
-      tempData = {
-        ...tempData,
-        Quantity: 0,
-        IsCalculatedEntry: false,
-        ProcessCost: ProcessCost,
-      }
-      let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
-
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-
-      let apiArr = formatMainArr(gridTempArr)
-
-      tempArr = {
-        ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
-      }
-      setIsFromApi(false)
-      setTabData(tempArr)
-      if (isAssemblyTechnology) {
-        // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-      }
-      setGridData(gridTempArr)
-      dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
-      setTimeout(() => {
-        setValue(`${ProcessGridFields}.${index}.Quantity`, "")
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
-      }, 200)
-      //Toaster.warning('Please enter valid number.')
     }
+    //  else {
+
+    //   const ProcessCost = tempData.MHR * 0
+    //   tempData = {
+    //     ...tempData,
+    //     Quantity: 0,
+    //     IsCalculatedEntry: false,
+    //     ProcessCost: ProcessCost,
+    //   }
+    //   let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
+
+    //   let ProcessCostTotal = 0
+    //   ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+    //     return accummlator + checkForNull(el.ProcessCost)
+    //   }, 0)
+
+    //   let apiArr = formatMainArr(gridTempArr)
+
+    //   tempArr = {
+    //     ...tabData,
+    //     NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+    //     ProcessCostTotal: ProcessCostTotal,
+    //     CostingProcessCostResponse: apiArr,
+    //   }
+    //   setIsFromApi(false)
+    //   setTabData(tempArr)
+    //   setGridData(gridTempArr)
+    //   dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
+    //   setTimeout(() => {
+    //     setValue(`${ProcessGridFields}.${index}.Quantity`, "")
+    //     setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
+    //   }, 200)
+    //   //Toaster.warning('Please enter valid number.')
+    // }
   }
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
@@ -1072,7 +1074,7 @@ function ProcessCost(props) {
                 <span className="d-inline-block  mr-2">
 
                   {
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label=""
                       name={`${SingleProcessGridField}.${index}${parentIndex}${item.ProcessName}.Quantity`}
                       Controller={Controller}
@@ -1080,11 +1082,7 @@ function ProcessCost(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        required: true,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,4})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 4',
-                        },
+                        validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
                       }}
                       errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`] && errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`].Quantity : ''}
                       defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
@@ -1148,10 +1146,8 @@ function ProcessCost(props) {
                     register={register}
                     mandatory={false}
                     rules={{
-                      maxLength: {
-                        value: 75,
-                        message: "Remark should be less than 75 word"
-                      },
+                      validate: { checkWhiteSpaces },
+                      maxLength: REMARKMAXLENGTH
                     }}
                     handleChange={(e) => { }}
                     defaultValue={item.Remark ?? item.Remark}
@@ -1259,10 +1255,11 @@ function ProcessCost(props) {
                             <td >
                               {
 
-                                <div className='d-flex align-items-center'>
+                                < div className='d-flex align-items-center'>
+                                  {console.log('item.BoughtOutPartUOM: ', item)}
                                   <span className="d-inline-block mr-2">
                                     {
-                                      <NumberFieldHookForm
+                                      <TextFieldHookForm
                                         label=""
                                         name={`${ProcessGridFields}.${index}.Quantity`}
                                         Controller={Controller}
@@ -1271,9 +1268,10 @@ function ProcessCost(props) {
                                         mandatory={false}
                                         rules={{
                                           required: true,
-                                          pattern: {
-                                            value: /^\d{0,6}(\.\d{0,4})?$/i,
-                                            message: 'Maximum length for integer is 6 and for decimal is 4',
+                                          validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                          max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
                                           },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
@@ -1340,10 +1338,8 @@ function ProcessCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      validate: { checkWhiteSpaces },
+                                      maxLength: REMARKMAXLENGTH
                                     }}
                                     handleChange={(e) => { }}
                                     defaultValue={item.Remark ?? item.Remark}
@@ -1356,7 +1352,7 @@ function ProcessCost(props) {
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
@@ -1368,11 +1364,13 @@ function ProcessCost(props) {
                               </div>
                             </td>
                           </tr>
-                          {processAccObj[index] && <>
-                            {
-                              renderSingleProcess(item, index)
-                            }
-                          </>}
+                          {
+                            processAccObj[index] && <>
+                              {
+                                renderSingleProcess(item, index)
+                              }
+                            </>
+                          }
                         </>
                       )
                       // }
@@ -1410,18 +1408,19 @@ function ProcessCost(props) {
 
         </div >
       </div >
-      {isDrawerOpen && (
-        <AddProcess
-          isOpen={isDrawerOpen}
-          closeDrawer={closeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          Ids={Ids}
-          MachineIds={MachineIds}
-          groupMachineId={groupNameMachine}
-        />
-      )
+      {
+        isDrawerOpen && (
+          <AddProcess
+            isOpen={isDrawerOpen}
+            closeDrawer={closeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            Ids={Ids}
+            MachineIds={MachineIds}
+            groupMachineId={groupNameMachine}
+          />
+        )
       }
       {
         isCalculator && (

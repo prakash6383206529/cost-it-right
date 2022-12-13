@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
@@ -17,6 +17,7 @@ import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
+import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -59,6 +60,7 @@ function Tool(props) {
   const { costingData } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
+  const [errorMessage, setErrorMessage] = useState('')
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
@@ -89,13 +91,17 @@ function Tool(props) {
 
 
   const handleMaintainenceToolCostChange = (e) => {
-
-    if (e?.target?.value > 100) {
+    let message = ''
+    if (!isNumber(e.target.value)) {
       setPercentageLimit(true)
+      message = NoSignNoDecimalMessage
+    } else if (e?.target?.value > 100) {
+      setPercentageLimit(true)
+      message = "Percentage cannot be greater than 100."
     } else {
       setPercentageLimit(false)
     }
-
+    setErrorMessage(message)
   }
 
 
@@ -657,17 +663,13 @@ function Tool(props) {
                     {applicability.label !== 'Fixed' ?
 
                       <div className='mb-2'>
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                           label={`Maintenance Tool Cost (%)`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
                           control={control}
                           register={register}
                           mandatory={false}
-                          rules={{
-                            required: false,
-                            pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                          }}
                           handleChange={(e) => {
                             e.preventDefault()
                             dispatch(isToolDataChange(true))
@@ -679,12 +681,12 @@ function Tool(props) {
                           customClassName={'withBorder'}
                           disabled={CostingViewMode ? true : false}
                         />
-                        {percentageLimit && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Percentage cannot be greater than 100"} />}
+                        {percentageLimit && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={errorMessage} />}
                       </div>
                       :
                       //THIS FIELD WILL RENDER WHEN APPLICABILITY TYPE FIXED
                       <div className='mb-2'>
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                           label={`Maintenance Tool Cost`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
@@ -693,10 +695,7 @@ function Tool(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: {
-                              value: /^\d{0,6}(\.\d{0,6})?$/i,
-                              message: 'Maximum length for integer is 6 and for decimal is 6.',
-                            },
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                           }}
                           handleChange={(e) => {
                             e.preventDefault()
@@ -730,10 +729,7 @@ function Tool(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          pattern: {
-                            value: /^\d{0,6}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 6 and for decimal is 6.',
-                          },
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -754,10 +750,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 6.',
-                        }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       defaultValue={''}
                       className=""
@@ -780,10 +773,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 6.',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       defaultValue={''}
                       className=""
@@ -806,10 +796,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 6.',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       defaultValue={''}
                       className=""
@@ -834,10 +821,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 6.',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       defaultValue={''}
                       className=""
@@ -860,10 +844,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        pattern: {
-                          value: /^\d{0,6}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 6 and for decimal is 6.',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       defaultValue={''}
                       className=""

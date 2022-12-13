@@ -7,8 +7,9 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import {
-  maxLength5, checkWhiteSpaces, postiveNumber, maxLength25,
+  maxLength5, checkWhiteSpaces, postiveNumber, maxLength25, number, decimalNumberLimit6, alphaNumericValidation
 } from "../../../../helper/validation";
+import { STRINGMAXLENGTH } from '../../../../config/masterData';
 
 function AddTool(props) {
 
@@ -277,10 +278,8 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: {
-                          maxLength25,
-                          checkWhiteSpaces
-                        }
+                        validate: { checkWhiteSpaces, alphaNumericValidation },
+                        maxLength: STRINGMAXLENGTH
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -301,11 +300,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: {
-                          maxLength5,
-                          checkWhiteSpaces,
-                          postiveNumber
-                        }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -326,10 +321,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^\d{0,5}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 5 and for decimal is 6',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -350,10 +342,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^\d{0,5}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for integer is 5 and for decimal is 6',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -374,11 +363,7 @@ function AddTool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

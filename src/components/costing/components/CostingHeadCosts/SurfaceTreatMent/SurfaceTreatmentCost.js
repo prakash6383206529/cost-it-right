@@ -12,6 +12,7 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TooltipCustom from '../../../../common/Tooltip';
+import { number, checkWhiteSpaces, decimalNumberLimit6, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -95,7 +96,7 @@ function SurfaceTreatmentCost(props) {
         }
       })
 
-      let tempArr = [...gridData, ...rowArray]
+      let tempArr = gridData ? [...gridData, ...rowArray] : [rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -178,8 +179,6 @@ function SurfaceTreatmentCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -193,8 +192,6 @@ function SurfaceTreatmentCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -259,10 +256,7 @@ function SurfaceTreatmentCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                    },
+                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
@@ -292,12 +286,7 @@ function SurfaceTreatmentCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        //required: true,
-                                        pattern: {
-                                          value: /^[0-9]*$/i,
-                                          //value: /^[0-9]\d*(\.\d+)?$/i,
-                                          message: 'Invalid Number.'
-                                        },
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
