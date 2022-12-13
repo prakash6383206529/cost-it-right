@@ -15,7 +15,7 @@ import _ from 'lodash';
 import HeaderTitle from '../../../common/HeaderTitle';
 
 function CostMovementGraph(props) {
-    const { fromDate, toDate, tableData, ModeId, importEntry } = props
+    const { ModeId, importEntry } = props
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(true)
     const [showBarGraph, setShowBarGraph] = useState(false)
@@ -27,49 +27,28 @@ function CostMovementGraph(props) {
     const [lineDataSets, setLineDataSets] = useState([]);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
+
+    let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
+
     const getGraphColour = (index) => {
+        let bgColor = '#' + Math.floor(16777215 * 0.34 + (index * 90146) + (index * 1310)).toString(16)
+        return bgColor;
 
-
-        switch (index) {        //DYNAMICALLY RETURNING DIFFERENT COLOURS ON THE BASIS OF INDEX
-            case 0:
-                return graphColor1
-            case 1:
-                return graphColor2
-            case 2:
-                return graphColor3
-            case 3:
-                return graphColor4
-            case 4:
-                return graphColor5
-            case 5:
-                return graphColor6
-            case 6:
-                return graphColor7
-            case 7:
-                return graphColor8
-            case 8:
-                return graphColor9
-            case 9:
-                return graphColor10
-            case 10:
-                return graphColor11
-            case 11:
-                return graphColor12
-            default:
-                return graphColor13
-        }
     }
 
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = fromDate
-        obj.ToDate = toDate
+        obj.FromDate = startDate
+        obj.ToDate = endDate
         let sampleArray = []
         let allEffectiveDates = []
 
         tableData && tableData.map((item) => {
-            sampleArray.push({ PartId: item.PartId, RevisionNumber: item.RevisionNo === "-" ? "" : item.RevisionNo })
+            sampleArray.push({ PartId: item.PartId, RevisionNumber: item.RevisionNumber, PlantId: item.PlantId, VendorId: item.VendorId, TechnologyId: item.TechnologyId })
         })
         obj.PartIdList = sampleArray
 
@@ -168,7 +147,7 @@ function CostMovementGraph(props) {
                             fill: false,
                             lineTension: 1,
                             backgroundColor: getGraphColour(plantIndex),
-                            borderColor: primaryColor,
+                            borderColor: getGraphColour(plantIndex),
                             borderWidth: 2,
                             data: perPartData,
                             pointBackgroundColor: getGraphColour(plantIndex)

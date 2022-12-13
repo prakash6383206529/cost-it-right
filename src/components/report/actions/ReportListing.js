@@ -6,7 +6,8 @@ import {
     GET_ALL_REPORT_LIST,
     GET_BENCHMARK_RM_LIST,
     GET_BENCHMARK_MASTER_LIST,
-    GET_COST_RATIO_REPORT
+    GET_COST_RATIO_REPORT,
+    GET_REPORT_FORM_GRID_DATA
 } from '../../../config/constants';
 
 // const config() = config
@@ -241,6 +242,17 @@ export function getSupplierContributionData(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             // apiErrors(error)
+        })
+    }
+}
+
+//SET THE COST REPORT FORM GRID DATA
+export function getFormGridData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: GET_REPORT_FORM_GRID_DATA,
+            payload: data
         })
     }
 }

@@ -11,27 +11,39 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13, graphColor14, graphColor15, graphColor16 } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
-import { getCostRatioReport } from '../../actions/ReportListing';
+import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing';
 
 const CostRatioListing = (props) => {
-    const { costRatioGridData } = props
     const [tableData, setTableData] = useState([])
     const [pieChartDataArray, setPieChartDataArray] = useState([])
     const [isLoader, setIsLoader] = useState(false)
+    const [gridDataState, setGridDataState] = useState()
     const dispatch = useDispatch()
 
     const divRef = useRef()    // THIS IS CALCULATE  WIDTH OF THE PLANT AND VENDOR (CODE) 
     const { initialConfiguration } = useSelector(state => state.auth)
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
+
+    let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
+
+
 
     useEffect(() => {
-        let formData =
-        {
-            FromDate: costRatioGridData.fromDate,
-            ToDate: costRatioGridData.toDate,
-            CostingData: costRatioGridData.rowData
-        }
+
+        let obj = {}
+        obj.FromDate = startDate
+        obj.ToDate = endDate
+        let sampleArray = []
+
+        gridData && gridData.map((item) => {
+            sampleArray.push({ PartId: item.PartId, RevisionNumber: item.RevisionNumber, PlantId: item.PlantId, VendorId: item.VendorId, TechnologyId: item.TechnologyId })
+        })
+        obj.CostingData = sampleArray
+
         setIsLoader(true)
-        dispatch(getCostRatioReport(formData, (res) => {
+        dispatch(getCostRatioReport(obj, (res) => {
             setIsLoader(false)
             let Data = res.data && res.data.DataList
             if (res.status === 200) {
@@ -41,13 +53,11 @@ const CostRatioListing = (props) => {
                 setIsLoader(false)
             }
         }))
-        setTimeout(() => {
-
-
-        }, 200);
+        setGridDataState(costReportFormData)
     }, [])
 
     const cancelReport = () => {
+        dispatch(getFormGridData(gridDataState))
         props?.viewListing(false)
     }
 
