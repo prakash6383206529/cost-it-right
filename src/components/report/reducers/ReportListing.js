@@ -1,11 +1,12 @@
 import {
-    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT, GET_REPORT_FORM_GRID_DATA,
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
     reportListing: [],
-    allReportListing: []
+    allReportListing: [],
+    costReportFormGridData: {}
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -64,6 +65,16 @@ export default function ReportListingReducers(state = initialState, action) {
                 loading: false,
                 BenchmarkList: action.payload
 
+            }
+        case GET_COST_RATIO_REPORT:
+            return {
+                loading: false,
+                costRatioReportList: action.payload
+            }
+        case GET_REPORT_FORM_GRID_DATA:
+            return {
+                loading: false,
+                costReportFormGridData: action.payload
             }
 
         default:

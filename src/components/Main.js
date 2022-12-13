@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -56,6 +56,9 @@ import SimulationInsights from './report/components/SimulationInsights'
 import SimulationRoutes from './simulation/Routes'
 import CommonApproval from './masters/material-master/CommonApproval'
 import RfqListing from './rfq/RfqListing'
+import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
+import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
+import SupplierContributionReport from './report/components/SupplierContribution'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -193,15 +196,15 @@ class Main extends Component {
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND ||
         location.pathname === DASHBOARDWITHGRAPH_PATH ||
-        location.pathname !== SIMULATION_PATH ||
-        location.pathname !== SIMULATION_HISTORY_PATH ||
-        location.pathname !== RFQ_LISTING ? 'w-100' : ''
+        location.pathname === SIMULATION_PATH ||
+        location.pathname === SIMULATION_HISTORY_PATH ||
+        location.pathname === USER_PATH ||
+        location.pathname === RFQ_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
     const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-
 
 
     return (
@@ -337,14 +340,13 @@ class Main extends Component {
                     <Route path="/simulation-history" component={AuthMiddleware(SimulationRoutes, Simulation_Page)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
-
                     <Route path="/simulation" component={SimulationRoutes} exact={true} />
-
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
-
-
                     <Route path="/costing-breakup-report" component={AuthMiddleware(CostingDetailReport, COSTING_BREAKUP_DETAILS_REPORT)} />
+                    <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
                     <Route path="/master-benchmarking-report" component={CostingBenchmarkReport} />
+                    <Route path="/cost-movement-report" component={CostMovementReport} />
+                    <Route path="/supplier-contribution-report" component={SupplierContributionReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />

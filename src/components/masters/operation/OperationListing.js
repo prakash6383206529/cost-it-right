@@ -18,7 +18,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { checkForDecimalAndNull, userDepartmetList, getConfigurationKey } from '../../../helper'
+import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -33,6 +33,7 @@ import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -68,7 +69,9 @@ class OperationListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            analyticsDrawer: false,
+            selectedRowDataAnalytics: [],
+            inRangeDate: [],
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
             warningMessage: false,
@@ -181,7 +184,7 @@ class OperationListing extends Component {
                 this.props?.changeTokenCheckBox(false)
             }
 
-            if (Number(this?.props?.isOperationST) === Number(SURFACETREATMENT)) {
+            if (Number(this?.props?.isOperationST) === Number(SURFACETREATMENT)) {   //CONDITION TO GET SURFACETREATMENT LISTING DATA
                 filterData.OperationType = 'surfacetreatment'
             } else if ((Number(this?.props?.isOperationST) === Number(OPERATIONS))) {
                 filterData.OperationType = 'operation'
@@ -371,6 +374,12 @@ class OperationListing extends Component {
     closePopUp = () => {
         this.setState({ showPopup: false })
     }
+
+
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowDataAnalytics: rowData, analyticsDrawer: true })
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -401,6 +410,7 @@ class OperationListing extends Component {
 
         return (
             <>
+                <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -648,6 +658,7 @@ class OperationListing extends Component {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
                 setDate(newDate)
+                handleDate(newDate)// FOR COSTING BENCHMARK OPERATION REPORT
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
                 var cellDate = new Date(
@@ -668,6 +679,21 @@ class OperationListing extends Component {
             browserDatePicker: true,
             minValidYear: 2000,
         };
+
+        var handleDate = (newDate) => {
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+        }
 
 
         var setDate = (date) => {
@@ -719,6 +745,7 @@ class OperationListing extends Component {
             }
 
             this.setState({ selectedRowData: selectedRows })
+
         }
 
         const isFirstColumn = (params) => {
@@ -732,13 +759,17 @@ class OperationListing extends Component {
             }
         }
 
+        const closeAnalyticsDrawer = () => {
+            this.setState({ analyticsDrawer: false })
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props.benchMark) ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -895,6 +926,23 @@ class OperationListing extends Component {
                         anchor={'right'}
                         isFinalApprovar={this.state.isFinalApprovar}
                     />}
+
+                    {
+                        this.state.analyticsDrawer &&
+                        <AnalyticsDrawer
+                            isOpen={this.state.analyticsDrawer}
+                            ModeId={3}
+                            closeDrawer={closeAnalyticsDrawer}
+                            anchor={"right"}
+                            isReport={this.state.analyticsDrawer}
+                            selectedRowData={this.state.selectedRowDataAnalytics}
+                            isSimulation={true}
+                            //cellValue={cellValue}
+                            rowData={this.state.selectedRowDataAnalytics}
+                        />
+                    }
+
+
                 </div>
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
