@@ -195,7 +195,7 @@ function SupplierContributionReport(props) {
                                     dateFormat="DD/MM/YYYY"
                                     dropdownMode="select"
                                     maxDate={maxDate}
-                                    placeholderText="Select date"
+                                    placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
                                     autoComplete={"off"}
@@ -224,7 +224,7 @@ function SupplierContributionReport(props) {
                                     dateFormat="DD/MM/YYYY"
                                     minDate={minDate}
                                     dropdownMode="select"
-                                    placeholderText="Select date"
+                                    placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
                                     autoComplete={"off"}
