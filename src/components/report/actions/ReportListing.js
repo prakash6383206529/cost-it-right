@@ -5,7 +5,9 @@ import {
     GET_REPORT_LIST, config, EMPTY_GUID,
     GET_ALL_REPORT_LIST,
     GET_BENCHMARK_RM_LIST,
-    GET_BENCHMARK_MASTER_LIST
+    GET_BENCHMARK_MASTER_LIST,
+    GET_COST_RATIO_REPORT,
+    GET_REPORT_FORM_GRID_DATA
 } from '../../../config/constants';
 
 // const config() = config
@@ -160,5 +162,97 @@ export function getCostingBenchMarkBopReport(data, callback) {
 
     };
 }
+export function getCostRatioReport(data, callback) {
 
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostRatioReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_COST_RATIO_REPORT,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
 
+    };
+}
+
+export function getRevisionNoFromPartId(PartId, callback) {
+    return (dispatch) => {
+
+        if (PartId !== '') {
+            const request = axios.get(`${API.getRevisionNoFromPartId}?partId=${PartId}`, config(),)
+            request.then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE })
+                // apiErrors(error)
+            })
+        }
+    }
+}
+export function getCostingBenchMarkOperationReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostingBenchMarkOperationReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_BENCHMARK_MASTER_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
+
+export function getCostMovementReportByPart(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostMovementReportByPart}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
+export function getSupplierContributionData(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getSupplierContributionData}?fromDate=${data.fromDate}&toDate=${data.toDate}&plantId=${data.plantId}`, config(),)
+        request.then((response) => {
+            if (response.data) {
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            // apiErrors(error)
+        })
+    }
+}
+
+//SET THE COST REPORT FORM GRID DATA
+export function getFormGridData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: GET_REPORT_FORM_GRID_DATA,
+            payload: data
+        })
+    }
+}

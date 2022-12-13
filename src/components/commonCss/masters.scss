@@ -1,96 +1,136 @@
 .sub-form-container {
-    .text-help.mb-2 {
-      position: absolute;
-    }
-  }
-  .p-absolute {
+  .text-help.mb-2 {
     position: absolute;
-    &.right-22 {
-      right: 22px;
-      z-index: -1;
-    }
-    &.bottom-22 {
-      bottom: 22px;
-    }
-    &.bottom-7 {
-      bottom: 7px;
-    }
   }
-  .rate-form-container {
-    .p-absolute {
-      bottom: 7px;
-    }
-  }
-  .truck-load-form-container {
-    .p-absolute {
-      bottom: 22px;
-    }
-    .bottom-7 {
-      bottom: 7px;
-    }
-  }
-  .child-form-container {
-    @extend .truck-load-form-container;
-    .bottom-37 {
-      bottom: 37px;
-    }
-  }
-  .table {
-    .UOM-label-container {
-      span {
-        &:last-child {
-          position: absolute;
-          top: -5px;
-        }
-      }
-    }
-  }
-  
-  .action-icon-container {
-    display: flex;
-    align-items: center;
-    grid-gap: 4px;
-    margin-top: 5px;
-    .user-btn {
-       height: 22px !important;
-       padding: 5px !important;
-       &:focus {
-        border: transparent !important;
-        box-shadow: none !important;
-      }
-    }
-    .plus-icon-square {
-      width: 25px;
-      height: 23px;
+}
 
+.p-absolute {
+  position: absolute;
+
+  &.right-22 {
+    right: 22px;
+    z-index: -1;
+  }
+
+  &.bottom-22 {
+    bottom: 22px;
+  }
+
+  &.bottom-7 {
+    bottom: 7px;
+  }
+}
+
+.rate-form-container {
+  .p-absolute {
+    bottom: 7px;
+  }
+}
+
+.truck-load-form-container {
+  .p-absolute {
+    bottom: 22px;
+  }
+
+  .bottom-7 {
+    bottom: 7px;
+  }
+}
+
+.child-form-container {
+  @extend .truck-load-form-container;
+
+  .bottom-37 {
+    bottom: 37px;
+  }
+}
+
+.table {
+  .UOM-label-container {
+    span {
+      &:last-child {
+        position: absolute;
+        top: -5px;
+      }
     }
   }
-  .ag-grid-wrapper, .ag-theme-material {
-    .no-content-found {
-      position:absolute; 
-      z-index: 1;
-      bottom: 70px;
-      left: 0;
-      right: 0;
-      margin: 0 !important;
-      .my-2 {
-        margin-top: 0 !important;
-      }
-      &.approval-listing {
-        bottom: 103px;
-      }
-      &.bop-drawer {
-        bottom: 130px;
-      }
-      &.drawer {
-        bottom: 100px;
-      }
-      &.simulation-lisitng {
-        bottom: 78px;
+}
+
+.action-icon-container {
+  display: flex;
+  align-items: center;
+  grid-gap: 4px;
+  margin-top: 5px;
+
+  .user-btn {
+    height: 22px !important;
+    padding: 5px !important;
+
+    &:focus {
+      border: transparent !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .plus-icon-square {
+    width: 25px;
+    height: 23px;
+
+  }
+}
+
+.ag-grid-wrapper,
+.ag-theme-material {
+  .no-content-found {
+    position: absolute;
+    z-index: 1;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    margin: 0 !important;
+
+    .my-2 {
+      margin-top: 0 !important;
+    }
+
+    &.approval-listing {
+      bottom: 103px;
+    }
+
+    &.bop-drawer {
+      bottom: 130px;
+    }
+
+    &.drawer {
+      bottom: 100px;
+    }
+
+    &.simulation-lisitng {
+      bottom: 78px;
+    }
+  }
+}
+
+.no-content-image-container {
+  min-height: 150px;
+
+}
+
+
+//ANALYTICS DRAWER SCSS FOR MASTERS COST MOVEMENT REPORT 
+.analytics-drawer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+
+  .ag-grid-multi {
+    .form-group-searchable-select {
+      min-height: unset;
+
+      label {
+        display: none;
       }
     }
   }
-  .no-content-image-container {
-    min-height: 150px;
-   
-  }
+}
