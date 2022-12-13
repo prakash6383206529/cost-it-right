@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
@@ -13,6 +13,8 @@ import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../.
 import WarningMessagge from '../../../../common/WarningMessage'
 import Popup from 'reactjs-popup';
 import TooltipCustom from '../../../../common/Tooltip';
+import { AcceptableOperationUOM, REMARKMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTOTHEROPERATION } from '../../../../../config/masterData';
+import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -329,7 +331,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.Rate}</td>
                             <td>
                               {
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
@@ -337,12 +339,7 @@ function OperationCostExcludedOverhead(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? '' : /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.'
-                                    },
+                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
@@ -364,7 +361,7 @@ function OperationCostExcludedOverhead(props) {
                               <td>
                                 {
                                   item.IsLabourRateExist ?
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                       label=""
                                       name={`${OperationGridFields}[${index}]LabourQuantity`}
                                       Controller={Controller}
@@ -372,7 +369,7 @@ function OperationCostExcludedOverhead(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        //required: true,
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
@@ -424,10 +421,8 @@ function OperationCostExcludedOverhead(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      validate: { checkWhiteSpaces },
+                                      maxLength: REMARKMAXLENGTH
                                     }}
                                     handleChange={(e) => { }}
                                     defaultValue={item.Remark ?? item.Remark}

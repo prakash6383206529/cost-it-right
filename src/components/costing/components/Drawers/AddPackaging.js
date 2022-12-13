@@ -3,10 +3,12 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
+import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6 } from "../../../../helper/validation";
+import { STRINGMAXLENGTH } from '../../../../config/masterData';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -42,7 +44,7 @@ function AddPackaging(props) {
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
   // const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   const [PackageType, setPackageType] = useState(true);
-  const [packagingCost, setPackagingCost] = useState('')
+  const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
@@ -330,10 +332,8 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        maxLength: {
-                          value: 80,
-                          message: 'Length should not be more than 80'
-                        },
+                        validate: { checkWhiteSpaces, hashValidation },
+                        maxLength: STRINGMAXLENGTH
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -391,7 +391,7 @@ function AddPackaging(props) {
                     applicability.label !== 'Fixed' &&
 
                     <Col md="12">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="Packaging Percentage"
                         name={'PackagingCostPercentage'}
                         Controller={Controller}
@@ -400,13 +400,10 @@ function AddPackaging(props) {
                         mandatory={PackageType ? true : false}
                         rules={{
                           required: PackageType ? true : false,
-                          pattern: {
-                            value: PackageType ? /^\d*\.?\d*$/ : '',
-                            message: PackageType ? 'Invalid Number.' : '',
-                          },
+                          validate: { number, checkWhiteSpaces, percentageLimitValidation },
                           max: {
                             value: 100,
-                            message: 'Percentage should be less than 100'
+                            message: 'Percentage cannot be greater than 100'
                           },
                         }}
                         handleChange={() => { }}
@@ -429,8 +426,12 @@ function AddPackaging(props) {
                       control={control}
                       register={register}
                       mandatory={applicability.label === 'Fixed' ? true : false}
+                      rules={{
+                        required: true,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      }}
                       handleChange={packingCostHandler}
-                      defaultValue={''}
+                      defaultValue={0}
                       className=""
                       customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}

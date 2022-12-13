@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
@@ -12,8 +12,11 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
+import { AcceptableOperationUOM, STRINGMAXLENGTH, TEMPOBJECTOPERATION } from '../../../../../config/masterData';
+import { required, maxLength15 } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, alphaNumericValidation, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function OperationCost(props) {
@@ -33,6 +36,7 @@ function OperationCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
+  const [showQuantity, setShowQuantity] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -185,8 +189,9 @@ function OperationCost(props) {
     totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
-    props.getOperationGrid(tempArr, totalFinishWeight)
-
+    if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+      props.getOperationGrid(tempArr, totalFinishWeight)
+    }
   }
 
   const editItem = (index) => {
@@ -209,10 +214,6 @@ function OperationCost(props) {
         return false
       }
       if (!isValid) {
-        Toaster.warning('Please enter numeric value')
-        setTimeout(() => {
-          setValue(`${OperationGridFields}.${index}.Quantity`, '')
-        }, 200)
         return false
       }
     }
@@ -354,13 +355,16 @@ function OperationCost(props) {
                             <td>{item.Rate}</td>
                             <td style={{ width: 130 }}>
                               {
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
+                                  rules={{
+                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                  }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder hide-label-inside mb-0'}
@@ -381,14 +385,16 @@ function OperationCost(props) {
                               <td style={{ width: 200 }}>
                                 {
                                   item.IsLabourRateExist ?
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                       label=""
                                       name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
                                       mandatory={false}
-
+                                      rules={{
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                      }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
                                       customClassName={'withBorder hide-label-inside mb-0'}
@@ -439,10 +445,8 @@ function OperationCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      validate: { checkWhiteSpaces },
+                                      maxLength: REMARKMAXLENGTH
                                     }}
                                     handleChange={(e) => { }}
                                     defaultValue={item.Remark ?? item.Remark}

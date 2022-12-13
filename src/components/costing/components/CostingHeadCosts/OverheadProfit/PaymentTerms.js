@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
@@ -13,6 +13,7 @@ import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
+import { number, checkWhiteSpaces, decimalNumberLimit6, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
 
 let counter = 0;
 function PaymentTerms(props) {
@@ -29,6 +30,7 @@ function PaymentTerms(props) {
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -255,11 +257,15 @@ function PaymentTerms(props) {
     }
 
     const handleChangeInterestRateFixedLimit = (event) => {
-        if (decimalAndNumberValidationBoolean(event?.target?.value)) {
+        let message = ''
+        if (decimalAndNumberValidationBoolean(event.target.value)) {
             setInterestRateFixedLimit(true)
-        } else {
-            setInterestRateFixedLimit(false)
+            message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+        } if (!isNumber(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = NoSignNoDecimalMessage
         }
+        setErrorMessage(message)
         dispatch(isOverheadProfitDataChange(true))
     }
 
@@ -320,7 +326,7 @@ function PaymentTerms(props) {
                         </Col>}
                         <Col md="3">
                             {paymentTermsApplicability.label !== 'Fixed' ?
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                     label={`Interest Rate(%)`}
                                     name={'RepaymentPeriodPercentage'}
                                     Controller={Controller}
@@ -329,14 +335,7 @@ function PaymentTerms(props) {
                                     mandatory={false}
                                     rules={{
                                         required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                        max: {
-                                            value: 100,
-                                            message: 'Percentage cannot be greater than 100'
-                                        },
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                                     }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
@@ -347,27 +346,20 @@ function PaymentTerms(props) {
                                 />
                                 :
                                 <div className='p-relative error-wrapper'>
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Interest Rate`}
                                         name={'RepaymentPeriodPercentage'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: 'Invalid Number.'
-                                            },
-                                        }}
                                         handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
                                     />
-                                    {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                    {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                 </div>}
                         </Col>
                         <Col md="3">
