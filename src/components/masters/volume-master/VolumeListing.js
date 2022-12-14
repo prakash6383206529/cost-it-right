@@ -24,8 +24,8 @@ import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -108,6 +108,7 @@ function VolumeListing(props) {
   const [shown, setShown] = useState(false);
   const [showVolumeForm, setShowVolumeForm] = useState(false);
   const [data, setData] = useState({ isEditFlag: false, ID: '' });
+  const [isBulkUpload, setBulkUpload] = useState(false);
   const [isActualBulkUpload, setIsActualBulkUpload] = useState(false);
   const [isBudgetedBulkUpload, setIsBudgetedBulkUpload] = useState(false);
   const [addAccessibility, setAddAccessibility] = useState(false);
@@ -307,7 +308,13 @@ function VolumeListing(props) {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-
+  /**
+   * @method actualBulkToggle
+   * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
+   */
+  const bulkToggle = () => {
+    setBulkUpload(true)
+  }
   /**
    * @method actualBulkToggle
    * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
@@ -315,7 +322,16 @@ function VolumeListing(props) {
   const actualBulkToggle = () => {
     setIsActualBulkUpload(true)
   }
-
+  /**
+   * @method closeActualBulkUploadDrawer
+   * @description CLOSE ACTUAL BULK DRAWER
+   */
+  const closeBulkUploadDrawer = () => {
+    setBulkUpload(false)
+    setTimeout(() => {
+      getTableListData(0, globalTake, true)
+    }, 200);
+  }
   /**
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
@@ -665,6 +681,17 @@ function VolumeListing(props) {
                     ) : (
                       ""
                     )}
+                    {bulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={bulkToggle}
+                        title="Actual Volume Upload"
+                      >
+                        <div className={"ml5 upload mr-0"}></div>
+                        {/* Actual Upload */}
+                      </button>
+                    )}
                     <button
                       type="button"
                       className={"user-btn mr5"}
@@ -784,7 +811,17 @@ function VolumeListing(props) {
             </div>
           </>
         }
-
+        {isBulkUpload && (
+          <VolumeBulkUploadDrawer
+            isOpen={isBulkUpload}
+            closeDrawer={closeBulkUploadDrawer}
+            isEditFlag={false}
+            fileName={'Volume'}
+            isZBCVBCTemplate={true}
+            messageLabel={'Volume'}
+            anchor={'right'}
+          />
+        )}
         {isActualBulkUpload && (
           <BulkUpload
             isOpen={isActualBulkUpload}
