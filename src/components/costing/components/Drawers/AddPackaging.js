@@ -28,7 +28,7 @@ function AddPackaging(props) {
     PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
     PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : 0,
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
-    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -48,7 +48,7 @@ function AddPackaging(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
-  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : 0)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
 
   const fieldValues = IsolateReRender(control)
   useEffect(() => {
@@ -257,7 +257,7 @@ function AddPackaging(props) {
     else setShowCostError(true)
   }
   const onSubmit = data => {
-    if (Number(packagingCostDataFixed) === 0 || packagingCostDataFixed === '') {
+    if (showCostError || (applicability.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
       setShowCostError(true)
       return false
     }
@@ -425,12 +425,12 @@ function AddPackaging(props) {
                       control={control}
                       register={register}
                       mandatory={applicability.label === 'Fixed' ? true : false}
-                      rules={{
-                        required: true,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
+                      // rules={{
+                      //   required: true,
+                      //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      // }}
                       handleChange={packingCostHandler}
-                      defaultValue={0}
+                      defaultValue={''}
                       className=""
                       customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}

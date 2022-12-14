@@ -12,7 +12,7 @@ import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { MESSAGES } from '../../../../../config/message';
 import WarningMessage from '../../../../common/WarningMessage';
-import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function Icc(props) {
@@ -330,7 +330,11 @@ function Icc(props) {
                                     mandatory={false}
                                     rules={{
                                         required: false,
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage should be less than 100'
+                                        },
                                     }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}

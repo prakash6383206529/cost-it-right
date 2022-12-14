@@ -389,6 +389,7 @@ function TabDiscountOther(props) {
             HundiOrDiscountValue: 0,
             totalCost: totalCost
           })
+          errors.HundiOrDiscountValue = {}
           Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
           return false
         }

@@ -267,15 +267,6 @@ function BOPCost(props) {
       tempData = { ...tempData, Quantity: checkForNull(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-    } else {
-      const NetBoughtOutPartCost = tempData.LandedCostINR * 0;
-      tempData = { ...tempData, Quantity: 0, NetBoughtOutPartCost: NetBoughtOutPartCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      setTimeout(() => {
-        setValue(`${bopGridFields}.${index}.Quantity`, '')
-      }, 200)
-      //Toaster.warning('Please enter valid number.')
     }
   }
 
