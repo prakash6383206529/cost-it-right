@@ -48,10 +48,9 @@ function AddPackaging(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
-  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(0)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : 0)
 
   const fieldValues = IsolateReRender(control)
-
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
       calculateApplicabilityCost(applicability.label)
@@ -251,14 +250,14 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
-    if (e.target.value <= 0) {
+    if (e.target.value >= 0) {
       setPackagingCostDataFixed(e.target.value)
-      setShowCostError(true)
+      setShowCostError(false)
     }
-    else setShowCostError(false)
+    else setShowCostError(true)
   }
   const onSubmit = data => {
-    if (showCostError || (applicability.label === 'Fixed' && packagingCostDataFixed === 0)) {
+    if (Number(packagingCostDataFixed) === 0 || packagingCostDataFixed === '') {
       setShowCostError(true)
       return false
     }

@@ -86,7 +86,11 @@
 
 // THIS IS FOR COST RATIO REPORT FIRST PAGE UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .cost-ratio-report {
-    min-height: calc(100vh - 289px);
+    min-height: calc(100vh - 315px);
+
+    &.h-298 {
+        min-height: calc(100vh - 298px);
+    }
 }
 
 //THIS IS USED FOR DOUGHNUT GRAPH 
@@ -96,6 +100,7 @@
     align-items: center;
 
     .doughnut-graph {
-        width: 32%;
+        width: 450px;
+        height: 450px;
     }
 }

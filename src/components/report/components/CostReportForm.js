@@ -319,217 +319,216 @@ function CostReportForm(props) {
         setValue('Technology', '')
         setValue('Part', '')
         resetRevisionVendorPlant()
-        setValue('toDate', '')
-        setValue('fromDate', '')
     }
 
 
 
     return (
         <>
+            <div className="cost-ratio-report">
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
 
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
+                    <Row className="pt-2 mb-5">
+                        <div className="form-group mb-0 col-md-3">
+                            <div className="inputbox date-section">
+                                <DatePickerHookForm
+                                    name={`fromDate`}
+                                    label={'From Date'}
+                                    selected={fromDate !== "" ? DayTime(fromDate).format('DD/MM/YYYY') : ""}
+                                    handleChange={(date) => {
+                                        handleFromDate(date);
+                                    }}
+                                    rules={{ required: isDateMandatory }}
+                                    maxDate={maxDate}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    dropdownMode="select"
+                                    placeholder="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    // disabled={rowData.length !== 0}
+                                    mandatory={isDateMandatory}
+                                    errors={errors && errors.fromDate}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group mb-0 col-md-3">
+                            <div className="inputbox date-section">
+                                <DatePickerHookForm
+                                    name={`toDate`}
+                                    label={'To Date'}
+                                    selected={toDate !== "" ? DayTime(toDate).format('DD/MM/YYYY') : ""}
+                                    handleChange={handleToDate}
+                                    minDate={minDate}
+                                    rules={{ required: isDateMandatory }}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    dropdownMode="select"
+                                    placeholder="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    // disabled={rowData.length !== 0}
+                                    mandatory={isDateMandatory}
+                                    errors={errors && errors.toDate}
+                                />
+                            </div>
+                        </div>
+                    </Row>
+                    <Row>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Technology"}
+                                name={"Technology"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={technology.length !== 0 ? technology : ""}
+                                options={renderListing("Technology")}
+                                mandatory={true}
+                                handleChange={handleTechnologyChange}
+                                errors={errors.Technology}
+                            />
+                        </Col>
 
-                <Row className="pt-2 mb-5">
-                    <div className="form-group mb-0 col-md-3">
-                        <div className="inputbox date-section">
-                            <DatePickerHookForm
-                                name={`fromDate`}
-                                label={'From Date'}
-                                selected={fromDate !== "" ? DayTime(fromDate).format('DD/MM/YYYY') : ""}
-                                handleChange={(date) => {
-                                    handleFromDate(date);
-                                }}
-                                rules={{ required: isDateMandatory }}
-                                maxDate={maxDate}
+                        <Col md="3">
+
+                            <AsyncSearchableSelectHookForm
+                                label={"Part No."}
+                                name={"Part"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={part.length !== 0 ? part : ""}
+                                asyncOptions={filterList}
+                                mandatory={true}
+                                //   isLoading={loaderObj}
+                                handleChange={handlePartChange}
+                                errors={errors.Part}
+                                disabled={(technology.length === 0) ? true : false}
+                                NoOptionMessage={"Enter 3 characters to show data"}
+                            />
+
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Revision Number"}
+                                name={"Revision"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                defaultValue={revision.length !== 0 ? revision : ""}
+                                options={renderListing("Revision")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.revision}
+                                disabled={part.length === 0 ? true : false}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Vendor"}
+                                name={"Vendor"}
+                                placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="DD/MM/YYYY"
-                                dropdownMode="select"
-                                placeholder="Select date"
-                                customClassName="withBorder"
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                // disabled={rowData.length !== 0}
-                                mandatory={isDateMandatory}
-                                errors={errors && errors.fromDate}
+                                defaultValue={vendor.length !== 0 ? vendor : ''}
+                                options={renderListing('Vendor')}
+                                mandatory={false}
+                                handleChange={handleVendorChange}
+                                errors={errors.vendor}
+                                disabled={part.length === 0 ? true : false}
                             />
-                        </div>
-                    </div>
-                    <div className="form-group mb-0 col-md-3">
-                        <div className="inputbox date-section">
-                            <DatePickerHookForm
-                                name={`toDate`}
-                                label={'To Date'}
-                                selected={toDate !== "" ? DayTime(toDate).format('DD/MM/YYYY') : ""}
-                                handleChange={handleToDate}
-                                minDate={minDate}
-                                rules={{ required: isDateMandatory }}
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Plant (Code)"}
+                                name={"Plant"}
+                                placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
+                                rules={{ required: false }}
                                 register={register}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="DD/MM/YYYY"
-                                dropdownMode="select"
-                                placeholder="Select date"
-                                customClassName="withBorder"
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                // disabled={rowData.length !== 0}
-                                mandatory={isDateMandatory}
-                                errors={errors && errors.toDate}
+                                defaultValue={plant.length !== 0 ? plant : ""}
+                                options={renderListing("Plant")}
+                                mandatory={false}
+                                handleChange={plantHandleChange}
+                                errors={errors.plant}
+                                disabled={part.length === 0 ? true : false}
                             />
-                        </div>
+                        </Col>
+                        <Col md="3" className="mt-4 pt-1">
+                            <button
+                                type="submit"
+                                className={"user-btn  pull-left mt-1"}
+
+                            >
+                                <div className={"plus"}></div>ADD
+                            </button>
+                            <button
+                                type="button"
+                                className={"reset-btn pull-left mt-1 ml5"}
+                                onClick={resetData}
+                            >
+                                Reset
+                            </button>
+                        </Col>
+
+                    </Row>
+                </form>
+                <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
+                    < div className={`ag-theme-material `}>
+                        <AgGridReact
+                            defaultColDef={defaultColDef}
+                            floatingFilter={true}
+                            domLayout='autoHeight'
+                            // columnDefs={c}
+                            rowData={gridData}
+                            pagination={true}
+                            paginationPageSize={defaultPageSize}
+                            onGridReady={onGridReady}
+                            gridOptions={gridOptions}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                                title: EMPTY_DATA,
+                                imagClass: 'imagClass'
+                            }}
+                            rowSelection={'multiple'}
+                            suppressRowClickSelection={true}
+                            // onSelectionChanged={onRowSelect}
+                            // onFilterModified={onFloatingFilterChanged}
+                            frameworkComponents={frameworkComponents}
+                        >
+                            <AgGridColumn field="TechnologyName" headerName="Tehnology"></AgGridColumn>
+                            <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
+                            <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>
+                            <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>
+                            <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                            <AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
+                        </AgGridReact>
+                        {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />} */}
                     </div>
-                </Row>
-                <Row>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={"Technology"}
-                            name={"Technology"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={technology.length !== 0 ? technology : ""}
-                            options={renderListing("Technology")}
-                            mandatory={true}
-                            handleChange={handleTechnologyChange}
-                            errors={errors.Technology}
-                        />
-                    </Col>
-
-                    <Col md="3">
-
-                        <AsyncSearchableSelectHookForm
-                            label={"Part No."}
-                            name={"Part"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={part.length !== 0 ? part : ""}
-                            asyncOptions={filterList}
-                            mandatory={true}
-                            //   isLoading={loaderObj}
-                            handleChange={handlePartChange}
-                            errors={errors.Part}
-                            disabled={(technology.length === 0) ? true : false}
-                            NoOptionMessage={"Enter 3 characters to show data"}
-                        />
-
-                    </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={"Revision Number"}
-                            name={"Revision"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            defaultValue={revision.length !== 0 ? revision : ""}
-                            options={renderListing("Revision")}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            errors={errors.revision}
-                            disabled={part.length === 0 ? true : false}
-                        />
-                    </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={"Vendor"}
-                            name={"Vendor"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            defaultValue={vendor.length !== 0 ? vendor : ''}
-                            options={renderListing('Vendor')}
-                            mandatory={false}
-                            handleChange={handleVendorChange}
-                            errors={errors.vendor}
-                            disabled={part.length === 0 ? true : false}
-                        />
-                    </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={"Plant (Code)"}
-                            name={"Plant"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            defaultValue={plant.length !== 0 ? plant : ""}
-                            options={renderListing("Plant")}
-                            mandatory={false}
-                            handleChange={plantHandleChange}
-                            errors={errors.plant}
-                            disabled={part.length === 0 ? true : false}
-                        />
-                    </Col>
-                    <Col md="3" className="mt-4 pt-1">
-                        <button
-                            type="submit"
-                            className={"user-btn  pull-left mt-1"}
-
-                        >
-                            <div className={"plus"}></div>ADD
-                        </button>
-                        <button
-                            type="button"
-                            className={"reset-btn pull-left mt-1 ml5"}
-                            onClick={resetData}
-                        >
-                            Reset
-                        </button>
-                    </Col>
-
-                </Row>
-            </form>
-            <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
-                < div className={`ag-theme-material `}>
-                    <AgGridReact
-                        defaultColDef={defaultColDef}
-                        floatingFilter={true}
-                        domLayout='autoHeight'
-                        // columnDefs={c}
-                        rowData={gridData}
-                        pagination={true}
-                        paginationPageSize={defaultPageSize}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                            title: EMPTY_DATA,
-                            imagClass: 'imagClass'
-                        }}
-                        rowSelection={'multiple'}
-                        suppressRowClickSelection={true}
-                        // onSelectionChanged={onRowSelect}
-                        // onFilterModified={onFloatingFilterChanged}
-                        frameworkComponents={frameworkComponents}
-                    >
-                        <AgGridColumn field="TechnologyName" headerName="Tehnology"></AgGridColumn>
-                        <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
-                        <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>
-                        <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>
-                        <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-                        <AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
-                    </AgGridReact>
-                    {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />} */}
                 </div>
             </div>
         </>

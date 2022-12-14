@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Col, Row } from "reactstrap"
 import { EMPTY_DATA, ZBC } from "../../../config/constants"
-import { loggedInUserId } from "../../../helper"
+import { getConfigurationKey, getCurrencySymbol, loggedInUserId } from "../../../helper"
 import DayTime from "../../common/DayTimeWrapper"
 import Toaster from "../../common/Toaster"
 import { getCostingSpecificTechnology, getPartInfo } from "../../costing/actions/Costing"
@@ -13,7 +13,6 @@ import { DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookF
 import { getSupplierContributionData } from "../actions/ReportListing"
 import { getPlantSelectListByType } from "../../../actions/Common"
 import { Doughnut } from 'react-chartjs-2';
-import { graphColor1, graphColor3, graphColor4, graphColor7 } from "../../dashboard/ChartsDashboard"
 import NoContentFound from "../../common/NoContentFound"
 
 const gridOptions = {}
@@ -31,6 +30,7 @@ function SupplierContributionReport(props) {
     const [vendorArray, setVendorArray] = useState([])
     const [vendorData, setVendorData] = useState([])
     const [noContent, setNoContent] = useState(false)
+    const [doughnutColor, setDoughnutColor] = useState([])
 
     const dispatch = useDispatch()
     const { control, register, getValues, reset, formState: { errors } } = useForm({
@@ -99,6 +99,12 @@ function SupplierContributionReport(props) {
                 setVendorArray(vendors)
                 setVendorData(vendorPrice)
                 setNoContent(false)
+                let color = ''
+                let colorArray = vendors.map((item, index) => {
+                    color = '#' + Math.floor(10002222 * 0.9834 + (index * 90146) + (index * 1310)).toString(16);
+                    return color;
+                })
+                setDoughnutColor(colorArray);
             }))
         } else {
             Toaster.warning("Please enter from date, to date & plant.")
@@ -129,20 +135,11 @@ function SupplierContributionReport(props) {
                 labels: {
                     boxWidth: 15,
                     borderWidth: 1,
-                    borderColor: [
-                        graphColor1,
-                        graphColor4,
-                        graphColor3,
-                        graphColor7,
-                        graphColor1,
-                        graphColor4,
-                        graphColor3,
-                        graphColor7,
-
-                    ],
+                    borderColor: doughnutColor,
                 }
-            }
+            },
         },
+        cutout: 150,
     };
 
     const data3 = {
@@ -151,26 +148,8 @@ function SupplierContributionReport(props) {
             {
                 label: '',
                 data: vendorData,
-                backgroundColor: [
-                    graphColor1,
-                    graphColor4,
-                    graphColor3,
-                    graphColor7,
-                    graphColor1,
-                    graphColor4,
-                    graphColor3,
-                    graphColor7
-                ],
-                borderColor: [
-                    '#fff',
-                    '#fff',
-                    '#fff',
-                    '#fff',
-                    '#fff',
-                    '#fff',
-                    '#fff',
-                ],
-                borderWidth: 1,
+                backgroundColor: doughnutColor,
+                borderWidth: 0.7,
             },
         ],
     };
@@ -184,7 +163,7 @@ function SupplierContributionReport(props) {
             var fontSize = (width + 3) / width;
             ctx.font = fontSize + "em sans-serif";
             ctx.textBaseline = "top";
-            var text = `${totalCost}`,
+            var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
                 textX = width / 2.35,
                 textY = height / 2.35;
             ctx.fillText(text, textX, textY);
@@ -216,7 +195,7 @@ function SupplierContributionReport(props) {
                                     dateFormat="DD/MM/YYYY"
                                     dropdownMode="select"
                                     maxDate={maxDate}
-                                    placeholderText="Select date"
+                                    placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
                                     autoComplete={"off"}
@@ -245,7 +224,7 @@ function SupplierContributionReport(props) {
                                     dateFormat="DD/MM/YYYY"
                                     minDate={minDate}
                                     dropdownMode="select"
-                                    placeholderText="Select date"
+                                    placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
                                     autoComplete={"off"}
