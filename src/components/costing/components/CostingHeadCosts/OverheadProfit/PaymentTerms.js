@@ -13,7 +13,7 @@ import DayTime from '../../../../common/DayTimeWrapper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
-import { number, checkWhiteSpaces, decimalNumberLimit6, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
 
 let counter = 0;
 function PaymentTerms(props) {
@@ -335,7 +335,11 @@ function PaymentTerms(props) {
                                     mandatory={false}
                                     rules={{
                                         required: false,
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage should be less than 100'
+                                        },
                                     }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}

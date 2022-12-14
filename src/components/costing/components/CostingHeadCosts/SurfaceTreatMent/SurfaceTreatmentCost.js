@@ -47,7 +47,7 @@ function SurfaceTreatmentCost(props) {
 
     if (!CostingViewMode && !IsLocked) {
       const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
-      props.setSurfaceData({ gridData, Params, isEqual, item })
+      props.setSurfaceData({ gridData, Params, isEqual, item }, errors)
       // if (props.IsAssemblyCalculation) {
       //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       // } else {
@@ -145,7 +145,6 @@ function SurfaceTreatmentCost(props) {
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
-      console.log('operationGridData.SurfaceArea: ', operationGridData);
       if (operationGridData.SurfaceArea === '0') {
         Toaster.warning('Number should not be zero')
         return false
