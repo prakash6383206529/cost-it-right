@@ -94,7 +94,7 @@ const CostRatioListing = (props) => {
     * @description In this object set the data and color for pie chart
     */
     const pieChartData = {
-        labels: ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.'],
+        labels: ['RM', 'BOP', 'PROC.', 'OPER.', 'OTH. OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAY.& TERM', 'P&F', 'OTH. COST', 'TC', 'DIS.'],
         datasets: [
             {
                 label: '',
@@ -117,7 +117,7 @@ const CostRatioListing = (props) => {
                     graphColor15,
                     graphColor16,
                 ],
-                borderWidth: 0,
+                borderWidth: 1,
             },
         ],
 
@@ -131,9 +131,12 @@ const CostRatioListing = (props) => {
         plugins: {
             legend: {
                 position: 'bottom',
+                align: 'start',
                 labels: {
-                    boxWidth: 26,
+                    boxWidth: 16,
                     borderWidth: 0,
+                    padding: 8,
+                    color: '#000'
                 }
             },
         },
@@ -170,7 +173,7 @@ const CostRatioListing = (props) => {
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
-                                            <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'>All value is showing in Percentage</div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
+                                            <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
 
                                         </th>
                                     </>
