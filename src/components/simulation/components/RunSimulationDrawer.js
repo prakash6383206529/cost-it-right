@@ -228,7 +228,7 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        if (IdForMultiTechnology.includes(String(selectedMasterForSimulation.value))) {
+        if (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) {
             dispatch(runSimulationOnSelectedAssemblyTechnologyCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp, SimulationId: props?.token }, (res) => {
                 checkForResponse(res)
             }))
