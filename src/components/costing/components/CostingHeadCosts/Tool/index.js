@@ -282,8 +282,6 @@ function Tool(props) {
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
       dispatch(isToolDataChange(true))
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -700,6 +698,7 @@ function Tool(props) {
                           handleChange={(e) => {
                             e.preventDefault()
                             setValueByAPI(false)
+                            dispatch(isToolDataChange(true))
 
                           }}
                           defaultValue={''}

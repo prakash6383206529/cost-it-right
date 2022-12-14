@@ -270,8 +270,9 @@ function CostingHeaderTabs(props) {
   */
   const toggle = (tab) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-
-    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
+    let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    delete tempErrorObjRMCC?.bopGridFields
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
 
     if (activeTab !== tab) {
       setActiveTab(tab);

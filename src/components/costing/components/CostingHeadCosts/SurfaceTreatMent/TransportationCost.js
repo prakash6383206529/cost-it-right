@@ -78,10 +78,10 @@ function TransportationCost(props) {
 
       if (props.IsAssemblyCalculation) {
         // props.setAssemblyTransportationCost(tempObj, Params, item)
-        props.getTransportationObj({ tempObj, Params, item })
+        props.getTransportationObj({ tempObj, Params, item }, errors)
       } else {
         // props.setTransportationCost(tempObj, Params)
-        props.getTransportationObj({ tempObj, Params })
+        props.getTransportationObj({ tempObj, Params }, errors)
       }
     }
 
