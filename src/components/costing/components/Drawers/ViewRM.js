@@ -129,7 +129,7 @@ function ViewRM(props) {
               <th>{`RM Name -Grade`}</th>
               <th>{`RM Rate`}</th>
               <th>{`Scrap Rate`}</th>
-              <th>{`Scrap Recovery(%)`}</th>
+              <th>{`Scrap Recovery (%)`}</th>
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
