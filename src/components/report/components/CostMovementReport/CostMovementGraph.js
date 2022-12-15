@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
-import { primaryColor, graphColor4, graphColor1, graphColor2, graphColor3, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13 } from '../../../dashboard/ChartsDashboard'
 import { Line } from 'react-chartjs-2';
 import DayTime from '../../../common/DayTimeWrapper';
 import RenderGraphList from '../../../common/RenderGraphList'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
-import { checkForDecimalAndNull, getCurrencySymbol } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import _ from 'lodash';
 import HeaderTitle from '../../../common/HeaderTitle';
 
@@ -26,9 +25,7 @@ function CostMovementGraph(props) {
     const [barDataSets, setBarDataSets] = useState([]);
     const [lineDataSets, setLineDataSets] = useState([]);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
-
     let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
@@ -63,6 +60,7 @@ function CostMovementGraph(props) {
 
                 res.data.Data && res.data.Data.map((item, index) => {
                     item.Data.map((ele) => {
+                        grid.push(ele)
                         allEffectiveDates.push((ele.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
                     })
 
@@ -102,64 +100,78 @@ function CostMovementGraph(props) {
 
                 uniquePartPlantVendor = uniquePartPlantVendor.filter((v, i, a) => a.indexOf(v) === i);
 
-                let count = 1
-                res.data.Data && res.data.Data.map((item, index) => {
-                    let dateIndex;
-                    let plantIndex = 0
+                /////////////////////////////////////////main-logic///////////////
+
+                uniquePartPlantVendor.map((uniqueItem, uniqueIndex) => {
                     let uniquePlantLabel = ''
 
-                    item.Data.map((ele, i) => {
-                        grid.push(ele)
-                        perPartData = []
+                    res.data.Data && res.data.Data.map((item, index) => {
+                        let dateIndex;
 
-                        allEffectiveDates.map((date, indexFromDate) => {
+                        item.Data.map((ele, i) => {
 
-                            if (date == DayTime(ele.EffectiveDate).format('DD-MM-YYYY')) {
-                                dateIndex = indexFromDate
+                            if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == uniqueItem) {
+
+                                uniquePlantLabel = `${ele.PartNumber} (${ele.PlantCode}) (${ele.VendorCode})(${getCurrencySymbol(ele.Currency ? ele.Currency : getConfigurationKey().BaseCurrency)})`
+
+                                allEffectiveDates.map((date, indexFromDate) => {
+
+                                    if (date == DayTime(ele.EffectiveDate).format('DD-MM-YYYY')) {
+                                        dateIndex = indexFromDate
+                                    }
+                                })
+
+                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
                             }
                         })
+                    })
 
-                        perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
 
-                        uniquePartPlantVendor.map((value, PlantIndex) => {
+                    barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
 
-                            if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == value) {
-                                plantIndex = PlantIndex
-                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}(${getCurrencySymbol('INR')})`
+                        type: 'bar',
+                        label: `${uniquePlantLabel}`,
+                        backgroundColor: getGraphColour(uniqueIndex),
+                        data: perPartData,
+                        maxBarThickness: 25,
+                        borderColor: getGraphColour(uniqueIndex)
+
+                    })
+
+
+                    let finalPartData = [] // ARRAY FOR LINE CHART
+                    for (let i = 0; i < perPartData.length; i++) {    //FOR LOOP IS FOR LINE CHART (COVERT UNDEFINED VALUE IN ARRAY TO PREVOUS VALUE TO SHOW LINE
+                        if (i === 0) {
+
+                            if (perPartData[i]) {
+                                finalPartData.push(perPartData[i])
+                            } else {
+                                finalPartData.push(undefined)
                             }
+                        }
+                        else if (perPartData[i]) {
+                            finalPartData.push(perPartData[i])
+                        } else {
+                            finalPartData.push(perPartData[i - 1])
+                        }
 
-                        })
+                    }
 
-                        barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
+                    lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
 
-                            type: 'bar',
-                            label: `${count}) : ${uniquePlantLabel}`,
-                            backgroundColor: getGraphColour(plantIndex),
-                            data: perPartData,
-                            maxBarThickness: 25,
-                            borderColor: getGraphColour(plantIndex)
-
-                        })
-
-                        lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
-
-                            label: `${count}) : ${uniquePlantLabel}`,
-                            fill: false,
-                            lineTension: 1,
-                            backgroundColor: getGraphColour(plantIndex),
-                            borderColor: getGraphColour(plantIndex),
-                            borderWidth: 2,
-                            data: perPartData,
-                            pointBackgroundColor: getGraphColour(plantIndex)
-
-                        })
-
-                        count++
+                        label: `${uniquePlantLabel}`,
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: getGraphColour(uniqueIndex),
+                        borderColor: getGraphColour(uniqueIndex),
+                        borderWidth: 2,
+                        data: finalPartData,
+                        pointBackgroundColor: getGraphColour(uniqueIndex)
                     })
 
                     perPartData = []
+                    uniquePlantLabel = ''
                 })
-
 
                 setGridData(grid)       // SETTING ALL DATA TO SHOW IN LISTING IN GRID
                 setBarDataSets(barDataSet)
@@ -266,7 +278,7 @@ function CostMovementGraph(props) {
     return (
         <>
             <div className={"container-fluid"}>
-                <div className='cost-ratio-report'>
+                <div className='cost-ratio-report h-298'>
                     <form noValidate className="form">
                         <div className='analytics-drawer'>
                             <HeaderTitle customClass="mb-0"

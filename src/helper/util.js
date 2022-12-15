@@ -979,7 +979,7 @@ export const getCurrencySymbol = (value) => {
     case "THB":
       return "฿"
     default:
-      break;
+      return "₹"
   }
 }
 //FOR SHOWING SUPER VALUE FOR UOM
