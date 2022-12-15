@@ -941,7 +941,7 @@ function ApprovalListing(props) {
 
                     <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
                       <div className="ag-theme-material">
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}

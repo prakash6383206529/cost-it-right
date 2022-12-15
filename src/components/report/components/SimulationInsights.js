@@ -417,7 +417,7 @@ function SimulationInsights(props) {
       <div className="ag-grid-react">
         <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsightsReport && simulationInsightsReport?.length <= 0 ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
-            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
             <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
           </div>
           <div

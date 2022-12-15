@@ -436,7 +436,7 @@ function RMSimulation(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
-                                            <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-3" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
@@ -491,7 +491,7 @@ function RMSimulation(props) {
                                                     <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
                                                 <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor:</label>
+                                                    <label className='mr-1'>Vendor (Code):</label>
                                                     <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
                                             </div>}
