@@ -286,7 +286,7 @@ class IndivisualPartListing extends Component {
             <>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
