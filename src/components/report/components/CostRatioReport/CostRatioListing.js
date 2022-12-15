@@ -143,6 +143,9 @@ const CostRatioListing = (props) => {
             <div className='container-fluid costing-ratio-report'>
                 {isLoader && <LoaderCustom />}
                 <div className='row overflow-auto report-height'>
+                    <div className='w-100 mb-2 d-flex justify-content-end'>
+                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                    </div>
                     {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
@@ -223,13 +226,6 @@ const CostRatioListing = (props) => {
                         </tbody>
                     </Table>}
                 </div>
-                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                            <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>
-                        </div>
-                    </div>
-                </Row>
             </div>
         </>
 
