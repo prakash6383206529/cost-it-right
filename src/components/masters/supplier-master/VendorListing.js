@@ -678,7 +678,7 @@ class VendorListing extends Component {
                     </Col>
                 </Row>
                 <Row className="py-4 no-filter-row zindex-2">
-                    <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
+                    <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">
                             <div className="warning-message d-flex align-items-center">

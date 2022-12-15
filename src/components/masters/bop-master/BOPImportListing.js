@@ -643,7 +643,7 @@ class BOPImportListing extends Component {
                     <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
