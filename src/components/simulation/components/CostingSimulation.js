@@ -257,7 +257,7 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.SimulationHeadId = Data.SimulatedCostingList[0].SimulationHeadId
+            tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
@@ -1217,7 +1217,7 @@ function CostingSimulation(props) {
                                     <Col>
                                         <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
                                             <div className="ag-theme-material p-relative" >
                                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
