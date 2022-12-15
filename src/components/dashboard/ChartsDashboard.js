@@ -29,6 +29,7 @@ export const graphColor15 = "#9f9f9f";
 export const graphColor16 = "#c758d0";
 // graph colors end
 
+export const colorArray = ['#77dd77', '#ff9899', '#007ed6', '#836953', '#89cff0', '#99c5c4', '#bdb0d0', '#befd73', '#9adedb', '#aa9499', '#e01e84', '#7cdddd', '#aaf0d1', '#b2fba5', '#b39eb5', '#bee7a5', '#c1c6fc', '#c6a4a4', '#c8ffb0', '#cb99c9', '#cef0cc', '#d8a1c4', '#cfcfc4', '#d6fffe', '#dea5a4', '#deece1', '#dfd8e1', '#e5d9d3', '#e9d1bf', '#ffb7ce', '#f49ac2', '#f4bfff', '#fdfd96', '#ff6961', '#ca9bf7', '#ff964f',]
 
 // graph 1 (Cost Movement by Cost Drivers) dashboard  
 export const options1 = {
