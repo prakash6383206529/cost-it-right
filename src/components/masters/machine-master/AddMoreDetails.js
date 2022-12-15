@@ -2747,7 +2747,7 @@ class AddMoreDetails extends Component {
                           <div className="accordian-content row mx-0 w-100">
                             <Col md="4">
                               <Field
-                                label={`Loan(%)`}
+                                label={`Loan (%)`}
                                 name={"LoanPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2761,7 +2761,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="4">
                               <Field
-                                label={`Equity (Owned)(%)`}
+                                label={`Equity (Owned) (%)`}
                                 name={"EquityPercentage"}
                                 type="text"
                                 placeholder={'-'}
@@ -2776,7 +2776,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest(%) / Annum`}
+                                label={`Rate Of Interest (%) / Annum`}
                                 name={this.props.fieldsObj.RateOfInterestPercentage === 0 ? '-' : "RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2899,7 +2899,7 @@ class AddMoreDetails extends Component {
                               <div className="d-flex justify-space-between align-items-center filled-icon-inside">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Availability(%)`}
+                                    label={`Availability (%)`}
                                     name={"EfficiencyPercentage"}
                                     type="text"
                                     placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2973,7 +2973,7 @@ class AddMoreDetails extends Component {
                               this.state.depreciationType.value !== SLM &&
                               <Col md="3">
                                 <Field
-                                  label={`Depreciation Rate(%)`}
+                                  label={`Depreciation Rate (%)`}
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3397,7 +3397,7 @@ class AddMoreDetails extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Efficiency(%)`}
+                                  label={`Efficiency (%)`}
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}

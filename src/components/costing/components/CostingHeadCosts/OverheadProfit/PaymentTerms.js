@@ -320,7 +320,7 @@ function PaymentTerms(props) {
                         <Col md="3">
                             {paymentTermsApplicability.label !== 'Fixed' ?
                                 <NumberFieldHookForm
-                                    label={`Interest Rate(%)`}
+                                    label={`Interest Rate (%)`}
                                     name={'RepaymentPeriodPercentage'}
                                     Controller={Controller}
                                     control={control}
