@@ -1952,7 +1952,7 @@ class AddPower extends Component {
                                   <tr>
                                     <th>{`Source`}</th>
                                     <th>{`Cost/Unit (INR)`}</th>
-                                    <th>{`Contribution(%)`}</th>
+                                    <th>{`Contribution (%)`}</th>
                                     <th>{`Contribution Value`}</th>
                                     <th>{`Action`}</th>
                                   </tr>

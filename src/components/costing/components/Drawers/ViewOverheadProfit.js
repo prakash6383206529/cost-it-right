@@ -75,7 +75,7 @@ function ViewOverheadProfit(props) {
             <thead>
               <tr>
                 <th>{`Overhead On`}</th>
-                <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage(%)'}</th>
+                <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
                 <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Overhead`}</th>
 
@@ -186,7 +186,7 @@ function ViewOverheadProfit(props) {
               { }
               <tr>
                 <th>{`Profit On`}</th>
-                <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage(%)'}</th>
+                <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
                 <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Profit`}</th>
 

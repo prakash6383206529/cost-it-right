@@ -337,7 +337,7 @@ function SheetMetalBaicDrawer(props) {
 
                   <Col md="4">
                     <NumberFieldHookForm
-                      label={`Efficiency(%)`}
+                      label={`Efficiency (%)`}
                       name={'Efficiency'}
                       Controller={Controller}
                       control={control}
