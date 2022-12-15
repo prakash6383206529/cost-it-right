@@ -400,3 +400,21 @@ export function checkRegularizationLimit(obj, callback) {
 export function getPartSelectListWtihRevNo(partNumber, callback) {
   return axios.get(`${API.getPartSelectListWtihRevNo}?partNumber=${partNumber}`, config());
 }
+/**
+ * @method bulkUploadVolume
+ * @description upload bulk Volume
+ */
+export function bulkUploadVolume(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.bulkUploadVolume, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}

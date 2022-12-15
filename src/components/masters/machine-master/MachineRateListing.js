@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -61,6 +62,8 @@ class MachineRateListing extends Component {
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
+            analyticsDrawer: false,
+            selectedRowData: [],
 
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
@@ -326,6 +329,12 @@ class MachineRateListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
+
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowData: rowData, analyticsDrawer: true })
+    }
+
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -357,6 +366,7 @@ class MachineRateListing extends Component {
 
         return (
             <>
+                <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}> </button>
                 {this.state.isProcessGroup && <button className="group-process" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
                 {ViewAccessibility && <button title="View" className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
@@ -578,6 +588,10 @@ class MachineRateListing extends Component {
             }
         }
 
+        const closeAnalyticsDrawer = () => {
+            this.setState({ analyticsDrawer: false })
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
@@ -781,6 +795,25 @@ class MachineRateListing extends Component {
                         isFinalApprovar={this.state.isFinalApprovar}
                     />
                 }
+
+
+                {
+                    this.state.analyticsDrawer &&
+                    <AnalyticsDrawer
+                        isOpen={this.state.analyticsDrawer}
+                        ModeId={4}
+                        closeDrawer={closeAnalyticsDrawer}
+                        anchor={"right"}
+                        isReport={this.state.analyticsDrawer}
+                        selectedRowData={this.state.selectedRowData}
+                        isSimulation={true}
+                        //cellValue={cellValue}
+                        rowData={this.state.selectedRowData}
+                    />
+                }
+
+
+
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
