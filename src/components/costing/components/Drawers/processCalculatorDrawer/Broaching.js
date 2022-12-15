@@ -647,7 +647,7 @@ function Broaching(props) {
 
                                         <Col md="4">
                                             <NumberFieldHookForm
-                                                label={`Efficiency(%)`}
+                                                label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}

@@ -340,6 +340,7 @@ function CostingDetails(props) {
    * @description  USED TO HANDLE PART CHANGE
    */
   const handlePartChange = (newValue) => {
+    resetGrid()
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
         const data = { TechnologyId: technology.value, PartId: newValue.value }
@@ -1407,7 +1408,6 @@ function CostingDetails(props) {
    * @description TO RESET THE GRID DATA OF ZBC,VBC AND CBC (COSTING VVERSION RESET)
    */
   const resetGrid = () => {
-
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM ZBC GRIDS
     zbcPlantGrid && zbcPlantGrid.map((el, index) => {
       setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
