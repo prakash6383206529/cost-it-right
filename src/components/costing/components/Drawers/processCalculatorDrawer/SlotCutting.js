@@ -527,7 +527,7 @@ function SlotCutting(props) {
                     </Col>
                     <Col md="4">
                       <NumberFieldHookForm
-                        label={`Additional Time(%)`}
+                        label={`Additional Time (%)`}
                         name={'clampingPercentage'}
                         Controller={Controller}
                         control={control}
