@@ -16,7 +16,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, CostingTypeId } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, CostingTypeId, TypeOfCosting } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
@@ -67,7 +67,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && (CostingTypeId === VBCTypeId)) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBCTypeId)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -211,7 +211,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(CostingTypeId === VBCTypeId) && <>
+              {(TypeOfCosting === VBCTypeId) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">
