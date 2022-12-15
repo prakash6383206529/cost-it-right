@@ -700,7 +700,7 @@ function CommonApproval(props) {
                     <div className={`ag-grid-react`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${props?.isApproval ? "report-grid" : ""} ${loader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}

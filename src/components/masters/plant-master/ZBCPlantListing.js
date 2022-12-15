@@ -504,7 +504,7 @@ class ZBCPlantListing extends Component {
 
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     {!this.state.isLoader && < div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>

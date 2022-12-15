@@ -319,6 +319,7 @@ export function renderEmailInputField(field) {
           type="text"
           className={InputClassName}
           {...input}
+          autoComplete={'off'}
         />
         <div className="input-group-prepend">
           <span
@@ -463,6 +464,7 @@ export function renderNumberInputField(field) {
           maxLength={field.maxLength}
           value={field.Value}
           disabled={disabledLabel}
+          autoComplete={'off'}
           {...input}
         />
         {/* <div className="input-group-prepend">
@@ -584,6 +586,7 @@ export function renderText(field) {
         {...others}
 
         className={InputClassName}
+        autoComplete={'off'}
       />
 
       <div className="text-help mb-2">{touched ? error : ""}</div>

@@ -245,7 +245,7 @@ class DepartmentsListing extends Component {
             <Col>
               <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

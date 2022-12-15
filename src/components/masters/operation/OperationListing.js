@@ -757,7 +757,7 @@ class OperationListing extends Component {
 
                         <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
                             <Col md="3" lg="3">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
                                 {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}

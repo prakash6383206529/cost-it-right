@@ -231,7 +231,7 @@ function OtherVerifySimulation(props) {
                                 <div className={`ag-grid-react`}>
                                     <div className={`height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
