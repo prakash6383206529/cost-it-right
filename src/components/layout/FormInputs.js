@@ -510,6 +510,7 @@ export function renderTextAreaField(field) {
           {...input}
           placeholder={placeholder}
           disabled={disabledLabel}
+          autoComplete={'off'}
         />
       </div>
       {/* <div className="text-help mb-2">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
