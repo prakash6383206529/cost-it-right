@@ -57,7 +57,7 @@ function CostReportForm(props) {
 
 
     const { handleSubmit, control, register, getValues, setValue, formState: { errors } } = useForm({
-        mode: 'onBlur',
+        mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
