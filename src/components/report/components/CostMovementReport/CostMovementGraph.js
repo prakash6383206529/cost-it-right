@@ -11,7 +11,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
 import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import _ from 'lodash';
-import HeaderTitle from '../../../common/HeaderTitle';
+import { colorArray } from '../../../dashboard/ChartsDashboard';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
@@ -31,9 +31,15 @@ function CostMovementGraph(props) {
     let endDate = costReportFormData && costReportFormData.toDate
 
     const getGraphColour = (index) => {
-        let bgColor = '#' + Math.floor(16777215 * 0.34 + (index * 90146) + (index * 1310)).toString(16)
+        let bgColor = ''
+        if (index <= 36) {
+            bgColor = colorArray[index];
+        } else if (index <= 72 && index > 36) {
+            bgColor = colorArray[index - 36];
+        } else if (index <= 144 && index > 72) {
+            bgColor = colorArray[index - 72];
+        }
         return bgColor;
-
     }
 
     useEffect(() => {
