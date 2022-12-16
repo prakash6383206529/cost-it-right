@@ -286,7 +286,7 @@ class IndivisualPartListing extends Component {
             <>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -665,7 +665,7 @@ class IndivisualPartListing extends Component {
                     </Row>
                     <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

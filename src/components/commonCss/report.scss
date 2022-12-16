@@ -18,9 +18,9 @@
             min-width: 225px;
 
             .column-data {
-                height: 40px;
-                border-bottom: 1px solid $agGridBorder;
-                border-right: 1px solid $agGridBorder;
+                height: 43px;
+                border-bottom: 1px solid $excelGridBorder;
+                border-right: 1px solid $excelGridBorder;
                 padding: 1px 10px;
                 line-height: 1;
                 display: flex;
@@ -56,7 +56,8 @@
 
             //FIRST HEADER FREEZE IF DATA IS OVERFLOW E.I. FIRST COLUMN
             &:first-child {
-                max-width: 120px;
+                max-width: 80px;
+                min-width: 80px;
                 position: sticky;
                 left: -1px;
                 background-color: #eef3f8;
@@ -65,21 +66,22 @@
 
 
                 .column-data {
-                    border-left: 1px solid $agGridBorder;
+                    border-left: 1px solid $excelGridBorder;
                     padding-left: 15px;
                     font-weight: bold;
                 }
             }
-        }
 
-        .right-position:nth-child(2) {
+            &:nth-child(2) {
 
-            // FIRST PIE CHART FLOATING RIGHT DUE TO LESS SPACE IN LEFT SIDE
-            .view-pie-button .tooltiptext.graph-tooltip {
-                right: unset !important;
-                left: 107% !important;
+                // FIRST PIE CHART FLOATING RIGHT DUE TO LESS SPACE IN LEFT SIDE
+                .view-pie-button .tooltiptext.graph-tooltip {
+                    right: unset !important;
+                    left: 107% !important;
+                }
             }
         }
+
 
     }
 }
@@ -99,8 +101,8 @@
     justify-content: center;
     align-items: center;
 
-    .doughnut-graph {
-        width: 450px;
-        height: 450px;
-    }
+    // .doughnut-graph {
+    //     width: 450px;
+    //     height: 450px;
+    // }
 }

@@ -852,7 +852,7 @@ function TabDiscountOther(props) {
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <NumberFieldHookForm
-                          label="Percentage(%)"
+                          label="Percentage (%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}
                           control={control}
@@ -969,7 +969,7 @@ function TabDiscountOther(props) {
                     {
                       <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
-                          label="Discount(%)"
+                          label="Discount (%)"
                           name={"HundiOrDiscountPercentage"}
                           Controller={Controller}
                           control={control}
