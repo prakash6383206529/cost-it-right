@@ -3540,7 +3540,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[maxLength10, number, postiveNumber]}
+                                validate={[maxLength10, number]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}

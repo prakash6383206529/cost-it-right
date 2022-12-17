@@ -16,6 +16,7 @@ import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing
 const CostRatioListing = (props) => {
     const [tableData, setTableData] = useState([])
     const [pieChartDataArray, setPieChartDataArray] = useState([])
+    const [pieChartLabelArray, setPieChartLabelArray] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const [gridDataState, setGridDataState] = useState()
     const dispatch = useDispatch()
@@ -87,6 +88,14 @@ const CostRatioListing = (props) => {
             checkForDecimalAndNull(tempObj.NetDiscountCostPercentage, 2),
         ]
         setPieChartDataArray(temp)
+        let labelArray = []
+        let labels = ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.']
+        temp && temp.map((item, index) => {
+            if (item !== 0) {
+                labelArray.push(labels[index])
+            }
+        })
+        setPieChartLabelArray(labelArray)
     }, [100])
 
     /**
@@ -94,7 +103,7 @@ const CostRatioListing = (props) => {
     * @description In this object set the data and color for pie chart
     */
     const pieChartData = {
-        labels: ['RM', 'BOP', 'PROC.', 'OPER.', 'OTH. OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAY.& TERM', 'P&F', 'OTH. COST', 'TC', 'DIS.'],
+        labels: pieChartLabelArray,
         datasets: [
             {
                 label: '',
