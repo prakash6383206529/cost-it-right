@@ -17,12 +17,12 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1005/api/v1`;
+const BASE_URL = `http://10.10.1.100:1005/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -880,6 +880,7 @@ export const API = {
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
+  bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -1815,12 +1816,12 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
-  rm: 'RM name-Grade',
+  rm: 'RM Name-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
-  BurningLossWeight: 'BurningLost Weight',
+  BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
   netBOP: 'Net BOP Cost',
@@ -1846,22 +1847,22 @@ export const VIEW_COSTING_DATA = {
   // rejectionOn: 'Rejection On',
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'OverHead Applicablity',
+  overHeadApplicablity: 'OverHead Applicability',
   overHeadApplicablityValue: 'OverHead Value',
-  ProfitApplicablity: 'Profit Applicablity',
+  ProfitApplicablity: 'Profit Applicability',
   ProfitApplicablityValue: 'Profit Value',
-  rejectionApplicablity: 'Rejection Applicablity',
+  rejectionApplicablity: 'Rejection Applicability',
   rejectionApplicablityValue: 'Rejection Value',
-  iccApplicablity: 'ICC Applicablity',
+  iccApplicablity: 'ICC Applicability',
   iccApplicablityValue: 'ICC Value',
-  paymentApplicablity: 'Payment Applicablity',
+  paymentApplicablity: 'Payment Applicability',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging and Freight',
-  toolMaintenanceCostApplicablity: 'Tool MaintenanceCost Applicablity',
-  toolMaintenanceCost: 'Tool MaintenanceCost Value',
+  toolMaintenanceCostApplicablity: 'Tool Maintenance Cost Applicability',
+  toolMaintenanceCost: 'Tool Maintenance Cost Value',
   //toolMaintenanceCost: 'Tool Maintenance Cost',
   toolPrice: 'Tool Price',
   amortizationQty: 'Amortization Quantity',
@@ -1871,11 +1872,11 @@ export const VIEW_COSTING_DATA = {
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
   otherDiscountType: 'Other Discount Type',
-  otherDiscountApplicablity: 'Other Discount Applicablity',
+  otherDiscountApplicablity: 'Other Discount Applicability',
   otherDiscountValuePercent: 'Other Discount Value',
   otherDiscountCost: 'Other Discount Cost',
   anyOtherCostType: 'Any Other Cost Type',
-  anyOtherCostApplicablity: 'AnyOtherCostApplicablity',
+  anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
   nPOPrice: 'Net PO Price (INR)',
@@ -1884,7 +1885,7 @@ export const VIEW_COSTING_DATA = {
   nPoPriceCurrency: 'Net PO Price (In Currency)',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
-  remark: 'Remark',
+  remark: 'Remarks',
   //nPOPrice: 'Net PO Price',
   // attachment: 'Attachment',
   // approvalButton: '',
@@ -2136,4 +2137,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.15";
+export const VERSION = "V2.1.22";

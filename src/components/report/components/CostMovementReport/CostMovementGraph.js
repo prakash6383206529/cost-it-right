@@ -4,39 +4,42 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
-import { primaryColor, graphColor4, graphColor1, graphColor2, graphColor3, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13 } from '../../../dashboard/ChartsDashboard'
 import { Line } from 'react-chartjs-2';
 import DayTime from '../../../common/DayTimeWrapper';
 import RenderGraphList from '../../../common/RenderGraphList'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostMovementReportByPart } from '../../actions/ReportListing';
-import { checkForDecimalAndNull, getCurrencySymbol } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import _ from 'lodash';
-import HeaderTitle from '../../../common/HeaderTitle';
+import { colorArray } from '../../../dashboard/ChartsDashboard';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
     const dispatch = useDispatch()
-    const [showList, setShowList] = useState(true)
+    const [showList, setShowList] = useState(false)
     const [showBarGraph, setShowBarGraph] = useState(false)
-    const [showLineGraph, setShowLineGraph] = useState(false)
+    const [showLineGraph, setShowLineGraph] = useState(true)
     const [gridData, setGridData] = useState([])
     const [dateRangeArray, setDateRangeArray] = useState([])
     const [gridApi, setGridApi] = useState(null);
     const [barDataSets, setBarDataSets] = useState([]);
     const [lineDataSets, setLineDataSets] = useState([]);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
-
     let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
 
     const getGraphColour = (index) => {
-        let bgColor = '#' + Math.floor(16777215 * 0.34 + (index * 90146) + (index * 1310)).toString(16)
+        let bgColor = ''
+        if (index <= 36) {
+            bgColor = colorArray[index];
+        } else if (index <= 72 && index > 36) {
+            bgColor = colorArray[index - 36];
+        } else if (index <= 144 && index > 72) {
+            bgColor = colorArray[index - 72];
+        }
         return bgColor;
-
     }
 
     useEffect(() => {
@@ -63,6 +66,9 @@ function CostMovementGraph(props) {
 
                 res.data.Data && res.data.Data.map((item, index) => {
                     item.Data.map((ele) => {
+                        ele.PlantNameWithCode = `${ele.PlantName} (${ele.PlantCode})`
+                        ele.VendorNameWithCode = `${ele.VendorName} (${ele.VendorCode})`
+                        grid.push(ele)
                         allEffectiveDates.push((ele.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
                     })
 
@@ -102,64 +108,78 @@ function CostMovementGraph(props) {
 
                 uniquePartPlantVendor = uniquePartPlantVendor.filter((v, i, a) => a.indexOf(v) === i);
 
-                let count = 1
-                res.data.Data && res.data.Data.map((item, index) => {
-                    let dateIndex;
-                    let plantIndex = 0
+                /////////////////////////////////////////main-logic///////////////
+
+                uniquePartPlantVendor.map((uniqueItem, uniqueIndex) => {
                     let uniquePlantLabel = ''
 
-                    item.Data.map((ele, i) => {
-                        grid.push(ele)
-                        perPartData = []
+                    res.data.Data && res.data.Data.map((item, index) => {
+                        let dateIndex;
 
-                        allEffectiveDates.map((date, indexFromDate) => {
+                        item.Data.map((ele, i) => {
 
-                            if (date == DayTime(ele.EffectiveDate).format('DD-MM-YYYY')) {
-                                dateIndex = indexFromDate
+                            if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == uniqueItem) {
+
+                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}`
+
+                                allEffectiveDates.map((date, indexFromDate) => {
+
+                                    if (date == DayTime(ele.EffectiveDate).format('DD-MM-YYYY')) {
+                                        dateIndex = indexFromDate
+                                    }
+                                })
+
+                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
                             }
                         })
+                    })
 
-                        perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
 
-                        uniquePartPlantVendor.map((value, PlantIndex) => {
+                    barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
 
-                            if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == value) {
-                                plantIndex = PlantIndex
-                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}(${getCurrencySymbol('INR')})`
+                        type: 'bar',
+                        label: `${uniquePlantLabel}`,
+                        backgroundColor: getGraphColour(uniqueIndex),
+                        data: perPartData,
+                        maxBarThickness: 25,
+                        borderColor: getGraphColour(uniqueIndex)
+
+                    })
+
+
+                    let finalPartData = [] // ARRAY FOR LINE CHART
+                    for (let i = 0; i < perPartData.length; i++) {    //FOR LOOP IS FOR LINE CHART (COVERT UNDEFINED VALUE IN ARRAY TO PREVOUS VALUE TO SHOW LINE
+                        if (i === 0) {
+
+                            if (perPartData[i]) {
+                                finalPartData.push(perPartData[i])
+                            } else {
+                                finalPartData.push(undefined)
                             }
+                        }
+                        else if (perPartData[i]) {
+                            finalPartData.push(perPartData[i])
+                        } else {
+                            finalPartData.push(perPartData[i - 1])
+                        }
 
-                        })
+                    }
 
-                        barDataSet.push({          //PUSHING VALUE FOR BAR GRAPH
+                    lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
 
-                            type: 'bar',
-                            label: `${count}) : ${uniquePlantLabel}`,
-                            backgroundColor: getGraphColour(plantIndex),
-                            data: perPartData,
-                            maxBarThickness: 25,
-                            borderColor: getGraphColour(plantIndex)
-
-                        })
-
-                        lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
-
-                            label: `${count}) : ${uniquePlantLabel}`,
-                            fill: false,
-                            lineTension: 1,
-                            backgroundColor: getGraphColour(plantIndex),
-                            borderColor: getGraphColour(plantIndex),
-                            borderWidth: 2,
-                            data: perPartData,
-                            pointBackgroundColor: getGraphColour(plantIndex)
-
-                        })
-
-                        count++
+                        label: `${uniquePlantLabel}`,
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: getGraphColour(uniqueIndex),
+                        borderColor: getGraphColour(uniqueIndex),
+                        borderWidth: 2,
+                        data: finalPartData,
+                        pointBackgroundColor: getGraphColour(uniqueIndex)
                     })
 
                     perPartData = []
+                    uniquePlantLabel = ''
                 })
-
 
                 setGridData(grid)       // SETTING ALL DATA TO SHOW IN LISTING IN GRID
                 setBarDataSets(barDataSet)
@@ -191,8 +211,8 @@ function CostMovementGraph(props) {
     const valueChanged = (event) => {
 
         if (Number(event.value) === Number(1)) { //FOR LISTING
-            setShowList(true)
-            setShowLineGraph(false)
+            setShowList(false)
+            setShowLineGraph(true)
             setShowBarGraph(false)
         }
 
@@ -204,10 +224,10 @@ function CostMovementGraph(props) {
         }
 
         if (Number(event.value) === Number(3)) { //FOR LINE CHART
-
-            setShowList(false)
-            setShowLineGraph(true)
+            setShowList(true)
+            setShowLineGraph(false)
             setShowBarGraph(false)
+
         }
 
     }
@@ -258,20 +278,196 @@ function CostMovementGraph(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? cellValue : '-';
     }
 
+    const POPriceFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
+    }
+
     // const rowSpan = (params) => { //DONT DELETE (WILL BE USED FOR ROW MERGING LATER)
     //     return 5
     // }
+    const lineChartOptions = {
+        plugins: {
+            legend: {
+                position: 'bottom',
+                align: 'start',
 
+                labels: {
+                    boxWidth: 14,
+                    boxHeight: 12,
+                    borderWidth: 0,
+                    color: '#000',
+                    font: {
+                        size: 16,
+                        weight: 500
+                    }
+                },
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+
+                        let label = '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
+            },
+            subtitle: {
+                display: true,
+                position: 'bottom',
+                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                fontSize: 10,
+                align: 'start',
+                color: '#000',
+                font: {
+                    size: 14,
+                    weight: 600
+                },
+                padding: {
+                    left: 25,
+                    right: 40,
+                    top: 10,
+                    bottom: 15
+                }
+            },
+            // subtitle: {
+            //     display: true,
+            //     text: 'Chart Subtitle',
+            //     align: 'start',
+            //     color: '#000',
+            //     font: {
+            //         size: 13,
+            //         weight: 'normal',
+            //     },
+            //     padding: {
+            //         bottom: 15,
+            //         left: 15
+            //     }
+            // },
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Effective Date',
+                    color: '#000',
+                    font: {
+                        size: 16,
+                        weight: 500
+                    },
+                    Rotation: 180,
+                    maxRatation: 180,
+                    minRatation: 180,
+                    padding: {
+                        top: 10,
+                        bottom: 5
+                    },
+                },
+                Rotation: 180,
+                maxRatation: 180,
+                minRatation: 180,
+            },
+            // y: {
+            //     title: {
+            //         display: true,
+            //         text: getCurrencySymbol(getConfigurationKey().BaseCurrency),
+            //         color: '#000',
+            //         autoSkip: false,
+            //         maxRotation: 90,
+            //         minRotation: 90,
+            //         font: {
+            //             size: 28,
+            //             weight: 500,
+
+            //         },
+            //     },
+            //     maxRatation: 180,
+            //     minRatation: 180,
+            // },
+
+        },
+    }
+    const barChartOptions = {
+        plugins: {
+            legend: {
+                position: 'bottom',
+                align: 'start',
+                labels: {
+                    boxWidth: 16,
+                    boxHeight: 14,
+                    borderWidth: 0,
+                    color: '#000'
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+
+                        let label = '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
+            },
+            subtitle: {
+                display: true,
+                position: 'bottom',
+                text: '  Format: Color | serial no.): Part No.-Vendor code-Plant code ',
+                fontSize: 10,
+                align: 'start',
+                color: '#000',
+                font: {
+                    size: 14,
+                    weight: 600
+                },
+                padding: {
+                    left: 25,
+                    right: 40,
+                    top: 10,
+                    bottom: 15
+                }
+            },
+        },
+        scales: {
+            x: {
+
+                title: {
+                    display: true,
+                    text: 'Effective Date',
+                    color: '#000',
+                    font: {
+                        size: 16,
+                        weight: 500
+                    },
+                }
+            },
+
+        },
+    }
 
     return (
         <>
             <div className={"container-fluid"}>
-                <div className='cost-ratio-report'>
+                <div className='cost-ratio-report h-298'>
                     <form noValidate className="form">
-                        <div className='analytics-drawer'>
-                            <HeaderTitle customClass="mb-0"
-                                title={"Cost Movement:"}
-                            />
+                        <div className='analytics-drawer justify-content-end'>
+                            <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
                             <RenderGraphList valueChanged={valueChanged} />
                         </div>
                         {showList &&
@@ -308,11 +504,11 @@ function CostMovementGraph(props) {
                                                             }}></AgGridColumn>}   //DONT DELETE (WILL BE USED FOR ROW MERGING LATER) */}
 
                                                     {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="PlantCode" headerName="Plant Code" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="PlantNameWithCode" headerName="Plant (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
 
                                                     {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                    {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                     {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
 
                                                 </AgGridReact>
@@ -327,9 +523,9 @@ function CostMovementGraph(props) {
 
                         { }
                         {showBarGraph &&
-                            <Row className="mt-4">
-                                <Col md="12" className='pr-0'>
-                                    <Costmovementgraph graphData={data1} graphHeight={120} />
+                            <Row className="mt-2 ">
+                                <Col md="12">
+                                    <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getCurrencySymbol(getConfigurationKey().BaseCurrency)} />
                                 </Col>
                             </Row>
 
@@ -337,36 +533,19 @@ function CostMovementGraph(props) {
 
                         {showLineGraph &&
                             <Row>
-                                <Col className='pr-0'>
+                                <Col className='pr-3 d-flex align-items-center mt-2'>
+                                    <div className='mb-5 pb-5 mr-2'><strong>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</strong></div>
                                     <Line
                                         data={state}
                                         height={120}
-                                        options={{
-                                            title: {
-                                                display: true,
-                                                text: 'Part Cost',
-                                                fontSize: 10
-                                            },
-                                            legend: {
-                                                display: true,
-                                                position: 'right'
-                                            },
-
-                                        }}
+                                        options={lineChartOptions}
                                     />
                                 </Col>
                             </Row>
                         }
                     </form>
                 </div >
-                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                            <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>
-                        </div>
-                    </div>
-                </Row>
-            </div>
+            </div >
         </>
     );
 }

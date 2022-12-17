@@ -1099,7 +1099,7 @@ function RawMaterialCost(props) {
                       <th>{`Gross Weight`}</th>
                       <th>{`Finish Weight`}</th>
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
-                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery(%)`}</th>}
+                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
                       <th className='scrap-weight'>Scrap Weight </th>
                       {/* //Add i here for MB+ */}
