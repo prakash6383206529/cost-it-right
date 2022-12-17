@@ -123,20 +123,98 @@ function SupplierContributionReport(props) {
         setIsPlantSelected(true)
     }
 
+
+
     const options3 = {
+        maintainAspectRatio: false,
+        // responsive: true,
+        // maintainAspectRatio: true,
+        layout: {
+            padding: 20,
+        },
+
         plugins: {
             legend: {
-                position: 'bottom',
-                labels: {
-                    boxWidth: 15,
-                    borderWidth: 1,
-                    borderColor: doughnutColor,
-                }
-            },
-        },
-        cutout: '70%',
-        width: 600
+                display: false
+            }
+        }
     };
+
+
+    const doughnutLabelsLine = {
+
+        id: 'doughnutLabelsLine',
+        beforeDraw(chart, args, options) {
+            chart.ctx.canvas.style.width = '1000px'
+            // chart.ctx.canvas.style.height = '800px'
+        },
+
+        afterDraw(chart, args, options) {
+            const { ctx, chartArea: { top, bottom, left, right, width, height } } = chart;
+
+            ctx.restore();
+            var fontSize = (width + 3) / width;
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "top";
+            var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
+                textX = width / 2.1,
+                textY = height / 2;
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+
+            chart.data.datasets.forEach((dataset, i) => {
+
+                chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
+
+                    const { x, y } = datapoint.tooltipPosition()
+                    //
+                    // ctx.fillStyle = 'Black';
+                    // ctx.fill();
+                    // ctx.fillRect(x, y, 1, 1)
+
+                    //draw line
+                    const halfwidth = width / 2;
+                    const halfheight = height / 2;
+
+                    let xLine = x >= halfwidth ? x + 35 : x - 35;
+                    let yLine = y >= halfheight ? y + 35 : y - 35;
+                    let extraLine = x >= halfwidth ? 35 : -35
+
+                    if (index % 2 == 0) {
+                        xLine = x >= halfwidth ? x + 25 : x - 25;
+                        yLine = y >= halfheight ? y + 25 : y - 25;
+                        extraLine = x >= halfwidth ? 25 : -25
+
+                    } else {
+                        xLine = x >= halfwidth ? x + 55 : x - 55;
+                        yLine = y >= halfheight ? y + 55 : y - 55;
+                        extraLine = x >= halfwidth ? 55 : -55
+
+                    }
+
+                    //line
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(xLine, yLine);
+                    ctx.lineTo(xLine + extraLine, yLine);
+                    // ctx.strokeStyle = dataset.backgroundColor[index]
+                    ctx.strokeStyle = 'Black'
+                    ctx.stroke();
+
+                    //text
+                    const textWidth = ctx.measureText(chart.data.labels[index]).width;
+                    ctx.font = '15px Arial';
+
+                    const textXposition = x >= halfwidth ? 'left' : 'right';
+                    const plusFivePx = x >= halfwidth ? 5 : -5;
+                    ctx.textAlign = textXposition;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = dataset.backgroundColor[index]
+                    ctx.fillText(chart.data.labels[index], xLine + extraLine + plusFivePx, yLine);
+                })
+            })
+        }
+    }
 
     const data3 = {
         labels: vendorArray,
@@ -145,180 +223,15 @@ function SupplierContributionReport(props) {
                 label: '',
                 data: vendorData,
                 backgroundColor: doughnutColor,
-                borderWidth: 1,
+                // borderWidth: 1,
+                cutout: '70%',
+                width: 200,
+                height: 200
+                // borderRadius: 20,
+                // offset: 10
             },
         ],
-
     };
-    // const data3 = {
-    //     labels: ["Red", "Blue", "Yellow", "Green", "Greek", "Greek"],
-    //     datasets: [
-    //         {
-    //             label: "# of Votes",
-    //             data: [30, 1, .4, 2, 0.3, 80],
-    //             backgroundColor: [
-    //                 "rgba(255, 99, 132, 0.8)",
-    //                 "rgba(54, 162, 235, 0.8)",
-    //                 "rgba(255, 206, 86, 0.8)",
-    //                 "rgba(75, 192, 192, 0.8)",
-    //                 "rgba(153, 102, 255, 0.8)",
-    //                 "rgba(75, 192, 192, 0.8)",
-    //                 "rgba(255, 159, 64, 0.8)"
-    //             ],
-    //             borderColor: [
-    //                 "rgba(255, 99, 132, 1)",
-    //                 "rgba(54, 162, 235, 1)",
-    //                 "rgba(255, 206, 86, 1)",
-    //                 "rgba(75, 192, 192, 1)",
-    //                 "rgba(153, 102, 255, 1)",
-    //                 "rgba(255, 159, 64, 1)",
-    //                 "rgba(75, 192, 192, 1)"
-    //             ],
-    //             borderWidth: 1,
-    //             polyline: {
-    //                 //   color: "gray",
-    //                 //   labelColor: "gray",
-    //                 formatter: (value) => `${value}`
-    //             }
-    //         }
-    //     ]
-    // }
-    const plugins = [{
-
-        beforeDraw: function (chart) {
-            var width = chart.width,
-                height = chart.height,
-                ctx = chart.ctx;
-            ctx.restore();
-            var fontSize = (width + 3) / width;
-            ctx.font = fontSize + "em sans-serif";
-            ctx.textBaseline = "top";
-            var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
-                textX = width / 2.35,
-                textY = height / 2.35;
-            ctx.fillText(text, textX, textY);
-            ctx.save();
-        }
-    }]
-
-    // const getSuitableY = (y, yArray = [], direction) => {
-    //     let result = y;
-    //     yArray.forEach((existedY) => {
-    //         if (existedY - 14 < result && existedY + 14 > result) {
-    //             if (direction === "right") {
-    //                 result = existedY + 14;
-    //             } else {
-    //                 result = existedY - 14;
-    //             }
-    //         }
-    //     });
-    //     return result;
-    // };
-
-    // const getOriginPoints = (source, center, l) => {
-    //     // console.log(source, center, l)
-
-    //     let a = { x: 0, y: 0 };
-    //     var dx = (center.x - source.x) / l
-    //     var dy = (center.y - source.y) / l
-    //     a.x = center.x + l * dx
-    //     a.y = center.y + l * dy
-    //     return a
-    // };
-
-    // const plugins = [
-    //     {
-    //         afterDraw: (chart) => {
-    //             const ctx = chart.ctx;
-    //             ctx.save();
-    //             ctx.font = "10px 'Averta Std CY'";
-    //             const leftLabelCoordinates = [];
-    //             const rightLabelCoordinates = [];
-    //             const chartCenterPoint = {
-    //                 x:
-    //                     (chart.chartArea.right - chart.chartArea.left) / 2 +
-    //                     chart.chartArea.left,
-    //                 y:
-    //                     (chart.chartArea.bottom - chart.chartArea.top) / 2 +
-    //                     chart.chartArea.top
-    //             };
-    //             chart.config.data.labels.forEach((label, i) => {
-    //                 const meta = chart.getDatasetMeta(0);
-    //                 const arc = meta.data[i];
-    //                 const dataset = chart.config.data.datasets[0];
-
-    //                 // Prepare data to draw
-    //                 // important point 1
-    //                 const centerPoint = arc.getCenterPoint();
-    //                 let color = chart.config._config.data.datasets[0].backgroundColor[i];
-    //                 let labelColor = chart.config._config.data.datasets[0].backgroundColor[i];
-
-
-    //                 const angle = Math.atan2(
-    //                     centerPoint.y - chartCenterPoint.y,
-    //                     centerPoint.x - chartCenterPoint.x
-    //                 );
-    //                 // important point 2, this point overlapsed with existed points
-    //                 // so we will reduce y by 14 if it's on the right
-    //                 // or add by 14 if it's on the left
-    //                 let originPoint = getOriginPoints(chartCenterPoint, centerPoint, arc.outerRadius)
-    //                 const point2X =
-    //                     chartCenterPoint.x + Math.cos(angle) * (centerPoint.x < chartCenterPoint.x ? arc.outerRadius + 10 : arc.outerRadius + 10);
-    //                 let point2Y =
-    //                     chartCenterPoint.y + Math.sin(angle) * (centerPoint.y < chartCenterPoint.y ? arc.outerRadius + 15 : arc.outerRadius + 15);
-
-    //                 let suitableY;
-    //                 if (point2X < chartCenterPoint.x) {
-    //                     // on the left
-    //                     suitableY = getSuitableY(point2Y, leftLabelCoordinates, "left");
-    //                 } else {
-    //                     // on the right
-
-    //                     suitableY = getSuitableY(point2Y, rightLabelCoordinates, "right");
-    //                 }
-
-    //                 point2Y = suitableY;
-
-    //                 let value = dataset.data[i];
-    //                 // if (dataset.polyline && dataset.polyline.formatter) {
-    //                 //   value = dataset.polyline.formatter(value);
-    //                 // }
-    //                 let edgePointX = point2X < chartCenterPoint.x ? chartCenterPoint.x - arc.outerRadius - 10 : chartCenterPoint.x + arc.outerRadius + 10;
-
-    //                 if (point2X < chartCenterPoint.x) {
-    //                     leftLabelCoordinates.push(point2Y);
-    //                 } else {
-    //                     rightLabelCoordinates.push(point2Y);
-    //                 }
-
-    //                 //DRAW CODE
-    //                 // first line: connect between arc's center point and outside point
-    //                 ctx.lineWidth = 2;
-    //                 ctx.strokeStyle = color;
-    //                 ctx.beginPath();
-    //                 ctx.moveTo(originPoint.x, originPoint.y);
-    //                 ctx.lineTo(point2X, point2Y);
-    //                 ctx.stroke();
-    //                 // second line: connect between outside point and chart's edge
-    //                 ctx.beginPath();
-    //                 ctx.moveTo(point2X, point2Y);
-    //                 ctx.lineTo(edgePointX, point2Y);
-    //                 ctx.stroke();
-    //                 //fill custom label
-    //                 const labelAlignStyle =
-    //                     edgePointX < chartCenterPoint.x ? "right" : "left";
-    //                 const labelX = edgePointX < chartCenterPoint.x ? edgePointX : edgePointX + 0;
-    //                 const labelY = point2Y + 7;
-    //                 ctx.textAlign = labelAlignStyle;
-    //                 ctx.textBaseline = "bottom";
-    //                 ctx.font = "bold 12px Lato";
-    //                 // ctx.fillStyle = labelColor;
-    //                 ctx.fillText(value, labelX, labelY);
-    //             });
-    //             ctx.restore();
-    //         }
-    //     }
-    // ];
 
     return (
 
@@ -427,7 +340,7 @@ function SupplierContributionReport(props) {
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
-                        <Doughnut type="doughnut" data={data3} options={options3} plugins={plugins} height="450" width={450} />
+                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={[doughnutLabelsLine]} height="600" width={600} />
                     </div>
                 </div>
 
