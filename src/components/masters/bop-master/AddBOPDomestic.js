@@ -145,22 +145,17 @@ class AddBOPDomestic extends Component {
     reactLocalStorage?.setObject('vendorData', [])
   }
   /**
-   * @method onPressVendor
-   * @description Used for Vendor checked
-   */
+    * @method onPressVendor
+    * @description Used for Vendor checked
+    */
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag,
       vendorLocation: [],
       selectedPlants: [],
-    }, () => {
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
