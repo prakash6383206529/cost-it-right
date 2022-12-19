@@ -336,9 +336,18 @@ function BOPCost(props) {
         let message = ''
         if (decimalAndNumberValidationBoolean(value)) {
           setPercentageLimit(true)
+          errors.BOPHandlingPercentage = {
+            "type": "max",
+            "message": "Percentage cannot be greater than 100",
+            "ref": {
+              "name": "BOPHandlingPercentage",
+              "value": ""
+            }
+          }
           message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
         } else {
           setPercentageLimit(false)
+          errors.BOPHandlingPercentage = {}
           message = ''
         }
         BOPHandling = value
@@ -369,8 +378,17 @@ function BOPCost(props) {
       let message = ''
       if (!isNumber(value)) {
         setPercentageLimit(true)
+        errors.BOPHandlingPercentage = {
+          "type": "max",
+          "message": "Percentage cannot be greater than 100",
+          "ref": {
+            "name": "BOPHandlingPercentage",
+            "value": ""
+          }
+        }
         message = NoSignNoDecimalMessage
       } else {
+        errors.BOPHandlingPercentage = {}
         setPercentageLimit(false)
         message = ''
       }

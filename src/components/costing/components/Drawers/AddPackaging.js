@@ -7,7 +7,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/Hoo
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
-import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
 import { STRINGMAXLENGTH } from '../../../../config/masterData';
 import { MESSAGES } from '../../../../config/message';
 
