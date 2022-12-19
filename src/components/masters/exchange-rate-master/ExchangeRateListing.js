@@ -380,7 +380,7 @@ class ExchangeRateListing extends Component {
 
                             <Row className="pt-4 blue-before zindex-0">
                                 <Col md="6">
-                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                                     <SelectRowWrapper dataCount={dataCount} className="mb-n2" />
                                 </Col>
                                 <Col md="6" className=" mb-3">

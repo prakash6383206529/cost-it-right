@@ -394,9 +394,9 @@ class FuelListing extends Component {
                     <Col>
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.fuelDataList && this.props.fuelDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                                 <SelectRowWrapper dataCount={dataCount} />
-                            </div>
+                            </div >
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
@@ -429,9 +429,9 @@ class FuelListing extends Component {
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
-                        </div>
-                    </Col>
-                </Row>
+                        </div >
+                    </Col >
+                </Row >
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
@@ -439,7 +439,8 @@ class FuelListing extends Component {
                     fileName={'Fuel'}
                     messageLabel={'Fuel'}
                     anchor={'right'}
-                />}
+                />
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />
                 }
