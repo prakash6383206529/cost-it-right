@@ -7,6 +7,9 @@ import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } fro
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
+import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { STRINGMAXLENGTH } from '../../../../config/masterData';
+import { MESSAGES } from '../../../../config/message';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -46,7 +49,8 @@ function AddPackaging(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
-  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : 0)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const fieldValues = IsolateReRender(control)
   useEffect(() => {
@@ -248,11 +252,19 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
-    if (e.target.value >= 0) {
+    let message = ''
+    if (decimalNumberLimit6(e.target.value)) {
+      setShowCostError(true)
+      message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+    } else if (!isNumber(e.target.value)) {
+      setShowCostError(true)
+      message = NoSignNoDecimalMessage
+    } else {
       setPackagingCostDataFixed(e.target.value)
       setShowCostError(false)
+      message = ''
     }
-    else setShowCostError(true)
+    setErrorMessage(message)
   }
   const onSubmit = data => {
     if (Number(packagingCostDataFixed) === 0 || packagingCostDataFixed === '') {
@@ -435,7 +447,7 @@ function AddPackaging(props) {
                       errors={errors.PackagingCost}
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
-                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={"Cost should not be zero"} />}
+                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
                 </Row>
 
