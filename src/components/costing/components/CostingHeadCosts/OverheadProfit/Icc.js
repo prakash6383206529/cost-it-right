@@ -333,7 +333,7 @@ function Icc(props) {
                                         validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                         max: {
                                             value: 100,
-                                            message: 'Percentage should be less than 100'
+                                            message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
