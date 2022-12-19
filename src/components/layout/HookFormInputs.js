@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import "./formInputs.css";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
@@ -28,6 +28,7 @@ export const TextFieldHooks = (input) => {
           value={value}
           rules={rules}
           {...inputProps}
+          autoComplete={'off'}
         />
         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
@@ -38,13 +39,88 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
+
+  return (
+    <>
+      <div className={className}>
+        {
+          !hidden &&
+          <label>
+            {label}
+            {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+          </label>
+        }
+        <div id={id}>
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            // ref={reg}
+            {...register}
+            defaultValue={defaultValue}
+            hidden={hidden}
+            render={({ field: { onChange, onBlur, value } }) => {
+              return (
+                <div className={`${isLoader ? "p-relative" : ''}`}>
+                  <input
+                    {...field}
+                    {...register}
+                    name={name}
+                    className={InputClassName}
+                    disabled={isDisabled}
+                    placeholder={isDisabled ? '-' : 'Enter'}
+                    value={value}
+                    onChange={(e) => {
+                      handleChange(e);
+                      onChange(e)
+                    }}
+                    hidden={hidden}
+                    autoComplete={'off'}
+                  />
+                  {isLoader && <LoaderCustom customClass={`input-loader ${loaderClass}`} />}
+                </div>
+              )
+            }
+            }
+          />
+        </div>
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
+      </div>
+    </>
+  )
+}
+
+
+export const PasswordFieldHookForm = (field) => {
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input, disableErrorOverflow } = field
+  // //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  // const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  // const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  // const isDisabled = field.disabled === true ? true : false;
+  // let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
+  // let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
+
+
+
+  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""
+    } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
+  const placeholder = field.placeholder ? field.placeholder : "";
+  const isPwdVisible = field.isShowHide === true ? "text" : "password";
+  const eyeIcon = field.isShowHide === true ? "fa-eye" : "fa-eye-slash";
+
+
+
 
   return (
     <>
@@ -65,37 +141,76 @@ export const TextFieldHookForm = (field) => {
           defaultValue={defaultValue}
           hidden={hidden}
           render={({ field: { onChange, onBlur, value } }) => {
+
             return (
-              <div className={`${isLoader ? "p-relative" : ''}`}>
-                <input
-                  {...field}
-                  {...register}
-                  name={name}
-                  className={InputClassName}
-                  disabled={isDisabled}
-                  placeholder={isDisabled ? '-' : 'Enter'}
-                  value={value}
-                  onChange={(e) => {
-                    handleChange(e);
-                    onChange(e)
-                  }}
-                  hidden={hidden}
-                />
-                {isLoader && <LoaderCustom customClass={`input-loader ${loaderClass}`} />}
+              <div className={className}>
+                <div className={inputbox}>
+                  <input
+                    maxLength={field.maxLength}
+                    onChange={(e) => {
+                      handleChange(e);
+                      onChange(e)
+                    }}
+                    value={value}
+                    {...field}
+                    {...register}
+                    name={name}
+                    className={InputClassName}
+
+                    type={isPwdVisible}
+                    {...input}
+                    id={"password"}
+                    placeholder={placeholder}
+                    autoComplete={field.autoComplete}
+                  />
+                  {field.isEyeIcon === true && (
+                    <div
+                      className={`input-group-prepend ${field.isShowHide === true ? "hide" : "show"
+                        }`}
+                    >
+                      <span
+                        onClick={field.showHide}
+                        className="input-group-text bg-white"
+                      >
+                        <i className={`fas ${eyeIcon}`} />
+                      </span>
+                    </div>
+                  )}
+
+                  {field.isEyeIcon === false && (
+                    <div className="input-group-prepend">
+                      <span className="input-group-text bg-white">
+                        <i className="fas fa-lock" />
+                      </span>
+                    </div>
+                  )}
+
+                  {field.isVarificationForm === true && (
+                    <div className="input-group-prepend">
+                      <span className="input-group-text bg-white"></span>
+                    </div>
+                  )}
+                </div>
+                <div className="text-help mb-2">{touched ? error : ""}</div>
               </div>
-            )
+            );
+
           }
           }
         />
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
+          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
       </div>
     </>
   )
 }
 
+
+
+
+
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name, placeholder, disableErrorOverflow, id } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -103,37 +218,40 @@ export const NumberFieldHookForm = (field) => {
 
   return (
     <>
-      <div className={className}>
+      <div className={className} >
         <label>
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => {
-            return (
-              <input
-                {...field}
-                {...register}
-                type={'number'}
-                name={name}
-                className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-              />
-            )
-          }
-          }
-        />
+        <div id={id}>
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => {
+              return (
+                <input
+                  {...field}
+                  {...register}
+                  type={'number'}
+                  name={name}
+                  className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
+                  autoComplete={'off'}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                />
+              )
+            }
+            }
+          />
+        </div>
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
@@ -156,7 +274,7 @@ export const SearchableSelectHookForm = (field) => {
       temp = 128
     }
     else {
-      temp = dropdownHeight * 49;
+      temp = dropdownHeight * 39;
     }
   }
   const onFocusChange = () => {
@@ -178,6 +296,9 @@ export const SearchableSelectHookForm = (field) => {
       marginLeft: "5px",
       width: 'calc(100% - 10px)',
     }),
+  };
+  const filterConfig = {
+    stringify: option => `${option.label}`,
   };
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
@@ -217,6 +338,7 @@ export const SearchableSelectHookForm = (field) => {
                 onKeyDown={(onKeyDown) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
+                filterOption={createFilter(filterConfig)}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
               {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisable} onClick={buttonCross}>
@@ -271,6 +393,7 @@ export const TextAreaHookForm = (field) => {
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
+                autoComplete={'off'}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)
@@ -485,7 +608,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 selected={value}
                 value={value}
                 isLoading={isLoader}
-                noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
+                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? NoOptionMessage : "No results found"}
                 onKeyDown={(onKeyDown) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}

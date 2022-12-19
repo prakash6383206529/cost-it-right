@@ -3,12 +3,13 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../actions/CostWorking'
-import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../common/Toaster'
 import HeaderTitle from '../../../common/HeaderTitle'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../common/Tooltip'
 
 function CorrugatedBox(props) {
     const [dataSend, setDataSend] = useState({})
@@ -294,10 +295,12 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <TooltipCustom disabledIcon={true} id={'bursting-strength'} tooltipText={'Bursting Strength = (No of Ply * GSM * Busting Factor) / 1000'} />
+                                    <NumberFieldHookForm
                                         label={`Bursting Strength`}
                                         name={'bursting_strength'}
                                         Controller={Controller}
+                                        id={'bursting-strength'}
                                         control={control}
                                         register={register}
                                         mandatory={false}
@@ -434,12 +437,13 @@ function CorrugatedBox(props) {
                             <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
-
-                                    <TextFieldHookForm
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width Sheet = (Width Box + Height Box) / 25.4'} />
+                                    <NumberFieldHookForm
                                         label={`Width(Sheet)(inch)`}
                                         name={'width_sheet'}
                                         Controller={Controller}
                                         control={control}
+                                        id={'sheet-width'}
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
@@ -480,12 +484,14 @@ function CorrugatedBox(props) {
 
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
+                                    <NumberFieldHookForm
                                         label={`Width(sheet) inc. Cutting allowance`}
                                         name={'width_inc_cutting'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        id={'sheet-width-cutting'}
                                         mandatory={false}
                                         rules={{
                                             required: false,
@@ -505,12 +511,14 @@ function CorrugatedBox(props) {
 
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (2 * (Length Box + Width Box) + Length Sheet) / 25.4'} />
+                                    <NumberFieldHookForm
                                         label={`Length(Sheet)(inch)`}
                                         name={'length_sheet'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        id={'length-sheet'}
                                         mandatory={false}
                                         rules={{
                                             required: true,
@@ -557,12 +565,14 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
-                                    <TextFieldHookForm
+                                <Col md="3" className='mt-2'>
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
+                                    <NumberFieldHookForm
                                         label={`Length(sheet) inc. Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
                                         Controller={Controller}
                                         control={control}
+                                        id={'length-cutting-al'}
                                         register={register}
                                         mandatory={false}
                                         rules={{
@@ -591,13 +601,15 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * No of Ply * GSM / 1500) / 1000'} />
+                                    <NumberFieldHookForm
                                         label={'Paper wt.+ Process Rejection(Kg)'}
                                         name={'paper_process'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
+                                        id={'paper-width'}
                                         rules={{
                                             required: false,
                                             pattern: {

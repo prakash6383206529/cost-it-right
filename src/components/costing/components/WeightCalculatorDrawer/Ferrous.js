@@ -8,6 +8,7 @@ import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../common/Tooltip'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -315,11 +316,13 @@ function Ferrous(props) {
                             </Table>
                             <Row className={"mx-0"}>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = RM1 Rate * Percentage / 100 + RM2 Rate * Percentage / 100 + ....'} />
                                     <NumberFieldHookForm
                                         label={`Net RM Rate`}
                                         name={'NetRMRate'}
                                         Controller={Controller}
                                         control={control}
+                                        id={'rm-rate-ferrous'}
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
@@ -331,9 +334,11 @@ function Ferrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = RM1 Scrap Rate * Percentage / 100 + RM2 Scrap Rate * Percentage / 100 + ....'} />
                                     <NumberFieldHookForm
                                         label={`Net Scrap Rate`}
                                         name={'NetScrapRate'}
+                                        id={'srape-rate-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -388,8 +393,10 @@ function Ferrous(props) {
                             />
                             <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(Kg)`}
+                                        id={'gross-weight-ferrous'}
                                         name={'grossWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -438,9 +445,11 @@ function Ferrous(props) {
                                 </Col>
 
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
+                                        id={'scrap-weight-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -458,7 +467,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Recovery(%)`}
+                                        label={`Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}
@@ -486,9 +495,11 @@ function Ferrous(props) {
 
 
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
+                                        id={'scrap-cost-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -504,10 +515,12 @@ function Ferrous(props) {
                                 </Col>
 
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
                                     <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}
                                         name={'NetRMCost'}
+                                        id={'net-rm-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

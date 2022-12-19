@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, approvalRequestByApprove } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
+import { FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -132,29 +132,33 @@ const SendForApproval = (props) => {
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
-    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
+    drawerDataObj.CostingHead = viewApprovalData[0]?.costingTypeId === ZBCTypeId ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
-    regularizationObj.technologyId = viewApprovalData[0].technologyId
-    regularizationObj.partId = viewApprovalData[0].partId
-    regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
-    regularizationObj.vendorId = viewApprovalData[0].vendorId
-
-    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
-      if (res && res?.data && res?.data?.Data) {
-        let Data = res.data.Data
-        setDataToChange(Data)
-      }
-    }))
+    regularizationObj.technologyId = viewApprovalData[0]?.technologyId
+    regularizationObj.partId = viewApprovalData[0]?.partId
+    regularizationObj.destinationPlantId = viewApprovalData[0]?.destinationPlantId
+    regularizationObj.vendorId = viewApprovalData[0]?.vendorId
+    if (viewApprovalData[0]?.costingTypeId === NCCTypeId) {
+      dispatch(checkRegularizationLimit(regularizationObj, (res) => {
+        if (res && res?.data && res?.data?.Data) {
+          let Data = res.data.Data
+          setDataToChange(Data)
+        }
+      }))
+    }
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        if (props?.isRfq) {
+          setIsFinalApproverShow(false)
+        }
         // setIsFinalApproverShow(false)
       }
 
       dispatch(getReasonSelectList((res) => { }))
-      if (!res.data.Data.IsFinalApprovar) {
+      if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
 
         dispatch(getAllApprovalDepartment((res) => {
           const Data = res?.data?.SelectList
@@ -309,7 +313,7 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, viewApprovalData[index]?.costingTypeId === ZBCTypeId ? viewApprovalData[index]?.plantId : viewApprovalData[index]?.destinationPlantId, viewApprovalData[index]?.vendorId, viewApprovalData[index]?.customerId, viewApprovalData[index]?.costingTypeId, (res) => {
       if (res.data.Result === true || res.status === 202) {
         let approvedQtyArr = res.data.Data.VolumeApprovedDetails
         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -370,103 +374,176 @@ const SendForApproval = (props) => {
       Toaster.warning('Please upload file to send for approval.')
       return false
     }
-    let obj = {
-      ApproverDepartmentId: selectedDepartment.value,
-      ApproverDepartmentName: selectedDepartment.label,
-      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
-      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
-      ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
 
-      // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
-      // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-      SenderLevelId: userData.LoggedInLevelId,
-      SenderLevel: userData.LoggedInLevel,
-      SenderId: userData.LoggedInUserId,
-      SenderRemark: data.remarks,
-      LoggedInUserId: userData.LoggedInUserId,
-      // Quantity: getValues('Quantity'),
-      // Attachment: files,
-      // IsLimitCrossed: IsLimitCrossed
+    if (props?.isRfq) {
+      let temp = []
+
+      viewApprovalData.map((data) => {
+
+
+        let tempObj = {}
+        tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
+        tempObj.ApprovalToken = data.ApprovalToken
+        tempObj.ApproverDepartmentId = selectedDepartment.value
+        tempObj.ApproverDepartmentName = selectedDepartment.label
+        tempObj.ApproverLevelId = !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId
+        tempObj.ApproverLevel = !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel
+        tempObj.Approver = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
+
+        // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+        // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+        tempObj.SenderLevelId = userData.LoggedInLevelId
+        tempObj.SenderLevel = userData.LoggedInLevel
+        tempObj.SenderId = userData.LoggedInUserId
+        // tempObj.SenderRemark = data.remarks
+        tempObj.LoggedInUserId = userData.LoggedInUserId
+        tempObj.ReasonId = data.reasonId
+        tempObj.Reason = data.reason
+        tempObj.FinancialYear = financialYear
+        tempObj.OldPOPrice = data.oldPrice ? data.oldPrice : 0
+        tempObj.NewPoPrice = data.revisedPrice ? data.revisedPrice : 0
+        tempObj.POCurrency = data.nPOPriceWithCurrency ? data.nPOPriceWithCurrency : 0
+        tempObj.CurrencyRate = data.currencyRate ? data.currencyRate : 0
+        tempObj.Variance = data.variance ? data.variance : 0
+        tempObj.ConsumptionQuantity = data.consumptionQty
+        tempObj.RemainingQuantity = data.remainingQty
+        tempObj.AnnualImpact = data.annualImpact
+        tempObj.ImpactOfTheYear = data.yearImpact
+        tempObj.Remark = getValues("remarks")
+        tempObj.IsApproved = true
+
+        temp.push(tempObj)
+        return null
+      })
+
+
+
+      // action
+
+      dispatch(approvalRequestByApprove(temp, res => {
+
+        if (res?.data?.Result) {
+          if (isFinalApproverShow) {
+            Toaster.success('The costing has been approved')
+
+          } else {
+            Toaster.success(isFinalApproverShow ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+
+            props.closeDrawer('', 'submit')
+          }
+        }
+      }))
+
+
+
+
+    } else {
+
+
+      let obj = {
+        ApproverDepartmentId: selectedDepartment.value,
+        ApproverDepartmentName: selectedDepartment.label,
+        ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
+        ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
+        ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
+
+        // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+        // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+        SenderLevelId: userData.LoggedInLevelId,
+        SenderLevel: userData.LoggedInLevel,
+        SenderId: userData.LoggedInUserId,
+        SenderRemark: data.remarks,
+        LoggedInUserId: userData.LoggedInUserId,
+        // Quantity: getValues('Quantity'),
+        // Attachment: files,
+        // IsLimitCrossed: IsLimitCrossed
+      }
+
+      let temp = []
+
+      setIsDisable(true)
+
+      viewApprovalData.map((data) => {
+
+        let tempObj = {}
+        tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
+        tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
+        tempObj.PlantId =
+          (data.costingTypeId === ZBCTypeId) ? data.plantId : ''
+        tempObj.PlantNumber =
+          (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
+        tempObj.PlantName =
+          (data.costingTypeId === ZBCTypeId) ? data.plantName : ''
+        tempObj.PlantCode =
+          (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
+        tempObj.CostingId = data.costingId
+        tempObj.CostingNumber = data.costingName
+        tempObj.ReasonId = data.reasonId
+        tempObj.Reason = data.reason
+        tempObj.ECNNumber = ''
+        // tempObj.ECNNumber = 1;
+        tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        tempObj.RevisionNumber = partNo.revisionNumber
+        tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
+        // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
+        tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
+        tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
+        // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
+        tempObj.FinancialYear = financialYear
+        tempObj.OldPOPrice = data.oldPrice
+        tempObj.NewPoPrice = data.revisedPrice
+        tempObj.POCurrency = data.nPOPriceWithCurrency
+        tempObj.CurrencyRate = data.currencyRate
+        tempObj.Variance = data.variance
+        tempObj.ConsumptionQuantity = data.consumptionQty
+        tempObj.RemainingQuantity = data.remainingQty
+        tempObj.AnnualImpact = data.annualImpact
+        tempObj.ImpactOfTheYear = data.yearImpact
+        tempObj.VendorId =
+          (data.costingTypeId === VBCTypeId) ? data.vendorId : ''
+        tempObj.VendorCode =
+          (data.costingTypeId === VBCTypeId) ? data.vendorCode : ''
+        tempObj.VendorPlantId =
+          (data.costingTypeId === VBCTypeId) ? data.vendorePlantId : ''
+        tempObj.VendorPlantCode =
+          (data.costingTypeId === VBCTypeId) ? data.vendorPlantCode : ''
+        tempObj.VendorName =
+          (data.costingTypeId === VBCTypeId) ? data.vendorName : ''
+        tempObj.VendorPlantName =
+          (data.costingTypeId === VBCTypeId) ? data.vendorPlantName : ''
+        tempObj.IsFinalApproved = isFinalApproverShow ? true : false
+        tempObj.DestinationPlantCode = data.destinationPlantCode
+        tempObj.DestinationPlantName = data.destinationPlantName
+        tempObj.DestinationPlantId = data.destinationPlantId
+        tempObj.NCCPartQuantity = getValues('Quantity')
+        tempObj.Attachment = files
+        tempObj.IsRegularized = isRegularize
+        tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+        tempObj.CostingTypeId = data.costingTypeId
+        tempObj.CustomerId = data.customerId
+        tempObj.CustomerName = data.customerName
+        tempObj.CustomerCode = data.customerCode
+        temp.push(tempObj)
+        return null
+      })
+      obj.CostingsList = temp
+      // debounce_fun()
+      // 
+      // props.closeDrawer()
+      dispatch(sendForApprovalBySender(obj, (res) => {
+        setIsDisable(false)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }))
     }
 
-    let temp = []
-
-    setIsDisable(true)
-
-    viewApprovalData.map((data) => {
-
-      let tempObj = {}
-      tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
-      tempObj.PlantId =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantId : ''
-      tempObj.PlantNumber =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
-      tempObj.PlantName =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantName : ''
-      tempObj.PlantCode =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
-      tempObj.CostingId = data.costingId
-      tempObj.CostingNumber = data.costingName
-      tempObj.ReasonId = data.reasonId
-      tempObj.Reason = data.reason
-      tempObj.ECNNumber = ''
-      // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-      tempObj.RevisionNumber = partNo.revisionNumber
-      tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
-      // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-      tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
-      tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
-      // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
-      tempObj.FinancialYear = financialYear
-      tempObj.OldPOPrice = data.oldPrice
-      tempObj.NewPoPrice = data.revisedPrice
-      tempObj.POCurrency = data.nPOPriceWithCurrency
-      tempObj.CurrencyRate = data.currencyRate
-      tempObj.Variance = data.variance
-      tempObj.ConsumptionQuantity = data.consumptionQty
-      tempObj.RemainingQuantity = data.remainingQty
-      tempObj.AnnualImpact = data.annualImpact
-      tempObj.ImpactOfTheYear = data.yearImpact
-      tempObj.VendorId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorId : ''
-      tempObj.VendorCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorCode : ''
-      tempObj.VendorPlantId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorePlantId : ''
-      tempObj.VendorPlantCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantCode : ''
-      tempObj.VendorName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorName : ''
-      tempObj.VendorPlantName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantName : ''
-      tempObj.IsFinalApproved = isFinalApproverShow ? true : false
-      tempObj.DestinationPlantCode = data.destinationPlantCode
-      tempObj.DestinationPlantName = data.destinationPlantName
-      tempObj.DestinationPlantId = data.destinationPlantId
-      tempObj.NCCPartQuantity = getValues('Quantity')
-      tempObj.Attachment = files
-      tempObj.IsRegularized = isRegularize
-      tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
-
-      temp.push(tempObj)
-      return null
-    })
-
-    obj.CostingsList = temp
 
 
-    // debounce_fun()
-    // 
-    // props.closeDrawer()
-    dispatch(sendForApprovalBySender(obj, (res) => {
-      setIsDisable(false)
-      Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-      props.closeDrawer('', 'Submit')
-      dispatch(setCostingApprovalData([]))
-      dispatch(setCostingViewData([]))
-    }))
+
+
+
   }), 500)
 
   const handleApproverChange = (data) => {
@@ -569,7 +646,7 @@ const SendForApproval = (props) => {
 
       // dispatch(
       //   fileDeleteCosting(deleteData, (res) => {
-      //     Toaster.success("File has been deleted successfully.");
+      //     Toaster.success("File deleted successfully.");
       //     let tempArr = files && files.filter((item) => item.FileId !== FileId);
       //     setFiles(tempArr);
       //     setIsOpen(!IsOpen);
@@ -628,7 +705,6 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
-
                 <div
                   onClick={(e) => toggleDrawer(e)}
                   disabled={isDisable}
@@ -636,6 +712,7 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
+            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
@@ -644,15 +721,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : `${data.vendorName}`}
+                          {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No:`}{" "}
                           <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code:` : `Customer Code:`}
+                          <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
@@ -789,7 +866,7 @@ const SendForApproval = (props) => {
                             </Col>
                             <Col md="4">
                               <div className="form-group">
-                                <TooltipCustom tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                                <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                                 <label>Annual Impact</label>
                                 <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                                   {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -870,7 +947,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
+                        {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -949,7 +1026,7 @@ const SendForApproval = (props) => {
                       <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
+                          Maximum file upload limit reached.
                         </div>
                       ) : (
                         <Dropzone
@@ -1036,7 +1113,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId !== NCCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
@@ -1069,6 +1146,7 @@ const SendForApproval = (props) => {
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
                 TypeOfCosting={viewApprovalData[0].typeOfCosting}
+                CostingTypeId={viewApprovalData[0]?.costingTypeId}
               />}
           </div>
         </div>

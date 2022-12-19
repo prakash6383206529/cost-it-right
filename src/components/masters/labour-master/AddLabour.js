@@ -10,7 +10,7 @@ import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA, SPACEBAR } from '../../../config/constants'
+import { EMPTY_DATA, searchCount, SPACEBAR } from '../../../config/constants'
 import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -22,6 +22,9 @@ import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const selector = formValueSelector('AddLabour')
 
@@ -60,7 +63,8 @@ class AddLabour extends Component {
         effectiveDate: false
       },
       showErrorOnFocus: false,
-      isEditMode: false
+      isEditMode: false,
+      showPopup: false
     }
   }
 
@@ -70,8 +74,7 @@ class AddLabour extends Component {
    */
   componentDidMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.setState({ inputLoader: true })
-      this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+
     }
     if (!this.state.isViewMode) {
       this.props.getMachineTypeSelectList(() => { })
@@ -80,10 +83,13 @@ class AddLabour extends Component {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
-      this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, () => { })
+      this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
       this.props.getPlantListByState('', () => { })
     }
     this.getDetail()
+  }
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
   }
 
   componentDidUpdate(prevProps) { }
@@ -114,7 +120,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate) : '',
+                  EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm') : '',
                   LabourRate: item.LabourRate,
                   IsAssociated: item.IsAssociated
                 }
@@ -140,7 +146,6 @@ class AddLabour extends Component {
       this.props.getLabourData('', () => { })
     }
   }
-
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
@@ -148,7 +153,6 @@ class AddLabour extends Component {
   renderListing = (label) => {
     const {
       plantSelectList,
-      VendorLabourTypeSelectList,
       stateList,
       machineTypeSelectList,
     } = this.props
@@ -167,15 +171,6 @@ class AddLabour extends Component {
     if (label === 'plant') {
       plantSelectList &&
         plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'VendorNameList') {
-      VendorLabourTypeSelectList &&
-        VendorLabourTypeSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -326,7 +321,7 @@ class AddLabour extends Component {
     setTimeout(() => {
       this.props.getLabourTypeByMachineTypeSelectList(
         { machineTypeId: this.state.machineType?.value ? this.state.machineType?.value : '' },
-        () => { },
+        (res) => { this.setState({ labourData: res?.data?.SelectList }) },
       )
     }, 400);
   }
@@ -512,7 +507,7 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, () => { })
+      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
 
@@ -526,7 +521,8 @@ class AddLabour extends Component {
 
     this.props.getLabourTypeByMachineTypeSelectList(
       { machineTypeId: tempData.MachineTypeId },
-      () => {
+      (res) => {
+        this.setState({ labourData: res?.data?.SelectList })
         this.setState({
           labourType: {
             label: tempData.LabourType,
@@ -585,7 +581,16 @@ class AddLabour extends Component {
 
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -674,28 +679,40 @@ class AddLabour extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
-
-
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        // this.setState({ inputLoader: true })
+        let res
+        res = await labourTypeVendorSelectList(resultInput)
+        // this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          // this.setState({ inputLoader: false })
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -750,18 +767,18 @@ class AddLabour extends Component {
                       </Col>
                       {this.state.IsEmployeContractual && (
                         <Col md="3" className='mb-4'>
-                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="p-relative">
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
                               key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
+                              loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) || gridTable.length !== 0 ? true : false}
+                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                              isDisabled={(isEditFlag) || gridTable.length !== 0 ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
@@ -796,7 +813,7 @@ class AddLabour extends Component {
                           <Field
                             name="Plant"
                             type="text"
-                            label="Plant"
+                            label="Plant (Code)"
                             component={searchableSelect}
                             placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("plant")}
@@ -1004,7 +1021,7 @@ class AddLabour extends Component {
                       <button
                         type={"button"}
                         className="reset mr15 cancel-btn"
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -1025,6 +1042,9 @@ class AddLabour extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && (
           <AddMachineTypeDrawer
             isOpen={isOpenMachineType}

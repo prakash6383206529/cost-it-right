@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,6 +24,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const gridOptions = {};
@@ -43,6 +44,7 @@ function SimulationApprovalListing(props) {
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
+
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState([])
@@ -71,7 +73,8 @@ function SimulationApprovalListing(props) {
     var floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: "simulationApproval"
+        component: "simulationApproval",
+        location: "simulation"
     }
 
     var filterParams = {
@@ -128,10 +131,12 @@ function SimulationApprovalListing(props) {
 
 
     useEffect(() => {
-        getTableData(0, defaultPageSize, true, floatingFilterData)
+        if (props.activeTab === '2' || isDashboard) {
+            getTableData(0, defaultPageSize, true, floatingFilterData)
+        }
         dispatch(isResetClick(false))
         dispatch(agGridStatus("", ""))
-    }, [])
+    }, [props.activeTab])
 
     useEffect(() => {
 
@@ -163,7 +168,10 @@ function SimulationApprovalListing(props) {
      */
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
-
+        if (isDashboard) {
+            dataObj.DisplayStatus = props.status
+        }
+        let IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -175,7 +183,7 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
@@ -189,10 +197,17 @@ function SimulationApprovalListing(props) {
                         setPageNo(0)
                     }
                     setTimeout(() => {
-                        for (var prop in obj) {
-                            if (obj[prop] !== "") {
 
-                                isReset = false
+                        for (var prop in obj) {
+                            if (props?.status) {   // CONDITION WHEN RENDERED FROM DASHBOARD
+                                if (prop !== 'DisplayStatus' && obj[prop] !== "") {
+                                    isReset = false
+                                }
+                            }
+                            else {
+                                if (obj[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
@@ -422,6 +437,7 @@ function SimulationApprovalListing(props) {
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+            dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
             setShowApprovalSummary(true)
@@ -619,7 +635,7 @@ function SimulationApprovalListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
@@ -679,7 +695,7 @@ function SimulationApprovalListing(props) {
                                         <button type="button" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        <button
+                                        {!props.hidesendBtn && <button
                                             class="user-btn approval-btn"
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
@@ -687,7 +703,7 @@ function SimulationApprovalListing(props) {
                                             disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
-                                        </button>
+                                        </button>}
                                     </div>
                                 </Col>
 
@@ -696,7 +712,7 @@ function SimulationApprovalListing(props) {
 
                         <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div className="ag-theme-material">
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
@@ -722,10 +738,10 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
+                                    suppressRowClickSelection={true}
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
@@ -735,7 +751,7 @@ function SimulationApprovalListing(props) {
 
 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

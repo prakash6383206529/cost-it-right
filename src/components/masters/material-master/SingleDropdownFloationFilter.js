@@ -5,7 +5,7 @@ import {
 } from '../../../actions/Common';
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
-import { statusOptions } from "../../../config/constants";
+import { statusOptions, statusOptionsCosting, statusOptionsMasters, statusOptionsSimulation } from "../../../config/constants";
 
 
 function SingleDropdownFloationFilter(props) {
@@ -41,7 +41,7 @@ function SingleDropdownFloationFilter(props) {
 
     useEffect(() => {
 
-        dispatch(fetchCostingHeadsAPI('--Costing Heads--', res => {
+        dispatch(fetchCostingHeadsAPI('master', res => {
             if (res) {
                 let temp = []
                 res?.data?.SelectList && res?.data?.SelectList.map((item) => {
@@ -122,7 +122,7 @@ function SingleDropdownFloationFilter(props) {
                     onFocus={onFocus}
                     register={register}
                     //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                    options={activate || props?.maxValue == 5 ? statusOptions : dropdownData}
+                    options={activate || props?.maxValue == 5 ? (props.location == 'masters' ? statusOptionsMasters : (props.location == 'costing' ? statusOptionsCosting : (props.location == 'simulation' ? statusOptionsSimulation : statusOptions))) : dropdownData}
                     isMulti={false}
                     mandatory={true}
                     dropDownClass={true}

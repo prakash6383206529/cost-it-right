@@ -5,12 +5,15 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS, ASSEMBLYNAME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function OperationCost(props) {
@@ -24,13 +27,16 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
+  const OldGridData = props.data
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const costData = useContext(costingInfoContext);
 
   useEffect(() => {
     const Params = {
@@ -40,10 +46,19 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+      // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
+      if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+        // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
+        // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
+
+        // PROP IS USED TO SET OPERATION GRID AND TOTAL OPERATION COST IN ADDASSEMBLYOPERATION
+        props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
+        if (props.IsAssemblyCalculation) {
+          props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+        } else {
+          props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
+        }
       }
 
       if (JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : [])) {
@@ -60,6 +75,9 @@ function OperationCost(props) {
   */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setTimeout(() => {
+      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
+    }, 500);
     setDrawerOpen(true)
   }
 
@@ -96,10 +114,13 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      let netCostTotal = 0
       tempArr && tempArr.map((el, index) => {
+        netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
+      setOperationCostAssemblyTechnology(netCostTotal)
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -160,6 +181,12 @@ function OperationCost(props) {
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
+    let totalFinishWeight = 0
+    totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.OperationCost)
+    }, 0)
+    props.getOperationGrid(tempArr, totalFinishWeight)
+
   }
 
   const editItem = (index) => {
@@ -197,6 +224,7 @@ function OperationCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
   }
 
   const handleQuantityChange = (event, index) => {
@@ -209,6 +237,10 @@ function OperationCost(props) {
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el?.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
     } else {
@@ -374,8 +406,8 @@ function OperationCost(props) {
                             <td>{netCost(item)}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                                <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button title='Discard' className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
                           </tr>
@@ -392,13 +424,13 @@ function OperationCost(props) {
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td>{netCost(item)}</td>
+                            <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                                <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} className="Comment-box align-middle" type={'button'} />}
-                                  position={`${props.IsAssemblyCalculation ? 'top right' : 'top center'}`}>
+                                {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                                <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
+                                  position={'top right'}>
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}

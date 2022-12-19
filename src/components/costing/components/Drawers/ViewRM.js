@@ -129,7 +129,7 @@ function ViewRM(props) {
               <th>{`RM Name -Grade`}</th>
               <th>{`RM Rate`}</th>
               <th>{`Scrap Rate`}</th>
-              <th>{`Scrap Recovery(%)`}</th>
+              <th>{`Scrap Recovery (%)`}</th>
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
@@ -269,7 +269,7 @@ function ViewRM(props) {
           anchor={props.anchor}
           open={props.isOpen}
           className='view-rm-cost'
-        >
+          BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
           <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
             <div className={"drawer-wrapper drawer-1500px"}>
               <Row className="drawer-heading">
@@ -296,6 +296,7 @@ function ViewRM(props) {
                     isSummary={true}
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
+                    fromCostingSummary={props.fromCostingSummary}
                   />
                 )}
               </Row>

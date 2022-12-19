@@ -295,8 +295,8 @@ function StandardRub(props) {
         return (
             <>
 
-                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
-                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {isEditable && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {isEditable && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
             </>
         )
     };
@@ -305,7 +305,7 @@ function StandardRub(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
 
     };
 

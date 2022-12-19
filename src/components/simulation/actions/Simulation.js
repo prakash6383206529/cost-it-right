@@ -17,12 +17,10 @@ import {
     GET_AMMENDENT_STATUS_COSTING,
     GET_FG_WISE_IMPACT_DATA,
     GET_COMBINED_PROCESS_LIST,
-    SET_SELECTED_VENDOR_SIMULATION,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
     GET_ASSEMBLY_SIMULATION_LIST,
-    GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
@@ -52,7 +50,9 @@ import {
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
-    GET_SIMULATION_APPROVAL_LIST_DRAFT
+    GET_SIMULATION_APPROVAL_LIST_DRAFT,
+    SET_SELECTED_VENDOR_SIMULATION,
+    GET_ALL_MULTI_TECHNOLOGY_COSTING,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -119,13 +119,13 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
         request.then((response) => {
             if (response.data.Result) {
                 let tempData = {
-                    IsBoughtOutPartSimulation: response.data.Data.IsBoughtOutPartSimulation,
-                    IsExchangeRateSimulation: response.data.Data.IsExchangeRateSimulation,
-                    IsOperationSimulation: response.data.Data.IsOperationSimulation,
-                    IsRawMaterialSimulation: response.data.Data.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation,
-                    IsCombinedProcessSimulation: response.data.Data.IsCombinedProcessSimulation,
-
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -160,7 +160,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
     };
 }
 
-export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, callback) {
+export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, IsCustomerDataShow, callback) {
     return (dispatch) => {
         dispatch({
             type: GET_SIMULATION_APPROVAL_LIST,
@@ -172,7 +172,7 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
         })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
 
-        const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&SimulationType=${obj.SimulationType !== undefined ? obj.SimulationType : ""}&AmedmentStatus=${obj.ProvisionalStatus !== undefined ? obj.ProvisionalStatus : ""}&LinkingTokenNo=${obj.LinkingTokenNo !== undefined ? obj.LinkingTokenNo : ""}&SimulationHead=${obj.SimulationTechnologyHead !== undefined ? obj.SimulationTechnologyHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&ImpactedCosting=${obj.ImpactCosting !== undefined ? obj.ImpactCosting : ""}&ImpactedParts=${obj.ImpactParts !== undefined ? obj.ImpactParts : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&InitiatedBy=${obj.SimulatedByName !== undefined ? obj.SimulatedByName : ""}&SimulatedOn=${obj.SimulatedOn !== undefined ? obj.SimulatedOn : ""}&LastApproval=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&SimulationStatus=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&SimulationType=${obj.SimulationType !== undefined ? obj.SimulationType : ""}&AmedmentStatus=${obj.ProvisionalStatus !== undefined ? obj.ProvisionalStatus : ""}&LinkingTokenNo=${obj.LinkingTokenNo !== undefined ? obj.LinkingTokenNo : ""}&SimulationHead=${obj.SimulationTechnologyHead !== undefined ? obj.SimulationTechnologyHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&ImpactedCosting=${obj.ImpactCosting !== undefined ? obj.ImpactCosting : ""}&ImpactedParts=${obj.ImpactParts !== undefined ? obj.ImpactParts : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&InitiatedBy=${obj.SimulatedByName !== undefined ? obj.SimulatedByName : ""}&SimulatedOn=${obj.SimulatedOn !== undefined ? obj.SimulatedOn : ""}&LastApproval=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&SimulationStatus=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${IsCustomerDataShow !== undefined ? IsCustomerDataShow : false}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
 
         request.then((response) => {
@@ -296,7 +296,8 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation
                 }
                 dispatch({
                     type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
@@ -609,8 +610,8 @@ export function getExchangeCostingSimulationList(token, callback) {
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
-
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -760,7 +761,8 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
-            CombinedProcessImpactedMasterDataList: [],
+            MachineProcessImpactedMasterDataList: [],
+            CombinedProcessImpactedMasterDataList: []
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
@@ -798,14 +800,7 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
         })
     }
 }
-export function setVendorForSimulation(selectedVendorForSimulation) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_VENDOR_SIMULATION,
-            payload: selectedVendorForSimulation,
-        });
-    }
-}
+
 
 export function sapPushedInitialMoment(simulationId, callback) {
     return (dispatch) => {
@@ -834,7 +829,8 @@ export function getImpactedMasterData(simulationId, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
-            CombinedProcessImpactedMasterDataList: [],
+            MachineProcessImpactedMasterDataList: [],
+            CombinedProcessImpactedMasterDataList: []
         }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, config());
@@ -921,7 +917,8 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -1009,8 +1006,8 @@ export function getVerifyMachineRateSimulationList(token, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_VERIFY_MACHINERATE_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationMachineProcesstImpactedCostings
                 })
                 callback(response)
             }
@@ -1051,7 +1048,8 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -1372,7 +1370,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case MACHINERATE:
                         dispatch({
                             type: GET_MACHINE_DATALIST_SUCCESS,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
@@ -1454,3 +1452,135 @@ export function setSelectedRowForPagination(value) {
     }
 }
 
+export function getMachineRateCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getMachineRateCostingSimulationList}?simulationId=${token}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+// ASSEMBLY TECHNOLOGY
+export function setVendorForSimulation(selectedVendorForSimulation) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_VENDOR_SIMULATION,
+            payload: selectedVendorForSimulation,
+        });
+    }
+}
+
+export function getAllMultiTechnologyCostings(obj, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ALL_MULTI_TECHNOLOGY_COSTING,
+                    payload: response?.data?.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function runSimulationOnSelectedAssemblyTechnologyCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedAssemblyTechnologyCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function draftSimulationMultiTechnology(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftSimulationMultiTechnology, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getAllMultiTechnologyImpactedSimulationCostings(simulationId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMultiTechnologyImpactedSimulationCostings}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response?.data?.Data?.SimulationImpactedCostings,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllSimulatedMultiTechnologyCosting}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                });
+            }
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

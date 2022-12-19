@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT,
+    USERS, AUDIT, RFQ,
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -19,6 +19,8 @@ import UsersTab from "./UsersTab";
 import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
+import RfqTab from "./RfqTab";
+import { getConfigurationKey } from "../../../helper";
 
 class PermissionsTabIndex extends Component {
     constructor(props) {
@@ -35,7 +37,8 @@ class PermissionsTabIndex extends Component {
             reportAnalytics: [],
             user: [],
             audit: [],
-            scrollReset: false
+            scrollReset: false,
+            counter: 0
         };
     }
 
@@ -44,7 +47,8 @@ class PermissionsTabIndex extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        this.setState({ isLoader: true });
+
+        this.setState({ isLoader: true, counter: this.state.counter + 1 });
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
@@ -53,8 +57,25 @@ class PermissionsTabIndex extends Component {
                 }
             }, 500)
         })
-        this.props.onRef(this);
+
+        if (this.props.refVariable) {
+            this.props.onRef(this);
+        }
     }
+
+
+    UNSAFE_componentWillReceiveProps(nextProps) {
+
+        if (nextProps.updatedData !== this.props.updatedData) {
+            if (JSON.stringify(nextProps.updatedData) != JSON.stringify(this.props.updatedData)) {
+                if (this.state.counter == 1) {
+                    this.getUpdatedData(nextProps.updatedData)
+                    this.setState({ counter: this.state.counter + 1 })
+                }
+            }
+        }
+    }
+
 
     getRolePermission = () => {
         const { isEditFlag, isNewRole } = this.props;
@@ -88,6 +109,7 @@ class PermissionsTabIndex extends Component {
     */
     updateTabs = (Data) => {
 
+
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -96,6 +118,7 @@ class PermissionsTabIndex extends Component {
         let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName === REPORTS_AND_ANALYTICS)
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
+        let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
 
         this.setState({
             actionData: Data,
@@ -108,6 +131,7 @@ class PermissionsTabIndex extends Component {
             reportAnalytics: reportAnalyticsObj && reportAnalyticsObj.length > 0 ? reportAnalyticsObj[0].Pages : [],
             user: usersObj && usersObj.length > 0 ? usersObj[0].Pages : [],
             audit: auditObj && auditObj.length > 0 ? auditObj[0].Pages : [],
+            rfq: rfqObj && rfqObj.length > 0 ? rfqObj[0].Pages : [],
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -118,6 +142,8 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.reportAnalytics, REPORTS_AND_ANALYTICS)
             this.permissionHandler(this.state.user, USERS)
             this.permissionHandler(this.state.audit, AUDIT)
+            this.permissionHandler(this.state.rfq, RFQ)
+
         })
     }
 
@@ -155,7 +181,7 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                                 Dashboard
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
@@ -163,7 +189,7 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                                 Masters
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
@@ -171,7 +197,7 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                                 Additional Masters
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
@@ -179,7 +205,7 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                                 Costing
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
@@ -187,7 +213,7 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                                 Simulation
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
@@ -195,23 +221,31 @@ class PermissionsTabIndex extends Component {
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                                 Reports
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
-                                        this.state.user.length > 0 &&
+                                        this.state.user?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                                 Users
-              								</NavLink>
+                                            </NavLink>
+                                        </NavItem>
+                                    }
+                                    {
+                                        this?.state?.rfq?.length > 0 && getConfigurationKey().IsRFQConfigured &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                                RFQ
+                                            </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.audit.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '9' })} onClick={() => { this.toggle('9'); }}>
                                                 Audit
-              								</NavLink>
+                                            </NavLink>
                                         </NavItem>
                                     }
                                 </Nav>
@@ -282,6 +316,15 @@ class PermissionsTabIndex extends Component {
                                     </TabPane>
 
                                     <TabPane tabId="8">
+                                        <RfqTab
+                                            data={this.state.rfq}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane>
+
+                                    <TabPane tabId="9">
                                         <AuditTab
                                             data={this.state.audit}
                                             actionData={this.state.actionData}

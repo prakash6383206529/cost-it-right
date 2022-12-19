@@ -4,10 +4,10 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -15,11 +15,13 @@ import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
+    ASSEMBLY_TECHNOLOGY,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     COMBINEDPROCESSSIMULATION,
-    CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    CostingSimulationDownloadAssemblyTechnology,
+    CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
+    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -105,10 +107,12 @@ function CostingSimulation(props) {
     const gridRef = useRef();
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const [noData, setNoData] = useState(false);
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     const dispatch = useDispatch()
 
@@ -202,7 +206,7 @@ function CostingSimulation(props) {
     * @description COMMON FUNCTION TO HANDLE RESPONSE FROM API
     */
     const setCommonStateForList = (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
             const tokenNo = res.data.Data.SimulationTokenNumber
             const Data = res.data.Data
             setStatus(Data.SapMessage)
@@ -227,9 +231,10 @@ function CostingSimulation(props) {
                     checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
                 item.ERVariance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
+                item.MRVariance = (checkForNull(item.OldMachineRate).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewMachineRate).toFixed(TOFIXEDVALUE))
                 item.CPVariance = (checkForNull(item.OldNetCC).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewNetCC).toFixed(TOFIXEDVALUE))
-
                 switch (String(master)) {
                     case EXCHNAGERATE:
                         item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
@@ -261,7 +266,7 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+            tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
@@ -285,43 +290,53 @@ function CostingSimulation(props) {
     * @description API CALL FOR GET LIST OF ALL MASTERS
     */
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        switch (Number(selectedMasterForSimulation?.value)) {
-            //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
-            case Number(RMDOMESTIC):
-            case Number(RMIMPORT):
-                dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(SURFACETREATMENT):
-                dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(OPERATIONS):
-                dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
-                dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(EXCHNAGERATE):
-                dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-            case Number(COMBINED_PROCESS):
-                dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
-                    setCommonStateForList(res)
-                }))
-                break;
-
-            default:
-                break;
+        if (isMultiTechnology) {
+            dispatch(getAllSimulatedMultiTechnologyCosting(simulationId, (res) => {
+                setCommonStateForList(res)
+            }))
+        } else {
+            switch (Number(selectedMasterForSimulation?.value)) {
+                //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
+                case Number(RMDOMESTIC):
+                case Number(RMIMPORT):
+                    dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(SURFACETREATMENT):
+                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(OPERATIONS):
+                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(BOPDOMESTIC):
+                case Number(BOPIMPORT):
+                    dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(EXCHNAGERATE):
+                    dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(MACHINERATE):
+                    dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                case Number(COMBINED_PROCESS):
+                    dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -343,7 +358,7 @@ function CostingSimulation(props) {
             costingId: data.CostingId
         }
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldNetOperationCost, NewOperationCost: data.NewNetOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency, NewNetCC: data.NewNetCC, OldNetCC: data.OldNetCC
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldNetOperationCost, NewOperationCost: data.NewNetOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency, NewNetCC: data.NewNetCC, OldNetCC: data.OldNetCC, OldMachineRate: data.OldMachineRate, NewMachineRate: data.NewMachineRate
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -412,7 +427,11 @@ function CostingSimulation(props) {
         let isSelected = e.node.isSelected()
         setGridSelection(isSelected, e.node)
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (tableData.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     /**
     * @method setGridSelection
     * @description SET REJECTED DATA FOR API RESPONSE
@@ -493,7 +512,7 @@ function CostingSimulation(props) {
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell !== null ? cell : '-'
+        return (cell !== ' ' && cell !== null && cell !== '' && cell !== undefined) ? cell : '-';
     }
 
     const revisionFormatter = (props) => {
@@ -669,6 +688,13 @@ function CostingSimulation(props) {
         return cell != null ? temp : '-';
     }
 
+    const processFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = row.IsMultiProcess === true ? 'Multiple Process' : cell
+        return cell != null ? temp : '-';
+    }
+
     const oldSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -793,12 +819,19 @@ function CostingSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        return `${props.value}(${props.data.PlantCode})`
+        return `${props.value}`
     }
 
     const impactPerQuarterFormatter = (props) => {
         const cell = props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    }
+
+    const processCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetProcessCost > row.OldNetProcessCost) ? 'red-value form-control' : (row.NewNetProcessCost < row.OldNetProcessCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const hideColumn = (props) => {
@@ -859,14 +892,16 @@ function CostingSimulation(props) {
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
         setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
-        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineProcessSimulation === true ? true : false)
         setShowCombinedProcessColumn(costingSimulationListAllKeys?.IsCombinedProcessSimulation === true ? true : false)
+
         setIsMultipleMasterSimulation(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
-            costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||
-            costingSimulationListAllKeys?.IsRawMaterialSimulation === true || costingSimulationListAllKeys?.IsOperationSimulation === true ||
-            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true || costingSimulationListAllKeys?.IsCombinedProcessSimulation === true)
-
-
+            costingSimulationListAllKeys?.IsCombinedProcessSimulation === true ||
+            costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||
+            costingSimulationListAllKeys?.IsRawMaterialSimulation === true ||
+            costingSimulationListAllKeys?.IsOperationSimulation === true ||
+            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ||
+            costingSimulationListAllKeys?.IsMachineProcessSimulation === true)
 
         // let arr = [], countFalse = 0
         // costingList && costingList.map((item) => {
@@ -937,6 +972,14 @@ function CostingSimulation(props) {
             {value ? (row.NewNetCC > row.OldNetCC ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
+    }
+
+    /**
+     * @method hyphenFormatter
+     */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -1010,6 +1053,10 @@ function CostingSimulation(props) {
                 finalGrid = [...finalGrid, ...ERGridForToken]
                 isTokenAPI = true
             }
+            if (showMachineRateColumn || isMachineRate) {
+                finalGrid = [...finalGrid, ...MRGridForToken]
+                isTokenAPI = true
+            }
             // if (showMachineRateColumn || isMachineRate) {
             //     finalGrid = [...finalGrid, ...OperationGridForToken]
             // isTokenAPI = true
@@ -1023,23 +1070,29 @@ function CostingSimulation(props) {
             finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
         }
 
-        switch (Number(master)) {
-            case Number(RMDOMESTIC):
-            case Number(RMIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(SURFACETREATMENT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(OPERATIONS):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
-            case Number(EXCHNAGERATE):
-                return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
-            case Number(COMBINED_PROCESS):
-                return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
-            default:
-                return 'foo'
+        if (isMultiTechnology) {
+            return returnExcelColumn(CostingSimulationDownloadAssemblyTechnology, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+        } else {
+            switch (Number(master)) {
+                case Number(RMDOMESTIC):
+                case Number(RMIMPORT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(SURFACETREATMENT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(OPERATIONS):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(BOPDOMESTIC):
+                case Number(BOPIMPORT):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                case Number(EXCHNAGERATE):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                case Number(MACHINERATE):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                case Number(COMBINED_PROCESS):
+                    return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                default:
+                    return 'foo'
+            }
         }
     }
 
@@ -1060,7 +1113,7 @@ function CostingSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -1151,14 +1204,17 @@ function CostingSimulation(props) {
         netBOPPartCostFormatter: netBOPPartCostFormatter,
         netCCFormatter: netCCFormatter,
         plantFormatter: plantFormatter,
-        impactPerQuarterFormatter: impactPerQuarterFormatter
+        impactPerQuarterFormatter: impactPerQuarterFormatter,
+        hyphenFormatter: hyphenFormatter,
+        processCostFormatter: processCostFormatter,
+        processFormatter: processFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
     return (
         <>
             {
-                loader ? <LoaderCustom customClass={`center-loader`} /> :
+                false ? <LoaderCustom customClass={`center-loader`} /> :
 
                     !showApprovalHistory &&
 
@@ -1208,13 +1264,12 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-                                            >
+                                            <div className="ag-theme-material p-relative" >
+                                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
@@ -1238,12 +1293,13 @@ function CostingSimulation(props) {
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
                                                     onRowSelected={onRowSelected}
+                                                    onFilterModified={onFloatingFilterChanged}
                                                 >
 
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor(Code)'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant(Code)'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
@@ -1297,8 +1353,11 @@ function CostingSimulation(props) {
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
-                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>}
-                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>}
+                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
+                                                    {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
+                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Old Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
+                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NewNetProcessCost" headerName='New Net Process Cost' cellRenderer='processCostFormatter'></AgGridColumn>}
+                                                    {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Net Process Cost Variance' cellRenderer={decimalFormatter} ></AgGridColumn>}
 
 
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
@@ -1318,7 +1377,17 @@ function CostingSimulation(props) {
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" headerName='Old Net Child Parts Cost With Quantity' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" headerName='New Net Child Parts Cost With Quantity' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
+                                                    <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact for Quarter(INR)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Budgeted Price Impact/Quarter' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Budgeted Price Variance' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>}
@@ -1396,7 +1465,7 @@ function CostingSimulation(props) {
                                 simulationDetail={simulationDetail}
                                 selectedRowData={selectedRowData}
                                 costingArr={costingArr}
-                                master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                                master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
                                 apiData={apiData}
@@ -1422,7 +1491,7 @@ function CostingSimulation(props) {
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                                 approvalSummaryTrue={false}
-                                TypeOfCosting={amendmentDetails.CostingHead}
+                                TypeOfCosting={amendmentDetails.SimulationHeadId}
                             />
                         }
                     </div >
@@ -1442,7 +1511,7 @@ function CostingSimulation(props) {
                     simulationDetail={simulationDetail}
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
-                    master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                    master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                     simulationMode={true}

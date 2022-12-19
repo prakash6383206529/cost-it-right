@@ -198,6 +198,7 @@ function AddFreight(props) {
     let totalFreightCost = ''
     switch (Text) {
       case 'RM':
+      case 'Part Cost':
         totalFreightCost = NetRawMaterialsCost * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
@@ -210,6 +211,7 @@ function AddFreight(props) {
         break;
 
       case 'RM + CC':
+      case 'Part Cost + CC':
         totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
@@ -227,12 +229,14 @@ function AddFreight(props) {
         break;
 
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         totalFreightCost = (RMBOPCC) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         totalFreightCost = (RMBOP) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)

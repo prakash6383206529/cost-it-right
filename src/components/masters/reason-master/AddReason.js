@@ -11,6 +11,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddReason extends Component {
   constructor(props) {
@@ -20,7 +21,8 @@ class AddReason extends Component {
       IsActive: true,
       ReasonId: '',
       DataToCheck: [],
-      setDisable: false
+      setDisable: false,
+      showPopup: false
     }
   }
 
@@ -86,7 +88,16 @@ class AddReason extends Component {
     this.props.setEmptyReason();
     this.toggleDrawer('', type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -149,47 +160,48 @@ class AddReason extends Component {
     const { handleSubmit, isEditFlag, } = this.props;
     const { setDisable } = this.state
     return (
-      <Drawer
-        anchor={this.props.anchor}
-        open={this.props.isOpen}
-      // onClose={(e) => this.toggleDrawer(e)}
-      >
-        {this.state.isLoader && <LoaderCustom />}
-        <Container>
-          <div className={"drawer-wrapper"}>
-            <form
-              noValidate
-              className="form"
-              onSubmit={handleSubmit(this.onSubmit.bind(this))}
-              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-            >
-              <Row className="drawer-heading">
-                <Col>
-                  <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
-                  </div>
-                  <div
-                    onClick={this.cancel}
-                    className={"close-button right"}
-                  ></div>
-                </Col>
-              </Row>
-              <Row className="pl-3">
-                <Col md="12">
-                  <Field
-                    label={`Reason`}
-                    name={"Reason"}
-                    type="text"
-                    placeholder={this.state.isEditFlag ? '-' : "Enter"}
-                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
-                    component={renderText}
-                    required={true}
-                    className=" "
-                    customClassName=" withBorder"
-                    disabled={this.state.isEditFlag ? true : false}
-                  />
-                </Col>
-                {/* <Col md="6">
+      <>
+        <Drawer
+          anchor={this.props.anchor}
+          open={this.props.isOpen}
+        // onClose={(e) => this.toggleDrawer(e)}
+        >
+          {this.state.isLoader && <LoaderCustom />}
+          <Container>
+            <div className={"drawer-wrapper"}>
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+              >
+                <Row className="drawer-heading">
+                  <Col>
+                    <div className={"header-wrapper left"}>
+                      <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
+                    </div>
+                    <div
+                      onClick={this.cancel}
+                      className={"close-button right"}
+                    ></div>
+                  </Col>
+                </Row>
+                <Row className="pl-3">
+                  <Col md="12">
+                    <Field
+                      label={`Reason`}
+                      name={"Reason"}
+                      type="text"
+                      placeholder={this.state.isEditFlag ? '-' : "Enter"}
+                      validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
+                      component={renderText}
+                      required={true}
+                      className=" "
+                      customClassName=" withBorder"
+                      disabled={this.state.isEditFlag ? true : false}
+                    />
+                  </Col>
+                  {/* <Col md="6">
                                     <Col className={'pull-right'}>
                                         <label
                                             className="custom-checkbox pull-right"
@@ -209,33 +221,37 @@ class AddReason extends Component {
                                         </label>
                                     </Col>
                                 </Col> */}
-              </Row>
+                </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between px-3">
-                <div className="col-sm-12 text-right px-3">
-                  <button
-                    type={"button"}
-                    className=" mr15 cancel-btn"
-                    onClick={() => { this.cancel('cancel') }}
-                    disabled={setDisable}
-                  >
-                    <div className={"cancel-icon"}></div>
-                    {"Cancel"}
-                  </button>
-                  <button
-                    type="submit"
-                    className="user-btn save-btn"
-                    disabled={setDisable}
-                  >
-                    <div className={"save-icon"}></div>
-                    {isEditFlag ? "Update" : "Save"}
-                  </button>
-                </div>
-              </Row>
-            </form>
-          </div>
-        </Container>
-      </Drawer>
+                <Row className="sf-btn-footer no-gutters justify-content-between px-3">
+                  <div className="col-sm-12 text-right px-3">
+                    <button
+                      type={"button"}
+                      className=" mr15 cancel-btn"
+                      onClick={this.cancelHandler}
+                      disabled={setDisable}
+                    >
+                      <div className={"cancel-icon"}></div>
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type="submit"
+                      className="user-btn save-btn"
+                      disabled={setDisable}
+                    >
+                      <div className={"save-icon"}></div>
+                      {isEditFlag ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </Row>
+              </form>
+            </div>
+          </Container>
+        </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
+      </>
     );
   }
 }

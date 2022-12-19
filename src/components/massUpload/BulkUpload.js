@@ -4,19 +4,19 @@ import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
 import { checkForNull, getJsDateFromExcel } from "../../helper/validation";
 import {
-    bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
+    bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportCBC, bulkUploadRMDomesticCBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
-import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
+import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC, bulkUploadMachineCBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
-import { operationZBCBulkUpload, operationVBCBulkUpload } from '../masters/actions/OtherOperation';
+import { operationZBCBulkUpload, operationVBCBulkUpload, operationCBCBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
-import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
-import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
-import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../masters/actions/InterestRateMaster';
+import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticCBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportCBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
+import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
+import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -24,10 +24,12 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
-import { BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticVBC, RMDomesticZBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { MESSAGES } from '../../config/message';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -41,10 +43,11 @@ class BulkUpload extends Component {
 
             faildRecords: false,
             failedData: [],
-            costingHead: props?.fileName === "InterestRate" ? 'VBC' : 'ZBC',
             uploadfileName: "",
             setDisable: false,
-            bulkUploadLoader: false
+            bulkUploadLoader: false,
+            costingTypeId: props?.fileName === "InterestRate" ? VBCTypeId : ZBCTypeId,
+            showPopup: false
         }
     }
 
@@ -84,14 +87,23 @@ class BulkUpload extends Component {
         })
         this.toggleDrawer('')
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onPressHeads
     * @description Used for Costing head check
     */
     onPressHeads = (costingHeadFlag) => {
         setTimeout(() => {
-            this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+            this.setState({ costingTypeId: costingHeadFlag, fileData: [], uploadfileName: "" });
         }, 300);
     }
 
@@ -109,6 +121,7 @@ class BulkUpload extends Component {
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
+            this.setState({ bulkUploadLoader: false })
         } else {
             let data = new FormData()
             data.append('file', fileObj)
@@ -121,39 +134,51 @@ class BulkUpload extends Component {
                     let checkForFileHead
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC), fileHeads)
+                            if (this.state.costingTypeId === ZBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads)
                             }
-                            else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC), fileHeads)
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(RMIMPORTBULKUPLOAD):
 
-                            if (this.state.costingHead === 'ZBC') {
+                            if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads)
                             }
-                            else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC), fileHeads)
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(RMSPECIFICATION):
                             checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
-                            if (this.state.costingHead === 'VBC') {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC), fileHeads)
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC, VBCTypeId), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(BOP_CBC_DOMESTIC, fileHeads)
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
+                            if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
                             }
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT, VBCTypeId), fileHeads)
+                            }
                             else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
@@ -163,11 +188,14 @@ class BulkUpload extends Component {
                             checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
                             break;
                         case String(MACHINEBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC), fileHeads)
+                            if (this.state.costingTypeId === ZBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC, ZBCTypeId), fileHeads)
                             }
-                            else if (this.state.costingHead === 'VBC') {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC), fileHeads)
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC, VBCTypeId), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineCBC, ZBCTypeId), fileHeads)
                             }
                             else {
                                 checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(MHRMoreZBC), fileHeads)
@@ -180,34 +208,48 @@ class BulkUpload extends Component {
                             checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
+                            if (this.state.costingTypeId === ZBCTypeId) {
 
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperation), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperation), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperation), fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
                             break;
                         case String(INTERESTRATEBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCInterestRate), fileHeads)
+                            }
                             break;
                         case String(ACTUALVOLUMEBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
+                            if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_ZBC, fileHeads)
                             }
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_VBC, VBCTypeId), fileHeads)
+                            }
                             else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(BUDGETEDVOLUMEBULKUPLOAD):
-                            if (this.state.costingHead === 'ZBC') {
+                            if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_ZBC, fileHeads)
                             }
-                            else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC), fileHeads)
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         default:
@@ -231,7 +273,7 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
                                     el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
@@ -269,7 +311,7 @@ class BulkUpload extends Component {
             let DynamicData = res?.data?.DynamicData;
 
             if (Data?.CountSucceeded > 0) {
-                Toaster.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
+                Toaster.success(`${Data.CountSucceeded} ${messageLabel} uploaded successfully.`)
                 if (DynamicData && DynamicData?.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }
@@ -292,7 +334,7 @@ class BulkUpload extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { fileData, costingHead } = this.state;
+        const { fileData, costingTypeId } = this.state;
         const { fileName, isFinalApprovar } = this.props;
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
@@ -309,26 +351,35 @@ class BulkUpload extends Component {
         }
         this.setState({ setDisable: true })
 
-        if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
+        if (fileName === 'RMDomestic' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadRMDomesticZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
+        } else if (fileName === 'RMDomestic' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadRMDomesticVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-
-        } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
+        } else if (fileName === 'RMDomestic' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadRMDomesticCBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+        } else if (fileName === 'RMImport' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadRMImportZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'RMImport' && costingHead === 'VBC') {
+        } else if (fileName === 'RMImport' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadRMImportVBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+        } else if (fileName === 'RMImport' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadRMImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -345,14 +396,20 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Operation' && costingHead === 'ZBC') {
+        } else if (fileName === 'Operation' && costingTypeId === ZBCTypeId) {
             this.props.operationZBCBulkUpload(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Operation' && costingHead === 'VBC') {
+        } else if (fileName === 'Operation' && costingTypeId === VBCTypeId) {
             this.props.operationVBCBulkUpload(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'Operation' && costingTypeId === CBCTypeId) {
+            this.props.operationCBCBulkUpload(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -380,80 +437,106 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'Machine' && costingHead === 'ZBC') {
+        } else if (fileName === 'Machine' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadMachineZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Machine' && costingHead === 'VBC') {
+        } else if (fileName === 'Machine' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadMachineVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Machine' && costingHead === 'ZBC_MACHINE_MORE') {
+        } else if (fileName === 'Machine' && costingTypeId === ZBCADDMORE) {
             this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-
+        } else if (fileName === 'Machine' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadMachineCBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
         } else if (fileName === 'PartComponent') {
             this.props.partComponentBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
+        } else if (fileName === 'BOPDomestic' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadBOPDomesticZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
+        } else if (fileName === 'BOPDomestic' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadBOPDomesticVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
+        } else if (fileName === 'BOPDomestic' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadBOPDomesticCBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
+        } else if (fileName === 'BOPImport' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadBOPImportZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
-            this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
+        } else if (fileName === 'BOPImport' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadBOPImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'ActualVolume' && costingHead === 'ZBC') {
+        } else if (fileName === 'ActualVolume' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'ActualVolume' && costingHead === 'VBC') {
+        } else if (fileName === 'ActualVolume' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadVolumeActualVBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BudgetedVolume' && costingHead === 'ZBC') {
+        } else if (fileName === 'ActualVolume' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadVolumeActualCBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BudgetedVolume' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadVolumeBudgetedZBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BudgetedVolume' && costingHead === 'VBC') {
+        } else if (fileName === 'BudgetedVolume' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadVolumeBudgetedVBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InterestRate' && costingHead === 'VBC') {
+        } else if (fileName === 'BudgetedVolume' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadVolumeBudgetedCBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'InterestRate' && costingTypeId === VBCTypeId) {
             this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+        } else if (fileName === 'InterestRate' && costingTypeId === CBCTypeId) {
+            this.props.bulkUploadInterestRateCBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -463,7 +546,6 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-
         }
 
         else {
@@ -478,124 +560,140 @@ class BulkUpload extends Component {
      */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
-        const { faildRecords, failedData, costingHead, setDisable } = this.state;
+        const { faildRecords, failedData, costingTypeId, setDisable } = this.state;
         if (faildRecords) {
             return <Downloadxls
                 isFailedFlag={true}
                 fileName={fileName}
                 failedData={failedData}
-                costingHead={costingHead}
+                costingTypeId={costingTypeId}
             />
         }
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen}
-            // onClose={(e) => this.toggleDrawer(e)}
-            >
-                <Container>
-                    <div className={'drawer-wrapper WIDTH-400'}>
-                        <form
-                            noValidate
-                            className="form"
-                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                        >
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
+            <>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
+                // onClose={(e) => this.toggleDrawer(e)}
+                >
+                    <Container>
+                        <div className={'drawer-wrapper WIDTH-400'}>
+                            <form
+                                noValidate
+                                className="form"
+                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                            >
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
+                                        </div>
+                                        <div
+                                            onClick={(e) => this.toggleDrawer(e)}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
 
-                            <Row className="pl-3">
-                                {isZBCVBCTemplate &&
-                                    <Col md="12">
-                                        {fileName !== 'InterestRate' &&
-                                            <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                <Row className="pl-3">
+                                    {isZBCVBCTemplate &&
+                                        <Col md="12">
+                                            {fileName !== 'InterestRate' &&
+                                                <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={
+                                                            costingTypeId === ZBCTypeId ? true : false
+                                                        }
+                                                        onClick={() => this.onPressHeads(ZBCTypeId)}
+                                                    />{' '}
+                                                    <span>Zero Based</span>
+                                                </Label>
+                                            }
+                                            <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
-                                                    checked={costingHead === 'ZBC' ? true : false}
-                                                    onClick={() => this.onPressHeads('ZBC')}
+                                                    checked={costingTypeId === VBCTypeId ? true : fileName === 'InterestRate' ? true : false}
+                                                    onClick={() => this.onPressHeads(VBCTypeId)}
                                                 />{' '}
-                                                <span>Zero Based</span>
+                                                <span>Vendor Based</span>
                                             </Label>
-                                        }
-                                        <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                            <input
-                                                type="radio"
-                                                name="costingHead"
-                                                checked={costingHead === 'VBC' ? true : fileName === 'InterestRate' ? true : false}
-                                                onClick={() => this.onPressHeads('VBC')}
-                                            />{' '}
-                                            <span>Vendor Based</span>
-                                        </Label>
-                                        {isMachineMoreTemplate &&
-                                            <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
-                                                    checked={costingHead === 'ZBC_MACHINE_MORE' ? true : false}
-                                                    onClick={() => this.onPressHeads('ZBC_MACHINE_MORE')}
+                                                    checked={costingTypeId === CBCTypeId ? true : false}
+                                                    onClick={() => this.onPressHeads(CBCTypeId)}
                                                 />{' '}
-                                                <span>ZBC More Details</span>
-                                            </Label>}
-                                    </Col>}
+                                                <span>Customer Based</span>
+                                            </Label>
+                                            {isMachineMoreTemplate &&
+                                                <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === ZBCADDMORE ? true : false}
+                                                        onClick={() => this.onPressHeads(ZBCADDMORE)}
+                                                    />{' '}
+                                                    <span>ZBC More Details</span>
+                                                </Label>}
+                                        </Col>}
 
-                                <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
-                                    <Downloadxls
-                                        isZBCVBCTemplate={isZBCVBCTemplate}
-                                        isMachineMoreTemplate={isMachineMoreTemplate}
-                                        fileName={fileName}
-                                        isFailedFlag={false}
-                                        costingHead={costingHead}
-                                    />
-                                </div>
-
-                                <div className="input-group mt25 col-md-12 input-withouticon " >
-                                    <div className="file-uploadsection">
-                                        {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
-                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
-                                        <input
-                                            ref={this.fileUploadRef}
-                                            type="file"
-                                            name="File"
-                                            onChange={this.fileHandler}
-                                            onClick={(event) => { event.target.value = [] }}
-                                            //accept="xls/*"
-                                            className="" placeholder="bbb" />
-                                        <p> {this.state.uploadfileName}</p>
+                                    <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
+                                        <Downloadxls
+                                            isZBCVBCTemplate={isZBCVBCTemplate}
+                                            isMachineMoreTemplate={isMachineMoreTemplate}
+                                            fileName={fileName}
+                                            isFailedFlag={false}
+                                            costingTypeId={costingTypeId}
+                                        />
                                     </div>
-                                </div>
 
-                            </Row>
-                            <Row className=" justify-content-between">
-                                <div className="col-sm-12  text-right">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel}
-                                        disabled={setDisable}
-                                    >
-                                        <div className={'cancel-icon'}></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button save-btn"
-                                        disabled={setDisable}
-                                    >
-                                        <div className={"save-icon"}></div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
-                        </form>
-                    </div>
-                </Container>
-            </Drawer>
+                                    <div className="input-group mt25 col-md-12 input-withouticon " >
+                                        <div className="file-uploadsection">
+                                            {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
+                                            <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
+                                            <input
+                                                ref={this.fileUploadRef}
+                                                type="file"
+                                                name="File"
+                                                onChange={this.fileHandler}
+                                                onClick={(event) => { event.target.value = [] }}
+                                                //accept="xls/*"
+                                                className="" placeholder="bbb" />
+                                            <p> {this.state.uploadfileName}</p>
+                                        </div>
+                                    </div>
+
+                                </Row>
+                                <Row className=" justify-content-between">
+                                    <div className="col-sm-12  text-right">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancelHandler}
+                                            disabled={setDisable}
+                                        >
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button save-btn"
+                                            disabled={setDisable}
+                                        >
+                                            <div className={"save-icon"}></div>
+                                            {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
+                                    </div>
+                                </Row>
+                            </form>
+                        </div>
+                    </Container>
+                </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
+            </>
         );
     }
 }
@@ -644,7 +742,17 @@ export default connect(mapStateToProps, {
     bulkUploadVolumeBudgetedZBC,
     bulkUploadVolumeBudgetedVBC,
     bulkUploadInterestRateZBC,
-    bulkUploadInterestRateVBC
+    bulkUploadInterestRateVBC,
+    bulkUploadInterestRateCBC,
+    bulkUploadRMDomesticCBC,
+    bulkUploadRMImportCBC,
+    operationCBCBulkUpload,
+    bulkUploadMachineCBC,
+    bulkUploadBOPDomesticCBC,
+    bulkUploadBOPImportCBC,
+    bulkUploadVolumeActualCBC,
+    bulkUploadVolumeBudgetedCBC
+
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

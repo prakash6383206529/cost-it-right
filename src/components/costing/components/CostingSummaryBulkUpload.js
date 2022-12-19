@@ -174,7 +174,7 @@ class CostingSummaryBulkUpload extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
 
         };
         const frameworkComponents = {
@@ -221,7 +221,7 @@ class CostingSummaryBulkUpload extends Component {
                     <div className="ag-grid-react">
                         <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material">

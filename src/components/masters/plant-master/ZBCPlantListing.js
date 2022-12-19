@@ -7,7 +7,7 @@ import { fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -113,6 +113,7 @@ class ZBCPlantListing extends Component {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+                this.setState({ dataCount: 0 })
                 this.filterList()
 
             }
@@ -238,7 +239,7 @@ class ZBCPlantListing extends Component {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
             city: city && city.hasOwnProperty('value') ? city.value : '',
-            is_vendor: false,
+            CostingTypeId: ZBCTypeId
         }
         this.props.getFilteredPlantList(filterData, (res) => {
             this.setState({ isLoader: false })
@@ -269,6 +270,8 @@ class ZBCPlantListing extends Component {
         }, () => {
             if (type === 'submit') {
                 this.filterList()
+                this.setState({ noData: false })
+                this.setState({ dataCount: 0 })
             }
         })
 
@@ -355,7 +358,7 @@ class ZBCPlantListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -395,7 +398,8 @@ class ZBCPlantListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
@@ -415,8 +419,7 @@ class ZBCPlantListing extends Component {
 
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        <SelectRowWrapper dataCount={this.state.dataCount} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     {!this.state.isLoader && < div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

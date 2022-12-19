@@ -59,15 +59,16 @@ function ApproveRejectDrawer(props) {
     /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
     if (!isSimulation) {
       dispatch(getAllApprovalDepartment((res) => {
-        const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : approvalData[0].DepartmentId))
 
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+        const Data = res?.data?.SelectList
+        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+
+        setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0]?.Value,
-          TechnologyId: approvalData[0]?.TechnologyId,
+          DepartmentId: departObj && departObj[0]?.Value,
+          TechnologyId: approvalData && approvalData[0]?.TechnologyId,
           ReasonId: reasonId
         }
 
@@ -318,6 +319,7 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
+
       approvalData.map(ele => {
         Data.push({
           ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
@@ -343,11 +345,11 @@ function ApproveRejectDrawer(props) {
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
-              Toaster.success('The costing has been approved')
+              Toaster.success('The costing approved successfully')
               setOpenPushButton(true)
 
             } else {
-              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -478,7 +480,7 @@ function ApproveRejectDrawer(props) {
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
-              Toaster.success('The simulation token has been approved')
+              Toaster.success('The simulation token approved successfully')
               setOpenPushButton(true)
 
             } else {
@@ -497,10 +499,10 @@ function ApproveRejectDrawer(props) {
                 // pushObj.LoggedInUserId = userLoggedIn
                 // pushObj.AmmendentDataRequests = temp
                 // dispatch(pushAPI(pushObj, () => { }))
-                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit', status)
               } else {
-                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               }
             }
@@ -511,7 +513,7 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('The simulation token has been rejected')
+            Toaster.success('The simulation token rejected successfully')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -577,6 +579,23 @@ function ApproveRejectDrawer(props) {
       }))
     } else {
       getApproversList(value.value, value.label)
+      // dispatch(
+      //   getAllSimulationApprovalList(simObj, (res) => {
+      //     res.data.DataList &&
+      //       res.data.DataList.map((item) => {
+      //         if (item.Value === '0') return false;
+      //         tempDropdownList.push({
+      //           label: item.Text,
+      //           value: item.Value,
+      //           levelId: item.LevelId,
+      //           levelName: item.LevelName
+      //         })
+      //         return null
+      //       })
+      //     setApprovalDropDown(tempDropdownList)
+      //   },
+      //   ),
+      // )
     }
   }
 
@@ -776,7 +795,13 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{
+                      required: type === 'Approve' ? false : true,
+                      maxLength: {
+                        value: 255,
+                        message: "Remark should be less than 255 word"
+                      },
+                    }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""

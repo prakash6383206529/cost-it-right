@@ -166,8 +166,8 @@ class TaxListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
       </>
     )
   }
@@ -207,7 +207,7 @@ class TaxListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
     };
     const frameworkComponents = {
 
@@ -251,7 +251,7 @@ class TaxListing extends Component {
               <div className="ag-grid-react">
                 <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.taxDataList && this.props.taxDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                   <div className="ag-grid-header">
-                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                   </div>
                   <div
                     className="ag-theme-material">

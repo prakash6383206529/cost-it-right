@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { COMBINED_PROCESS_NAME, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,9 +16,10 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
-import { getConfigurationKey } from '../../../../helper';
+import { getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { hyphenFormatter } from '../../../masters/masterUtil';
+import { ViewCostingContext } from '../CostingDetails';
 
 const gridOptions = {};
 
@@ -29,6 +30,7 @@ function AddProcess(props) {
   const [isTabSwitch, setIsTabSwitch] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
   // const [processGroup, setProcessGroup] = useState(true)
   // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
   const processGroup = getConfigurationKey().IsMachineProcessGroup
@@ -38,6 +40,7 @@ function AddProcess(props) {
   const costData = useContext(costingInfoContext)
   const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup, selectedProcessId, selectedProcessGroupId } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
+  const CostingViewMode = useContext(ViewCostingContext);
 
   /**
   * @method toggleDrawer
@@ -83,70 +86,41 @@ function AddProcess(props) {
   }, [processDrawerList])
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      let data = {}
-
-      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      } else {
-        data = {
-          PlantId: costData.PlantId,
-          TechnologyId: String(costData?.TechnologyId),
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
+    let data = {}
+    if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
       }
-      dispatch(getProcessDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
-          setTableDataList(filteredData)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-      let data = {}
-      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      else {
-        data = {
-          VendorId: costData.VendorId,
-          TechnologyId: String(costData?.TechnologyId),
-          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-          CostingId: costData.CostingId,
-          EffectiveDate: CostingEffectiveDate,
-        }
-      }
-      dispatch(getProcessDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          const filteredData = Data && Data.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME)
-          setTableDataList(filteredData)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
     }
+    else {
+      data = {
+        VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        TechnologyId: String(costData?.TechnologyId),
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        CostingTypeId: costData.CostingTypeId,
+        CustomerId: costData.CustomerId
+      }
+    }
+    dispatch(getProcessDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
   }, []);
 
   const onRowSelect = (event) => {
@@ -181,7 +155,11 @@ function AddProcess(props) {
     }
     setSelectedRowData(selectedRows)
   }
-
+  const onFloatingFilterChanged = (value) => {
+    if (tableData.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   /**
   * @method addRow
   * @description ADD ROW IN TO RM COST GRID
@@ -215,7 +193,7 @@ function AddProcess(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
@@ -317,7 +295,7 @@ function AddProcess(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Process:'}</h3>
+                    <h3>{'ADD PROCESS:'}</h3>
                   </div>
                   <div
                     onClick={cancel}
@@ -355,16 +333,15 @@ function AddProcess(props) {
                       <TabPane tabId="1">
                         <Row className="mx-0">
                           <Col className="pt-2 px-0">
-                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                   <div className="refresh mr-0"></div>
                                 </button>
                               </div>
-                              <div
-                                className="ag-theme-material"
-                              >
+                              <div className="ag-theme-material p-relative">
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                                 <AgGridReact
                                   style={{ height: '100%', width: '100%' }}
                                   defaultColDef={defaultColDef}
@@ -382,6 +359,7 @@ function AddProcess(props) {
                                     imagClass: 'imagClass'
                                   }}
                                   suppressRowClickSelection={true}
+                                  onFilterModified={onFloatingFilterChanged}
                                   rowSelection={'multiple'}
                                   frameworkComponents={frameworkComponents}
                                   onRowSelected={onRowSelect}
@@ -427,7 +405,9 @@ function AddProcess(props) {
                   <button
                     type={'button'}
                     className="submit-button save-btn"
-                    onClick={addRow} >
+                    onClick={addRow}
+                    disabled={CostingViewMode}
+                  >
                     <div className={'save-icon'}></div>
                     {'SELECT'}
                   </button>

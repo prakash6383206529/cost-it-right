@@ -6,7 +6,7 @@ import Role from './RolePermissions/Role';
 import { getLeftMenu, } from '../../actions/auth/AuthActions';
 import { checkPermission } from '../../helper/util';
 import { getConfigurationKey } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
+import { USER, ROLE, DEPARTMENT, LEVELS, RFQUSER } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
@@ -26,10 +26,12 @@ class User extends Component {
       isRolePermissionForm: false,
       data: {},
       ViewUserAccessibility: false,
+      ViewRFQUserAccessibility: false,
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
-      count: 0
+      count: 0,
+      RFQUser: false
     }
   }
 
@@ -50,11 +52,13 @@ class User extends Component {
       const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
       const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DEPARTMENT)
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
+      const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === RFQUSER)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
       const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
       const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
+      const rfqUserData = RfqUserPermissions && RfqUserPermissions.Actions && checkPermission(RfqUserPermissions.Actions)
 
       if (userData !== undefined) {
 
@@ -62,6 +66,15 @@ class User extends Component {
           if (userData[prop] === true) {
             isFirstTabActive = true
             this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+          }
+        }
+      }
+
+      if (rfqUserData !== undefined) {
+
+        for (var propRfq in rfqUserData) {
+          if (rfqUserData[propRfq] === true) {
+            this.setState({ ViewRFQUserAccessibility: true, activeTab: isFirstTabActive ? '1' : '5' })
           }
         }
       }
@@ -117,8 +130,8 @@ class User extends Component {
     }
   }
 
-  displayForm = () => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, })
+  displayForm = (RFQUser) => {
+    this.setState({ isUserForm: true, isRolePermissionForm: false, RFQUser: RFQUser })
   }
 
   displayRoleForm = () => {
@@ -130,7 +143,7 @@ class User extends Component {
   }
 
   getUserDetail = (data) => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data, RFQUser: data.RFQUser })
   }
 
   getRoleDetail = (data) => {
@@ -143,12 +156,13 @@ class User extends Component {
   */
   render() {
     const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, } = this.state;
+      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility } = this.state;
 
     if (isUserForm === true) {
       return <UserRegistration
         data={data}
         hideForm={this.hideForm}
+        RFQUser={this.state.RFQUser}
       />
     }
 
@@ -185,11 +199,19 @@ class User extends Component {
                 Manage Levels
               </NavLink>
             </NavItem>}
+
+            {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
+              <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                RFQ User
+              </NavLink>
+            </NavItem>}
+
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
             {this.state.activeTab === '1' && ViewUserAccessibility &&
               <TabPane tabId="1">
                 <UsersListing
+                  RFQUser={false}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
                 />
@@ -210,6 +232,14 @@ class User extends Component {
               <TabPane tabId="4">
                 <LevelsListing
                   toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '5' && ViewRFQUserAccessibility &&
+              <TabPane tabId="5">
+                <UsersListing
+                  RFQUser={true}
+                  formToggle={this.displayForm}
+                  getUserDetail={this.getUserDetail}
+                />
               </TabPane>}
           </TabContent>
         </div>

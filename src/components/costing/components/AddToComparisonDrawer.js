@@ -4,11 +4,11 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/Common'
+import { getPlantSelectListByType, getPlantSelectListReducer } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
-import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
+import { getCostingByVendorAndVendorPlant, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper'
@@ -18,19 +18,17 @@ function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
   const { editObject, isEditFlag, viewMode } = props
 
-  const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
-    vendorPlantName, vendorPlantId, destinationPlantName, destinationPlantId } = editObject
-
-
+  const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
+    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId } = editObject
 
   const defaultValue = {
-    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
-    // comparisonValue: 'VBC',
+    comparisonValue: isEditFlag ? costingTypeId === ZBCTypeId ? 'ZBC' : costingTypeId === VBCTypeId ? 'VBC' : 'CBC' : 'ZBC',
     plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
-    costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
+    costings: isEditFlag && costingTypeId === 1 ? { label: CostingNumber, value: costingId } : '',
     vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
     vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
     destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
+    clientName: customerId !== '-' ? { label: customerName, value: customerId } : '',
   }
 
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -51,11 +49,13 @@ function AddToComparisonDrawer(props) {
 
   const [vendorId, setVendorId] = useState(editObject.VendorId ? editObject.VendorId : [])
   /* constant for checkbox rendering condition */
-  const [isZbcSelected, setIsZbcSelected] = useState(false)  // FALSE FOR MINDA 
-
-  const [isVbcSelected, setIsVbcSelected] = useState(true) //TRUE FOR MINDA AS BY DEFAULT TO SHOW VBC
+  const [isZbcSelected, setIsZbcSelected] = useState(true)
+  const [CustomerId, setCustomerId] = useState(editObject.customerId ? editObject.customerId : [])
+  const [isVbcSelected, setIsVbcSelected] = useState(false)
 
   const [isCbcSelected, setisCbcSelected] = useState(false)
+  const [isNccSelected, setisNccSelected] = useState(false)
+  const [showCostingSection, setShowCostingSection] = useState({})
 
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
@@ -65,6 +65,7 @@ function AddToComparisonDrawer(props) {
   const costingSelectList = useSelector((state) => state.costing.costingSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
 
 
   /* For getting part no for costing dropdown */
@@ -90,27 +91,49 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(true)
       setIsZbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      //    dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      setisNccSelected(false)
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+        // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+
+        dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
+      }),
+      )
     }
 
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-      /***************************FOR MINDA***************************************** */
-      setIsZbcSelected(false)
-      setIsVbcSelected(true)
-      setisCbcSelected(false)
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      if (VendorId && VendorId !== '-') {
-
-        if (getConfigurationKey().IsDestinationPlantConfigure) {
-          dispatch(getPlantSelectListByType(ZBC, () => { }))
-        } else if (getConfigurationKey().IsVendorPlantConfigurable) {
-          dispatch(getPlantBySupplier(VendorId, (res) => { }))
-        }
-        dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId ? vendorPlantId : '00000000-0000-0000-0000-000000000000', destinationPlantId ? destinationPlantId : '00000000-0000-0000-0000-000000000000', () => { }))
+      if (costingTypeId === ZBCTypeId) { //ZBC COSTING CONDITION
+        setIsZbcSelected(true)
+        setIsVbcSelected(false)
+        setisCbcSelected(false)
+        setisNccSelected(false)
+        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
+        commonApiCall(ZBCTypeId)
+      } else if (costingTypeId === VBCTypeId) {//VBC COSTING CONDITION
+        setIsZbcSelected(false)
+        setIsVbcSelected(true)
+        setisCbcSelected(false)
+        setisNccSelected(false)
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+        // dispatch(getPlantBySupplier(VendorId, (res) => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        commonApiCall(VBCTypeId)
+      }
+      else if (costingTypeId === NCCTypeId) {
+        setIsZbcSelected(false)
+        setIsVbcSelected(false)
+        setisCbcSelected(false)
+        setisNccSelected(true)
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        commonApiCall(NCCTypeId)
+      } else if (costingTypeId === CBCTypeId) {//CBC COSTING CONDITION
+        setIsZbcSelected(false)
+        setIsVbcSelected(false)
+        setisNccSelected(false)
+        setisCbcSelected(true)
+        dispatch(getClientSelectList(() => { }))
+        commonApiCall(CBCTypeId)
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
       }
       // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
 
@@ -132,16 +155,28 @@ function AddToComparisonDrawer(props) {
       //   setisCbcSelected(true)
       // }
     }
+    const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === COSTING);
+    const ZBCAccessData = Data && Data.Pages.find(el => el.PageName === ZBC_COSTING)
+    const VBCAccessData = Data && Data.Pages.find(el => el.PageName === VBC_COSTING)
+    const NCCAccessData = Data && Data.Pages.find(el => el.PageName === NCC_COSTING)
+    const CBCAccessData = Data && Data.Pages.find(el => el.PageName === CBC_COSTING)
+    setShowCostingSection({ ZBC: ZBCAccessData ? ZBCAccessData?.IsChecked : false, VBC: VBCAccessData ? VBCAccessData?.IsChecked : false, NCC: NCCAccessData ? NCCAccessData?.IsChecked : false, CBC: CBCAccessData ? CBCAccessData?.IsChecked : false })
   }, [])
 
   /* for showing vendor name dropdown */
   useEffect(() => {
-    dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-    dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+    // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+    dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
     // setIsZbcSelected(false)
     // setIsVbcSelected(true)
     // setisCbcSelected(false)
   }, [vendorSelectList])
+
+  const commonApiCall = (costingTypeId) => {
+    if (((costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && VendorId && destinationPlantId) || (costingTypeId === CBCTypeId && customerId && destinationPlantId) || (costingTypeId === VBCTypeId && destinationPlantId)) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
+    }
+  }
 
   /**
    * @method toggleDrawer
@@ -166,40 +201,55 @@ function AddToComparisonDrawer(props) {
    */
   const handleComparison = (value) => {
     setValue('comparisonValue', value)
-    if (value === 'ZBC') {
+    if ((value) === ZBCTypeId) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
+      setisNccSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
-        if (plantId !== undefined && plantId !== '-') {
-          dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
-        }
-        dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+        commonApiCall(ZBCTypeId)
         setValue('costings', '')
-
+        setValue('plant', '')
       }))
-    } else if (value === 'VBC') {
+
+    } else if ((value) === VBCTypeId) {
+      dispatch(getPlantSelectListReducer([]))
       setCostingDropdown([])
       setIsZbcSelected(false)
       setIsVbcSelected(true)
       setisCbcSelected(false)
+      setisNccSelected(false)
       setValue('costings', '')
+      setValue('vendor', '')
+      setValue('destinationPlant', '')
+      commonApiCall(VBCTypeId)
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-      dispatch(getCostingByVendorAndVendorPlant('', '', '', '', () => { }))
 
-    } else if (value === 'CBC') {
+    } else if ((value) === CBCTypeId) {
+      dispatch(getPlantSelectListReducer([]))
       setisCbcSelected(true)
       setIsZbcSelected(false)
       setIsVbcSelected(false)
+      setisNccSelected(false)
       setCostingDropdown([])
+      setValue('clientName', '')
       setValue('costings', '')
-      dispatch(getClientSelectList((res) => {
-        dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-        dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-
-      }),
+      setValue('plant', '')
+      dispatch(getClientSelectList((res) => { }),
+        commonApiCall(CBCTypeId)
       )
+    } else if ((value) === NCCTypeId) {
+      setisCbcSelected(false)
+      setIsZbcSelected(false)
+      setIsVbcSelected(false)
+      setisNccSelected(true)
+      setValue('costings', '')
+      setValue('vendor', '')
+      setValue('destinationPlant', '')
+      setCostingDropdown([])
+      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      commonApiCall(NCCTypeId)
     }
   }
 
@@ -209,21 +259,27 @@ function AddToComparisonDrawer(props) {
    */
   const handleVendorChange = ({ value }) => {
     setVendorId(value)
-    if (loggedIn) {
-      dispatch(getPlantBySupplier(value, (res) => { }),
-        // dispatch(
-        //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
-        //   }),
-        //   )
-        setValue('costings', '')
-      )
-    } else {
-      handleVendorNameChange('')
-    }
+    setValue('destinationPlant', '')
+
+    // dispatch(getPlantBySupplier(value, (res) => { }),
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    // dispatch(
+    //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
+    //   }),
+    //   )
+    setValue('costings', '')
   }
-
-
-
+  const handleCustomerChange = (v) => {
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
+    setValue('plant', '')
+    setTimeout(() => {
+      setCustomerId(v.value)
+    }, 500);
+    if (!getConfigurationKey().IsCBCApplicableOnPlant) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, () => { }))
+    }
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+  }
   /**
    * @method onSubmit
    * @description Handling form submisson seting value
@@ -251,95 +307,95 @@ function AddToComparisonDrawer(props) {
           obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
           obj.CostingNumber = dataFromAPI.CostingNumber ? dataFromAPI.CostingNumber : '-'
           obj.status = dataFromAPI.CostingStatus ? dataFromAPI.CostingStatus : '-'
-          obj.rm = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI.CostingPartDetails?.CostingRawMaterialsCost[0].RMName : '-'
-          obj.gWeight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetGrossWeight ? dataFromAPI.CostingPartDetails?.NetGrossWeight : 0
-          obj.fWeight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetFinishWeight ? dataFromAPI.CostingPartDetails?.NetFinishWeight : 0
+          obj.rm = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].RMName : '-'
+          obj.gWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetGrossWeight ? dataFromAPI?.CostingPartDetails?.NetGrossWeight : 0
+          obj.fWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFinishWeight ? dataFromAPI?.CostingPartDetails?.NetFinishWeight : 0
           obj.netRM = dataFromAPI.NetRawMaterialsCost && dataFromAPI.NetRawMaterialsCost ? dataFromAPI.NetRawMaterialsCost : 0
-          obj.netBOP = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI.CostingPartDetails?.NetBoughtOutPartCost : 0
-          obj.pCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProcessCost ? dataFromAPI.CostingPartDetails?.NetProcessCost : 0
-          obj.oCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOperationCost ? dataFromAPI.CostingPartDetails?.NetOperationCost : 0
-          obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI.CostingPartDetails?.SurfaceTreatmentCost : 0
+          obj.netBOP = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
+          obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
+          obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
+          obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
           obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
-          obj.tCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetTransportationCost ? dataFromAPI.CostingPartDetails?.NetTransportationCost : 0
-          obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetConversionCost ? dataFromAPI.CostingPartDetails?.NetConversionCost : 0
-          obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
-          obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails?.NetSurfaceTreatmentCost : 0
+          obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
+          obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
+          obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
+          obj.netSurfaceTreatmentCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
 
 
-          obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.ModelType ? dataFromAPI.CostingPartDetails?.ModelType : '-'
+          obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
           obj.aValue = { applicability: 'Applicability', value: 'Value', }
           obj.overheadOn = {
-            overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
-            overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails?.NetOverheadCost : '-'
+            overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
+            overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-'
           }
 
           obj.profitOn = {
-            profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-',
-            profitValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI.CostingPartDetails?.NetProfitCost : '-'
+            profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-',
+            profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-'
           }
 
           obj.rejectionOn = {
-            rejectionTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-',
-            rejectionValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0,
+            rejectionTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-',
+            rejectionValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0,
           }
 
           obj.iccOn = {
-            iccTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-',
-            iccValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
+            iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-',
+            iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
           }
 
           obj.paymentTerms = {
-            paymentTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
-            paymentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
+            paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
+            paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
           }
 
 
-          obj.nOverheadProfit = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI.CostingPartDetails?.NetOverheadAndProfitCost : 0
+          obj.nOverheadProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
 
-          obj.packagingCost = dataFromAPI.CostingPartDetails
-            && dataFromAPI.CostingPartDetails?.NetPackagingCost !== null ? dataFromAPI.CostingPartDetails?.NetPackagingCost
+          obj.packagingCost = dataFromAPI?.CostingPartDetails
+            && dataFromAPI?.CostingPartDetails?.NetPackagingCost !== null ? dataFromAPI?.CostingPartDetails?.NetPackagingCost
             : 0
-          obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetFreightCost !== null ? dataFromAPI.CostingPartDetails?.NetFreightCost : 0
-          obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails?.NetFreightPackagingCost : 0
+          obj.freight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightCost !== null ? dataFromAPI?.CostingPartDetails?.NetFreightCost : 0
+          obj.nPackagingAndFreight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost ? dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost : 0
 
 
-          obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails?.BOPHandlingCharges : 0
-          obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails?.BOPHandlingPercentage : 0
-          obj.bopHandlingChargeType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI.CostingPartDetails?.BOPHandlingChargeType : ''
+          obj.bopPHandlingCharges = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingCharges !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingCharges : 0
+          obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
+          obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
-          obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
-          obj.toolPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
-          obj.amortizationQty = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
+          obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
+          obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
+          obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
 
           obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
           obj.toolApplicabilityValue = {
-            toolTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0,
-            toolValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
+            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0,
+            toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
 
-          obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
-          obj.totalToolCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetToolCost !== null ? dataFromAPI.CostingPartDetails?.NetToolCost : 0
+          obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
+          obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
 
-          obj.totalCost = dataFromAPI.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'
+          obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : 0
           obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
           obj.otherDiscountValue = {
-            discountPercentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0,
-            discountValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0,
-            discountApplicablity: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0,
-            dicountType: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
+            discountPercentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0,
+            discountValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0,
+            discountApplicablity: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0,
+            dicountType: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
           }
 
 
-          obj.anyOtherCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.AnyOtherCost : 0
-          obj.anyOtherCostType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.OtherCostType !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.OtherCostType : '-'
-          obj.anyOtherCostApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.OtherCostApplicability : 0
-          obj.anyOtherCostPercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.OtherCostPercentage !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.OtherCostPercentage : 0
-          obj.remark = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.Remark !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.Remark : '-'
-          obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency : 0
+          obj.anyOtherCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost : 0
+          obj.anyOtherCostType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType : '-'
+          obj.anyOtherCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostApplicability : 0
+          obj.anyOtherCostPercent = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostPercentage : 0
+          obj.remark = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Remark !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Remark : '-'
+          obj.nPOPriceWithCurrency = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency : 0
           obj.currency = {
-            currencyTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency : '-',
-            currencyValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate : '-',
+            currencyTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-',
+            currencyValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate : '-',
           }
 
 
@@ -349,32 +405,32 @@ function AddToComparisonDrawer(props) {
           obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : []
           obj.approvalButton = ''
           // //RM
-          obj.netRMCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingRawMaterialsCost : []
+          obj.netRMCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost : []
           // //BOP Cost
-          obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingBoughtOutPartCost : []
+          obj.netBOPCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingBoughtOutPartCost : []
           // //COnversion Cost
-          obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingConversionCost : '-'
-          obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
-          obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.SurfaceTreatmentDetails : []
+          obj.netConversionCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingConversionCost : '-'
+          obj.netTransportationCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
+          obj.surfaceTreatmentDetails = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentDetails : []
           // //OverheadCost and Profit
-          obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingOverheadDetail : '-'
-          obj.netProfitCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingProfitDetail : '-'
+          obj.netOverheadCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail : '-'
+          obj.netProfitCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail : '-'
           // // Rejection
-          obj.netRejectionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail : '-'
+          obj.netRejectionCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail : '-'
 
           //payment terms and ICC
-          obj.netPaymentIccCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail : '-'
+          obj.netPaymentIccCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail : '-'
 
           // //Net Packaging and Freight
-          obj.netPackagingCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingPackagingDetail : []
-          obj.netFreightCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingFreightDetail : []
+          obj.netPackagingCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingPackagingDetail : []
+          obj.netFreightCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingFreightDetail : []
           // //Tool Cost
-          obj.netToolCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse : []
+          obj.netToolCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse : []
           obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
           // //For Drawer Edit
-          obj.partId = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.PartId ? dataFromAPI.CostingPartDetails?.PartId : '-' // PART NUMBER KEY NAME
-          obj.partNumber = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.PartNumber ? dataFromAPI.CostingPartDetails?.PartNumber : '-'
+          obj.partId = dataFromAPI && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartId ? dataFromAPI?.CostingPartDetails?.PartId : '-' // PART NUMBER KEY NAME
+          obj.partNumber = dataFromAPI && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartNumber ? dataFromAPI?.CostingPartDetails?.PartNumber : '-'
 
           obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
           obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
@@ -395,19 +451,19 @@ function AddToComparisonDrawer(props) {
           obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
           obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
           obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
-          obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.PartName ? dataFromAPI.CostingPartDetails?.PartName : '-'
+          obj.partName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartName ? dataFromAPI?.CostingPartDetails?.PartName : '-'
           obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
-          obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MasterBatchTotal ? dataFromAPI.CostingPartDetails?.MasterBatchTotal : 0
-          obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails?.MasterBatchRMPrice : 0
-          obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI.CostingPartDetails?.MasterBatchPercentage : 0
-          obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails?.IsApplyMasterBatch : false
+          obj.masterBatchTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchTotal ? dataFromAPI?.CostingPartDetails?.MasterBatchTotal : 0
+          obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
+          obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
+          obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
           obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
-          obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges : []
-          obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.MasterBatchRMName ? dataFromAPI.CostingPartDetails?.MasterBatchRMName : '-'
+          obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
+          obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'
           obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
-          obj.RawMaterialCalculatorId = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
+          obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
           //MASTER BATCH OBJECT
-          obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse : []
+          obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse : []
           obj.NCCPartQuantity = dataFromAPI.NCCPartQuantity && dataFromAPI.NCCPartQuantity !== null ? dataFromAPI.NCCPartQuantity : '';
           obj.IsRegularized = dataFromAPI.IsRegularized && dataFromAPI.IsRegularized !== null ? dataFromAPI.IsRegularized : '';
           obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
@@ -419,35 +475,46 @@ function AddToComparisonDrawer(props) {
 
           //USED FOR DOWNLOAD PURPOSE
 
-          obj.overHeadApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-'
-          obj.overHeadApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails?.NetOverheadCost : '-'
-          obj.ProfitApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-'
-          obj.ProfitApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI.CostingPartDetails?.NetProfitCost : '-'
-          obj.rejectionApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-'
-          obj.rejectionApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
-          obj.iccApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
-          obj.iccApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-          obj.paymentApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
-          obj.paymentcApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
-          obj.toolMaintenanceCostApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
-          obj.toolMaintenanceCostApplicablityValue = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
-          obj.otherDiscountType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
-          obj.otherDiscountApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0
-          obj.otherDiscountValuePercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0
-          obj.otherDiscountCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
-          obj.currencyTitle = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI.CostingPartDetails?.OtherCostDetails.Currency : '-'
+          obj.overHeadApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-'
+          obj.overHeadApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-'
+          obj.ProfitApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-'
+          obj.ProfitApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-'
+          obj.rejectionApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-'
+          obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
+          obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
+          obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
+          obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
+          obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
+          obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
+          obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
+          obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
+          obj.otherDiscountApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0
+          obj.otherDiscountValuePercent = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0
+          obj.otherDiscountCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
+          obj.currencyTitle = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-'
           obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
           obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
-          obj.PoPriceWithDate = `${obj?.poPrice}(${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
-          obj.plantCode = obj?.zbc === 0 ? `${obj?.plantName} (${obj?.plantCode})` : `${obj?.destinationPlantName} (${obj?.destinationPlantCode})`
+          obj.PoPriceWithDate = `${obj?.poPrice} (${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
           obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
           obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
           obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
           obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
+          obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
+          obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
+          obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
+          obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
+          obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
+          obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName} (${dataFromAPI.PlantCode})` : `${dataFromAPI.DestinationPlantName} (${dataFromAPI.DestinationPlantCode})`
 
-
+          // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
+          obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
+          obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
+          obj.netProcessCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
+          obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
+          obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
+          obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -465,7 +532,6 @@ function AddToComparisonDrawer(props) {
               setisCbcSelected(false)
             } else {
               if (isVbcSelected) {
-
                 setIsVbcSelected(true)
                 setIsZbcSelected(false)
                 setisCbcSelected(false)
@@ -473,7 +539,7 @@ function AddToComparisonDrawer(props) {
                 setIsVbcSelected(false)
                 setIsZbcSelected(true)
                 setisCbcSelected(false)
-              } else {
+              } else if (isCbcSelected) {
                 setIsVbcSelected(false)
                 setIsZbcSelected(false)
                 setisCbcSelected(true)
@@ -501,11 +567,20 @@ function AddToComparisonDrawer(props) {
    * @description Getting costing dropdown on basis of plant selection
    */
   const handlePlantChange = (value) => {
-    dispatch(
-      getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, value.value, (res) => {
+    setCustomerId(value)
+    if (isZbcSelected) {
+      dispatch(
+        getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, (res) => {
+          setValue('costings', '')
+        }),
+      )
+    }
+    else if (isCbcSelected) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, CustomerId, CBCTypeId, (res) => {
         setValue('costings', '')
       }),
-    )
+      )
+    }
   }
 
   /**
@@ -517,10 +592,10 @@ function AddToComparisonDrawer(props) {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
-    dispatch(
-      getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, value, (res) => {
-        setValue('costings', '')
-      }),
+    // dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value.value, '', '', '', costingTypeId, (res) => {
+      setValue('costings', '')
+    }),
     )
   }
 
@@ -533,12 +608,31 @@ function AddToComparisonDrawer(props) {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
-    dispatch(
-      getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, vendorId, '00000000-0000-0000-0000-000000000000', value, (res) => {
+    if (isVbcSelected) {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
         setValue('costings', '')
       }),
+      )
+    }
+
+  }
+
+  const handleDestinationPlantNameChangeForNCC = ({ value }) => {
+    setVendorId(value)
+    if (value === '') {
+      value = '00000000-0000-0000-0000-000000000000'
+    }
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+
+  }
+  const handleVendorChangeForNCC = ({ value }) => {
+    // setValue('destinationPlant', '')
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value.value, '', '', '', costingTypeId, (res) => {
+      setValue('costings', '')
+    }),
     )
   }
+
 
   /**
    * @method renderListing
@@ -570,13 +664,13 @@ function AddToComparisonDrawer(props) {
       })
       return temp
     }
-    if (label === 'client') {
-      clientSelectList && clientSelectList.map((item) => {
-        if (item.Value === '0') return false
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
+        return null;
+      });
+      return temp;
     }
     if (label === 'costing') {
       if (viewMode === true) {
@@ -635,31 +729,58 @@ function AddToComparisonDrawer(props) {
             </Row>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Row className="pl-3 mb-2">
-                <RadioHookForm
-                  className={"filter-from-section"}
-                  name={"comparisonValue"}
-                  control={control}
-                  // Controller={Controller}
-                  register={register}
-                  onChange={handleComparison}
-                  defaultValue={defaultValue.comparisonValue}
-                  dataArray={[
-                    // THIS IS FOR MINDA 
-                    // { 
-                    //   label: "ZBC",
-                    //   optionsValue: "ZBC",
-                    // },
-                    {
-                      label: "VBC",
-                      optionsValue: "VBC",
-                    },
-                    // {
-                    //   label: "CBC",
-                    //   optionsValue: "CBC",
-                    // },
-                  ]}
-                />
+              <Row className="pl-3 my-3">
+                <Col>
+                  {showCostingSection.ZBC &&
+                    <RadioHookForm
+                      customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                      className={"filter-form-section mr-1"}
+                      name={"ZBC"}
+                      label={"ZBC"}
+                      defaultValue={isZbcSelected}
+                      control={control}
+                      Controller={Controller}
+                      register={register}
+                      handleChange={() => handleComparison(ZBCTypeId)}
+                    />}
+                  {showCostingSection.VBC && <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"VBC"}
+                    label={"VBC"}
+                    defaultValue={isVbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison(VBCTypeId)}
+                  />}
+                  {showCostingSection.CBC && <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"CBC"}
+                    label={"CBC"}
+                    defaultValue={isCbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison(CBCTypeId)}
+                  />}
+
+                  {/******************* THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
+                  {/*  {showCostingSection.NCC &&  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline"
+                    className={"filter-form-section mr-1"}
+                    name={"NCC"}
+                    label={"NCC"}
+                    defaultValue={isNccSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison(NCCTypeId)}
+                  />} */}
+                  {/****************** THIS CODE WILL USE AFTER DEPLOYED CODE FROM BACKEND */}
+
+                </Col>
               </Row>
               <Row className="pl-3">
                 {isZbcSelected && (
@@ -719,7 +840,7 @@ function AddToComparisonDrawer(props) {
                     {getConfigurationKey().IsDestinationPlantConfigure && (
                       <Col md="12">
                         <SearchableSelectHookForm
-                          label={"Destination Plant"}
+                          label={"Destination Plant (Code)"}
                           name={"destinationPlant"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -740,7 +861,7 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Client Name"}
+                        label={"Customer (Code)"}
                         name={"clientName"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -748,14 +869,68 @@ function AddToComparisonDrawer(props) {
                         rules={{ required: true }}
                         register={register}
                         //defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderListing('client')}
+                        options={renderListing("ClientList")}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={handleCustomerChange}
                         errors={errors.clientName}
                       />
                     </Col>
+                    {getConfigurationKey().IsCBCApplicableOnPlant && (
+                      <Col md="12">
+                        <SearchableSelectHookForm
+                          label={"Plant (Code)"}
+                          name={"plant"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={isEditFlag ? plantName : ""}
+                          options={renderListing('DestinationPlant')}
+                          mandatory={true}
+                          handleChange={handlePlantChange}
+                          errors={errors.plant}
+                        />
+                      </Col>
+                    )}
                   </>
-                )} */}
+                )}*/}
+                {isNccSelected && <>
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
+                    <Col md="12">
+                      <SearchableSelectHookForm
+                        label={"Destination Plant (Code)"}
+                        name={"destinationPlant"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderListing('DestinationPlant')}
+                        mandatory={true}
+                        handleChange={handleDestinationPlantNameChangeForNCC}
+                        errors={errors.destinationPlant}
+                      />
+                    </Col>
+                  )}
+                  <Col md="12">
+                    <SearchableSelectHookForm
+                      label={"Vendor"}
+                      name={"vendor"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      // defaultValue={plant.length !== 0 ? plant : ''}
+                      options={renderListing('vendor')}
+                      mandatory={true}
+                      handleChange={handleVendorChangeForNCC}
+                      errors={errors.vendor}
+                    />
+                  </Col>
+                </>}
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Costing Version"}

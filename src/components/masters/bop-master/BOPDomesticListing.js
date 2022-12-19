@@ -28,6 +28,8 @@ import { hyphenFormatter } from '../masterUtil';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -58,9 +60,11 @@ class BOPDomesticListing extends Component {
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            inRangeDate: [],
+            analyticsDrawer: false,
+            selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -110,7 +114,22 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
+
+
+        if (this.state.filterModel?.EffectiveDateNew && !isReset) {
+            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+                let temp = []
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+
+        }
+        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+
+
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
 
@@ -210,6 +229,7 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+
         if (this.props.bopDomesticList?.length !== 0) {
             this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
         }
@@ -262,7 +282,8 @@ class BOPDomesticListing extends Component {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: isViewMode
+            isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
@@ -308,6 +329,11 @@ class BOPDomesticListing extends Component {
     }
 
 
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowData: rowData, analyticsDrawer: true })
+    }
+
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -336,6 +362,7 @@ class BOPDomesticListing extends Component {
 
         return (
             <>
+                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -463,7 +490,7 @@ class BOPDomesticListing extends Component {
                 item.Vendor = ' '
             }
 
-            if (item.EffectiveDate.includes('T')) {
+            if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
@@ -482,6 +509,8 @@ class BOPDomesticListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
+
+
     /**
     * @method render
     * @description Renders the component
@@ -492,9 +521,21 @@ class BOPDomesticListing extends Component {
 
         var filterParams = {
             date: "",
+            inRangeInclusive: true,
+            filterOptions: ['equals', 'inRange'],
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+                handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
+
+                let date = document.getElementsByClassName('ag-input-field-input')
+                for (let i = 0; i < date.length; i++) {
+                    if (date[i].type == 'radio') {
+                        date[i].click()
+                    }
+                }
+
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
@@ -523,6 +564,21 @@ class BOPDomesticListing extends Component {
 
         }
 
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+        }
 
         const isFirstColumn = (params) => {
 
@@ -538,9 +594,9 @@ class BOPDomesticListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props.benchMark) ? isFirstColumn : false,
             checkboxSelection: isFirstColumn
         };
 
@@ -553,6 +609,11 @@ class BOPDomesticListing extends Component {
             checkBoxRenderer: this.checkBoxRenderer,
             commonCostFormatter: this.commonCostFormatter
         };
+
+        const closeAnalyticsDrawer = () => {
+
+            this.setState({ analyticsDrawer: false })
+        }
 
         const onRowSelect = (event) => {
 
@@ -591,6 +652,15 @@ class BOPDomesticListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
         }
 
         return (
@@ -598,15 +668,14 @@ class BOPDomesticListing extends Component {
             <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="3" lg="3">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                         <div className="cancel-icon-white"></div></button>
@@ -651,24 +720,16 @@ class BOPDomesticListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {/* DOWNLOAD */}
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        </button>
 
-                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                        </button></div> :
-
-                                            <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>
-
-                                                <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-
-                                            </>
-
-                                        }
+                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
+                                            </button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -684,9 +745,9 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -714,8 +775,9 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
-                                    <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
@@ -750,6 +812,24 @@ class BOPDomesticListing extends Component {
                         isFinalApprovar={this.state.isFinalApprovar}
                     />
                 }
+
+                {
+                    this.state.analyticsDrawer &&
+                    <AnalyticsDrawer
+                        isOpen={this.state.analyticsDrawer}
+                        ModeId={2}
+                        closeDrawer={closeAnalyticsDrawer}
+                        anchor={"right"}
+                        isReport={this.state.analyticsDrawer}
+                        selectedRowData={this.state.selectedRowData}
+                        isSimulation={true}
+                        //cellValue={cellValue}
+                        rowData={this.state.selectedRowData}
+                    />
+                }
+
+
+
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                 }

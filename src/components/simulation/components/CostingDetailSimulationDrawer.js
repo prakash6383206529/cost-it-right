@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, COMBINED_PROCESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
 
@@ -52,8 +52,7 @@ function CostingDetailSimulationDrawer(props) {
                 <Drawer
                     anchor={props.anchor}
                     open={props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
-                >
+                    BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
                     <Container>
                         <div className={"drawer-wrapper drawer-1500px simulation-costing-details-drawers"}>
                             <form noValidate className="form">
@@ -185,14 +184,27 @@ function CostingDetailSimulationDrawer(props) {
                                                 </Col>
                                             </>
                                         }
+                                        {
+                                            (Number(master) === Number(MACHINERATE)) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Old Machine Rate</label>
+                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New Machine Rate</label>
+                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
                                     </Row>
                                 }
                                 {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} />
-                            </form >
-                        </div >
-                    </Container >
-                </Drawer >
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props.fromCostingSummary} />
+                            </form>
+                        </div>
+                    </Container>
+                </Drawer>
             </>}
 
             {

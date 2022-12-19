@@ -9,7 +9,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { checkForDecimalAndNull, formViewData } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, searchNocontentFilter } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
@@ -31,7 +31,7 @@ function AssemblyWiseImpactSummary(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [showViewAssembly, setShowViewAssembly] = useState(false)
-
+    const [noData, setNoData] = useState(false);
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { initialConfiguration } = useSelector(state => state.auth)
     const dispatch = useDispatch()
@@ -72,7 +72,7 @@ function AssemblyWiseImpactSummary(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
     };
 
 
@@ -133,7 +133,11 @@ function AssemblyWiseImpactSummary(props) {
             </>
         )
     }
-
+    const onFloatingFilterChanged = (value) => {
+        if (simulationAssemblyListSummary.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
@@ -148,7 +152,7 @@ function AssemblyWiseImpactSummary(props) {
             <Row>
                 <Col>
                     <div className="ag-grid-header assembly-wise-impact-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
@@ -165,10 +169,9 @@ function AssemblyWiseImpactSummary(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${simulationAssemblyListSummary && simulationAssemblyListSummary?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div
-                            className="ag-theme-material"
-                        >
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(simulationAssemblyListSummary && simulationAssemblyListSummary?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className="ag-theme-material p-relative" >
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                             <AgGridReact
                                 style={{ height: '100%', width: '100%' }}
                                 defaultColDef={defaultColDef}
@@ -185,6 +188,7 @@ function AssemblyWiseImpactSummary(props) {
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
                                 }}
+                                onFilterModified={onFloatingFilterChanged}
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="PartNumber" headerName='Assembly Number' cellRenderer={'hyphenFormatter'}></AgGridColumn>

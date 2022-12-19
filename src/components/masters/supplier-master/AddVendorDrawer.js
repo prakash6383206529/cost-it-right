@@ -17,6 +17,7 @@ import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -38,7 +39,8 @@ class AddVendorDrawer extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             isViewMode: this.props?.isViewMode ? true : false,
-            setDisable: false
+            setDisable: false,
+            showPopup: false
         }
     }
 
@@ -48,7 +50,7 @@ class AddVendorDrawer extends Component {
     */
     UNSAFE_componentWillMount() {
         if (!this.props.isViewMode) {
-            this.props.getVendorTypesSelectList()
+            this.props.getVendorTypesSelectList(() => { })
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
@@ -266,11 +268,11 @@ class AddVendorDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event, type) => {
+    toggleDrawer = (event, formData, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', type)
+        this.props.closeDrawer('', formData, type)
     };
 
     /**
@@ -290,9 +292,18 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('', type)
+        this.toggleDrawer('', formData, type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('submit')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -330,7 +341,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
                 DataToCheck.AddressLine2 === values.AddressLine2) {
 
-                this.toggleDrawer('', 'cancel')
+                this.toggleDrawer('', '', 'cancel')
                 return false
             }
             this.setState({ setDisable: true })
@@ -373,12 +384,14 @@ class AddVendorDrawer extends Component {
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
                 CityId: city.value,
+                VendorId: VendorId,
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
+                    formData.VendorId = res.data.Identity
                     this.cancel(formData, 'submit');
                 }
             })
@@ -404,7 +417,7 @@ class AddVendorDrawer extends Component {
                 >
                     {this.state.isLoader && <LoaderCustom customClass={`${isEditFlag ? 'update-vendor-loader' : ''}`} />}
                     <Container >
-                        <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
+                        <div className={`drawer-wrapper drawer-700px`}>
                             <form
                                 noValidate
                                 className="form"
@@ -417,7 +430,7 @@ class AddVendorDrawer extends Component {
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
+                                            onClick={(e) => this.toggleDrawer(e, '', 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>
@@ -644,7 +657,7 @@ class AddVendorDrawer extends Component {
                                             type={'button'}
                                             disabled={this.state.isLoader || setDisable}
                                             className=" mr15 cancel-btn"
-                                            onClick={this.cancel} >
+                                            onClick={this.cancelHandler} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
@@ -661,6 +674,9 @@ class AddVendorDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
                 {isOpenVendorPlant && <AddVendorPlantDrawer
                     isOpen={isOpenVendorPlant}
                     closeDrawer={this.closeVendorDrawer}

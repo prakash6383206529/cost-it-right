@@ -1,0 +1,151 @@
+import React, { useState, useEffect, Fragment } from 'react'
+import { checkForDecimalAndNull } from '../../../../helper'
+import { Container, Row, Col, Table } from 'reactstrap'
+import Drawer from '@material-ui/core/Drawer'
+import NoContentFound from '../../../common/NoContentFound'
+import { BOUGHTOUTPART, EMPTY_DATA } from '../../../../config/constants'
+import { useDispatch, useSelector } from 'react-redux'
+import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { setCostingViewData } from '../../actions/Costing'
+
+function ViewMultipleTechnology(props) {
+    const { multipleTechnologyData, isPDFShow } = props
+    const [viewMultiCost, setViewMultiCost] = useState([])
+    const [costingDetailId, setCostingDetailId] = useState('')
+    const [openDrawer, setOpemDrawer] = useState(false)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        setViewMultiCost(multipleTechnologyData)
+    }, [])
+    /**
+     * @method toggleDrawer
+     * @description closing drawer
+     */
+    const toggleDrawer = (event) => {
+        if (
+            event.type === 'keydown' &&
+            (event.key === 'Tab' || event.key === 'Shift')
+        ) {
+            return
+        }
+        props.closeDrawer('')
+    }
+    const viewCosting = (id) => {
+        setCostingDetailId(id)
+        setOpemDrawer(true)
+        reactLocalStorage.setObject('viewCostingData', viewCostingData)
+        dispatch(setCostingViewData([]))
+    }
+    const closeDrawerPartCost = (e = '') => {
+        setOpemDrawer(false)
+        let tempObj = reactLocalStorage.getObject('viewCostingData')
+        dispatch(setCostingViewData(tempObj))
+    }
+
+    const multipleCost = () => {
+        return <>
+            <Row>
+                <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm">
+                        <thead>
+                            <tr>
+                                <th>{`Costing Number`}</th>
+                                <th>{`Part Number`}</th>
+                                <th>{`Name`}</th>
+                                <th>{`Part Type`}</th>
+                                <th>{`Technology`}</th>
+                                <th>{`Quantity`}</th>
+                                <th>{`Part Cost/Pc`}</th>
+                                <th>{`BOP Cost`}</th>
+                                <th>{`Part Cost/Assembly`}</th>
+                                <th className="costing-border-right">{`Action`}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {viewMultiCost &&
+                                viewMultiCost.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.CostingNumber}>{item.CostingNumber}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartNumber}>{item.PartNumber}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartName}>{item.PartName}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartTypeName}>{item.PartTypeName}</span></td>
+
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.TechnologyName}>{item.TechnologyName}</span></td>
+                                            <td> {item.Quantity}</td>
+                                            <td>
+                                                {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
+                                            </td>
+                                            <td>
+                                                {checkForDecimalAndNull(item.NetBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                            </td>
+                                            <td>
+                                                {checkForDecimalAndNull(item.NetChildPartsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                            </td>
+                                            <td> {item.PartTypeName !== BOUGHTOUTPART && <button
+                                                type="button"
+                                                title='View'
+                                                className="float-right mb-0 View "
+                                                onClick={() => viewCosting(item)}
+                                            > </button>}</td>
+                                        </tr>
+                                    )
+                                })}
+                            {viewMultiCost?.length === 0 && (
+                                <tr>
+                                    <td colSpan={9}>
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>
+        </>
+    }
+    return (
+        <Fragment>
+            {!isPDFShow ?
+                <Drawer
+                    anchor={props.anchor}
+                    open={props.isOpen}
+                // onClose={(e) => toggleDrawer(e)}
+                >
+                    <Container>
+                        <div className={'drawer-wrapper drawer-1500px'}>
+                            <Row className="drawer-heading">
+                                <Col>
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{'View Multiple Technology cost:'}</h3>
+                                    </div>
+                                    <div
+                                        onClick={(e) => toggleDrawer(e)}
+                                        className={'close-button right'}
+                                    ></div>
+                                </Col>
+                            </Row>
+                            {multipleCost()}
+
+
+                        </div>
+                    </Container>
+                </Drawer> : <div className='mt-2'>
+                    {viewMultiCost.length !== 0 && multipleCost()}</div>}
+            {openDrawer && <EditPartCost
+                isOpen={openDrawer}
+                closeDrawer={closeDrawerPartCost}
+                anchor={'right'}
+                tabAssemblyIndividualPartDetail={costingDetailId}
+                costingSummary={true}
+            />}
+
+        </Fragment>
+    )
+}
+
+export default React.memo(ViewMultipleTechnology)

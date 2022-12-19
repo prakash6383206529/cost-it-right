@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col } from 'reactstrap'
+import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,12 +11,12 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
 import { ErrorMessage } from '../SimulationUtils';
-import { VBC } from '../../../config/constants';
+import { VBC, VBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, TypeOfCosting } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, CostingTypeId, TypeOfCosting } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
@@ -46,6 +46,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
@@ -66,7 +67,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBC || TypeOfCosting === 1)) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBCTypeId)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -104,38 +105,30 @@ function VerifyImpactDrawer(props) {
               </Row>
               {!costingDrawer && <Row >
                 <Col md="12">
-                  <div className="border impact-drawer-header">
-                    <span class=" mr-2">
-                      <span class="grey-text d-block">Vendor :</span>
-                      <span>{amendmentDetails.Vendor}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Technology:</span>
-                      <span>{amendmentDetails.Technology}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Master:</span>
-                      <span>{amendmentDetails.SimulationAppliedOn}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Costing Head:</span>
-                      <span>{amendmentDetails.CostingHead}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Effective Date:</span>
-                      <span>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
-                    </span>
-
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Impact for Quarter(INR):</span>
-                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</span>
-                    </span>
-
-                  </div>
+                  <Table responsive className="border impact-drawer-table sub-table">
+                    <tbody>
+                      <tr>
+                        <th>Vendor:</th>
+                        <th>Technology:</th>
+                        <th>Master:</th>
+                        <th>Costing Head:</th>
+                        <th>Effective Date:</th>
+                        <th>Impact for Quarter(INR):</th>
+                        <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr>
+                        <td>{amendmentDetails.Vendor}</td>
+                        <td>{amendmentDetails.Technology}</td>
+                        <td>{amendmentDetails.SimulationAppliedOn}</td>
+                        <td>{amendmentDetails.CostingHead}</td>
+                        <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
+                        <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{amendmentDetails.totalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
                 </Col>
               </Row>}
 
@@ -218,7 +211,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(TypeOfCosting === VBC || TypeOfCosting === 1) && <>
+              {(TypeOfCosting === VBCTypeId) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">

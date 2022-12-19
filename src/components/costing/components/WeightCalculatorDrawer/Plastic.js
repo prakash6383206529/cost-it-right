@@ -10,6 +10,8 @@ import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../helper/validation'
+import TooltipCustom from '../../../common/Tooltip'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -170,7 +172,7 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
-    DisableMasterBatchCheckbox(!item.CostingPartDetails?.IsApplyMasterBatch ? true : false)
+    DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
@@ -255,6 +257,7 @@ function Plastic(props) {
                         value: /^\d{0,4}(\.\d{0,6})?$/i,
                         message: 'Maximum length for integer is 4 and for decimal is 6',
                       },
+                      validate: { nonZero }
                       // maxLength: 4,
                     }}
                     handleChange={() => { }}
@@ -308,9 +311,11 @@ function Plastic(props) {
 
               <Row className={'mt25'}>
                 <Col md="3" >
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
                   <NumberFieldHookForm
                     label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
+                    id={'gross-weight-plastic'}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -348,11 +353,13 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
                   <NumberFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
                     Controller={Controller}
                     control={control}
+                    id={'scrap-weight-plastic'}
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
@@ -367,10 +374,12 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
                   <NumberFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
+                    id={'burning-allowance'}
                     control={control}
                     register={register}
                     mandatory={false}
@@ -383,10 +392,12 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Total Gross Weight * RM Rate + Burning Allowance)'} />
                   <NumberFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
                     Controller={Controller}
+                    id={'rm-cost-plactic'}
                     control={control}
                     register={register}
                     mandatory={false}
@@ -399,12 +410,14 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
+                  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = (Scrap Rate * Scrap Weight)'} />
                   <NumberFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
                     Controller={Controller}
                     control={control}
                     register={register}
+                    id={'scrap-cost-plastic'}
                     mandatory={false}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -416,11 +429,13 @@ function Plastic(props) {
                 </Col>
 
                 <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Cost + Scrap Cost)'} />
                   <NumberFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}
                     name={'materialCost'}
                     Controller={Controller}
+                    id={'net-rm-cost-plastic'}
                     control={control}
                     register={register}
                     mandatory={false}

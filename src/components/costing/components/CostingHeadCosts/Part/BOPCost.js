@@ -13,6 +13,7 @@ import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Cos
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function BOPCost(props) {
@@ -36,7 +37,7 @@ function BOPCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails?.IsApplyBOPHandlingCharges)
+  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item?.CostingPartDetails?.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
   const [percentageLimit, setPercentageLimit] = useState(false)
@@ -130,7 +131,7 @@ function BOPCost(props) {
   //   if (IsApplyBOPHandlingCharges) {
   //     handleBOPPercentageChange(getValues('BOPHandlingPercentage'))
   //   }
-  // }, [item.CostingPartDetails?.TotalBoughtOutPartCost])
+  // }, [item?.CostingPartDetails?.TotalBoughtOutPartCost])
 
   /**
    * @method netBOPCost
@@ -536,11 +537,11 @@ function BOPCost(props) {
                                     />
                                 }
                               </td>
-                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && <button className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
                                 </div>
                               </td>
                             </tr>
@@ -551,11 +552,12 @@ function BOPCost(props) {
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                              <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && <button className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Edit' className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Delete' className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
                                 </div>
                               </td>
                             </tr>

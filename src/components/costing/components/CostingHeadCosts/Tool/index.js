@@ -8,24 +8,28 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
-import { isToolDataChange, setComponentToolItemData } from '../../../actions/Costing';
+import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
+import TooltipCustom from '../../../../common/Tooltip';
+import { errorCheckObject } from '../../../CostingUtil';
 
+let counter = 0;
 function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
   const headerCosts = useContext(netHeadCostContext);
   const dispatch = useDispatch();
 
-  const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails?.CostingToolCostResponse && data.CostingPartDetails?.CostingToolCostResponse[0];
+  const ObjectForOverAllApplicability = data?.CostingPartDetails && data?.CostingPartDetails?.CostingToolCostResponse && data?.CostingPartDetails?.CostingToolCostResponse[0];
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList } = useSelector(state => state.costing)
+  const { CostingDataList, ErrorObjTools } = useSelector(state => state.costing)
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -39,10 +43,10 @@ function Tool(props) {
     ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
-    mode: 'onBlur',
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+    mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
+    defaultValues: defaultValues,
   });
 
   const [gridData, setGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
@@ -50,13 +54,15 @@ function Tool(props) {
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [applicability, setApplicability] = useState(data && data.CostingPartDetails?.CostingToolCostResponse.length > 0 && data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
-  const [valueByAPI, setValueByAPI] = useState(data && data.CostingPartDetails?.CostingToolCostResponse.length > 0 && data.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
+  const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
+  const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
+  const { costingData } = useSelector(state => state.costing)
 
-  const [toolObj, setToolObj] = useState(data.CostingPartDetails?.CostingToolCostResponse[0])
+  const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
+  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
 
 
   useEffect(() => {
@@ -69,8 +75,17 @@ function Tool(props) {
   }, [data && data?.CostingPartDetails?.CostingToolCostResponse])
 
   useEffect(() => {
-    dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, (res) => { }))
   }, [])
+
+  useEffect(() => {
+    if (checkForNull(getValues('NetToolCost')) !== 0) {
+      props.disableToggle(true)
+    } else {
+      props.disableToggle(false)
+    }
+  }, [getValues('NetToolCost')])
 
 
   const handleMaintainenceToolCostChange = (e) => {
@@ -272,6 +287,8 @@ function Tool(props) {
   */
   const onSubmit = debounce(handleSubmit((values) => {
 
+    if (errorCheckObject(ErrorObjTools)) return false;
+
     if (applicability.label !== "Fixed" && percentageLimit) {
       return false
     }
@@ -309,6 +326,7 @@ function Tool(props) {
       setApplicability([])
       setValueOfToolCost('')
     }
+    setValue('maintanencePercentage', 0)
   }
 
   const toolFieldValue = useWatch({
@@ -348,6 +366,7 @@ function Tool(props) {
 
       switch (Text) {
         case 'RM':
+        case 'Part Cost':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -388,6 +407,7 @@ function Tool(props) {
           break;
 
         case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -401,6 +421,7 @@ function Tool(props) {
           break;
 
         case 'RM + BOP':
+        case 'Part Cost + BOP':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOP * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -414,6 +435,7 @@ function Tool(props) {
           break;
 
         case 'RM + CC':
+        case 'Part Cost + CC':
           setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
@@ -524,6 +546,29 @@ function Tool(props) {
 
   }
 
+  const resetData = () => {
+    setToolObj({})
+    setTimeout(() => {
+      setValue('MaintananceCostApplicability', 0)
+    }, 100);
+    setValue('ToolMaintenanceCost', 0)
+    setValue('maintanencePercentage', 0)
+    setValue('toolCostType', '')
+    setValue('ToolCost', 0)
+    setValue('Life', 0)
+    setValue('ToolAmortizationCost', 0)
+    setValue('NetToolCost', 0)
+
+  }
+
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    counter = counter + 1;
+    dispatch(setToolsErrors(errors))
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    counter = 0
+    dispatch(setToolsErrors({}))
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -566,8 +611,8 @@ function Tool(props) {
                               <td>{item.Life}</td>
                               <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                                <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                                <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>
                           )
@@ -598,6 +643,7 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       rules={{ required: false }}
+                      buttonCross={resetData}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ""}
                       options={renderListing("Applicability")}
@@ -612,7 +658,7 @@ function Tool(props) {
 
                       <div className='mb-2'>
                         <NumberFieldHookForm
-                          label={`Maintanence Tool Cost (%)`}
+                          label={`Maintenance Tool Cost (%)`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
                           control={control}
@@ -631,7 +677,6 @@ function Tool(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          errors={errors.maintanencePercentage}
                           disabled={CostingViewMode ? true : false}
                         />
                         {percentageLimit && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Percentage cannot be greater than 100"} />}
@@ -640,7 +685,7 @@ function Tool(props) {
                       //THIS FIELD WILL RENDER WHEN APPLICABILITY TYPE FIXED
                       <div className='mb-2'>
                         <NumberFieldHookForm
-                          label={`Maintanence Tool Cost`}
+                          label={`Maintenance Tool Cost`}
                           name={'maintanencePercentage'}
                           Controller={Controller}
                           control={control}
@@ -648,7 +693,10 @@ function Tool(props) {
                           mandatory={false}
                           rules={{
                             required: false,
-                            pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                            pattern: {
+                              value: /^\d{0,6}(\.\d{0,6})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 6.',
+                            },
                           }}
                           handleChange={(e) => {
                             e.preventDefault()
@@ -680,6 +728,13 @@ function Tool(props) {
                         control={control}
                         register={register}
                         mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
+                          },
+                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -688,10 +743,11 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintenance Cost = (Maintenance Cost (%) * Cost(Applicability) / 100)"} />}
                     <TextFieldHookForm
-                      label="Tool Maintanence Cost"
+                      label="Tool Maintenance Cost"
                       name={`ToolMaintenanceCost`}
+                      id={"tool-maintanence"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -699,10 +755,9 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
+                        }
                       }}
                       defaultValue={''}
                       className=""
@@ -726,9 +781,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -753,9 +807,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -770,9 +823,11 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={`ToolAmortizationCost`}
+                      id={"tool-amortization"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -780,9 +835,8 @@ function Tool(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
                         },
                       }}
                       defaultValue={''}
@@ -795,14 +849,22 @@ function Tool(props) {
                   </Col>
 
                   <Col md="3">
+                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={"Net Tool Cost = (Tool Maintenance Cost + Tool Amortization)"} />
                     <TextFieldHookForm
                       label="Net Tool Cost"
                       name={`NetToolCost`}
+                      id="tool-cost"
                       Controller={Controller}
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^\d{0,6}(\.\d{0,6})?$/i,
+                          message: 'Maximum length for integer is 6 and for decimal is 6.',
+                        },
+                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}

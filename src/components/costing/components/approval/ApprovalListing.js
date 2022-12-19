@@ -5,7 +5,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants'
+import { CBCTypeId, defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
@@ -29,6 +29,8 @@ import { setSelectedRowForPagination } from '../../../simulation/actions/Simulat
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import ScrollToTop from '../../../common/ScrollToTop'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -76,14 +78,17 @@ function ApprovalListing(props) {
   var floatingFilterStatus = {
     maxValue: 1,
     suppressFilterButton: true,
-    component: 'costingApproval'
+    component: 'costingApproval',
+    location: "costing"
   }
 
   useEffect(() => {
-    getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+    if (props.activeTab === "3" || isDashboard) {
+      getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+    }
     dispatch(isResetClick(false))
     dispatch(agGridStatus("", ""))
-  }, [])
+  }, [props.activeTab])
 
 
   useEffect(() => {
@@ -198,6 +203,10 @@ function ApprovalListing(props) {
     skip = 0, take = 10, isPagination = true, dataObj
 
   ) => {
+    if (isDashboard) {
+      dataObj.DisplayStatus = props.status
+    }
+    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -218,10 +227,18 @@ function ApprovalListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (floatingFilterData[prop] !== "") {
-                isReset = false
+              if (props?.status) {   // CONDITION WHEN RENDERED FROM DASHBOARD
+                if (prop !== 'DisplayStatus' && floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
+              }
+              else {
+                if (floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
               }
             }
+
             // Sets the filter model via the grid API
             isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
           }, 300);
@@ -253,8 +270,15 @@ function ApprovalListing(props) {
             let isReset = true
             setTimeout(() => {
               for (var prop in floatingFilterData) {
-                if (floatingFilterData[prop] !== "") {
-                  isReset = false
+                if (props?.status) {    // CONDITION WHEN RENDERED FROM DASHBOARD
+                  if (prop !== 'DisplayStatus' && floatingFilterData[prop] !== "") {
+                    isReset = false
+                  }
+                }
+                else {
+                  if (floatingFilterData[prop] !== "") {
+                    isReset = false
+                  }
                 }
               }
               // Sets the filter model via the grid API
@@ -502,11 +526,14 @@ function ApprovalListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
+  const renderCustomer = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
+  }
 
   const renderVendor = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
 
 
@@ -679,7 +706,11 @@ function ApprovalListing(props) {
       costingObj.destinationPlantId = item.DestinationPlantId
       costingObj.technologyId = item?.TechnologyId
       costingObj.CostingHead = item?.CostingHead
-
+      costingObj.costingTypeId = item.CostingTypeId
+      costingObj.customerId = item.CustomerId
+      costingObj.customerName = item.CustomerName
+      costingObj.customerCode = item.CustomerCode
+      costingObj.customer = item.Customer
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -692,7 +723,7 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
+        dispatch(getVolumeDataByPartAndYear(item.PartId, year, item.CostingTypeId === ZBCTypeId ? item.PlantId : item.DestinationPlantId, item.VendorId, item.CustomerId, item.CostingTypeId, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
             let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -777,7 +808,7 @@ function ApprovalListing(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
@@ -838,6 +869,7 @@ function ApprovalListing(props) {
 
   const frameworkComponents = {
     renderPlant: renderPlant,
+    renderCustomer: renderCustomer,
     renderVendor: renderVendor,
     priceFormatter: priceFormatter,
     oldpriceFormatter: oldpriceFormatter,
@@ -874,7 +906,8 @@ function ApprovalListing(props) {
         !showApprovalSumary &&
         <> {
           (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
+            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+              <ScrollToTop pointProp={"approval-go-to-top"} />
               <form noValidate>
                 <Row className="pt-4 blue-before">
                   <Col md="6" lg="6" className="search-user-block mb-3">
@@ -888,7 +921,7 @@ function ApprovalListing(props) {
                         <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>
                         </button>
-                        <button
+                        {!props.hidesendBtn && <button
                           title="Send For Approval"
                           class="user-btn approval-btn"
                           type='button'
@@ -896,7 +929,7 @@ function ApprovalListing(props) {
                           disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
                         >
                           <div className="send-for-approval mr-0" ></div>
-                        </button>
+                        </button>}
                       </div>
                     </div>
                   </Col>
@@ -908,7 +941,7 @@ function ApprovalListing(props) {
 
                     <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
                       <div className="ag-theme-material">
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
@@ -940,13 +973,14 @@ function ApprovalListing(props) {
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                          {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
                           <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                          <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor(Code)"></AgGridColumn>
-                          <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant(Code)"></AgGridColumn>
+                          <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
+                          <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
+                          <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>

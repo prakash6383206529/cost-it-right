@@ -15,6 +15,8 @@ import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { ZBCTypeId } from '../../../config/constants';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -31,7 +33,8 @@ class AddZBCPlant extends Component {
       company: [],
       DropdownChanged: true,
       DataToCheck: [],
-      setDisable: false
+      setDisable: false,
+      showPopup: false
     }
   }
 
@@ -215,7 +218,16 @@ class AddZBCPlant extends Component {
     this.props.getPlantUnitAPI('', res => { })
     this.toggleDrawer('', type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -261,7 +273,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         this.setState({ setDisable: false })
@@ -287,7 +300,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
 
       this.props.createPlantAPI(formData, (res) => {
@@ -551,7 +565,7 @@ class AddZBCPlant extends Component {
                     <button
                       type={"button"}
                       className=" mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
+                      onClick={this.cancelHandler}
                       disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
@@ -572,6 +586,9 @@ class AddZBCPlant extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }

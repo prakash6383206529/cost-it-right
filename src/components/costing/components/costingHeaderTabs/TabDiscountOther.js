@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -20,9 +20,15 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { IdForMultiTechnology } from '../../../../config/masterData';
+
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
+import TooltipCustom from '../../../common/Tooltip';
+
+let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -48,7 +54,7 @@ function TabDiscountOther(props) {
   const headerCosts = useContext(netHeadCostContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount } = useSelector(state => state.costing)
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -57,8 +63,10 @@ function TabDiscountOther(props) {
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -176,8 +184,8 @@ function TabDiscountOther(props) {
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
-          if (Data && Data.CostingPartDetails && Data.CostingPartDetails?.GrandTotalCost !== null) {
-            let OtherCostDetails = Data.CostingPartDetails?.OtherCostDetails;
+          if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
+            let OtherCostDetails = Data?.CostingPartDetails?.OtherCostDetails;
             setDiscountObj(OtherCostDetails)
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
@@ -216,31 +224,31 @@ function TabDiscountOther(props) {
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
-            setTimeout(() => {
-              let topHeaderData = {
-                DiscountsAndOtherCost: checkForNull(OtherCostDetails.HundiOrDiscountValue),
-                HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-                AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
-                OtherCostType: OtherCostDetails.OtherCostType,
-                PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
-                HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
-                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
-                OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-                DiscountApplicability: OtherCostDetails.DiscountApplicability
-              }
+            // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
+            let topHeaderData = {
+              DiscountsAndOtherCost: checkForNull(OtherCostDetails.HundiOrDiscountValue),
+              HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+              AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
+              OtherCostType: OtherCostDetails.OtherCostType,
+              PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
+              HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
+              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
+              OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
+              DiscountApplicability: OtherCostDetails.DiscountApplicability
+            }
 
-              props.setHeaderCost(topHeaderData, headerCosts, costData)
-              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-              let files = Data.Attachements && Data.Attachements.map((item) => {
-                item.meta = {}
-                item.meta.id = item.FileId
-                item.meta.status = 'done'
-                return item
-              })
-              if (dropzone.current !== null) {
-                dropzone.current.files = files
-              }
-            }, 1500)
+            props.setHeaderCost(topHeaderData, headerCosts, costData)
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (dropzone.current !== null) {
+              dropzone.current.files = files
+            }
+            // }, 1500)
           }
         }
       }))
@@ -419,6 +427,8 @@ function TabDiscountOther(props) {
         setOtherCostType(newValue)
         setValue('AnyOtherCost', 0)
         setValue('PercentageOtherCost', 0)
+        errors.AnyOtherCost = {}
+        errors.PercentageOtherCost = {}
         setDiscountObj({
           ...discountObj,
           AnyOtherCost: 0,
@@ -440,6 +450,8 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountValue', 0)
         setValue('HundiOrDiscountPercentage', 0)
         setValue('HundiDiscountType', newValue.value)
+        errors.HundiOrDiscountValue = {}
+        errors.HundiOrDiscountPercentage = {}
         setDiscountObj({
           ...discountObj,
           DiscountCostType: newValue.value
@@ -635,7 +647,7 @@ function TabDiscountOther(props) {
         DeletedBy: loggedInUserId(),
       }
       dispatch(fileDeleteCosting(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = files && files.filter(item => item.FileId !== FileId)
         setFiles(tempArr)
         setIsOpen(!IsOpen)
@@ -667,12 +679,15 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
 
-    if (errors && Object.keys(errors).length > 0) return false;
+    if (errorCheckObject(ErrorObjDiscount)) return false;
 
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
     const discountAndOtherTabData = DiscountCostData
+    const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+    const toolTabData = ToolTabData && ToolTabData[0]
+
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: costData.CostingId }
     })
@@ -726,12 +741,13 @@ function TabDiscountOther(props) {
       },
       "Attachements": updatedFiles
     }
-    if (costData.IsAssemblyPart === true) {
+    if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
       if (!CostingViewMode) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
+
     if (!CostingViewMode) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         if (res.data.Result) {
@@ -745,6 +761,29 @@ function TabDiscountOther(props) {
         }
       }))
     }
+
+    setTimeout(() => {
+      if (partType) {
+
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(gridDataAdded(true))
+
+      }
+    }, 500);
+
   }, 500)
 
   const handleOherCostApplicabilityChange = (value) => {
@@ -763,6 +802,15 @@ function TabDiscountOther(props) {
     })
   }
   const isLoaderObj = { isLoader: isInputLoader, loaderClass: "align-items-center" }
+
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    counter = counter + 1;
+    dispatch(setDiscountErrors(errors))
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    counter = 0
+    dispatch(setDiscountErrors({}))
+  }
+
   return (
     <>
       <div className="login-container signup-form">
@@ -831,7 +879,7 @@ function TabDiscountOther(props) {
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <NumberFieldHookForm
-                          label="Percentage(%)"
+                          label="Percentage (%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}
                           control={control}
@@ -879,9 +927,11 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="2">
+                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
+                        id="other-cost"
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -889,8 +939,8 @@ function TabDiscountOther(props) {
                         rules={{
                           //required: true,
                           pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: "Invalid Number.",
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
                           },
                         }}
                         handleChange={(e) => {
@@ -946,7 +996,7 @@ function TabDiscountOther(props) {
                     {
                       <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
-                          label="Discount(%)"
+                          label="Discount (%)"
                           name={"HundiOrDiscountPercentage"}
                           Controller={Controller}
                           control={control}
@@ -986,8 +1036,8 @@ function TabDiscountOther(props) {
                         mandatory={false}
                         rules={{
                           pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: "Invalid Number.",
+                            value: /^\d{0,6}(\.\d{0,6})?$/i,
+                            message: 'Maximum length for integer is 6 and for decimal is 6.',
                           },
                         }}
                         handleChange={(e) => {
@@ -1117,7 +1167,7 @@ function TabDiscountOther(props) {
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
                       <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
-                        Maximum file upload limit has been reached.
+                        Maximum file upload limit reached.
                       </div>
                       <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone

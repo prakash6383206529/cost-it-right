@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import "./formInputs.css";
@@ -239,6 +239,9 @@ export function renderMultiSelectField(field) {
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
   const placeholder = field.placeholder ? field.placeholder : "";
+  const filterConfig = {
+    stringify: option => `${option.label}`,
+  };
   return (
     <div className={className}>
       <label>
@@ -266,6 +269,7 @@ export function renderMultiSelectField(field) {
           onKeyDown={(onKeyDown) => {
             if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
           }}
+          filterOption={createFilter(filterConfig)}
         />
       </div>
       <div className="text-help mb-2">
@@ -319,6 +323,7 @@ export function renderEmailInputField(field) {
           type="text"
           className={InputClassName}
           {...input}
+          autoComplete={'off'}
         />
         <div className="input-group-prepend">
           <span
@@ -463,6 +468,7 @@ export function renderNumberInputField(field) {
           maxLength={field.maxLength}
           value={field.Value}
           disabled={disabledLabel}
+          autoComplete={'off'}
           {...input}
         />
         {/* <div className="input-group-prepend">
@@ -584,6 +590,7 @@ export function renderText(field) {
         {...others}
 
         className={InputClassName}
+        autoComplete={'off'}
       />
 
       <div className="text-help mb-2">{touched ? error : ""}</div>
@@ -679,8 +686,13 @@ export const searchableSelect = ({
   className,
   children,
   onKeyDown
+
 }) => {
   let isDisable = disabled && disabled === true ? true : false;
+  const filterConfig = {
+    stringify: option => `${option.label}`,
+  };
+
   return (
     <div className="w-100 form-group-searchable-select">
       {label && (
@@ -706,6 +718,7 @@ export const searchableSelect = ({
         onKeyDown={(onKeyDown) => {
           if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}
+        filterOption={createFilter(filterConfig)}
       />
       {children}
       <div className="text-help mb-2 mb-2">{touched && error ? error : ""}</div>

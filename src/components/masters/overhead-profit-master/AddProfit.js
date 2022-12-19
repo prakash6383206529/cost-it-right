@@ -15,13 +15,16 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, SPACEBAR, ZBC } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { onFocus, showDataOnHover } from '../../../helper';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -33,17 +36,15 @@ class AddProfit extends Component {
     this.dropzone = React.createRef();
     this.state = {
       ProfitID: '',
-      costingHead: 'zero',
       isShowForm: false,
       isEditFlag: false,
-      IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
       singlePlantSelected: [],
       ModelType: [],
       vendorName: [],
       client: [],
-
+      costingTypeId: ZBCTypeId,
       profitAppli: [],
 
       remarks: '',
@@ -70,7 +71,9 @@ class AddProfit extends Component {
       attachmentLoader: false,
       vendorCode: "",
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -81,29 +84,24 @@ class AddProfit extends Component {
    */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
+    this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
-    }
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getClientSelectList(() => { })
     }
     this.getDetails();
   }
 
   /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = (vendorFlag, costingHeadFlag) => {
+     * @method onPressVendor
+     * @description Used for Vendor checked
+     */
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: vendorFlag,
-      costingHead: costingHeadFlag,
       vendorName: [],
+      costingTypeId: costingHeadFlag
     });
-    if (costingHeadFlag === "vendor") {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
     }
   }
 
@@ -153,31 +151,29 @@ class AddProfit extends Component {
             const { costingHead } = this.props;
 
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-
-            let Head = '';
-            if (Data.IsVendor === true && Data.VendorId != null) {
-              Head = 'vendor';
-            } else if (Data.IsClient === true) {
-              Head = 'client';
-            } else {
-              Head = 'zero';
-            }
+            // let Head = '';
+            // if (Data.costingTypeId === VBCTypeId && Data.VendorId != null) {
+            //   Head = 'vendor';
+            // } else if (Data.IsClient === true) {
+            //   Head = 'client';
+            // } else {
+            //   Head = 'zero';
+            // }
 
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
-              costingHead: Head,
+              costingTypeId: Data.CostingTypeId,
               ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
-              client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : "",
-              selectedPlants: Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
-              singlePlantSelected: Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
+              selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
+              singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -208,7 +204,7 @@ class AddProfit extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList, plantSelectList } = this.props;
+    const { modelTypes, costingHead, clientSelectList, plantSelectList } = this.props;
     const temp = [];
 
     if (label === 'ModelType') {
@@ -228,16 +224,6 @@ class AddProfit extends Component {
       });
       return temp;
     }
-
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
     if (label === 'ClientList') {
       clientSelectList && clientSelectList.map(item => {
         if (item.Value === '0') return false;
@@ -331,7 +317,9 @@ class AddProfit extends Component {
 
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
  * @method handleChange
  * @description Handle Effective Date
@@ -348,6 +336,9 @@ class AddProfit extends Component {
   handleProfitChange = (newValue, actionMeta) => {
     this.resetFields();
     if (newValue && newValue !== '') {
+      if (newValue?.label?.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
       this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
         this.checkProfitFields()
       });
@@ -456,6 +447,7 @@ class AddProfit extends Component {
 
     switch (profitAppli.label) {
       case 'RM':
+      case 'Part Cost':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -500,6 +492,7 @@ class AddProfit extends Component {
           isHideBOP: true,
         })
       case 'RM + CC':
+      case 'Part Cost + CC':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -511,6 +504,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -533,6 +527,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -627,7 +622,7 @@ class AddProfit extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteProfit(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
+        Toaster.success('File deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -668,29 +663,46 @@ class AddProfit extends Component {
     this.props.getProfitData('', res => { })
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, ModelType, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
+    const { IsVendor, ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
       isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
-
+    const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
-    if (IsVendor) {
+    if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
       })
     }
+    let cbcPlantArray = []
+    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    }
+    else {
+      userDetailsProfit?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
+      })
+    }
     if (vendorName.length <= 0) {
-
-      if (IsVendor && costingHead === 'vendor') {
+      if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
@@ -728,21 +740,21 @@ class AddProfit extends Component {
       })
       let requestData = {
         ProfitId: ProfitID,
-        VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-        IsClient: costingHead === 'client' ? true : false,
-        ClientName: costingHead === 'client' ? client.label : '',
+        VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
+        IsClient: costingTypeId === CBCTypeId ? true : false,
+        CustomerName: costingTypeId === CBCTypeId ? client.label : '',
         ProfitApplicabilityType: profitAppli.label,
         ModelType: ModelType.label,
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
         ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
         VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
-        ClientId: costingHead === 'client' ? client.value : '',
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -751,7 +763,7 @@ class AddProfit extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -772,16 +784,16 @@ class AddProfit extends Component {
     } else {
       this.setState({ setDisable: true })
       const formData = {
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
         ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-        ClientId: costingHead === 'client' ? client.value : '',
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
@@ -789,7 +801,7 @@ class AddProfit extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
       }
 
       this.props.createProfit(formData, (res) => {
@@ -814,28 +826,41 @@ class AddProfit extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isRM, isCC, isBOP, isProfitPercent, isEditFlag, costingHead,
+    const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      const resultInput = inputValue.slice(0, 3)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+        let VendorData = []
+        if (inputValue) {
+          VendorData = reactLocalStorage?.getObject('vendorData')
+          return autoCompleteDropdown(inputValue, VendorData)
+        } else {
+          return VendorData
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('vendorData')
+          if (inputValue) {
+            VendorData = reactLocalStorage?.getObject('vendorData')
+            return autoCompleteDropdown(inputValue, VendorData)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -863,10 +888,10 @@ class AddProfit extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "zero" ? true : false
+                                costingTypeId === ZBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(false, "zero")
+                                this.onPressVendor(ZBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
@@ -877,32 +902,31 @@ class AddProfit extends Component {
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "vendor" ? true : false
+                                costingTypeId === VBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "vendor")
+                                this.onPressVendor(VBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {/* MAY BE USED LATER */}
-                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
                               checked={
-                                costingHead === "client" ? true : false
+                                costingTypeId === CBCTypeId ? true : false
                               }
                               onClick={() =>
-                                this.onPressVendor(true, "client")
+                                this.onPressVendor(CBCTypeId)
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Client Based</span>
-                          </Label> */}
-                        </Col>
-                      </Row>
+                            <span>Customer Based</span>
+                          </Label>}
+                        </Col >
+                      </Row >
                       <Row>
                         <Col md="3" >
                           <Field
@@ -927,20 +951,20 @@ class AddProfit extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                        {this.state.IsVendor && costingHead === "vendor" && (
+                        {costingTypeId === VBCTypeId && (
                           <Col md="3">
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                isDisabled={(isEditFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
@@ -950,10 +974,10 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         )}
-                        {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                           <Col md="3">
                             <Field
-                              label="Plant"
+                              label="Plant (Code)"
                               name="Plant"
                               placeholder={"Select"}
                               title={showDataOnHover(this.state.selectedPlants)}
@@ -975,10 +999,10 @@ class AddProfit extends Component {
                           </Col>)
                         )}
                         {
-                          (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                          ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                           <Col md="3">
                             <Field
-                              label={'Plant'}
+                              label={'Plant (Code)'}
                               name="DestinationPlant"
                               placeholder={"Select"}
                               options={this.renderListing("singlePlant")}
@@ -993,12 +1017,12 @@ class AddProfit extends Component {
                             />
                           </Col>
                         }
-                        {this.state.IsVendor && costingHead === "client" && (
+                        {costingTypeId === CBCTypeId && (
                           <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Client Name"}
+                              label={"Customer (Code)"}
                               component={searchableSelect}
                               placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
@@ -1068,7 +1092,7 @@ class AddProfit extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Profit on RM (%)`}
+                              label={`Profit on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
@@ -1169,7 +1193,7 @@ class AddProfit extends Component {
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit has been reached.
+                            Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
@@ -1249,13 +1273,13 @@ class AddProfit extends Component {
                           </div>
                         </Col>
                       </Row>
-                    </div>
+                    </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={() => { this.cancel('cancel') }}
+                          onClick={this.cancelHandler}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -1271,12 +1295,15 @@ class AddProfit extends Component {
                         </button>
                       </div>
                     </Row>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </form >
+                </div >
+              </div >
+            </div >
+          </div >
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
+        </div >
       </>
     );
   }

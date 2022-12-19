@@ -169,9 +169,9 @@ function OpenWeightCalculator(props) {
         className={`weight-drawer-costing calculator-drawer calculator__${drawerClassHandler()}`}
         anchor={props.anchor}
         open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
-        <Container>
+        // onClose={(e) => toggleDrawer(e)}
+        BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
+        <Container className='px-0'>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>

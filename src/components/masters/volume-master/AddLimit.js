@@ -9,6 +9,8 @@ import { NumberFieldHookForm, SearchableSelectHookForm } from "../../layout/Hook
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from "../../../helper";
 import Toaster from "../../common/Toaster";
 import { createVolumeLimit, getVolumeLimit, updateVolumeLimit } from "../actions/Volume";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import { MESSAGES } from "../../../config/message";
 
 const AddLimit = (props) => {
     const {
@@ -23,7 +25,8 @@ const AddLimit = (props) => {
 
     const [technology, setTechnology] = useState([]);
     const [dataToChange, setDataToChange] = useState([]);
-    const [isDisable, setIsDisable] = useState(false)
+    const [isDisable, setIsDisable] = useState(false);
+    const [showPopup, setShowPopup] = useState(false)
     const dispatch = useDispatch();
     const technologySelectList = useSelector(
         (state) => state.costing.costingSpecifiTechnology
@@ -112,6 +115,16 @@ const AddLimit = (props) => {
         setTechnology([]);
         props.closeDrawer("", {});
     };
+    const cancelHandler = () => {
+        setShowPopup(true)
+    }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
     const onSubmit = (data) => {
         if (isDisable === true) {
             let updatedData = {
@@ -235,7 +248,7 @@ const AddLimit = (props) => {
                                     <button
                                         type={"button"}
                                         className="reset mr15 cancel-btn"
-                                        onClick={cancel}
+                                        onClick={cancelHandler}
                                     >
                                         <div className={"cancel-icon"}></div>
                                         {"Cancel"}
@@ -251,6 +264,9 @@ const AddLimit = (props) => {
                     </div>
                 </Container>
             </Drawer>
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            }
         </div>
     );
 };

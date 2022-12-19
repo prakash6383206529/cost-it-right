@@ -9,6 +9,7 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { USERS, } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil"
+import { getConfigurationKey } from '../../../helper';
 
 class UsersTab extends Component {
   constructor(props) {
@@ -37,9 +38,23 @@ class UsersTab extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
       const { data, actionData, actionSelectList } = nextProps;
+
+      let arrayModules = data && data.sort((a, b) => a.Sequence - b.Sequence)
+      let newArrayModules = []
+
+      arrayModules && arrayModules.map((item, index) => {
+        if (getConfigurationKey().IsRFQConfigured) {
+          newArrayModules.push(item)
+        } else {
+          if (item.PageName !== "RFQUser") {
+            newArrayModules.push(item)
+          }
+        }
+      })
+
       this.setState({
         actionData: actionData,
-        Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
+        Modules: newArrayModules,
         actionSelectList: actionSelectList,
       })
 

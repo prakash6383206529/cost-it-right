@@ -364,8 +364,13 @@ export const CheckIsCostingDateSelected = (costingDate) => {
 
 export const strongPassword = value =>
     value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
-        ? ""
+        ? undefined
         : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';
+
+export const percentageOfNumber = (num, percentage) => {
+    const number = (num == null || isNaN(Number(num)) || num === undefined || num === Infinity || num === -Infinity) ? 0 : Number(num);
+    return (number / 100) * percentage;
+}
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const decimalAndNumberValidation = (value) => {
@@ -375,3 +380,7 @@ export const decimalAndNumberValidation = (value) => {
 export const decimalAndNumberValidationBoolean = (value) => {
     return value && !/^\d{0,6}(\.\d{0,6})?$/i.test(value) ? true : false;
 }
+
+export const nonZero = value =>
+    value && (Number(value) === 0)
+        ? 'Invalid Number.' : undefined;

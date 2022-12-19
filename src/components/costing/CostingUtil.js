@@ -281,3 +281,96 @@ export const clearCosting = (dispatch) => {
   dispatch(isDataChange(false))
 
 }
+
+export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date()) => {
+  let Arr = tabData
+  let assemblyWorkingRow = []
+  Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
+    // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
+    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part')) {
+      let subAssemblyObj = {
+        "CostingId": item?.CostingId,
+        "TotalCostINR": item?.CostingPartDetails?.NetPOPrice,
+        "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity
+      }
+      assemblyWorkingRow.push(subAssemblyObj)
+    }
+    return ''
+  })
+
+
+
+  let temp = {
+    "BOPHandlingCharges": {
+      "AssemblyCostingId": tabData?.CostingId,
+      "BOPHandlingChargeType": tabData?.CostingPartDetails?.BOPHandlingChargeType,
+      "IsApplyBOPHandlingCharges": tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
+      "BOPHandlingPercentage": tabData?.CostingPartDetails?.BOPHandlingPercentage,
+      "BOPHandlingCharges": tabData?.CostingPartDetails?.BOPHandlingCharges,
+      "BOPHandlingChargeApplicability": 0
+    },
+    "TopRow": {
+      "CostingId": tabData?.CostingId,
+      "TotalOperationCost": tabData?.CostingPartDetails?.TotalOperationCost,
+      "TotalProcessCost": tabData?.CostingPartDetails?.TotalProcessCost,
+      "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
+      "NetRMCostPerAssembly": tabData?.CostingPartDetails?.NetChildPartsCost,
+      "NetBOPCostAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCost,
+      "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
+      "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
+      "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
+      "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost,
+      "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
+      "NetToolCost": toolTabData?.CostingPartDetails?.TotalToolCost,
+      "NetOtherCost": DiscountCostData?.AnyOtherCost,
+      "NetDiscounts": DiscountCostData?.HundiOrDiscountValue,
+      "TotalCostINR": totalCost,
+      "EffectiveDate": CostingEffectiveDate,
+      "TransportationCost": surfaceTabData?.CostingPartDetails?.TransportationCost,
+      "SurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
+      "PackagingCost": packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost,
+      "FreightCost": packageAndFreightTabData?.CostingPartDetails?.FreightNetCost,
+      "OverheadCost": overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost,
+      "ProfitCost": overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost,
+      "RejectionCost": overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost,
+      "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
+      "PaymentTermCost": overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost
+    },
+    "WorkingRows": assemblyWorkingRow,
+    "LoggedInUserId": loggedInUserId()
+  }
+  return temp
+}
+
+const calcEdit = () => {
+  // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+  // let costPerPieceTotal = 0
+  // let CostPerAssemblyBOPTotal = 0
+
+  // tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+  //     costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+  //     CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+  //     return null
+  // })
+}
+
+export const errorCheck = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (tempObject[prop]?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+
+export const errorCheckObject = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (Object.keys(tempObject[prop])?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+

@@ -25,6 +25,7 @@ import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
 import SelectRowWrapper from '../common/SelectRowWrapper';
+import ScrollToTop from '../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -154,8 +155,10 @@ class UsersListing extends Component {
 			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId,
 			RoleId: roleId,
+			userType: this.props.RFQUser ? 'RFQ' : 'CIR'
 		}
 		this.setState({ isLoader: true })
+
 		this.props.getAllUserDataAPI(data, res => {
 			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
@@ -166,9 +169,8 @@ class UsersListing extends Component {
 					userData: Data,
 				})
 			} else {
-
 			}
-		});
+		})
 	}
 
 	/**
@@ -219,6 +221,7 @@ class UsersListing extends Component {
 			isEditFlag: true,
 			UserId: Id,
 			passwordFlag: passwordFlag,
+			RFQUser: this.props.RFQUser
 		}
 		this.closeUserDetails()
 		this.props.getUserDetail(data)
@@ -239,6 +242,7 @@ class UsersListing extends Component {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				}
 				this.getUsersListData(null, null);
+				this.setState({ dataCount: 0 })
 			}
 		})
 
@@ -296,12 +300,12 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
 		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
@@ -470,7 +474,7 @@ class UsersListing extends Component {
 	}
 
 	formToggle = () => {
-		this.props.formToggle()
+		this.props.formToggle(this.props?.RFQUser)
 	}
 
 	onPageSizeChanged = (newPageSize) => {
@@ -521,7 +525,7 @@ class UsersListing extends Component {
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
-			sortable: true,
+			sortable: false,
 			headerCheckboxSelectionFilteredOnly: true,
 			checkboxSelection: isFirstColumn
 
@@ -536,7 +540,8 @@ class UsersListing extends Component {
 		};
 
 		return (
-			<div className={"ag-grid-react"}>
+			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
+				<ScrollToTop pointProp={"userlist-go-to-top"} />
 				<>
 					{" "}
 					{this.state.isLoader && <LoaderCustom />}
@@ -602,11 +607,8 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={
-												<button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-													{/* DOWNLOAD */}
-												</button>}>
-
+											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
 												{this.onBtExport()}
 											</ExcelFile>
 											<button
@@ -630,8 +632,7 @@ class UsersListing extends Component {
 					</form>
 					<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
-							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-							<SelectRowWrapper dataCount={dataCount} />
+							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
 						<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 							{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -662,13 +663,14 @@ class UsersListing extends Component {
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}
+								{this.props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Purchase Group"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="RoleName" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
@@ -683,6 +685,7 @@ class UsersListing extends Component {
 							EditAccessibility={EditAccessibility}
 							anchor={"right"}
 							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+							RFQUser={this.props.RFQUser}
 						/>
 					)}
 
@@ -693,7 +696,7 @@ class UsersListing extends Component {
 				{/* {
                 this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`${MESSAGES.USER_DELETE_ALERT}`}  />
                 } */}
-			</div>
+			</div >
 
 		);
 	}

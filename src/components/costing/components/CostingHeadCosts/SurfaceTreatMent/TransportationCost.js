@@ -8,6 +8,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../..
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function TransportationCost(props) {
 
@@ -293,7 +294,7 @@ function TransportationCost(props) {
                       handleRateChange(e)
                     }}
                     errors={errors && errors.Rate}
-                    disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
+                    disabled={!TransportationType || TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
                 </div>
               </Col>
@@ -321,13 +322,14 @@ function TransportationCost(props) {
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
-              <Col md="3">
+              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom disabledIcon={true} id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = (Rate * Quantity)"} />}
                 <TextFieldHookForm
                   label="Cost"
+                  id="operation-cost"
                   name={`TransportationCost`}
                   Controller={Controller}
                   control={control}
@@ -348,7 +350,7 @@ function TransportationCost(props) {
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>

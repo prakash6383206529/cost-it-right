@@ -6,7 +6,6 @@ import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteS
 import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
-import { getPlantSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
@@ -14,6 +13,7 @@ import Drawer from '@material-ui/core/Drawer'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import { debounce } from 'lodash'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -25,10 +25,10 @@ class AddProcessDrawer extends Component {
       ProcessId: '',
       effectiveDate: '',
       isLoader: false,
-      setDisable: false,
+      setDisable: true,
       DataToChange: [],
       processName: "",
-
+      showPopup: false
     }
   }
 
@@ -39,7 +39,6 @@ class AddProcessDrawer extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewFlag)) {
       this.props.getMachineSelectList(() => { })
-      this.props.getPlantSelectList(() => { })
     }
     this.getData()
   }
@@ -84,7 +83,7 @@ class AddProcessDrawer extends Component {
       processCode: ""
 
     }
-    this.setState({ processName: value })
+    this.setState({ processName: value, setDisable: false })
 
     this.props.getProcessCode(obj, (res) => {
       if (res && res.data && res.data.Result) {
@@ -115,6 +114,10 @@ class AddProcessDrawer extends Component {
       }
     })
 
+  }
+
+  handleProcessName = (e) => {
+    this.setState({ setDisable: true })
   }
 
   /**
@@ -178,7 +181,16 @@ class AddProcessDrawer extends Component {
     // dispatch(reset('AddProcessDrawer'))
     this.toggleDrawer('', '', type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -270,6 +282,7 @@ class AddProcessDrawer extends Component {
                       validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
+                      onChange={this.handleProcessName}
                       required={true}
                       className=" "
                       customClassName=" withBorder"
@@ -358,7 +371,7 @@ class AddProcessDrawer extends Component {
                     <button
                       type={'button'}
                       className="mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
+                      onClick={this.cancelHandler}
                       disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
@@ -378,6 +391,9 @@ class AddProcessDrawer extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     )
   }
@@ -418,7 +434,6 @@ export default connect(mapStateToProps, {
   createProcess,
   updateProcess,
   getProcessData,
-  getPlantSelectList,
   getMachineSelectList,
 })(
   reduxForm({

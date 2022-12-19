@@ -7,10 +7,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
+import TooltipCustom from '../../../common/Tooltip'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
-  const { rejectData, modelType } = rejectAndModelType
+  const { rejectData, modelType, isRmCutOffApplicable } = rejectAndModelType
 
   const { register, control } = useForm({
     mode: 'onChange',
@@ -64,7 +65,7 @@ function ViewOverheadProfit(props) {
     return <>
       <Row>
         <Col md="12">
-          <div className="left-border">{"Overheads"}</div>
+          <div className="left-border">{"Overheads:"}</div>
         </Col>
       </Row>
       <Row>
@@ -74,8 +75,8 @@ function ViewOverheadProfit(props) {
             <thead>
               <tr>
                 <th>{`Overhead On`}</th>
-                <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage(%)'}</th>
-                <th>{`Cost (Applicability)`}</th>
+                <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
+                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Overhead`}</th>
 
               </tr>
@@ -185,8 +186,8 @@ function ViewOverheadProfit(props) {
               { }
               <tr>
                 <th>{`Profit On`}</th>
-                <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage(%)'}</th>
-                <th>{`Cost (Applicability)`}</th>
+                <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
+                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Profit`}</th>
 
               </tr>

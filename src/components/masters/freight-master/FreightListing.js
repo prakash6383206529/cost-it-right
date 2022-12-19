@@ -4,7 +4,6 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
-import { getVendorListByVendorType, } from '../actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -21,6 +20,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -70,6 +70,7 @@ class FreightListing extends Component {
       vendor_id: vendor_id,
       source_city_id: source_city_id,
       destination_city_id: destination_city_id,
+      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
     }
     this.props.getFreightDataList(filterData, (res) => {
       this.setState({ isLoader: false })
@@ -114,6 +115,7 @@ class FreightListing extends Component {
     this.props.deleteFright(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
+        this.setState({ dataCount: 0 })
         this.getDataList()
       }
     });
@@ -280,7 +282,7 @@ class FreightListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -322,7 +324,8 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                        <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
+                          {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -342,8 +345,7 @@ class FreightListing extends Component {
           <Col>
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.freightDetail && this.props.freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={dataCount} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -365,13 +367,15 @@ class FreightListing extends Component {
                   rowSelection={'multiple'}
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn width='200px' field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
@@ -407,7 +411,6 @@ function mapStateToProps({ freight, material, comman }) {
 export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
-  getVendorListByVendorType,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,

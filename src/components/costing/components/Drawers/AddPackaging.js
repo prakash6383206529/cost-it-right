@@ -6,6 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
+import WarningMessage from '../../../common/WarningMessage';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -44,9 +45,10 @@ function AddPackaging(props) {
   const [packagingCost, setPackagingCost] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
+  const [showCostError, setShowCostError] = useState(false)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : 0)
 
   const fieldValues = IsolateReRender(control)
-
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
       calculateApplicabilityCost(applicability.label)
@@ -127,6 +129,7 @@ function AddPackaging(props) {
     let totalPackagingCost = 0
     switch (Text) {
       case 'RM':
+      case 'Part Cost':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -148,6 +151,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC':
+      case 'Part Cost + CC':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -180,6 +184,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -190,6 +195,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -241,8 +247,18 @@ function AddPackaging(props) {
     reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
-
+  const packingCostHandler = (e) => {
+    if (e.target.value >= 0) {
+      setPackagingCostDataFixed(e.target.value)
+      setShowCostError(false)
+    }
+    else setShowCostError(true)
+  }
   const onSubmit = data => {
+    if (Number(packagingCostDataFixed) === 0 || packagingCostDataFixed === '') {
+      setShowCostError(true)
+      return false
+    }
     let formData = {
       PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
       IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
@@ -411,21 +427,15 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                      }}
-                      handleChange={() => { }}
+                      mandatory={applicability.label === 'Fixed' ? true : false}
+                      handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
+                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={"Cost should not be zero"} />}
                   </Col>
                 </Row>
 

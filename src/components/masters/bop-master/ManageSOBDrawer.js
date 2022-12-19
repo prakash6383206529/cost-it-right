@@ -12,6 +12,8 @@ import Drawer from '@material-ui/core/Drawer';
 import DatePicker from "react-datepicker";
 
 import DayTime from '../../common/DayTimeWrapper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 
 function ManageSOBDrawer(props) {
 
@@ -33,6 +35,7 @@ function ManageSOBDrawer(props) {
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState('')
+  const [showPopup, setShowPopup] = useState(false)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
@@ -152,7 +155,16 @@ function ManageSOBDrawer(props) {
   const cancel = (type) => {
     props.closeDrawer('', type)
   }
-
+  const cancelHandler = () => {
+    setShowPopup(true)
+  }
+  const onPopupConfirm = () => {
+    cancel('cancel')
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    setShowPopup(false)
+  }
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -195,7 +207,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success('BOP Vendors SOB has been updated.')
+        Toaster.success('BOP Vendors SOB updated successfully.')
         props.closeDrawer('a', 'submit')
       }
     }))
@@ -217,7 +229,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>Update SOB(%)</h3>
+                  <h3>Update SOB (%)</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -260,9 +272,9 @@ function ManageSOBDrawer(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th style={{ width: '100px' }}>{`Vendor Name`}</th>
+                        <th style={{ width: '100px' }}>{`Vendor (Code)`}</th>
                         <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
-                        <th style={{ width: '155px' }}>{`SOB(%)`}</th>
+                        <th style={{ width: '155px' }}>{`SOB (%)`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
                     </thead>
@@ -342,7 +354,7 @@ function ManageSOBDrawer(props) {
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
-                    onClick={() => { cancel('cancel') }} >
+                    onClick={cancelHandler} >
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                   <button
@@ -359,6 +371,9 @@ function ManageSOBDrawer(props) {
           </div >
         </Container>
       </Drawer>
+      {
+        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+      }
     </ >
   );
 }
