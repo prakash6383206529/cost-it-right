@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { Col, Row } from "reactstrap"
 import { EMPTY_DATA, ZBC } from "../../../config/constants"
-import { getConfigurationKey, getCurrencySymbol, loggedInUserId } from "../../../helper"
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol, loggedInUserId } from "../../../helper"
 import DayTime from "../../common/DayTimeWrapper"
 import Toaster from "../../common/Toaster"
 import { getCostingSpecificTechnology, getPartInfo } from "../../costing/actions/Costing"
@@ -147,7 +147,7 @@ function SupplierContributionReport(props) {
 
         id: 'doughnutLabelsLine',
         beforeDraw(chart, args, options) {
-            chart.ctx.canvas.style.width = '1000px'
+            chart.ctx.canvas.style.width = '1200px'
             // chart.ctx.canvas.style.height = '800px'
         },
 
@@ -165,9 +165,7 @@ function SupplierContributionReport(props) {
             ctx.save();
 
             chart.data.datasets.forEach((dataset, i) => {
-
                 chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
-
                     const { x, y } = datapoint.tooltipPosition()
                     //
                     // ctx.fillStyle = 'Black';
@@ -207,12 +205,21 @@ function SupplierContributionReport(props) {
                     const textWidth = ctx.measureText(chart.data.labels[index]).width;
                     ctx.font = '15px Arial';
 
+                    let percentage = checkForDecimalAndNull((chart.data.datasets[0].data[index] / totalCost) * 100, 2)
                     const textXposition = x >= halfwidth ? 'left' : 'right';
                     const plusFivePx = x >= halfwidth ? 5 : -5;
                     ctx.textAlign = textXposition;
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = dataset.backgroundColor[index]
-                    ctx.fillText(chart.data.labels[index], xLine + extraLine + plusFivePx, yLine);
+                    ctx.fillText(`${chart.data.labels[index]} - ${percentage}%`, xLine + extraLine + plusFivePx, yLine);
+                    // ctx.fillStyle = '#fff'
+                    // ctx.font = '10px Arial'
+                    // if (index % 2 == 0) {
+                    //     ctx.fillText(`${percentage}%`, x + 5, y + 1)
+                    // } else {
+                    //     ctx.fillText(`${percentage}%`, x, y)
+                    // }
+
                 })
             })
         }
