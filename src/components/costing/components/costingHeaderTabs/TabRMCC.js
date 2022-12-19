@@ -848,8 +848,9 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
-
-    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
+    let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    delete tempErrorObjRMCC?.bopGridFields
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
 
     let updatedArr = reactLocalStorage.getObject('costingArray')
     let tempPartNumber = []
@@ -1319,7 +1320,7 @@ function TabRMCC(props) {
   const saveCosting = debounce(handleSubmit(() => {
     let count = 0
     for (var prop in ErrorObjRMCC) {
-      if (ErrorObjRMCC[prop]?.length > 0) {
+      if (Object.keys(ErrorObjRMCC[prop])?.length > 0) {
         count++
       }
     }

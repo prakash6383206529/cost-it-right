@@ -142,6 +142,9 @@ function SurfaceTreatmentCost(props) {
   }
 
   const SaveItem = (index) => {
+    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.SurfaceArea !== undefined && Object.keys(errors?.OperationGridFields[index]?.SurfaceArea).length !== 0)) {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
@@ -165,6 +168,8 @@ function SurfaceTreatmentCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.SurfaceArea`, tempArr?.Quantity)
+    errors.OperationGridFields = {}
   }
 
   const handleSurfaceAreaChange = (event, index) => {

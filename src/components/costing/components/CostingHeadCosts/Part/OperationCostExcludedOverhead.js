@@ -175,7 +175,9 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const SaveItem = (index) => {
-
+    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.Quantity));
@@ -199,6 +201,8 @@ function OperationCostExcludedOverhead(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
+    errors.OperationGridFields = {}
   }
 
   const handleQuantityChange = (event, index) => {
@@ -212,18 +216,6 @@ function OperationCostExcludedOverhead(props) {
       tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-
-    } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      //Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}].Quantity`, '')
-      }, 200)
     }
   }
 

@@ -231,6 +231,9 @@ function BOPCost(props) {
   }
 
   const SaveItem = (index) => {
+    if (errors?.bopGridFields && (errors?.bopGridFields[index]?.Quantity !== undefined && Object.keys(errors?.bopGridFields[index]?.Quantity).length !== 0)) {
+      return false
+    }
     let bopGridData = gridData[index]
     if (gridData && gridData.filter(e => e?.Quantity === 0)?.length > 0) {
       Toaster.warning('Quantity cannot be zero')
@@ -256,6 +259,8 @@ function BOPCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${bopGridFields}.${index}.Quantity`, tempArr[index]?.Quantity)
+    errors.bopGridFields = {}
   }
 
   const handleQuantityChange = (event, index) => {
@@ -330,9 +335,18 @@ function BOPCost(props) {
         let message = ''
         if (decimalAndNumberValidationBoolean(value)) {
           setPercentageLimit(true)
+          errors.BOPHandlingPercentage = {
+            "type": "max",
+            "message": "Percentage cannot be greater than 100",
+            "ref": {
+              "name": "BOPHandlingPercentage",
+              "value": ""
+            }
+          }
           message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
         } else {
           setPercentageLimit(false)
+          errors.BOPHandlingPercentage = {}
           message = ''
         }
         BOPHandling = value
@@ -363,8 +377,17 @@ function BOPCost(props) {
       let message = ''
       if (!isNumber(value)) {
         setPercentageLimit(true)
+        errors.BOPHandlingPercentage = {
+          "type": "max",
+          "message": "Percentage cannot be greater than 100",
+          "ref": {
+            "name": "BOPHandlingPercentage",
+            "value": ""
+          }
+        }
         message = NoSignNoDecimalMessage
       } else {
+        errors.BOPHandlingPercentage = {}
         setPercentageLimit(false)
         message = ''
       }

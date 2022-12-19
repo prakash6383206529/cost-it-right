@@ -205,6 +205,9 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
+    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+      return false
+    }
 
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
@@ -226,6 +229,7 @@ function OperationCost(props) {
     setGridData(tempArr)
     setRowObjData({})
     setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
+    errors.OperationGridFields = {}
   }
 
   const handleQuantityChange = (event, index) => {
