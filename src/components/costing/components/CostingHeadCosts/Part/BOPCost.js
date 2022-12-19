@@ -7,13 +7,14 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean } from '../../../../../helper';
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
+import { isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function BOPCost(props) {
@@ -41,6 +42,8 @@ function BOPCost(props) {
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
   const [percentageLimit, setPercentageLimit] = useState(false)
+  const [fixedLimit, setFixedLimit] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -340,16 +343,11 @@ function BOPCost(props) {
     if (!isNaN(value)) {
       let BOPHandling = 0
       if (BOPHandlingType === 'Percentage') {
-        if (value > 100) {
-          setValue('BOPHandlingPercentage', 0)
-          setValue('BOPHandlingCharges', 0)
-          return false;
-        }
         BOPHandling = calculatePercentageValue(netBOPCost(gridData), value)
       } else {
         let message = ''
         if (decimalAndNumberValidationBoolean(value)) {
-          setPercentageLimit(true)
+          setFixedLimit(true)
           errors.BOPHandlingPercentage = {
             "type": "max",
             "message": "Percentage cannot be greater than 100",
@@ -360,11 +358,12 @@ function BOPCost(props) {
           }
           message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
         } else {
-          setPercentageLimit(false)
+          setFixedLimit(false)
           errors.BOPHandlingPercentage = {}
           message = ''
         }
         BOPHandling = value
+        setErrorMessage(message)
       }
       setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration.NoOfDecimalForPrice))
       setTimeout(() => {
@@ -390,7 +389,7 @@ function BOPCost(props) {
     } else {
       let message = ''
       if (!isNumber(value)) {
-        setPercentageLimit(true)
+        setFixedLimit(true)
         errors.BOPHandlingPercentage = {
           "type": "max",
           "message": "Percentage cannot be greater than 100",
@@ -399,17 +398,15 @@ function BOPCost(props) {
             "value": ""
           }
         }
-        message = NoSignNoDecimalMessage
+        // message = NoSignNoDecimalMessage
       } else {
         errors.BOPHandlingPercentage = {}
-        setPercentageLimit(false)
+        setFixedLimit(false)
         message = ''
       }
       setErrorMessage(message)
     }
   }
-
-
 
   /**
   * @method renderListing
