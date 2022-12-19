@@ -22,6 +22,7 @@ function SupplierContributionReport(props) {
     const [totalCost, setTotalCost] = useState("")
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
+    const [plant, setPlant] = useState('')
     const [reportListing, setReportListing] = useState(true)
     const [graphListing, setGraphListing] = useState(false)
     const [minDate, setMinDate] = useState('')
@@ -84,6 +85,7 @@ function SupplierContributionReport(props) {
             setGraphListing(false)
             data.fromDate = startDate
             data.toDate = endDate
+            data.plantId = plant.value ? plant.value : ''
             dispatch(getSupplierContributionData(data, (res) => {
                 let vendors = []
                 let vendorPrice = []
@@ -117,13 +119,13 @@ function SupplierContributionReport(props) {
         setStartDate('')
         setEndDate('')
         setIsPlantSelected(false)
+        setPlant('')
     }
 
     const valueChanged = (e) => {
+        setPlant(e)
         setIsPlantSelected(true)
     }
-
-
 
     const options3 = {
         maintainAspectRatio: false,
