@@ -9,7 +9,7 @@ import {
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
-import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
@@ -853,8 +853,8 @@ function TabDiscountOther(props) {
                     }
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
-                        <TextFieldHookForm
-                          label="Percentage(%)"
+                        <NumberFieldHookForm
+                          label="Percentage (%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}
                           control={control}
@@ -967,7 +967,7 @@ function TabDiscountOther(props) {
                     {
                       <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
-                          label="Discount(%)"
+                          label="Discount (%)"
                           name={"HundiOrDiscountPercentage"}
                           Controller={Controller}
                           control={control}

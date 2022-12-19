@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm, NumberFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
@@ -326,8 +326,8 @@ function PaymentTerms(props) {
                         </Col>}
                         <Col md="3">
                             {paymentTermsApplicability.label !== 'Fixed' ?
-                                <TextFieldHookForm
-                                    label={`Interest Rate(%)`}
+                                <NumberFieldHookForm
+                                    label={`Interest Rate (%)`}
                                     name={'RepaymentPeriodPercentage'}
                                     Controller={Controller}
                                     control={control}

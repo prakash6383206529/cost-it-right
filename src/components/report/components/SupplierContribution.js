@@ -13,6 +13,7 @@ import { DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookF
 import { getSupplierContributionData } from "../actions/ReportListing"
 import { getPlantSelectListByType } from "../../../actions/Common"
 import { Doughnut } from 'react-chartjs-2';
+import { colorArray } from "../../dashboard/ChartsDashboard"
 import NoContentFound from "../../common/NoContentFound"
 
 const gridOptions = {}
@@ -77,13 +78,12 @@ function SupplierContributionReport(props) {
 
 
     const runReport = () => {
-        if (startDate && endDate && isPlantSelected) {
+        if (startDate && endDate) {
             let data = {}
             setNoContent(true)
             setGraphListing(false)
             data.fromDate = startDate
             data.toDate = endDate
-            data.plantId = getValues('plant').value
             dispatch(getSupplierContributionData(data, (res) => {
                 let vendors = []
                 let vendorPrice = []
@@ -99,15 +99,10 @@ function SupplierContributionReport(props) {
                 setVendorArray(vendors)
                 setVendorData(vendorPrice)
                 setNoContent(false)
-                let color = ''
-                let colorArray = vendors.map((item, index) => {
-                    color = '#' + Math.floor(10002222 * 0.9834 + (index * 90146) + (index * 1310)).toString(16);
-                    return color;
-                })
                 setDoughnutColor(colorArray);
             }))
         } else {
-            Toaster.warning("Please enter from date, to date & plant.")
+            Toaster.warning("Please enter from date, to date")
         }
     }
 
@@ -128,19 +123,98 @@ function SupplierContributionReport(props) {
         setIsPlantSelected(true)
     }
 
+
+
     const options3 = {
+        maintainAspectRatio: false,
+        // responsive: true,
+        // maintainAspectRatio: true,
+        layout: {
+            padding: 20,
+        },
+
         plugins: {
             legend: {
-                position: 'bottom',
-                labels: {
-                    boxWidth: 15,
-                    borderWidth: 1,
-                    borderColor: doughnutColor,
-                }
-            },
-        },
-        cutout: 150,
+                display: false
+            }
+        }
     };
+
+
+    const doughnutLabelsLine = {
+
+        id: 'doughnutLabelsLine',
+        beforeDraw(chart, args, options) {
+            chart.ctx.canvas.style.width = '1000px'
+            // chart.ctx.canvas.style.height = '800px'
+        },
+
+        afterDraw(chart, args, options) {
+            const { ctx, chartArea: { top, bottom, left, right, width, height } } = chart;
+
+            ctx.restore();
+            var fontSize = (width + 3) / width;
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "top";
+            var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
+                textX = width / 2.1,
+                textY = height / 2;
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+
+            chart.data.datasets.forEach((dataset, i) => {
+
+                chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
+
+                    const { x, y } = datapoint.tooltipPosition()
+                    //
+                    // ctx.fillStyle = 'Black';
+                    // ctx.fill();
+                    // ctx.fillRect(x, y, 1, 1)
+
+                    //draw line
+                    const halfwidth = width / 2;
+                    const halfheight = height / 2;
+
+                    let xLine = x >= halfwidth ? x + 35 : x - 35;
+                    let yLine = y >= halfheight ? y + 35 : y - 35;
+                    let extraLine = x >= halfwidth ? 35 : -35
+
+                    if (index % 2 == 0) {
+                        xLine = x >= halfwidth ? x + 25 : x - 25;
+                        yLine = y >= halfheight ? y + 25 : y - 25;
+                        extraLine = x >= halfwidth ? 25 : -25
+
+                    } else {
+                        xLine = x >= halfwidth ? x + 55 : x - 55;
+                        yLine = y >= halfheight ? y + 55 : y - 55;
+                        extraLine = x >= halfwidth ? 55 : -55
+
+                    }
+
+                    //line
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(xLine, yLine);
+                    ctx.lineTo(xLine + extraLine, yLine);
+                    // ctx.strokeStyle = dataset.backgroundColor[index]
+                    ctx.strokeStyle = 'Black'
+                    ctx.stroke();
+
+                    //text
+                    const textWidth = ctx.measureText(chart.data.labels[index]).width;
+                    ctx.font = '15px Arial';
+
+                    const textXposition = x >= halfwidth ? 'left' : 'right';
+                    const plusFivePx = x >= halfwidth ? 5 : -5;
+                    ctx.textAlign = textXposition;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = dataset.backgroundColor[index]
+                    ctx.fillText(chart.data.labels[index], xLine + extraLine + plusFivePx, yLine);
+                })
+            })
+        }
+    }
 
     const data3 = {
         labels: vendorArray,
@@ -149,27 +223,15 @@ function SupplierContributionReport(props) {
                 label: '',
                 data: vendorData,
                 backgroundColor: doughnutColor,
-                borderWidth: 0.7,
+                // borderWidth: 1,
+                cutout: '70%',
+                width: 200,
+                height: 200
+                // borderRadius: 20,
+                // offset: 10
             },
         ],
     };
-    const plugins = [{
-
-        beforeDraw: function (chart) {
-            var width = chart.width,
-                height = chart.height,
-                ctx = chart.ctx;
-            ctx.restore();
-            var fontSize = (width + 3) / width;
-            ctx.font = fontSize + "em sans-serif";
-            ctx.textBaseline = "top";
-            var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
-                textX = width / 2.35,
-                textY = height / 2.35;
-            ctx.fillText(text, textX, textY);
-            ctx.save();
-        }
-    }]
 
     return (
 
@@ -244,11 +306,11 @@ function SupplierContributionReport(props) {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: true }}
+                                    rules={{ required: false }}
                                     register={register}
                                     options={renderListing('plant')}
                                     isMulti={false}
-                                    mandatory={true}
+                                    mandatory={false}
                                     dropDownClass={true}
                                     handleChange={(e) => {
                                         valueChanged(e)
@@ -278,7 +340,7 @@ function SupplierContributionReport(props) {
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
-                        <Doughnut type="doughnut" data={data3} options={options3} plugins={plugins} />
+                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={[doughnutLabelsLine]} height="600" width={600} />
                     </div>
                 </div>
 

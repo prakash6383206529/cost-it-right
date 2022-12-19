@@ -28,6 +28,7 @@ export const TextFieldHooks = (input) => {
           value={value}
           rules={rules}
           {...inputProps}
+          autoComplete={'off'}
         />
         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
@@ -93,6 +94,7 @@ export const TextFieldHookForm = (field) => {
                       onChange(e)
                     }}
                     hidden={hidden}
+                    autoComplete={'off'}
                   />
                   {isLoader && <LoaderCustom customClass={`input-loader ${loaderClass}`} />}
                 </div>
@@ -250,6 +252,7 @@ export const NumberFieldHookForm = (field) => {
                   disabled={isDisabled}
                   value={value}
                   placeholder={placeholder ? placeholder : isDisabled ? '-' : 'Enter'}
+                  autoComplete={'off'}
                   onChange={(e) => {
                     handleChange(e);
                     onChange(e)
@@ -414,6 +417,7 @@ export const TextAreaHookForm = (field) => {
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
+                autoComplete={'off'}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)
