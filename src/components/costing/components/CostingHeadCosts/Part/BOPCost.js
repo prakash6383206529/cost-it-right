@@ -3,17 +3,19 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean } from '../../../../../helper';
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
+import { AcceptableBOPUOM, NUMBERMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTBOP } from '../../../../../config/masterData';
+import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, hashValidation, numberLimit6, noDecimal, isNumber, NoSignMaxLengthRegex, NoSignMaxLengthMessage } from "../../../../../helper/validation";
 
 let counter = 0;
 function BOPCost(props) {
@@ -40,7 +42,8 @@ function BOPCost(props) {
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item?.CostingPartDetails?.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
-  const [percentageLimit, setPercentageLimit] = useState(false)
+  const [fixedLimit, setFixedLimit] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -168,9 +171,9 @@ function BOPCost(props) {
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
           Currency: el.Currency !== '-' ? el.Currency : INR,
-          LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
+          LandedCostINR: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
-          NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
+          NetBoughtOutPartCost: (el.EntryType === 'Domestic') ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
           BoughtOutPartUOM: el.UOM
         }
       })
@@ -228,6 +231,9 @@ function BOPCost(props) {
   }
 
   const SaveItem = (index) => {
+    if (errors?.bopGridFields && (errors?.bopGridFields[index]?.Quantity !== undefined && Object.keys(errors?.bopGridFields[index]?.Quantity).length !== 0)) {
+      return false
+    }
     let bopGridData = gridData[index]
     if (gridData && gridData.filter(e => e?.Quantity === 0)?.length > 0) {
       Toaster.warning('Quantity cannot be zero')
@@ -241,10 +247,6 @@ function BOPCost(props) {
         return false
       }
       if (!isValid) {
-        Toaster.warning('Please enter numeric value')
-        setTimeout(() => {
-          setValue(`${bopGridFields}.${index}.Quantity`, '')
-        }, 200)
         return false
       }
     }
@@ -257,6 +259,8 @@ function BOPCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${bopGridFields}.${index}.Quantity`, tempArr[index]?.Quantity)
+    errors.bopGridFields = {}
   }
 
   const handleQuantityChange = (event, index) => {
@@ -268,15 +272,6 @@ function BOPCost(props) {
       tempData = { ...tempData, Quantity: checkForNull(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-    } else {
-      const NetBoughtOutPartCost = tempData.LandedCostINR * 0;
-      tempData = { ...tempData, Quantity: 0, NetBoughtOutPartCost: NetBoughtOutPartCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      setTimeout(() => {
-        setValue(`${bopGridFields}.${index}.Quantity`, '')
-      }, 200)
-      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -335,15 +330,27 @@ function BOPCost(props) {
     if (!isNaN(value)) {
       let BOPHandling = 0
       if (BOPHandlingType === 'Percentage') {
-        if (value > 100) {
-          setValue('BOPHandlingPercentage', 0)
-          setValue('BOPHandlingCharges', 0)
-          return false;
-        }
         BOPHandling = calculatePercentageValue(netBOPCost(gridData), value)
       } else {
-        setPercentageLimit(decimalAndNumberValidationBoolean(value))
+        let message = ''
+        if (decimalAndNumberValidationBoolean(value)) {
+          setFixedLimit(true)
+          errors.BOPHandlingPercentage = {
+            "type": "max",
+            "message": "Percentage cannot be greater than 100",
+            "ref": {
+              "name": "BOPHandlingPercentage",
+              "value": ""
+            }
+          }
+          message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+        } else {
+          setFixedLimit(false)
+          errors.BOPHandlingPercentage = {}
+          message = ''
+        }
         BOPHandling = value
+        setErrorMessage(message)
       }
       setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration.NoOfDecimalForPrice))
       setTimeout(() => {
@@ -367,13 +374,26 @@ function BOPCost(props) {
       }, 200)
 
     } else {
-      setValue('BOPHandlingCharges', 0)
-      setValue('BOPHandlingPercentage', 0)
-      Toaster.warning('Please enter valid number.')
+      let message = ''
+      if (!isNumber(value)) {
+        setFixedLimit(true)
+        errors.BOPHandlingPercentage = {
+          "type": "max",
+          "message": "Percentage cannot be greater than 100",
+          "ref": {
+            "name": "BOPHandlingPercentage",
+            "value": ""
+          }
+        }
+        message = NoSignNoDecimalMessage
+      } else {
+        errors.BOPHandlingPercentage = {}
+        setFixedLimit(false)
+        message = ''
+      }
+      setErrorMessage(message)
     }
   }
-
-
 
   /**
   * @method renderListing
@@ -393,6 +413,7 @@ function BOPCost(props) {
     * @description  HANDLE OTHER COST TYPE CHANGE
     */
   const handleBOPHandlingType = (newValue) => {
+    setFixedLimit(false)
     setTimeout(() => {
       setBOPHandlingType(newValue.label)
       setValue('BOPHandlingPercentage', '')
@@ -489,7 +510,7 @@ function BOPCost(props) {
                                 {
                                   item.BoughtOutPartUOM === 'Number' ?
                                     <>
-                                      <NumberFieldHookForm
+                                      <TextFieldHookForm
                                         label=""
                                         name={`${bopGridFields}.${index}.Quantity`}
                                         Controller={Controller}
@@ -497,7 +518,7 @@ function BOPCost(props) {
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                          //required: true,
+                                          validate: { number, checkWhiteSpaces, noDecimal, numberLimit6 },
                                         }}
                                         defaultValue={item.Quantity}
                                         className=""
@@ -511,7 +532,7 @@ function BOPCost(props) {
                                       />
                                     </>
                                     :
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                       label=""
                                       name={`${bopGridFields}.${index}.Quantity`}
                                       Controller={Controller}
@@ -519,11 +540,7 @@ function BOPCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        //required: true,
-                                        pattern: {
-                                          value: /^\d*\.?\d*$/,
-                                          message: 'Invalid Number.'
-                                        },
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                       }}
                                       defaultValue={item.Quantity}
                                       className=""
@@ -615,11 +632,11 @@ function BOPCost(props) {
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                   />
                 </Col>}
-              {IsApplyBOPHandlingCharges &&
+              {IsApplyBOPHandlingCharges && BOPHandlingType &&
                 <Col md="2" >
                   {BOPHandlingType === 'Fixed' ?
                     <div className='p-relative error-wrapper'>
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label={'Fixed'}
                         name={"BOPHandlingFixed"}
                         Controller={Controller}
@@ -643,10 +660,10 @@ function BOPCost(props) {
                         // errors={errors.BOPHandlingPercentage}
                         disabled={(CostingViewMode || IsLocked) ? true : false}
                       />
-                      {percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                      {fixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                     </div>
                     :
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label={'Percentage'}
                       name={"BOPHandlingPercentage"}
                       Controller={Controller}
@@ -655,10 +672,7 @@ function BOPCost(props) {
                       mandatory={false}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^\d{0,3}(\.\d{0,6})?$/i,
-                          message: 'Maximum length for decimal is 6.'
-                        },
+                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
                         max: {
                           value: 100,
                           message: 'Percentage cannot be greater than 100'
