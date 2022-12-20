@@ -1323,6 +1323,7 @@ const CostingSummaryTable = (props) => {
                               anchor={'right'}
                               index={index}
                               isPDFShow={true}
+                              storeSummary={props?.storeSummary ? true : false}
                             /></th></tr>}
 
                         <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? 'green-row' : viewCostingData[0]?.netRM < viewCostingData[1]?.netRM ? 'red-row' : '' : '-'}`}>

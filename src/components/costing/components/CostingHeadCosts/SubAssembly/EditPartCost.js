@@ -19,7 +19,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
-    const { settledCostingDetails } = useSelector(state => state.subAssembly)
+    const { settledCostingDetails, settledCostingDetailsView } = useSelector(state => state.subAssembly)
     const [weightedCost, setWeightedCost] = useState(0)
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
@@ -52,23 +52,53 @@ function EditPartCost(props) {
     }, [gridData])
 
     useEffect(() => {
-        let tempArray = []
-        settledCostingDetails?.CostingWeightedAverageSettledDetails && settledCostingDetails?.CostingWeightedAverageSettledDetails.map((item, index) => {
-            let tempObject = {}
-            tempObject.DeltaValue = item?.Delta
-            tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
-            tempObject.NetCost = item?.NetCost
-            tempObject.SOBPercentage = item?.SOBPercentage
-            tempObject.SettledPrice = item?.SettledPrice
-            tempObject.VendorCode = item?.VendorCode
-            tempObject.VendorName = item?.VendorName
-            tempObject.label = item?.CostingNumber
-            tempObject.value = item?.BaseCostingId
-            tempArray.push(tempObject)
-            setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
-        })
-        setWeightedCost(settledCostingDetails?.NetPOPrice)
-        setGridData(tempArray)
+        let temp = []
+        if (CostingViewMode || props?.costingSummary) {
+            temp = settledCostingDetailsView
+
+            let tempArray = []
+            temp?.CostingWeightedAverageSettledDetails && temp?.CostingWeightedAverageSettledDetails.map((item, index) => {
+                let tempObject = {}
+                tempObject.DeltaValue = item?.Delta
+                tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
+                tempObject.NetCost = item?.NetCost
+                tempObject.SOBPercentage = item?.SOBPercentage
+                tempObject.SettledPrice = item?.SettledPrice
+                tempObject.VendorCode = item?.VendorCode
+                tempObject.VendorName = item?.VendorName
+                tempObject.label = item?.CostingNumber
+                tempObject.value = item?.BaseCostingId
+                tempArray.push(tempObject)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
+            })
+            setWeightedCost(temp?.NetPOPrice)
+            setGridData(tempArray)
+        }
+    }, [settledCostingDetailsView])
+
+    useEffect(() => {
+        let temp = []
+        if (!(CostingViewMode || props?.costingSummary)) {
+            temp = settledCostingDetails
+
+            let tempArray = []
+            temp?.CostingWeightedAverageSettledDetails && temp?.CostingWeightedAverageSettledDetails.map((item, index) => {
+                let tempObject = {}
+                tempObject.DeltaValue = item?.Delta
+                tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
+                tempObject.NetCost = item?.NetCost
+                tempObject.SOBPercentage = item?.SOBPercentage
+                tempObject.SettledPrice = item?.SettledPrice
+                tempObject.VendorCode = item?.VendorCode
+                tempObject.VendorName = item?.VendorName
+                tempObject.label = item?.CostingNumber
+                tempObject.value = item?.BaseCostingId
+                tempArray.push(tempObject)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
+            })
+            setWeightedCost(temp?.NetPOPrice)
+            setGridData(tempArray)
+        }
     }, [settledCostingDetails])
 
     useEffect(() => {
@@ -80,7 +110,13 @@ function EditPartCost(props) {
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
-        dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
+        let isViewMode = false
+        if ((CostingViewMode || props.costingSummary) ? true : false) {
+            isViewMode = true
+        } else {
+            isViewMode = false
+        }
+        dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, res => { }))
         // dispatch(getEditPartCostDetails(obj, res => { }))
         return () => {
             gridData && gridData.map((item, index) => {
