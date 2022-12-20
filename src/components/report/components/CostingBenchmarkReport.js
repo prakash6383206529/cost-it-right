@@ -19,10 +19,7 @@ import MachineInsights from '../../report/components/BenchMarkReportPages/Machin
 import InsightsBop from '../../report/components/BenchMarkReportPages/InsightsBop'
 import OperationInsights from '../../report/components/BenchMarkReportPages/OperationInsights'
 
-
-
 function CostingBenchmarkReport(props) {
-
 
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -113,7 +110,7 @@ function CostingBenchmarkReport(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case MACHINERATE:
-                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={false} technology={0} selectionForListingMasterAPI='Master' benchMark={true} />)
             case BOPDOMESTIC:
                 return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case BOPIMPORT:
@@ -140,7 +137,7 @@ function CostingBenchmarkReport(props) {
             case RMIMPORT:
                 return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case MACHINERATE:
-                return (<MachineInsights />)
+                return (<MachineInsights data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPDOMESTIC:
                 return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPIMPORT:

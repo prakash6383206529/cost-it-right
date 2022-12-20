@@ -69,7 +69,7 @@ function OperationInsights(props) {
         operationBenchmarkList && operationBenchmarkList?.OperationChildDetails?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.OperationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+                OperationName: item.OperationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -82,15 +82,15 @@ function OperationInsights(props) {
             item.VendorPlantsDetail?.map((data, indx) => {
 
                 data.PlantDetails.map((ele, ind) => {
-                    let Val = `plant${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    let Val = `plant${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val] = ele.Price
 
-                    let Val2 = `quantity${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    let Val2 = `quantity${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val2] = ele.TotalOperationCostingQuantity
 
 
-                    let Val3 = `value${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val3] = ele.TotalVolume
+                    let Val3 = `value${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val3] = ele.TotalValue
 
                 })
 
@@ -159,6 +159,15 @@ function OperationInsights(props) {
 
         let arr = [               //SETTING DYNAMIC COLUMN DEFINATIONS
 
+
+            {
+
+                field: "OperationName",
+                pinned: "left",
+                width: "115"
+
+            },
+
             {
 
                 field: "Minimum",
@@ -186,7 +195,13 @@ function OperationInsights(props) {
 
             },
             {
-                field: "EffectiveDate",
+                field: "EffectiveFromDate",
+                pinned: "left",
+                width: "130",
+                cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
+            },
+            {
+                field: "EffectiveToDate",
                 pinned: "left",
                 width: "130",
                 cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
@@ -207,7 +222,7 @@ function OperationInsights(props) {
 
                     headerName: "Rate",
                     width: "130",
-                    field: `plant${item.vendor}${ind}`,
+                    field: `plant${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -215,7 +230,7 @@ function OperationInsights(props) {
 
                     headerName: "Quantity",
                     width: "130",
-                    field: `quantity${item.vendor}${ind}`,
+                    field: `quantity${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -223,7 +238,7 @@ function OperationInsights(props) {
 
                     headerName: "Value",
                     width: "130",
-                    field: `value${item.vendor}${ind}`,
+                    field: `value${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? checkForDecimalAndNull(params.value, 4) : '-',
 
                 }
@@ -268,15 +283,17 @@ function OperationInsights(props) {
     const onSelectionChanged = (event) => {
 
         let labelArr = []
+
         tableHeaderColumnDefs?.map((item, index) => {
 
-            if (index > 5) {
+            if (index > 6) {
 
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
                 })
             }
         })
+
 
 
         setLabelArray(labelArr)
@@ -303,12 +320,18 @@ function OperationInsights(props) {
 
         let newArr = []
         labelArr.map((item, index) => {
+
             plantLabel.map((element, ind) => {
-                let ele = element.slice(5, -1)
-                if (item.includes(ele)) {
+                let ele = element.slice(5)
+                ele = ele.replace('-', '')
+                var newStr = item.replace('-', '')
+                newStr = newStr.replace('-', '')
+
+                if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
             })
+
         })
 
         graphDataNew = newArr
