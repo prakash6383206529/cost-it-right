@@ -42,7 +42,7 @@ function BOPCost(props) {
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item?.CostingPartDetails?.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
-  const [percentageLimit, setPercentageLimit] = useState(false)
+  const [fixedLimit, setFixedLimit] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -334,7 +334,7 @@ function BOPCost(props) {
       } else {
         let message = ''
         if (decimalAndNumberValidationBoolean(value)) {
-          setPercentageLimit(true)
+          setFixedLimit(true)
           errors.BOPHandlingPercentage = {
             "type": "max",
             "message": "Percentage cannot be greater than 100",
@@ -345,7 +345,7 @@ function BOPCost(props) {
           }
           message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
         } else {
-          setPercentageLimit(false)
+          setFixedLimit(false)
           errors.BOPHandlingPercentage = {}
           message = ''
         }
@@ -376,7 +376,7 @@ function BOPCost(props) {
     } else {
       let message = ''
       if (!isNumber(value)) {
-        setPercentageLimit(true)
+        setFixedLimit(true)
         errors.BOPHandlingPercentage = {
           "type": "max",
           "message": "Percentage cannot be greater than 100",
@@ -388,7 +388,7 @@ function BOPCost(props) {
         message = NoSignNoDecimalMessage
       } else {
         errors.BOPHandlingPercentage = {}
-        setPercentageLimit(false)
+        setFixedLimit(false)
         message = ''
       }
       setErrorMessage(message)
@@ -413,7 +413,7 @@ function BOPCost(props) {
     * @description  HANDLE OTHER COST TYPE CHANGE
     */
   const handleBOPHandlingType = (newValue) => {
-    setPercentageLimit(false)
+    setFixedLimit(false)
     setTimeout(() => {
       setBOPHandlingType(newValue.label)
       setValue('BOPHandlingPercentage', '')
@@ -660,7 +660,7 @@ function BOPCost(props) {
                         // errors={errors.BOPHandlingPercentage}
                         disabled={(CostingViewMode || IsLocked) ? true : false}
                       />
-                      {percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                      {fixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                     </div>
                     :
                     <TextFieldHookForm
