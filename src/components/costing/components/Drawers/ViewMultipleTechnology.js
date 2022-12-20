@@ -16,6 +16,7 @@ function ViewMultipleTechnology(props) {
     const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const partNumber = useSelector(state => state.costing.partNo);
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -37,8 +38,11 @@ function ViewMultipleTechnology(props) {
     const viewCosting = (id) => {
         setCostingDetailId(id)
         setOpemDrawer(true)
-        reactLocalStorage.setObject('viewCostingData', viewCostingData)
-        dispatch(setCostingViewData([]))
+        const isSamePart = viewCostingData?.filter((item) => item?.partNumber === partNumber?.partNumber)
+        if (isSamePart?.length > 0) {
+            reactLocalStorage.setObject('viewCostingData', viewCostingData)
+            dispatch(setCostingViewData([]))
+        }
     }
     const closeDrawerPartCost = (e = '') => {
         setOpemDrawer(false)
