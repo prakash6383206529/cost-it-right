@@ -2130,9 +2130,10 @@ export const ZBCADDMORE = 0
 
 export const searchCount = 3
 
-// KEY AND IVgit
-export const KEY = 'gQUJ79YKYm22Cazw';
-export const IV = 'eTEFSa0PinFKTQNB'
+// KEY AND IV
+
+export const KEY = 'awvmhujtecmcecmj';
+export const IV = 'vuqqsafvwouoqtgh'
 
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
