@@ -983,6 +983,7 @@ export const API = {
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
+  getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
