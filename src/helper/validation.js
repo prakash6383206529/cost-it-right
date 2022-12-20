@@ -2,7 +2,6 @@ import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
-import { NUMBERMAXLENGTH } from '../config/masterData';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -427,5 +426,5 @@ export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;
 
 export const NoSignNoDecimalRegex = /^\d*$/i;
 
-export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
+export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed 6 digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
