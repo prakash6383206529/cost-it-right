@@ -6,9 +6,10 @@ import { getFreigtFullTruckCapacitySelectList, getRateCriteriaByCapacitySelectLi
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
 
 function AddFreight(props) {
 
@@ -296,6 +297,8 @@ function AddFreight(props) {
     setValue('FreightCost', '')
     setApplicability([])
     setfreightType(FreightFlag)
+    errors.FreightCost = {}
+    errors.Rate = {}
   }
 
   /**
@@ -478,7 +481,7 @@ function AddFreight(props) {
                       />}
                   </Col>
                   <Col md="12">
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label={`${freightType === Percentage ? 'Percentage' : 'Rate'}`}
                       name={'Rate'}
                       Controller={Controller}
@@ -487,10 +490,7 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
+                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
                         max: {
                           value: 100,
                           message: 'Percentage should be less than 100'
@@ -540,10 +540,8 @@ function AddFreight(props) {
                       control={control}
                       register={register}
                       rules={{
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        }
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

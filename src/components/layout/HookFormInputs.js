@@ -36,7 +36,19 @@ export const TextFieldHooks = (input) => {
   )
 }
 
+const errorFunc = (errors, field) => {
+  switch (errors?.type) {
+    case "maxLength":
+      return <div className="text-help">Maximum length is {field?.rules?.maxLength}</div>
 
+    case "required":
+      return <div className="text-help">This field is required</div>
+
+    default:
+      return <div className="text-error-title"><div className="text-help">{(errors?.message || errors?.type)}</div>
+        <div className="error-overflow">{(errors?.message || errors?.type)}</div> </div>
+  }
+}
 
 export const TextFieldHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
@@ -91,8 +103,7 @@ export const TextFieldHookForm = (field) => {
             }
           />
         </div>
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
+        {errorFunc(errors, field)}
       </div>
     </>
   )
@@ -359,6 +370,19 @@ export const SearchableSelectHookForm = (field) => {
   )
 }
 
+const errorAreaFunc = (errors, field) => {
+  switch (errors?.type) {
+    case "maxLength":
+      return <div className="text-help">Maximum length is {field?.rules?.maxLength}</div>
+
+    case "required":
+      return <div className="text-help">This field is required</div>
+
+    default:
+      return <div className="text-error-title"><div className="text-help">{(errors?.message || errors?.type)}</div>
+        <div className="error-overflow">{(errors?.message || errors?.type)}</div> </div>
+  }
+}
 
 /*
 @method: renderTextAreaField
@@ -403,8 +427,7 @@ export const TextAreaHookForm = (field) => {
           }
           }
         />
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+        {errorAreaFunc(errors, field)}
       </div>
     </>
   )

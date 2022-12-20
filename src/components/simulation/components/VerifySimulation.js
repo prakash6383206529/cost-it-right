@@ -334,7 +334,7 @@ function VerifySimulation(props) {
     const renderPart = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value = isMultiTechnology ? row?.PartNumber : row?.PartNo
-        return (value !== null && value !== '-') ? value : '-'
+        return (value !== null && value !== '-' && value !== undefined) ? value : '-'
     }
 
     const renderRM = (props) => {
