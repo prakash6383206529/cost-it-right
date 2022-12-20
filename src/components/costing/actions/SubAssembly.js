@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API, API_FAILURE, API_REQUEST, config, GET_COSTING_FOR_MULTI_TECHNOLOGY, GET_EDIT_PART_COST_DETAILS, GET_SETTLED_COSTING_DETAILS, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
+import { API, API_FAILURE, API_REQUEST, config, GET_COSTING_FOR_MULTI_TECHNOLOGY, GET_EDIT_PART_COST_DETAILS, GET_SETTLED_COSTING_DETAILS, GET_SETTLED_COSTING_DETAILS_VIEW, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
 import { apiErrors } from '../../../helper'
 
 let headers = config
@@ -138,20 +138,34 @@ export function saveSettledCostingDetails(data, callback) {
  * @method getSettledCostingDetails
  * @description getSettledCostingDetails
  */
-export function getSettledCostingDetails(CostingId, callback) {
+export function getSettledCostingDetails(CostingId, isViewMode, callback) {
   return (dispatch) => {
     if (CostingId !== '') {
-      dispatch({
-        type: GET_SETTLED_COSTING_DETAILS,
-        payload: [],
-      })
+      if (isViewMode) {
+        dispatch({
+          type: GET_SETTLED_COSTING_DETAILS_VIEW,
+          payload: [],
+        })
+      } else {
+        dispatch({
+          type: GET_SETTLED_COSTING_DETAILS,
+          payload: [],
+        })
+      }
       const request = axios.get(`${API.getSettledCostingDetails}?baseCostingId=${CostingId}`, config());
       request.then((response) => {
         if (response.data.Result) {
-          dispatch({
-            type: GET_SETTLED_COSTING_DETAILS,
-            payload: response.data.Data,
-          })
+          if (isViewMode) {
+            dispatch({
+              type: GET_SETTLED_COSTING_DETAILS_VIEW,
+              payload: response.data.Data,
+            })
+          } else {
+            dispatch({
+              type: GET_SETTLED_COSTING_DETAILS,
+              payload: response.data.Data,
+            })
+          }
           callback(response);
         }
       }).catch((error) => {
