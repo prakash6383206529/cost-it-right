@@ -80,7 +80,6 @@ function Simulation(props) {
         dispatch(setTokenForSimulation([]))
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
 
         // ASSEMBLY TECHNOLOGY
         setInputLoader(true)
