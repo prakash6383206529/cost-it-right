@@ -622,6 +622,8 @@ export const API = {
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
   uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
+  uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
+  uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
 
 
   //COST SUMMARY
@@ -1945,6 +1947,8 @@ export const PROFIT = 'Profits'
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
 export const PLASTIC_GROUP_BULKUPLOAD = 2
 export const MACHINING_GROUP_BULKUPLOAD = 3
+export const CORRUGATED_BOX = 4
+export const ASSEMBLY = 5
 
 
 export const REASON_ID = 2
