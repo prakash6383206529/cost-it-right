@@ -12,6 +12,8 @@ import { getCostMovementReportByPart } from '../../actions/ReportListing';
 import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import _ from 'lodash';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
+import NoContentFound from '../../../common/NoContentFound';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
@@ -24,6 +26,8 @@ function CostMovementGraph(props) {
     const [gridApi, setGridApi] = useState(null);
     const [barDataSets, setBarDataSets] = useState([]);
     const [lineDataSets, setLineDataSets] = useState([]);
+    const [noRecordFound, setNoRecordFound] = useState(false);
+    const [isLoader, setIsLoader] = useState(false);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
     let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
@@ -54,9 +58,10 @@ function CostMovementGraph(props) {
             sampleArray.push({ PartId: item.PartId, RevisionNumber: item.RevisionNumber, PlantId: item.PlantId, VendorId: item.VendorId, TechnologyId: item.TechnologyId })
         })
         obj.PartIdList = sampleArray
-
+        setIsLoader(true)
         dispatch(getCostMovementReportByPart(obj, (res) => {
-
+            setNoRecordFound(res?.status === 204 ? false : true)
+            setIsLoader(false)
             if (res?.data?.Result) {
 
                 let grid = []
@@ -464,87 +469,85 @@ function CostMovementGraph(props) {
     return (
         <>
             <div className={"container-fluid"}>
-                <div className='cost-ratio-report h-298'>
-                    <form noValidate className="form">
-                        <div className='analytics-drawer justify-content-end'>
-                            <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-                            <RenderGraphList valueChanged={valueChanged} />
-                        </div>
-                        {showList &&
-                            <Row>
-                                <Col>
-                                    <div className='ag-grid-react'>
-                                        <div className="ag-grid-wrapper height-width-wrapper">
-                                            <div className="ag-grid-header">
-                                            </div>
-                                            <div className="ag-theme-material">
-                                                <AgGridReact
-                                                    defaultColDef={defaultColDef}
-                                                    domLayout='autoHeight'
-                                                    // suppressRowTransform={true}
-                                                    floatingFilter={true}
-                                                    rowData={gridData}
-                                                    pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
+                <form noValidate className="form">
+                    <div className='analytics-drawer justify-content-end'>
+                        <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        {noRecordFound && <RenderGraphList valueChanged={valueChanged} />}
+                    </div>
+                    {showList &&
+                        <Row>
+                            <Col>
+                                <div className='ag-grid-react'>
+                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                        <div className="ag-grid-header">
+                                        </div>
+                                        <div className="ag-theme-material">
+                                            <AgGridReact
+                                                defaultColDef={defaultColDef}
+                                                domLayout='autoHeight'
+                                                // suppressRowTransform={true}
+                                                floatingFilter={true}
+                                                rowData={gridData}
+                                                pagination={true}
+                                                paginationPageSize={10}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
 
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                        imagClass: 'imagClass'
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    rowSelection={'multiple'}
-                                                >
-
-                                                    {/* {ModeId == 1 && <AgGridColumn field="RawMaterialCode" headerName="RM Code" rowSpan={rowSpan} showRowGroup={true}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                            >
+                                                {/* {ModeId == 1 && <AgGridColumn field="RawMaterialCode" headerName="RM Code" rowSpan={rowSpan} showRowGroup={true}
                                                             cellClassRules={{
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>}   //DONT DELETE (WILL BE USED FOR ROW MERGING LATER) */}
-
-                                                    {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="PlantNameWithCode" headerName="Plant (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-
-                                                    {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
-                                                    {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
-
-                                                </AgGridReact>
-                                                <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
-                                            </div>
+                                                {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="PlantNameWithCode" headerName="Plant (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
+                                            </AgGridReact>
+                                            <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>
                                     </div>
-                                </Col>
-                            </Row>
+                                </div>
+                            </Col>
+                        </Row>
 
-                        }
+                    }
 
-                        { }
-                        {showBarGraph &&
-                            <Row className="mt-2 ">
-                                <Col md="12">
-                                    <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getCurrencySymbol(getConfigurationKey().BaseCurrency)} />
-                                </Col>
-                            </Row>
+                    { }
+                    {showBarGraph &&
+                        <Row className="mt-2 ">
+                            <Col md="12">
+                                <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getCurrencySymbol(getConfigurationKey().BaseCurrency)} />
+                            </Col>
+                        </Row>
 
-                        }
+                    }
 
-                        {showLineGraph &&
-                            <Row>
-                                <Col className='pr-3 d-flex align-items-center mt-2'>
-                                    <div className='mb-5 pb-5 mr-2'><strong>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</strong></div>
-                                    <Line
-                                        data={state}
-                                        height={120}
-                                        options={lineChartOptions}
-                                    />
-                                </Col>
-                            </Row>
-                        }
-                    </form>
-                </div >
+                    {showLineGraph && noRecordFound &&
+                        <Row>
+                            <Col className='pr-3 d-flex align-items-center mt-2'>
+                                <div className='mb-5 pb-5 mr-2'><strong>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</strong></div>
+                                <Line
+                                    data={state}
+                                    height={120}
+                                    options={lineChartOptions}
+                                />
+                            </Col>
+                        </Row>
+                    }
+                </form>
+                {!noRecordFound && <div className='h-298 d-flex align-items-center mt-3'>
+                    <NoContentFound title={EMPTY_DATA} />
+                </div>}
+                {isLoader && <LoaderCustom customClass="center-loader" />}
             </div >
         </>
     );
