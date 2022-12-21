@@ -78,7 +78,8 @@ class MachineRateListing extends Component {
             globalTake: defaultPageSize,
             disableFilter: true,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            inRangeDate: [],
         }
     }
 
@@ -551,6 +552,15 @@ class MachineRateListing extends Component {
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+                handleDate(newDate)// FOR COSTING BENCHMARK MACHINE REPORT
+
+                let date = document.getElementsByClassName('ag-input-field-input')
+                for (let i = 0; i < date.length; i++) {
+                    if (date[i].type == 'radio') {
+                        date[i].click()
+                    }
+                }
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
@@ -573,6 +583,21 @@ class MachineRateListing extends Component {
             minValidYear: 2000,
         };
 
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+        }
 
         var setDate = (date) => {
             this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDateNew: date, newDate: date } })
