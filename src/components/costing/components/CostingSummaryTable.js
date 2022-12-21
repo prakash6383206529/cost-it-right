@@ -39,7 +39,7 @@ import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphC
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist } = props
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -304,13 +304,14 @@ const CostingSummaryTable = (props) => {
     let rejectData = viewCostingData[index]?.netRejectionCostView
     let modelType = viewCostingData[index]?.modelType
     let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
+    let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
 
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
-    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
+    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType, isRmCutOffApplicable: isRmCutOffApplicable })
   }
 
   /**
@@ -1062,7 +1063,7 @@ const CostingSummaryTable = (props) => {
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && <LoaderCustom />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -1224,7 +1225,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
                                     <span className="d-block">{data?.RevisionNumber}</span>
-                                    <span className="d-block">{data.costingTypeId === ZBCTypeId ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
+                                    <span className="d-block">{data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`}</span>
                                   </td>
                                 )
                               })}
@@ -1265,13 +1266,13 @@ const CostingSummaryTable = (props) => {
                                 <td >
                                   <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
                                   <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
-                                    <button className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
+                                    <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
                                   </span>
                                   <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>
-                                    <button className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? data?.netProcessCost : ''}</button>
+                                    <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? data?.netProcessCost : ''}</button>
                                   </span>
                                   <span className={`d-block small-grey-text ${isApproval && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>
-                                    <button className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
+                                    <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
                                   </span>
 
                                 </td>
@@ -2122,6 +2123,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            fromCostingSummary={props.fromCostingSummary}
           />
         )
       }
@@ -2138,6 +2140,7 @@ const CostingSummaryTable = (props) => {
             index={index}
             technologyId={technologyId}
             rmMBDetail={rmMBDetail}
+            fromCostingSummary={props.fromCostingSummary}
           />
         )
       }

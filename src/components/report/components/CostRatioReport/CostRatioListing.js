@@ -11,27 +11,40 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13, graphColor14, graphColor15, graphColor16 } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
-import { getCostRatioReport } from '../../actions/ReportListing';
+import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing';
 
 const CostRatioListing = (props) => {
-    const { costRatioGridData } = props
     const [tableData, setTableData] = useState([])
     const [pieChartDataArray, setPieChartDataArray] = useState([])
+    const [pieChartLabelArray, setPieChartLabelArray] = useState([])
     const [isLoader, setIsLoader] = useState(false)
+    const [gridDataState, setGridDataState] = useState()
     const dispatch = useDispatch()
 
     const divRef = useRef()    // THIS IS CALCULATE  WIDTH OF THE PLANT AND VENDOR (CODE) 
     const { initialConfiguration } = useSelector(state => state.auth)
+    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
+
+    let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
+    let startDate = costReportFormData && costReportFormData.fromDate
+    let endDate = costReportFormData && costReportFormData.toDate
+
+
 
     useEffect(() => {
-        let formData =
-        {
-            FromDate: costRatioGridData.fromDate,
-            ToDate: costRatioGridData.toDate,
-            CostingData: costRatioGridData.rowData
-        }
+
+        let obj = {}
+        obj.FromDate = startDate
+        obj.ToDate = endDate
+        let sampleArray = []
+
+        gridData && gridData.map((item) => {
+            sampleArray.push({ PartId: item.PartId, RevisionNumber: item.RevisionNumber, PlantId: item.PlantId, VendorId: item.VendorId, TechnologyId: item.TechnologyId })
+        })
+        obj.CostingData = sampleArray
+
         setIsLoader(true)
-        dispatch(getCostRatioReport(formData, (res) => {
+        dispatch(getCostRatioReport(obj, (res) => {
             setIsLoader(false)
             let Data = res.data && res.data.DataList
             if (res.status === 200) {
@@ -41,13 +54,11 @@ const CostRatioListing = (props) => {
                 setIsLoader(false)
             }
         }))
-        setTimeout(() => {
-
-
-        }, 200);
+        setGridDataState(costReportFormData)
     }, [])
 
     const cancelReport = () => {
+        dispatch(getFormGridData(gridDataState))
         props?.viewListing(false)
     }
 
@@ -77,6 +88,14 @@ const CostRatioListing = (props) => {
             checkForDecimalAndNull(tempObj.NetDiscountCostPercentage, 2),
         ]
         setPieChartDataArray(temp)
+        let labelArray = []
+        let labels = ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.']
+        temp && temp.map((item, index) => {
+            if (item !== 0) {
+                labelArray.push(labels[index])
+            }
+        })
+        setPieChartLabelArray(labelArray)
     }, [100])
 
     /**
@@ -84,7 +103,7 @@ const CostRatioListing = (props) => {
     * @description In this object set the data and color for pie chart
     */
     const pieChartData = {
-        labels: ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.'],
+        labels: pieChartLabelArray,
         datasets: [
             {
                 label: '',
@@ -107,7 +126,7 @@ const CostRatioListing = (props) => {
                     graphColor15,
                     graphColor16,
                 ],
-                borderWidth: 0,
+                borderWidth: 1,
             },
         ],
 
@@ -121,9 +140,12 @@ const CostRatioListing = (props) => {
         plugins: {
             legend: {
                 position: 'bottom',
+                align: 'start',
                 labels: {
-                    boxWidth: 26,
+                    boxWidth: 16,
                     borderWidth: 0,
+                    padding: 8,
+                    color: '#000'
                 }
             },
         },
@@ -133,6 +155,9 @@ const CostRatioListing = (props) => {
             <div className='container-fluid costing-ratio-report'>
                 {isLoader && <LoaderCustom />}
                 <div className='row overflow-auto report-height'>
+                    <div className='w-100 mb-2 d-flex justify-content-end'>
+                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                    </div>
                     {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
@@ -160,7 +185,7 @@ const CostRatioListing = (props) => {
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
-                                            <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'>All value is showing in Percentage</div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
+                                            <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
 
                                         </th>
                                     </>
@@ -213,13 +238,6 @@ const CostRatioListing = (props) => {
                         </tbody>
                     </Table>}
                 </div>
-                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                            <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>
-                        </div>
-                    </div>
-                </Row>
             </div>
         </>
 

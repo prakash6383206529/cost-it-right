@@ -467,7 +467,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Recovery(%)`}
+                                        label={`Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}

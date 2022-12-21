@@ -624,7 +624,9 @@ class AddMachineRate extends Component {
   };
 
   processToggler = () => {
-    this.setState({ isOpenProcessDrawer: true })
+    if (!this.state.isViewMode) {
+      this.setState({ isOpenProcessDrawer: true })
+    }
   }
 
   /**
@@ -1401,7 +1403,7 @@ class AddMachineRate extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1665,12 +1667,12 @@ class AddMachineRate extends Component {
                                 valueDescription={this.state.processName}
                                 disabled={isViewMode || (isEditFlag && isMachineAssociated)}
                               />
-                              {this.state.errorObj.processName && (this.state.processName && this.state.processName.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                              {this.state.errorObj?.processName && (this.state.processName && this.state.processName?.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </div>
-                            {(!this.state.isViewFlag) && <div
+                            <div
                               onClick={this.processToggler}
-                              className={'plus-icon-square mr5 right'}>
-                            </div>}
+                              className={`${isViewMode ? 'disabled' : ''} plus-icon-square mr5 right`}>
+                            </div>
                           </div>
                         </Col>
                         <Col md="3">
@@ -1821,7 +1823,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                          <div className={`alert alert-danger mt-2 ${this.state.files?.length === 3 ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>

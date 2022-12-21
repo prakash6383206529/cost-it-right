@@ -6,7 +6,7 @@ import { checkForNull, loggedInUserId } from '../../../../helper';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { saveAssemblyCostingRMCCTab } from '../../actions/Costing';
+import { gridDataAdded, saveAssemblyCostingRMCCTab } from '../../actions/Costing';
 import { useContext } from 'react';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
@@ -105,8 +105,9 @@ function AddAssemblyProcess(props) {
       checkForNull(DiscountCostData?.AnyOtherCost)) -
       checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
     dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+    dispatch(gridDataAdded(true))
 
     let requestData = {
       "CostingId": item.CostingId,

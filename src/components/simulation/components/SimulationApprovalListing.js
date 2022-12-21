@@ -24,6 +24,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const gridOptions = {};
@@ -169,6 +170,7 @@ function SimulationApprovalListing(props) {
         if (isDashboard) {
             dataObj.DisplayStatus = props.status
         }
+        let IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -180,7 +182,7 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
@@ -708,7 +710,7 @@ function SimulationApprovalListing(props) {
 
                         <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div className="ag-theme-material">
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}

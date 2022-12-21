@@ -3,9 +3,13 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
+import WarningMessage from '../../../common/WarningMessage';
+import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { STRINGMAXLENGTH } from '../../../../config/masterData';
+import { MESSAGES } from '../../../../config/message';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -25,7 +29,7 @@ function AddPackaging(props) {
     PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
     PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : 0,
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
-    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -41,12 +45,14 @@ function AddPackaging(props) {
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
   // const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   const [PackageType, setPackageType] = useState(true);
-  const [packagingCost, setPackagingCost] = useState('')
+  const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
+  const [showCostError, setShowCostError] = useState(false)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const fieldValues = IsolateReRender(control)
-
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
       calculateApplicabilityCost(applicability.label)
@@ -245,8 +251,26 @@ function AddPackaging(props) {
     reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
-
+  const packingCostHandler = (e) => {
+    let message = ''
+    if (decimalNumberLimit6(e.target.value)) {
+      setShowCostError(true)
+      message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+    } else if (!isNumber(e.target.value)) {
+      setShowCostError(true)
+      message = NoSignNoDecimalMessage
+    } else {
+      setPackagingCostDataFixed(e.target.value)
+      setShowCostError(false)
+      message = ''
+    }
+    setErrorMessage(message)
+  }
   const onSubmit = data => {
+    if (showCostError || (applicability.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
+      setShowCostError(true)
+      return false
+    }
     let formData = {
       PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
       IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
@@ -317,10 +341,8 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        maxLength: {
-                          value: 80,
-                          message: 'Length should not be more than 80'
-                        },
+                        validate: { checkWhiteSpaces, hashValidation },
+                        maxLength: STRINGMAXLENGTH
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -378,7 +400,7 @@ function AddPackaging(props) {
                     applicability.label !== 'Fixed' &&
 
                     <Col md="12">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="Packaging Percentage"
                         name={'PackagingCostPercentage'}
                         Controller={Controller}
@@ -387,13 +409,10 @@ function AddPackaging(props) {
                         mandatory={PackageType ? true : false}
                         rules={{
                           required: PackageType ? true : false,
-                          pattern: {
-                            value: PackageType ? /^\d*\.?\d*$/ : '',
-                            message: PackageType ? 'Invalid Number.' : '',
-                          },
+                          validate: { number, checkWhiteSpaces, percentageLimitValidation },
                           max: {
                             value: 100,
-                            message: 'Percentage should be less than 100'
+                            message: 'Percentage cannot be greater than 100'
                           },
                         }}
                         handleChange={() => { }}
@@ -416,24 +435,18 @@ function AddPackaging(props) {
                       control={control}
                       register={register}
                       mandatory={applicability.label === 'Fixed' ? true : false}
-                      rules={{
-                        required: applicability.label === 'Fixed' ? true : false,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                        min: {
-                          value: 0.00001,
-                          message: 'Cost should not be zero.'
-                        }
-                      }}
-                      handleChange={() => { }}
+                      // rules={{
+                      //   required: true,
+                      //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      // }}
+                      handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
+                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
                 </Row>
 

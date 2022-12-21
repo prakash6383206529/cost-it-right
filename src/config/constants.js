@@ -880,6 +880,7 @@ export const API = {
   getVolumeLimit: `${BASE_URL}/masters-volume/get-add-limit-by-id`,
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
+  bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -1640,6 +1641,7 @@ export const GET_REPORT_LIST = 'GET_REPORT_LIST'
 export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
 export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 export const GET_COST_RATIO_REPORT = 'GET_COST_RATIO_REPORT'
+export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1663,7 +1665,7 @@ export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 
 // MASTER APPROVAL STATUS ID
-export const APPROVED_STATUS = '3'
+export const APPROVED_STATUS = '3,5'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1810,16 +1812,16 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendor: 'Vendor (Code)',
+  vendorName: 'Vendor (Code)',
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
-  rm: 'RM name-Grade',
+  rm: 'RM Name-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
-  BurningLossWeight: 'BurningLost Weight',
+  BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
   netBOP: 'Net BOP Cost',
@@ -1845,22 +1847,22 @@ export const VIEW_COSTING_DATA = {
   // rejectionOn: 'Rejection On',
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'OverHead Applicablity',
+  overHeadApplicablity: 'OverHead Applicability',
   overHeadApplicablityValue: 'OverHead Value',
-  ProfitApplicablity: 'Profit Applicablity',
+  ProfitApplicablity: 'Profit Applicability',
   ProfitApplicablityValue: 'Profit Value',
-  rejectionApplicablity: 'Rejection Applicablity',
+  rejectionApplicablity: 'Rejection Applicability',
   rejectionApplicablityValue: 'Rejection Value',
-  iccApplicablity: 'ICC Applicablity',
+  iccApplicablity: 'ICC Applicability',
   iccApplicablityValue: 'ICC Value',
-  paymentApplicablity: 'Payment Applicablity',
+  paymentApplicablity: 'Payment Applicability',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging and Freight',
-  toolMaintenanceCostApplicablity: 'Tool MaintenanceCost Applicablity',
-  toolMaintenanceCost: 'Tool MaintenanceCost Value',
+  toolMaintenanceCostApplicablity: 'Tool Maintenance Cost Applicability',
+  toolMaintenanceCost: 'Tool Maintenance Cost Value',
   //toolMaintenanceCost: 'Tool Maintenance Cost',
   toolPrice: 'Tool Price',
   amortizationQty: 'Amortization Quantity',
@@ -1870,11 +1872,11 @@ export const VIEW_COSTING_DATA = {
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
   otherDiscountType: 'Other Discount Type',
-  otherDiscountApplicablity: 'Other Discount Applicablity',
+  otherDiscountApplicablity: 'Other Discount Applicability',
   otherDiscountValuePercent: 'Other Discount Value',
   otherDiscountCost: 'Other Discount Cost',
   anyOtherCostType: 'Any Other Cost Type',
-  anyOtherCostApplicablity: 'AnyOtherCostApplicablity',
+  anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
   nPOPrice: 'Net PO Price (INR)',
@@ -1883,7 +1885,7 @@ export const VIEW_COSTING_DATA = {
   nPoPriceCurrency: 'Net PO Price (In Currency)',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
-  remark: 'Remark',
+  remark: 'Remarks',
   //nPOPrice: 'Net PO Price',
   // attachment: 'Attachment',
   // approvalButton: '',
@@ -2135,4 +2137,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.9";
+export const VERSION = "V2.1.23";

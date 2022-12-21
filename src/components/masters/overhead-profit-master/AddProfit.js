@@ -72,7 +72,8 @@ class AddProfit extends Component {
       vendorCode: "",
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      showPartCost: false
     }
   }
 
@@ -335,6 +336,9 @@ class AddProfit extends Component {
   handleProfitChange = (newValue, actionMeta) => {
     this.resetFields();
     if (newValue && newValue !== '') {
+      if (newValue?.label?.includes('Part Cost')) {
+        this.setState({ showPartCost: true })
+      }
       this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
         this.checkProfitFields()
       });
@@ -443,6 +447,7 @@ class AddProfit extends Component {
 
     switch (profitAppli.label) {
       case 'RM':
+      case 'Part Cost':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -487,6 +492,7 @@ class AddProfit extends Component {
           isHideBOP: true,
         })
       case 'RM + CC':
+      case 'Part Cost + CC':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -498,6 +504,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         return this.setState({
           isRM: false,
           isCC: true,
@@ -520,6 +527,7 @@ class AddProfit extends Component {
           isHideCC: false,
         })
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         return this.setState({
           isRM: false,
           isCC: false,
@@ -903,7 +911,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {!JSON.parse(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1084,7 +1092,7 @@ class AddProfit extends Component {
                         {!isHideRM && (
                           <Col md="3">
                             <Field
-                              label={`Profit on RM (%)`}
+                              label={`Profit on ${this.state.showPartCost ? 'Part Cost' : 'RM'} (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}

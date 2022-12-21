@@ -34,6 +34,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -191,6 +192,7 @@ class OperationListing extends Component {
                 filterData.OperationType = ''
             }
 
+            dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 this.setState({ noData: false })
                 if (this.props.isSimulation) {
@@ -787,7 +789,7 @@ class OperationListing extends Component {
                     <form>
                         <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
                             <Col md="3" lg="3">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
                                 <div className="d-flex justify-content-end bd-highlight w100">

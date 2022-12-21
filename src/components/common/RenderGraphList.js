@@ -11,9 +11,9 @@ function RenderGraphList(props) {
     })
 
     const dropdownOptions = [
-        { label: "List", value: "1" },
+        { label: "Line Chart", value: "1" },
         { label: "Bar Chart", value: "2" },
-        { label: "Line Chart", value: "3" },
+        { label: "List", value: "3" },
     ]
 
     useEffect(() => {

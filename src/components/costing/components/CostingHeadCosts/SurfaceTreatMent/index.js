@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -45,6 +45,8 @@ function SurfaceTreatment(props) {
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
+  const [errorObjectTransport, setErrorObjectTransport] = useState({})
+  const [errorObjectSurfaceTreatment, setErrorObjectSurfaceTreatment] = useState({})
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
@@ -68,13 +70,15 @@ function SurfaceTreatment(props) {
   const cancel = () => {
     props.closeDrawer()
   }
-  const setTransportationObj = (obj) => {
+  const setTransportationObj = (obj, errorObjectTransport) => {
+    setErrorObjectTransport(errorObjectTransport)
     setTransportationObject(obj)
     setTrasportObj(obj.tempObj)
 
   }
 
-  const setSurfaceData = (obj) => {
+  const setSurfaceData = (obj, errorObjectSurfaceTreatment) => {
+    setErrorObjectSurfaceTreatment(errorObjectSurfaceTreatment)
     setSurfacTreatmenteData(obj)
     setSurfacetableData(obj.gridData)
   }
@@ -98,6 +102,20 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = debounce(handleSubmit(() => {
+    let count = 0
+    let countST = 0
+    for (var prop in errorObjectTransport) {
+      if (Object.keys(errorObjectTransport[prop])?.length > 0) {
+        count++
+      }
+    }
+    for (var prop in errorObjectSurfaceTreatment) {
+      if (Object.keys(errorObjectSurfaceTreatment[prop])?.length > 0) {
+        countST++
+      }
+    }
+    if (errorObjectSurfaceTreatment && (count !== 0 || countST !== 0)) return false;
+
     if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
 
@@ -167,8 +185,9 @@ function SurfaceTreatment(props) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         } else if (partType) {
           setTimeout(() => {
-            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData)
+            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCostAPI, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(gridDataAdded(true))
           }, 500);
         }
 

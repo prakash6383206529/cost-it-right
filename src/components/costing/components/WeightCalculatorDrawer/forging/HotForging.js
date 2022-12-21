@@ -672,7 +672,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Recovery(%)`}
+                  label={`Scrap Recovery (%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
                   control={control}

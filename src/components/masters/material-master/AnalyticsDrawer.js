@@ -177,6 +177,27 @@ function AnalyticsDrawer(props) {
     //     return 5
     // }
 
+    let Options = {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+
+                        let label = '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
+            }
+        }
+
+    }
 
     return (
         <div>
@@ -269,7 +290,7 @@ function AnalyticsDrawer(props) {
                                 {showBarGraph &&
                                     <Row className="mt-4">
                                         <Col md="12" className='pr-0'>
-                                            <Costmovementgraph graphData={data1} graphHeight={120} />
+                                            <Costmovementgraph graphData={data1} graphHeight={120} options1={Options} />
                                         </Col>
                                     </Row>
 
@@ -292,7 +313,24 @@ function AnalyticsDrawer(props) {
                                                         display: true,
                                                         position: 'right'
                                                     },
+                                                    plugins: {
+                                                        tooltip: {
+                                                            callbacks: {
+                                                                label: function (context) {
 
+                                                                    let label = '';
+
+                                                                    if (label) {
+                                                                        label += ': ';
+                                                                    }
+                                                                    if (context.parsed.y !== null) {
+                                                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                                                                    }
+                                                                    return label;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }}
                                             />
                                         </Col>

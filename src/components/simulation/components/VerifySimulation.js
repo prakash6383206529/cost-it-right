@@ -323,20 +323,18 @@ function VerifySimulation(props) {
 
     const renderPlant = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row?.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
 
     const renderVendor = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row?.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
 
     const renderPart = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value = isMultiTechnology ? row?.PartNumber : row?.PartNo
-        return (value !== null && value !== '-') ? value : '-'
+        return (value !== null && value !== '-' && value !== undefined) ? value : '-'
     }
 
     const renderRM = (props) => {
@@ -575,7 +573,7 @@ function VerifySimulation(props) {
                             <div className={`ag-grid-react`}>
                                 <div className={`ag-grid-wrapper height-width-wrapper ${(verifyList && verifyList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>

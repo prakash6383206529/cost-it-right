@@ -33,6 +33,7 @@ import { debounce } from 'lodash';
 import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { getUOMSelectList } from '../../../actions/Common';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -149,6 +150,7 @@ function CostingDetails(props) {
       // dispatch(getPartSelectListByTechnology('', '', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
+      dispatch(getUOMSelectList(() => { }))
 
     }
     return () => {
@@ -340,6 +342,7 @@ function CostingDetails(props) {
    * @description  USED TO HANDLE PART CHANGE
    */
   const handlePartChange = (newValue) => {
+    resetGrid()
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
         const data = { TechnologyId: technology.value, PartId: newValue.value }
@@ -1407,7 +1410,6 @@ function CostingDetails(props) {
    * @description TO RESET THE GRID DATA OF ZBC,VBC AND CBC (COSTING VVERSION RESET)
    */
   const resetGrid = () => {
-
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM ZBC GRIDS
     zbcPlantGrid && zbcPlantGrid.map((el, index) => {
       setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
@@ -2023,7 +2025,7 @@ function CostingDetails(props) {
 
                                     return (
                                       <tr key={index}>
-                                        <td>{`${item.PlantName}(${item.PlantCode})`}</td>
+                                        <td>{`${item.PlantName}`}</td>
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
@@ -2155,8 +2157,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>
-                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
+                                      <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>
+                                      <td>{item.VendorName ? `${item.VendorName}` : '-'}</td>
 
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
@@ -2258,8 +2260,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      <td className='break-word'>{item.VendorName}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
@@ -2389,7 +2391,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
-                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
+                                      {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}

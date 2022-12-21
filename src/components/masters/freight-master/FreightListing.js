@@ -19,6 +19,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -68,6 +69,7 @@ class FreightListing extends Component {
       vendor_id: vendor_id,
       source_city_id: source_city_id,
       destination_city_id: destination_city_id,
+      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
     }
     this.props.getFreightDataList(filterData, (res) => {
       this.setState({ isLoader: false })
@@ -342,7 +344,7 @@ class FreightListing extends Component {
           <Col>
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.freightDetail && this.props.freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

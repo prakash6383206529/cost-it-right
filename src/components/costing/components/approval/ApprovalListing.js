@@ -30,6 +30,7 @@ import SingleDropdownFloationFilter from '../../../masters/material-master/Singl
 import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -205,6 +206,7 @@ function ApprovalListing(props) {
     if (isDashboard) {
       dataObj.DisplayStatus = props.status
     }
+    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -530,8 +532,7 @@ function ApprovalListing(props) {
 
   const renderVendor = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
 
 
@@ -936,7 +937,7 @@ function ApprovalListing(props) {
 
                     <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
                       <div className="ag-theme-material">
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}

@@ -224,17 +224,21 @@ export function vendorBulkUpload(data, callback) {
  * @method getVendorTypesSelectList
  * @description GET VENDOR TYPE SELECTLIST
  */
-export function getVendorTypesSelectList() {
+export function getVendorTypesSelectList(callback) {
     return (dispatch) => {
         const request = axios.get(API.getVendorTypesSelectList, config());
         request.then((response) => {
-            dispatch({
-                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
-                payload: response.data.SelectList,
-            });
+            if (response.status === 200) {
+                callback(response);
+                dispatch({
+                    type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
