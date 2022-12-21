@@ -228,18 +228,13 @@ function InsightsBop(props) {
         let vendorTemp = []
         let uniqueVendors = []
 
+
+
+
         //////////////////////////////////////////////////////////////////////////////////////
-        let specification = []
 
 
-        Array.isArray(bopBenchmarkList) && bopBenchmarkList?.map((item) => {
-
-            specification.push(item.BOPSpecifications[0])
-
-        })
-
-
-        true && specification.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        true && bopBenchmarkList.BOPSpecifications.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
                 Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
@@ -255,16 +250,16 @@ function InsightsBop(props) {
             item.BOPVendorPrice?.map((data, indx) => {
 
                 data.BOPPlant.map((ele, ind) => {
-                    let Val = `plant${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val] = ele.Rate
 
-                    let Val2 = `quantity${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val2] = ele.TotalQuantity
+                    let Val = `plant${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val] = ele.Price
+
+                    let Val2 = `quantity${data.VendorName}${ele.PlantName}`                        // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val2] = ele.TotalVolumeAndBOPCostingQuantity
 
 
-                    let Val3 = `value${data.Vendor}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    let Val3 = `value${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val3] = ele.TotalValue
-
 
                 })
 
@@ -280,7 +275,7 @@ function InsightsBop(props) {
             item.BOPVendorPrice?.map((ele, ind) => {
 
                 obj2 = {}
-                obj2.vendor = ele.Vendor                    // OBJ2 
+                obj2.vendor = ele.VendorName                    // OBJ2 
 
                 ele.BOPPlant.map((el) => {
                     plantTemp.push(el.PlantName)
@@ -290,7 +285,7 @@ function InsightsBop(props) {
                 plantTemp = []
 
                 arrSample.push(obj2)
-                uniqueVendors.push(ele.Vendor)
+                uniqueVendors.push(ele.VendorName)
 
             })
 
@@ -365,7 +360,13 @@ function InsightsBop(props) {
 
         },
         {
-            field: "EffectiveDate",
+            field: "EffectiveFromDate",
+            pinned: "left",
+            width: "130",
+            cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
+        },
+        {
+            field: "EffectiveToDate",
             pinned: "left",
             width: "130",
             cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
@@ -386,7 +387,7 @@ function InsightsBop(props) {
 
                     headerName: "Rate",
                     width: "130",
-                    field: `plant${item.vendor}${ind}`,
+                    field: `plant${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -394,7 +395,7 @@ function InsightsBop(props) {
 
                     headerName: "Quantity",
                     width: "130",
-                    field: `quantity${item.vendor}${ind}`,
+                    field: `quantity${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -402,12 +403,10 @@ function InsightsBop(props) {
 
                     headerName: "Value",
                     width: "130",
-                    field: `value${item.vendor}${ind}`,
+                    field: `value${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? checkForDecimalAndNull(params.value, 4) : '-',
 
                 }
-
-
 
                 let plantObj = {
                     headerName: ele,
@@ -530,7 +529,7 @@ function InsightsBop(props) {
 
         tableHeaderColumnDefs?.map((item, index) => {
 
-            if (index > 5) {
+            if (index > 6) {
 
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
@@ -560,15 +559,17 @@ function InsightsBop(props) {
             }
         }
 
-
         let newArr = []
         labelArr.map((item, index) => {
+
             plantLabel.map((element, ind) => {
-                let ele = element.slice(5, -1)
-                if (item.includes(ele)) {
+                let ele = element.slice(5)
+                var newStr = item.replace('-', '')
+                if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
             })
+
         })
 
         graphDataNew = newArr
