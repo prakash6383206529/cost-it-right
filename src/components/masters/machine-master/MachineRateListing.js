@@ -126,6 +126,18 @@ class MachineRateListing extends Component {
 
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
 
+
+        if (this.state.filterModel?.EffectiveDateNew) {
+            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+                let temp = []
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+
+        }
+
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
 
