@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6, graphColor7, graphColor8, graphColor9, graphColor10, graphColor11, graphColor12, graphColor13, graphColor14, graphColor15, graphColor16 } from '../../../dashboard/ChartsDashboard';
+import { colorArray } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
 import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing';
 
@@ -87,7 +87,7 @@ const CostRatioListing = (props) => {
             checkForDecimalAndNull(tempObj.NetToolCostPercentage, 2),
             checkForDecimalAndNull(tempObj.NetDiscountCostPercentage, 2),
         ]
-        setPieChartDataArray(temp)
+
         let labelArray = []
         let labels = ['RM', 'BOP', 'PROC.', 'OPER.', 'OTHER OPER.', 'CC', 'ST', 'OH', 'PROF.', 'REJ.', 'ICC', 'PAYMENT', 'P&F', 'OTHER COST', 'TC', 'DIS.']
         temp && temp.map((item, index) => {
@@ -95,6 +95,62 @@ const CostRatioListing = (props) => {
                 labelArray.push(labels[index])
             }
         })
+        let dataArray = []
+        labelArray && labelArray.map((item, index) => {
+            switch (item) {
+                case 'RM':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetRawMaterialsCostPercentage, 2))
+                    break;
+                case 'BOP':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetBoughtOutPartCostPercentage, 2))
+                    break;
+                case 'PROC.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetProcessCostPercentage, 2))
+                    break;
+                case 'OPER.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetOperationCostPercentage, 2))
+                    break;
+                case 'OTHER OPER.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetOtherOperationCostPercentage, 2))
+                    break;
+                case 'CC':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetConversionCostPercentage, 2))
+                    break;
+                case 'ST':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetSurfaceTreatmentCostPercentage, 2))
+                    break;
+                case 'OH':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetOverheadCostPercentage, 2))
+                    break;
+                case 'PROF.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetProfitCostPercentage, 2))
+                    break;
+                case 'REJ.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetRejectionCostPercentage, 2))
+                    break;
+                case 'ICC':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetICCCostPercentage, 2))
+                    break;
+                case 'PAYMENT':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetPaymentTermCostPercentage, 2))
+                    break;
+                case 'P&F':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetPackagingAndFreightCostPercentage, 2))
+                    break;
+                case 'OTHER COST':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetOtherCostPercentage, 2))
+                    break;
+                case 'TC':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetToolCostPercentage, 2))
+                    break;
+                case 'DIS.':
+                    dataArray.push(checkForDecimalAndNull(tempObj.NetDiscountCostPercentage, 2))
+                    break;
+                default:
+                    break;
+            }
+        })
+        setPieChartDataArray(dataArray)
         setPieChartLabelArray(labelArray)
     }, [100])
 
@@ -108,24 +164,7 @@ const CostRatioListing = (props) => {
             {
                 label: '',
                 data: pieChartDataArray,
-                backgroundColor: [
-                    graphColor1,
-                    graphColor2,
-                    graphColor3,
-                    graphColor4,
-                    graphColor5,
-                    graphColor6,
-                    graphColor7,
-                    graphColor8,
-                    graphColor9,
-                    graphColor10,
-                    graphColor11,
-                    graphColor12,
-                    graphColor13,
-                    graphColor14,
-                    graphColor15,
-                    graphColor16,
-                ],
+                backgroundColor: colorArray,
                 borderWidth: 1,
             },
         ],
