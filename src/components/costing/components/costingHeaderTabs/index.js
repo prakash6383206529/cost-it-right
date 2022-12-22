@@ -28,7 +28,7 @@ import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { ASSEMBLY, LOGISTICS } from '../../../../config/masterData';
+import { LOGISTICS } from '../../../../config/masterData';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -54,7 +54,6 @@ function CostingHeaderTabs(props) {
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
-  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
   }, [costingData])

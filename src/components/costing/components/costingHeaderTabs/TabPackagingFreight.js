@@ -157,7 +157,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce((gotoNextValue) => {
+  const saveCosting = debounce(handleSubmit((gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -216,7 +216,7 @@ function TabPackagingFreight(props) {
         }
       }))
     }
-  }, 500)
+  }), 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -290,20 +290,22 @@ function TabPackagingFreight(props) {
                     <div className={"save-icon"}></div>
                     {"Save"}
                   </button>}
-                  {!CostingViewMode && (costingData?.TechnologyId === LOGISTICS) && <button
+                  {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
                     type="button"
                     className="submit-button save-btn"
                     onClick={(data, e) => { handleSubmit(saveCosting(true)) }}
+                  // disabled={isDisable}
                   >
                     {"Next"}
                     <div className={"next-icon"}></div>
-                  </button>}
+                  </button>
+                  }
                 </div>
               </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            </div >
+          </Col >
+        </Row >
+      </div >
     </>
   );
 };
