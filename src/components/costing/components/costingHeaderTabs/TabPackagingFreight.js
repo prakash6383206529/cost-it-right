@@ -205,7 +205,7 @@ function TabPackagingFreight(props) {
 
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
-          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
           if (gotoNextValue) {
