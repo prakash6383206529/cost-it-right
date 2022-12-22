@@ -422,7 +422,7 @@ function CostingHeaderTabs(props) {
             </NavItem>}
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                Packaging & Freight
+                {costingData?.TechnologyId !== LOGISTICS && 'Packaging &'} Freight
               </NavLink>
             </NavItem>
             {costingData.TechnologyId !== LOGISTICS && <NavItem>

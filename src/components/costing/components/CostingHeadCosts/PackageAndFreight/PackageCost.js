@@ -108,7 +108,7 @@ function PackageCost(props) {
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Criteria/Applicability`}</th>}
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Packaging Type/Percentage`}</th>}
                       <th>{`Cost`}</th>
-                      <th style={{ width: "130px", textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
+                      <th style={{ textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody>
