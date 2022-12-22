@@ -45,9 +45,9 @@ function ViewPackagingAndFreight(props) {
             <thead>
               <tr>
                 <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
-                <th>{`Criteria/Applicability`}</th>
+                {!isLogisticsTechnology && <th>{`Criteria/Applicability`}</th>}
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
+                {!isLogisticsTechnology && <th className="costing-border-right">{`Cost`}</th>}
               </tr>
             </thead>
             <tbody>
@@ -58,13 +58,13 @@ function ViewPackagingAndFreight(props) {
                       <td>
                         {item.PackagingDescription ? item.PackagingDescription : '-'}
                       </td>
-                      <td>{item.Applicability ? item.Applicability : '-'}</td>
+                      {!isLogisticsTechnology && <td>{item.Applicability ? item.Applicability : '-'}</td>}
                       <td>
                         {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
                       </td>
-                      <td>
+                      {!isLogisticsTechnology && <td>
                         {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      </td>
+                      </td>}
                     </tr>
                   )
                 })}
