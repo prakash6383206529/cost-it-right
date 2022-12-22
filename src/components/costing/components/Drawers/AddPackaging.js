@@ -11,6 +11,7 @@ import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, de
 import { LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
+import TooltipCustom from '../../../common/Tooltip';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -446,10 +447,7 @@ function AddPackaging(props) {
 
                   {costingData.TechnologyId === LOGISTICS && <>
                     <Col md="12">
-                      {/* <div class="tooltip-n ml-1">
-                        <i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                        <span class="tooltiptext process-tooltip">{'Terminal Handling Charges'}</span>
-                      </div> */}
+                      <TooltipCustom id="freight" tooltipText="Terminal Handling Charges" />
                       <SearchableSelectHookForm
                         label={'Charges'}
                         name={'FrieghtType'}
