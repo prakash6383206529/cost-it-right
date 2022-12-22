@@ -1883,9 +1883,15 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
                       </> : <>
-
+                        {drawerDetailPDF && <tr><th colSpan={2}><ViewPackagingAndFreight
+                          isOpen={isViewPackagingFreight}
+                          packagingAndFreightCost={viewPackagingFreight}
+                          closeDrawer={closeViewDrawer}
+                          isLogisticsTechnology={isLogisticsTechnology}
+                          anchor={'right'}
+                          isPDFShow={true} /></th></tr>}
                         <tr className={`background-light-blue ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? 'green-row' : viewCostingData[0]?.nPackagingAndFreight < viewCostingData[1]?.nPackagingAndFreight ? 'red-row' : ' ' : '-'}`}>
-                          <th>Net Packaging </th>
+                          <th>Net Freight </th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
