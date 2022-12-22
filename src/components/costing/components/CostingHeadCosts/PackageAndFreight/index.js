@@ -1,14 +1,16 @@
 import React, { useEffect, } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector, } from 'react-redux';
 import PackageCost from './PackageCost';
 import FreightCost from './FreightCost';
 import { setComponentPackageFreightItemData } from '../../../actions/Costing';
+import { LOGISTICS } from '../../../../../config/masterData';
 
 function PackageAndFreight(props) {
 
   const { item, } = props;
 
   const dispatch = useDispatch()
+  const { costingData } = useSelector(state => state.costing)
 
   useEffect(() => {
     dispatch(setComponentPackageFreightItemData(item, () => { }))
@@ -28,12 +30,12 @@ function PackageAndFreight(props) {
             data={item?.CostingPartDetails?.CostingPackagingDetail}
             setPackageCost={props.setPackageCost}
           />
-          <FreightCost
+          {costingData.TechnologyId !== LOGISTICS && <FreightCost
             index={props.index}
             item={item}
             data={item?.CostingPartDetails?.CostingFreightDetail}
             setFreightCost={props.setFreightCost}
-          />
+          />}
         </div>
       </div >
     </ >
