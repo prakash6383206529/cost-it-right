@@ -3146,6 +3146,7 @@ export const PLATING = 21
 export const DIE_CASTING = 23
 export const LOGISTICS = 24
 export const ASSEMBLY_TECHNOLOGY = 10
+export const LOGISTICS = 24
 
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
