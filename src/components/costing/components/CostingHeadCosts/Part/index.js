@@ -46,8 +46,10 @@ function PartCompoment(props) {
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    delete tempErrorObjRMCC?.bopGridFields
 
-    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
 
     setIsOpen(!IsOpen)
     setCount(Count + 1)

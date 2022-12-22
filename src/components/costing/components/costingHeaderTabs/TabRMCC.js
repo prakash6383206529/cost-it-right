@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -848,8 +848,9 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
-
-    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
+    let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    delete tempErrorObjRMCC?.bopGridFields
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
 
     let updatedArr = reactLocalStorage.getObject('costingArray')
     let tempPartNumber = []
@@ -1319,7 +1320,7 @@ function TabRMCC(props) {
   const saveCosting = debounce(handleSubmit(() => {
     let count = 0
     for (var prop in ErrorObjRMCC) {
-      if (ErrorObjRMCC[prop]?.length > 0) {
+      if (Object.keys(ErrorObjRMCC[prop])?.length > 0) {
         count++
       }
     }
@@ -1384,6 +1385,7 @@ function TabRMCC(props) {
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
           dispatch(isDataChange(false))
+          dispatch(gridDataAdded(true))
 
         }
       }))

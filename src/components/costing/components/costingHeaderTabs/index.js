@@ -28,6 +28,7 @@ import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { LOGISTICS } from '../../../../config/masterData';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -53,6 +54,11 @@ function CostingHeaderTabs(props) {
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
 
   const costingApprovalStatus = useContext(CostingStatusContext);
+
+  useEffect(() => {
+    setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
+  }, [costingData])
+
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
@@ -270,8 +276,9 @@ function CostingHeaderTabs(props) {
   */
   const toggle = (tab) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-
-    if (errorCheck(ErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
+    let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    delete tempErrorObjRMCC?.bopGridFields
+    if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
 
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -398,36 +405,36 @@ function CostingHeaderTabs(props) {
 
         <div className='costing-tabs-container'>
           <Nav tabs className="subtabs cr-subtabs-head">
-            <NavItem>
+            {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                 {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                 Surface Treatment
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                 Overheads & Profits
               </NavLink>
-            </NavItem>
+            </NavItem>}
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                 Packaging & Freight
               </NavLink>
             </NavItem>
-            <NavItem>
+            {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
                 Tool Cost
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
                 Discount & Other Cost
               </NavLink>
-            </NavItem>
+            </NavItem>}
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">

@@ -151,7 +151,7 @@ export function getCostingBenchMarkBopReport(data, callback) {
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,
-                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
             })
             callback(response);
         }).catch((error) => {
@@ -201,6 +201,25 @@ export function getCostingBenchMarkOperationReport(data, callback) {
 
     return (dispatch) => {
         const request = axios.post(`${API.getCostingBenchMarkOperationReport}`, data, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_BENCHMARK_MASTER_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+}
+
+export function getCostingBenchMarkMachineReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getCostingBenchMarkMachineReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,

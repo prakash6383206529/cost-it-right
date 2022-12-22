@@ -197,7 +197,7 @@ function ApprovalSummary(props) {
       const Data = res.data.Data
       const newObj = formViewData(Data, 'New Costing')
       let finalObj = []
-      if (approvalData.LastCostingId !== EMPTY_GUID) {
+      if (approvalData.LastCostingId !== EMPTY_GUID || approvalData.LastCostingId !== undefined || approvalData.LastCostingId !== null) {
         dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
           const oldData = response.data.Data
           const oldObj = formViewData(oldData, 'Old Costing')
