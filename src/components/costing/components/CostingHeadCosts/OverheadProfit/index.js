@@ -334,7 +334,7 @@ function OverheadProfit(props) {
           costingTypeId: costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
           plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-          customerId: costData.CustomerId
+          customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
