@@ -21,7 +21,7 @@ function TabSTAssemblyTechnology(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
