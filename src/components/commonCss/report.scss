@@ -57,7 +57,7 @@
             //FIRST HEADER FREEZE IF DATA IS OVERFLOW E.I. FIRST COLUMN
             &:first-child {
                 max-width: 80px;
-                min-width: 80px;
+                min-width: 180px;
                 position: sticky;
                 left: -1px;
                 background-color: #eef3f8;
@@ -90,9 +90,10 @@
 .cost-ratio-report {
     min-height: calc(100vh - 315px);
 
-    &.h-298 {
-        min-height: calc(100vh - 298px);
-    }
+}
+
+.h-298 {
+    min-height: calc(100vh - 298px);
 }
 
 //THIS IS USED FOR DOUGHNUT GRAPH 
