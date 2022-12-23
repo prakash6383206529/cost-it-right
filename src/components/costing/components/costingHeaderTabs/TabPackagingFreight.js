@@ -157,7 +157,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit((gotoNextValue) => {
+  const saveCosting = debounce((gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -209,14 +209,14 @@ function TabPackagingFreight(props) {
           Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
-          if (gotoNextValue) {
-            props.toggle('2')
-            history.push('/costing-summary')
+          if ((costingData?.TechnologyId === LOGISTICS) && gotoNextValue) {
+            props?.toggle('2')
+            history?.push('/costing-summary')
           }
         }
       }))
     }
-  }), 500)
+  }, 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -290,11 +290,10 @@ function TabPackagingFreight(props) {
                     <div className={"save-icon"}></div>
                     {"Save"}
                   </button>}
-                  {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
+                  {!CostingViewMode && (costingData?.TechnologyId === LOGISTICS) && <button
                     type="button"
                     className="submit-button save-btn"
                     onClick={(data, e) => { handleSubmit(saveCosting(true)) }}
-                  // disabled={isDisable}
                   >
                     {"Next"}
                     <div className={"next-icon"}></div>
