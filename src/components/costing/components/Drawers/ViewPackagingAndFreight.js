@@ -46,8 +46,8 @@ function ViewPackagingAndFreight(props) {
               <tr>
                 <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
                 {!isLogisticsTechnology && <th>{`Criteria/Applicability`}</th>}
-                <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
-                {!isLogisticsTechnology && <th className="costing-border-right">{`Cost`}</th>}
+                {!isLogisticsTechnology && <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>}
+                <th className="costing-border-right">{`Cost`}</th>
               </tr>
             </thead>
             <tbody>
@@ -59,12 +59,12 @@ function ViewPackagingAndFreight(props) {
                         {item.PackagingDescription ? item.PackagingDescription : '-'}
                       </td>
                       {!isLogisticsTechnology && <td>{item.Applicability ? item.Applicability : '-'}</td>}
-                      <td>
-                        {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
-                      </td>
                       {!isLogisticsTechnology && <td>
-                        {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
                       </td>}
+                      <td>
+                        {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                      </td>
                     </tr>
                   )
                 })}
