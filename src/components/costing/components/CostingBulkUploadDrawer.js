@@ -6,12 +6,13 @@ import { Container, Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting } from '../actions/CostWorking'
 import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
-import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -155,11 +156,11 @@ class CostingBulkUploadDrawer extends Component {
 
     onSubmit = (value) => {
 
-
         const { fileData } = this.state
 
         let data = new FormData()
         data.append('file', fileData)
+        data.append('loggedInUserId', loggedInUserId())
 
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
@@ -180,6 +181,22 @@ class CostingBulkUploadDrawer extends Component {
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
                 this.props.machiningBulkUploadCosting(data, (res) => {
+                    let Data = res.data[0]
+                    const { files } = this.state
+                    files.push(Data)
+                })
+                this.cancel()
+                break;
+            case CORRUGATED_BOX:
+                this.props.corrugatedBoxBulkUploadCosting(data, (res) => {
+                    let Data = res.data[0]
+                    const { files } = this.state
+                    files.push(Data)
+                })
+                this.cancel()
+                break;
+            case ASSEMBLY:
+                this.props.assemblyBulkUploadCosting(data, (res) => {
                     let Data = res.data[0]
                     const { files } = this.state
                     files.push(Data)
@@ -353,7 +370,9 @@ export default connect(mapStateToProps,
         bulkUploadCosting,
         getCostingTechnologySelectList,
         plasticBulkUploadCosting,
-        machiningBulkUploadCosting
+        machiningBulkUploadCosting,
+        corrugatedBoxBulkUploadCosting,
+        assemblyBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

@@ -297,7 +297,6 @@ function MachineInsights(props) {
         })
 
 
-
         setLabelArray(labelArr)
 
 
