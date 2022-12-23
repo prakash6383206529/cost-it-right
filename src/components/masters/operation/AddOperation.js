@@ -104,7 +104,6 @@ class AddOperation extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
-      this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewMode) {
       let obj = {
@@ -195,6 +194,9 @@ class AddOperation extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag
     });
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
   }
 
   /**
