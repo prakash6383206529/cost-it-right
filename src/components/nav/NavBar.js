@@ -95,10 +95,10 @@ class SideBar extends Component {
 
         let Data = res?.data?.Data
         let costingIndex = Data && Data?.findIndex(item => item?.ModuleName === COSTING)
-        let cbcCostingData = Data[costingIndex].Pages.filter(item => item.PageName === CBC_COSTING)
+        let cbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === CBC_COSTING)
         let cbcCostingPermission
 
-        if (checkForNull(cbcCostingData.length) === 0) {
+        if (checkForNull(cbcCostingData?.length) === 0) {
           cbcCostingPermission = false
           reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
         }

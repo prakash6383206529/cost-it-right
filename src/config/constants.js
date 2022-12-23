@@ -983,6 +983,7 @@ export const API = {
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
+  getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1458,6 +1459,7 @@ export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
 
 // ASSEMBLY TECHNOLOGY API
 export const GET_SETTLED_COSTING_DETAILS = 'GET_SETTLED_COSTING_DETAILS'
+export const GET_SETTLED_COSTING_DETAILS_VIEW = 'GET_SETTLED_COSTING_DETAILS_VIEW'
 
 //COSTING SUMMARY
 export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';
@@ -2139,4 +2141,8 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
+<<<<<<< HEAD
 export const VERSION = "V2.1.23.3";
+=======
+export const VERSION = "V2.1.26";
+>>>>>>> m1-frontend

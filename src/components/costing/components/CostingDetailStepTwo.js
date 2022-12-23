@@ -16,7 +16,7 @@ import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { CBCTypeId, NCC, NCCTypeId, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { ASSEMBLY } from '../../../config/masterData';
+import { LOGISTICS } from '../../../config/masterData';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -46,7 +46,7 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
-    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
+    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, ComponentItemData } = useSelector(state => state.costing)
   const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
 
   let data = useSelector(state => state.costing)
@@ -448,28 +448,29 @@ function CostingDetailStepTwo(props) {
                   {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
                   <div class="table-responsive costing-header-table">
                     <Table className="table cr-brdr-main mb-0" size="sm">
-                      <thead>
+                      {costingData?.TechnologyId !== LOGISTICS && <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${partType ? "Part Cost/ Assembly" : `${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Insert Cost/ Assembly' : 'Insert Cost/ Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/ Assembly' : 'BOP Cost/ Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : "Net RMC + CC"}`}</span></th>
                           <th style={{ width: '220px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
+
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost(INR)`}</span></th>
                         </tr>
-                      </thead>
+                      </thead>}
                       <tbody>
                         <tr className="cr-bg-tbl">
                           {
                             CostingDataList && CostingDataList.map((item, index) => {
                               return (
-                                <>
+                                <> {costingData.TechnologyId !== LOGISTICS ? <>
                                   <td className="part-overflow pr-0 pl-2"><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetRMCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetBOPCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
@@ -482,6 +483,11 @@ function CostingDetailStepTwo(props) {
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                </> : <>
+                                  <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500"><span>Freight Cost: </span>{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost(INR): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                </>}
                                 </>
                               )
                             }
