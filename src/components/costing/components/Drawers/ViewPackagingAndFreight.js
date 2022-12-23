@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
-  const { isPDFShow } = props
+  const { isPDFShow, isLogisticsTechnology } = props
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -32,7 +32,7 @@ function ViewPackagingAndFreight(props) {
     return <>
       <Row>
         <Col md="12">
-          <div className="left-border">{'Packaging:'}</div>
+          <div className="left-border">{`${isLogisticsTechnology ? 'Freight' : 'Packaging'}:`}</div>
         </Col>
       </Row>
       <Row>
@@ -42,9 +42,9 @@ function ViewPackagingAndFreight(props) {
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
-                <th>{`Packaging Description`}</th>
+                <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
                 <th>{`Criteria/Applicability`}</th>
-                <th>{`Packaging Type/Percentage`}</th>
+                <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
             </thead>
@@ -141,7 +141,7 @@ function ViewPackagingAndFreight(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View Packaging & Freight Cost:'}</h3>
+                  <h3>{`${isLogisticsTechnology ? 'View Freight Cost:' : 'View Packaging & Freight Cost:'}`}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -153,7 +153,7 @@ function ViewPackagingAndFreight(props) {
             <div className="px-3">
               {packageTableData()}
               <div>
-                {freightTableData()}
+                {!isLogisticsTechnology && freightTableData()}
               </div>
             </div>
           </div>

@@ -628,6 +628,7 @@ function CostingSummary(props) {
         costingSummaryMainPage={true}
         setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
         costingIdExist={costingIdExist}
+        storeSummary={true}
       />}
 
       {IsBulkOpen && <BOMUpload
