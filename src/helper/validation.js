@@ -420,7 +420,7 @@ export const hashValidation = value =>
         ? 'Input should not contain #.' : undefined;
 
 export const alphaNumericValidation = value =>
-    value && !/^[a-zA-Z0-9]$/.test(value)
+    value && !/[a-zA-Z0-9]$/.test(value)
         ? 'Input should contain alpha numeric characters only.' : undefined;
 
 export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;

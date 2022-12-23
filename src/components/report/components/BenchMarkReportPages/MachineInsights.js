@@ -11,7 +11,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkOperationReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkMachineReport, getCostingBenchMarkOperationReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -31,24 +31,25 @@ function MachineInsights(props) {
     const gridOptions = {};
     const dispatch = useDispatch()
 
-    let operationBenchmarkList = useSelector((state) => state.report.BenchmarkList)
+    let machineBenchmarkList = useSelector((state) => state.report.BenchmarkList)
 
     useEffect(() => {
 
         let arr = []
+
         props.data && props.data.map((item) => {
             arr.push({
-                OperationId: item.OperationId
+                ProcessId: item.ProcessId
             })
             return arr
         })
         let data = {
             FromDate: props.dateArray[0] ? props.dateArray[0] : null,
             ToDate: props.dateArray[1] ? props.dateArray[1] : null,
-            OperationBenchMarkingReports: arr
+            ProcessBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkOperationReport(data, () => { }))
+        dispatch(getCostingBenchMarkMachineReport(data, () => { }))
 
     }, [])
 
@@ -65,10 +66,10 @@ function MachineInsights(props) {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
-        operationBenchmarkList && operationBenchmarkList?.OperationChildDetails?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        machineBenchmarkList && machineBenchmarkList?.ProcessDetails?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
-                Specification: item.OperationName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
+                ProcessName: item.ProcessName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
                 Minimum: item.Minimum,
                 Maximum: item.Maximum,
                 Average: item.Average,
@@ -81,15 +82,17 @@ function MachineInsights(props) {
             item.VendorPlantsDetail?.map((data, indx) => {
 
                 data.PlantDetails.map((ele, ind) => {
-                    let Val = `plant${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
+
+
+                    let Val = `plant${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val] = ele.Price
 
-                    let Val2 = `quantity${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val2] = ele.TotalOperationCostingQuantity
+                    let Val2 = `quantity${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val2] = ele.TotalProcessCostingQuantity
 
 
-                    let Val3 = `value${data.VendorName}` + ind                          // SETTING PLANTS FOR EACH VENDOR IN OBJ
-                    obj[Val3] = ele.TotalVolume
+                    let Val3 = `value${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
+                    obj[Val3] = ele.TotalValue
 
                 })
 
@@ -158,6 +161,15 @@ function MachineInsights(props) {
 
         let arr = [               //SETTING DYNAMIC COLUMN DEFINATIONS
 
+
+            {
+
+                field: "ProcessName",
+                pinned: "left",
+                width: "115"
+
+            },
+
             {
 
                 field: "Minimum",
@@ -185,7 +197,13 @@ function MachineInsights(props) {
 
             },
             {
-                field: "EffectiveDate",
+                field: "EffectiveFromDate",
+                pinned: "left",
+                width: "130",
+                cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
+            },
+            {
+                field: "EffectiveToDate",
                 pinned: "left",
                 width: "130",
                 cellRendererFramework: (params) => DayTime(params.value).format('DD/MM/YYYY'),
@@ -206,7 +224,7 @@ function MachineInsights(props) {
 
                     headerName: "Rate",
                     width: "130",
-                    field: `plant${item.vendor}${ind}`,
+                    field: `plant${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -214,7 +232,7 @@ function MachineInsights(props) {
 
                     headerName: "Quantity",
                     width: "130",
-                    field: `quantity${item.vendor}${ind}`,
+                    field: `quantity${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? params.value : '-',
 
                 }
@@ -222,7 +240,7 @@ function MachineInsights(props) {
 
                     headerName: "Value",
                     width: "130",
-                    field: `value${item.vendor}${ind}`,
+                    field: `value${item.vendor}${ele}`,
                     cellRendererFramework: (params) => params.value ? checkForDecimalAndNull(params.value, 4) : '-',
 
                 }
@@ -260,16 +278,17 @@ function MachineInsights(props) {
 
             setShowListing(true)
         }, 500);
-    }, [operationBenchmarkList]);
+    }, [machineBenchmarkList]);
 
 
 
     const onSelectionChanged = (event) => {
 
         let labelArr = []
+
         tableHeaderColumnDefs?.map((item, index) => {
 
-            if (index > 5) {
+            if (index > 6) {
 
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
@@ -302,12 +321,18 @@ function MachineInsights(props) {
 
         let newArr = []
         labelArr.map((item, index) => {
+
             plantLabel.map((element, ind) => {
-                let ele = element.slice(5, -1)
-                if (item.includes(ele)) {
+                let ele = element.slice(5)
+                ele = ele.replace('-', '')
+                var newStr = item.replace('-', '')
+                newStr = newStr.replace('-', '')
+
+                if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
             })
+
         })
 
         graphDataNew = newArr

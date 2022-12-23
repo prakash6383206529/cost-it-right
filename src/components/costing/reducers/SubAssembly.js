@@ -5,6 +5,7 @@ import {
   GET_EDIT_PART_COST_DETAILS,
   GET_COSTING_FOR_MULTI_TECHNOLOGY,
   GET_SETTLED_COSTING_DETAILS,
+  GET_SETTLED_COSTING_DETAILS_VIEW,
 } from '../../../config/constants';
 import { tempObject } from '../../../config/masterData';
 
@@ -47,6 +48,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         settledCostingDetails: action.payload
+      };
+    case GET_SETTLED_COSTING_DETAILS_VIEW:
+      return {
+        ...state,
+        loading: false,
+        settledCostingDetailsView: action.payload
       };
 
     default:

@@ -782,7 +782,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className={`button-wrapper ${this.props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}

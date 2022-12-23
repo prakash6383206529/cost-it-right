@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1005/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -985,6 +985,7 @@ export const API = {
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
+  getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1463,6 +1464,7 @@ export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
 
 // ASSEMBLY TECHNOLOGY API
 export const GET_SETTLED_COSTING_DETAILS = 'GET_SETTLED_COSTING_DETAILS'
+export const GET_SETTLED_COSTING_DETAILS_VIEW = 'GET_SETTLED_COSTING_DETAILS_VIEW'
 
 //COSTING SUMMARY
 export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';
@@ -2141,4 +2143,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.24";
+export const VERSION = "V2.1.27";
