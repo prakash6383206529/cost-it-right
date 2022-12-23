@@ -654,7 +654,7 @@ class AddInterestRate extends Component {
                             <Field
                               name="clientName"
                               type="text"
-                              label={"Customer Name"}
+                              label={"Customer (Code)"}
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
