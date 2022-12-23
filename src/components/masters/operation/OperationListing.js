@@ -908,7 +908,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
                                 <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
