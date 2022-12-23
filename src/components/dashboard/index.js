@@ -181,7 +181,7 @@ function Dashboard(props) {
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                            Insert Approval Status
+                            Insert
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>
