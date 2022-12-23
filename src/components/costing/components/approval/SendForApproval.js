@@ -432,6 +432,7 @@ const SendForApproval = (props) => {
             props.closeDrawer('', 'submit')
           }
         }
+        props?.cancel()
       }))
 
 

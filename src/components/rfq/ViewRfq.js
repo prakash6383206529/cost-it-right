@@ -607,8 +607,8 @@ function RfqListing(props) {
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
-                                            <AgGridColumn field="SubmissionDate" headerName='SubmissionDate' cellRenderer='dateFormatter'></AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" headerName='EffectiveDate' cellRenderer='dateFormatter'></AgGridColumn>
+                                            <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer='dateFormatter'></AgGridColumn>
                                             {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
@@ -631,6 +631,7 @@ function RfqListing(props) {
                             isApprovalisting={true}
                             isRfq={true}
                             technologyId={technologyId}
+                            cancel={cancel}
                         />
                     )
                 }
