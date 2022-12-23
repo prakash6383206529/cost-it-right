@@ -422,6 +422,10 @@ export const alphaNumericValidation = value =>
     value && !/[a-zA-Z0-9]$/.test(value)
         ? 'Input should contain alpha numeric characters only.' : undefined;
 
+export const postiveNumberForPlantCode = value =>
+    String(value).replace(/^0+/, '') && !/^\d{1,4}?$/.test(String(value)?.replace(/^0+/, ''))
+        ? 'Plant Code should be 4 digit integer.' : undefined;
+
 export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;
 
 export const NoSignNoDecimalRegex = /^\d*$/i;
