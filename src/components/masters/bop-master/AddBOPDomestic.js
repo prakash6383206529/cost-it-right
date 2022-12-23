@@ -156,13 +156,8 @@ class AddBOPDomestic extends Component {
       costingTypeId: costingHeadFlag,
       vendorLocation: [],
       selectedPlants: [],
-    }, () => {
     });
-    if (costingHeadFlag === VBCTypeId) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-    else if (costingHeadFlag === CBCTypeId) {
+    if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
