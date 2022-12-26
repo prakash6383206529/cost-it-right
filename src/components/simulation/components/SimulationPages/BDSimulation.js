@@ -129,6 +129,7 @@ function BDSimulation(props) {
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        obj.SimulationHeadId = list[0].CostingTypeId
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
