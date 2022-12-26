@@ -27,10 +27,10 @@ function AnalyticsDrawer(props) {
 
     const dispatch = useDispatch()
 
-    const [showList, setShowList] = useState(true)
+    const [showList, setShowList] = useState(false)
     const [uomValue, setUomValue] = useState("")
     const [showBarGraph, setShowBarGraph] = useState(false)
-    const [showLineGraph, setShowLineGraph] = useState(false)
+    const [showLineGraph, setShowLineGraph] = useState(true)
     const [gridData, setGridData] = useState([])
     const [dateRangeArray, setDateRangeArray] = useState([])
     const [netLandedCostArray, setNetLandedCostArray] = useState([])
@@ -81,8 +81,8 @@ function AnalyticsDrawer(props) {
     const valueChanged = (event) => {
 
         if (Number(event.value) === Number(1)) { //FOR LISTING
-            setShowList(true)
-            setShowLineGraph(false)
+            setShowList(false)
+            setShowLineGraph(true)
             setShowBarGraph(false)
         }
 
@@ -95,8 +95,8 @@ function AnalyticsDrawer(props) {
 
         if (Number(event.value) === Number(3)) { //FOR LINE CHART
 
-            setShowList(false)
-            setShowLineGraph(true)
+            setShowList(true)
+            setShowLineGraph(false)
             setShowBarGraph(false)
         }
 
@@ -194,7 +194,16 @@ function AnalyticsDrawer(props) {
                         return label;
                     }
                 }
-            }
+            },
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 16,
+                    boxHeight: 14,
+                    borderWidth: 0,
+                    color: '#000'
+                }
+            },
         }
 
     }
@@ -304,15 +313,6 @@ function AnalyticsDrawer(props) {
                                                 data={state}
                                                 height={120}
                                                 options={{
-                                                    title: {
-                                                        display: true,
-                                                        text: 'Average Rainfall per month',
-                                                        fontSize: 10
-                                                    },
-                                                    legend: {
-                                                        display: true,
-                                                        position: 'right'
-                                                    },
                                                     plugins: {
                                                         tooltip: {
                                                             callbacks: {
@@ -329,7 +329,16 @@ function AnalyticsDrawer(props) {
                                                                     return label;
                                                                 }
                                                             }
-                                                        }
+                                                        },
+                                                        legend: {
+                                                            position: 'bottom',
+                                                            labels: {
+                                                                boxWidth: 16,
+                                                                boxHeight: 14,
+                                                                color: '#000',
+
+                                                            }
+                                                        },
                                                     }
                                                 }}
                                             />

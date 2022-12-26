@@ -17,6 +17,8 @@ import { Link } from 'react-scroll';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
+import { LOGISTICS } from '../../../../config/masterData';
+import { useHistory } from 'react-router';
 
 function TabPackagingFreight(props) {
 
@@ -32,6 +34,8 @@ function TabPackagingFreight(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const { ComponentItemData, costingData } = useSelector(state => state.costing)
+  let history = useHistory();
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -153,7 +157,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit(() => {
+  const saveCosting = debounce(handleSubmit((gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -202,9 +206,13 @@ function TabPackagingFreight(props) {
 
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
-          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
+          if (gotoNextValue) {
+            props.toggle('2')
+            history.push('/costing-summary')
+          }
         }
       }))
 
@@ -242,7 +250,7 @@ function TabPackagingFreight(props) {
                       <thead>
                         <tr>
                           <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Part Number`}</th>
-                          <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Packaging Cost`}</th>
+                          {costingData.TechnologyId !== LOGISTICS && <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Packaging Cost`}</th>}
                           <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
@@ -253,7 +261,7 @@ function TabPackagingFreight(props) {
                               <tr class="accordian-row" key={index} >
                                 <td>{item?.PartNumber}</td>
                                 <td>{item?.CostingPartDetails?.PackagingNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                                <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                {costingData.TechnologyId !== LOGISTICS && <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
                               </tr>
                               <tr>
                                 <td colSpan={3} className="cr-innerwrap-td">
@@ -277,11 +285,20 @@ function TabPackagingFreight(props) {
                 <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
                   {!CostingViewMode && <button
                     type={"button"}
-                    className="submit-button save-btn"
-                    onClick={saveCosting}
+                    className="submit-button mr5 save-btn"
+                    onClick={(data, e) => { handleSubmit(saveCosting(false)) }}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
+                  </button>}
+                  {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
+                    type="button"
+                    className="submit-button save-btn"
+                    onClick={(data, e) => { handleSubmit(saveCosting(true)) }}
+                  // disabled={isDisable}
+                  >
+                    {"Next"}
+                    <div className={"next-icon"}></div>
                   </button>}
                 </div>
               </form>

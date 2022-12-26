@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-//const BASE_URL = `http://10.10.1.100:1005/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1005/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -625,6 +625,8 @@ export const API = {
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
   uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
+  uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
+  uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
 
 
   //COST SUMMARY
@@ -1947,6 +1949,8 @@ export const PROFIT = 'Profits'
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
 export const PLASTIC_GROUP_BULKUPLOAD = 2
 export const MACHINING_GROUP_BULKUPLOAD = 3
+export const CORRUGATED_BOX = 4
+export const ASSEMBLY = 5
 
 
 export const REASON_ID = 2
@@ -2139,4 +2143,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.24";
+export const VERSION = "V2.1.27";
