@@ -384,7 +384,7 @@ class AddFreight extends Component {
         FullTruckLoadId: "",
         Capacity: FullTruckCapacity.label,
         RateCriteria: RateCriteria.label,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: (DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') : ''),
         Rate: Rate,
       });
       this.setState(
@@ -433,7 +433,7 @@ class AddFreight extends Component {
     tempData = {
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: (DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') : ''),
       Rate: Rate,
     };
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData });
