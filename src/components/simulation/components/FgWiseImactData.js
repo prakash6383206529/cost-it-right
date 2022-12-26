@@ -110,7 +110,7 @@ export function Fgwiseimactdata(props) {
                                     <th><span>Impact/Pc</span></th>
                                     <th><span>SOB(%)</span></th>
                                     <th><span>Impact/Pc(with SOB)</span></th>
-                                    <th><div className='d-flex justify-content-center'><span>Volume/Year</span><TooltipCustom customClass="mt-1 ml-2" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></div></th>
+                                    <th><div className='d-flex justify-content-center'><span>Volume/Year</span><TooltipCustom id={"impact-volume"} customClass="mt-1 ml-2" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></div></th>
                                     <th><span>Impact/Quater</span></th>
                                     <th className="second-last-child"><span>Impact/Year</span></th>
                                     <th><span></span></th>
