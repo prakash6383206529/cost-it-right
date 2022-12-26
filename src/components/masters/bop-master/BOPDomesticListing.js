@@ -374,7 +374,6 @@ class BOPDomesticListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         // var selectedRows = gridApi?.getSelectedRows();
 
-
         if (this.props.selectedRowForPagination?.length > 0) {
             this.props.selectedRowForPagination.map((item) => {
                 if (item.RawMaterialId === props.node.data.RawMaterialId) {
