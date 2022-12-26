@@ -166,14 +166,16 @@ class OperationListing extends Component {
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 100, isPagination = true, dataObj) => {
         this.setState({ isLoader: isPagination ? true : false })
 
-        if (this.state.filterModel?.EffectiveDateNew) {
-            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+        if (this.state.filterModel?.EffectiveDate) {
+            if (this.state.filterModel.EffectiveDate.dateTo) {
                 let temp = []
-                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
-                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
                 dataObj.dateArray = temp
+
             }
         }
+
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
@@ -281,9 +283,13 @@ class OperationListing extends Component {
     }
 
     resetState = () => {
-        resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
+
+        this.setState({ dataCount: 0, filterModel: {} })
+        setTimeout(() => {
+            resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
+        }, 400);
         this.props.setSelectedRowForPagination([])
-        this.setState({ dataCount: 0 })
+
     }
 
     onBtPrevious = () => {
