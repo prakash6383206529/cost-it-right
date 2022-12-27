@@ -129,6 +129,8 @@ function AddPackaging(props) {
     } else {
       setApplicability([])
     }
+    setShowCostError(false)
+    setErrorMessage('')
   }
 
   /**
@@ -292,6 +294,9 @@ function AddPackaging(props) {
     } else if (!isNumber(e.target.value)) {
       setShowCostError(true)
       message = NoSignNoDecimalMessage
+    } else if (e.target.value === '') {
+      setShowCostError(true)
+      message = 'This field is required'
     } else {
       setPackagingCostDataFixed(e.target.value)
       setShowCostError(false)
