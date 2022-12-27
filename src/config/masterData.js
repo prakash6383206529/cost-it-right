@@ -3235,7 +3235,7 @@ export const SurfaceTreatmentSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
-    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -3249,7 +3249,7 @@ export const OperationSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
-    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -3276,30 +3276,30 @@ export const MachineRateSimulation = [
 
 export const BOPDomesticSimulation = [
     { label: "CostingHead", value: "IsVendor" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "InsertPartNumber", value: "BoughtOutPartNumber" },
+    { label: "InsertPartName", value: "BoughtOutPartName" },
+    { label: "InsertPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "InsertPartId", value: "BoughtOutPartId" }
 ]
 
 export const BOPImportSimulation = [
     { label: "CostingHead", value: "IsVendor" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "InsertPartNumber", value: "BoughtOutPartNumber" },
+    { label: "InsertPartName", value: "BoughtOutPartName" },
+    { label: "InsertPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "InsertPartId", value: "BoughtOutPartId" }
 ]
 
 export const OverheadProfitSimulation = [
