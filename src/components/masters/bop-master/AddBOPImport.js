@@ -165,13 +165,13 @@ class AddBOPImport extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
+      costingTypeId: costingHeadFlag,
       selectedPlants: [],
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
   }
-
   /**
   * @method handleCategoryChange
   * @description  used to handle BOP Category Selection
