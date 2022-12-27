@@ -829,39 +829,35 @@ function AddRfq(props) {
                                     </Row>
                                     <div>
                                         {true && <div className={`ag-grid-react`}>
-                                            <Row>
-                                                <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain" : ""} `}>
+                                            <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                        <div className={`ag-theme-material  max-loader-height`}>
-                                                            <AgGridReact
-                                                                defaultColDef={defaultColDef}
-                                                                //floatingFilter={true}
-                                                                domLayout='autoHeight'
-                                                                // columnDefs={c}
-                                                                rowData={partList}
-                                                                //pagination={true}
-                                                                paginationPageSize={10}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptions}
-                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                            >
-                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" ></AgGridColumn>
+                                                <div className={`ag-theme-material  max-loader-height`}>
+                                                    <AgGridReact
+                                                        defaultColDef={defaultColDef}
+                                                        //floatingFilter={true}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={partList}
+                                                        //pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                    >
+                                                        <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" ></AgGridColumn>
 
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
 
-                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                                            </AgGridReact>
+                                                        <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                                    </AgGridReact>
 
-                                                        </div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
+                                                </div>
+                                            </div>
                                         </div>
                                         }
                                     </div>
@@ -936,37 +932,32 @@ function AddRfq(props) {
 
                                     <div>
                                         {true && <div className={`ag-grid-react`}>
-                                            <Row>
-                                                <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain" : ""} `}>
+                                            <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border " : ""} `}>
+                                                <div className={`ag-theme-material  max-loader-height`}>
+                                                    <AgGridReact
+                                                        defaultColDef={defaultColDef}
+                                                        //floatingFilter={true}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={vendorList}
+                                                        //pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                    >
+                                                        <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
-                                                        <div className={`ag-theme-material  max-loader-height`}>
-                                                            <AgGridReact
-                                                                defaultColDef={defaultColDef}
-                                                                //floatingFilter={true}
-                                                                domLayout='autoHeight'
-                                                                // columnDefs={c}
-                                                                rowData={vendorList}
-                                                                //pagination={true}
-                                                                paginationPageSize={10}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptions}
-                                                                //noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                            >
-                                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-
-                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
-                                                            </AgGridReact>
-                                                        </div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
+                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                        <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
+                                                    </AgGridReact>
+                                                </div>
+                                            </div>
                                         </div>
                                         }
                                     </div>
@@ -991,10 +982,11 @@ function AddRfq(props) {
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                                 // options={renderListing("DestinationPlant")}
                                                 mandatory={true}
-                                                // handleChange={handleDestinationPlantChange}
+                                                customClassName={"withBorder"}
                                                 handleChange={() => { }}
                                                 errors={errors.remark}
                                                 disabled={isEditFlag}
+                                                rowHeight={6}
                                             // isLoading={plantLoaderObj}
                                             />
                                         </Col>
