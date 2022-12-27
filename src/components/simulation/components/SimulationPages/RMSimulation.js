@@ -487,7 +487,7 @@ function RMSimulation(props) {
                                                     </div>
                                                 </div>
                                             }
-                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container`}>
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Technology: </label>
                                                     <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
@@ -496,12 +496,9 @@ function RMSimulation(props) {
                                                     <label className='mr-1'>Vendor (Code):</label>
                                                     <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
+                                                <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
-
-
                                         </div>
-
-
 
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
@@ -594,10 +591,6 @@ function RMSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
-                                        <div className={"cancel-icon"}></div>
-                                        {"CANCEL"}
-                                    </button>
                                     <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}

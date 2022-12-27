@@ -319,11 +319,14 @@ function OperationSTSimulation(props) {
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
                                     <div className={`ag-grid-wrapper height-width-wrapper ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                        <div className="ag-grid-header d-flex align-items-center">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                        <div className="ag-grid-header d-flex align-items-center justify-content-between">
+                                            <div className='d-flex align-items-center'>
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className="refresh mr-0"></div>
+                                                </button>
+                                            </div>
+                                            {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                         </div>
                                         {
                                             isbulkUpload &&
@@ -438,11 +441,6 @@ function OperationSTSimulation(props) {
                                             />
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
-
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
-                                            <div className={"cancel-icon"}></div>
-                                            {"CANCEL"}
-                                        </button>
                                         <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
