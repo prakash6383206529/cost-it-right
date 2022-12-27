@@ -6056,5 +6056,24 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 ]
 
+export const AddRFQUpload = [
+    { label: "PartNumber", value: "PartNumber" },
+    { label: 'RevisionNumber', value: 'RevisionNumber' },
+    { label: 'Quantity', value: 'Quantity' }
+]
+
+export const AddRFQTempData = [
+    {
+        PartNumber: "Part_1",
+        RevisionNumber: 'A',
+        Quantity: 2
+    },
+    {
+        PartNumber: "Part_2",
+        RevisionNumber: 'B',
+        Quantity: 5
+    }
+]
+
 
 
