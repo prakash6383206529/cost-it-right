@@ -382,23 +382,9 @@ function CostMovementGraph(props) {
                 maxRatation: 180,
                 minRatation: 180,
             },
-            // y: {
-            //     title: {
-            //         display: true,
-            //         text: getCurrencySymbol(getConfigurationKey().BaseCurrency),
-            //         color: '#000',
-            //         autoSkip: false,
-            //         maxRotation: 90,
-            //         minRotation: 90,
-            //         font: {
-            //             size: 28,
-            //             weight: 500,
-
-            //         },
-            //     },
-            //     maxRatation: 180,
-            //     minRatation: 180,
-            // },
+            y: {
+                min: 0
+            },
 
         },
     }
