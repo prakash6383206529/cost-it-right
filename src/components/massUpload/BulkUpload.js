@@ -24,12 +24,13 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
-import { BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
+import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -252,6 +253,9 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
                             }
                             break;
+                        case String(ADDRFQ):
+                            checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
+                            break;
                         default:
                             break;
                     }
@@ -325,6 +329,23 @@ class BulkUpload extends Component {
                 })
             }
 
+        }
+        this.toggleDrawer('')
+    }
+
+    responseHandlerRFQ = (res) => {
+        const { messageLabel } = this.props;
+        if (res?.data?.Data) {
+            if (res?.data?.Data?.SuccessRecordCount > 0) {
+                Toaster.success(`${res?.data?.Data?.SuccessRecordCount} ${messageLabel} uploaded successfully.`)
+            }
+            if (res?.data?.Data?.FailedRecordCount > 0) {
+                Toaster.warning('Part upload failed.');
+                this.setState({
+                    failedData: res?.data?.Data?.FailedRecord,
+                    faildRecords: true,
+                })
+            }
         }
         this.toggleDrawer('')
     }
@@ -547,6 +568,15 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
+        } else if (fileName === 'ADDRFQ') {
+            let uploadDataRFQ = {}
+            uploadDataRFQ.PartList = fileData
+            uploadDataRFQ.LoggedInUserId = loggedInUserId()
+            uploadDataRFQ.TechnologyId = this.props?.technologyId?.value
+            this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandlerRFQ(res)
+            });
         }
 
         else {
@@ -597,7 +627,7 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {fileName !== 'InterestRate' &&
+                                            {(fileName !== 'InterestRate') && (fileName !== 'ADDRFQ') &&
                                                 <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -610,7 +640,7 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -618,8 +648,8 @@ class BulkUpload extends Component {
                                                     onClick={() => this.onPressHeads(VBCTypeId)}
                                                 />{' '}
                                                 <span>Vendor Based</span>
-                                            </Label>
-                                            <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            </Label>}
+                                            {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -627,7 +657,7 @@ class BulkUpload extends Component {
                                                     onClick={() => this.onPressHeads(CBCTypeId)}
                                                 />{' '}
                                                 <span>Customer Based</span>
-                                            </Label>
+                                            </Label>}
                                             {isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
@@ -704,9 +734,10 @@ class BulkUpload extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps() {
-
-    return {};
+function mapStateToProps(state) {
+    const { rfq } = state
+    const { checkRFQPartBulkUpload } = rfq
+    return { checkRFQPartBulkUpload };
 }
 
 /**
@@ -752,7 +783,8 @@ export default connect(mapStateToProps, {
     bulkUploadBOPDomesticCBC,
     bulkUploadBOPImportCBC,
     bulkUploadVolumeActualCBC,
-    bulkUploadVolumeBudgetedCBC
+    bulkUploadVolumeBudgetedCBC,
+    checkRFQBulkUpload
 
 })(reduxForm({
     form: 'BulkUpload',
