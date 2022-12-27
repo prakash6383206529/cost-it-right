@@ -905,7 +905,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant (Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
+                                <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
                                 <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>

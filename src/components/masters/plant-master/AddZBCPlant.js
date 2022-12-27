@@ -398,7 +398,7 @@ class AddZBCPlant extends Component {
                       <Field
                         name="CompanyName"
                         type="text"
-                        label="Company Name"
+                        label="Company (Code)"
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}

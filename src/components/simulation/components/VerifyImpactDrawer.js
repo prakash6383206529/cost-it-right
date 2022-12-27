@@ -104,7 +104,7 @@ function VerifyImpactDrawer(props) {
                   <Table responsive className="border impact-drawer-table sub-table">
                     <tbody>
                       <tr>
-                        <th>Vendor:</th>
+                        <th>Vendor (Code):</th>
                         <th>Technology:</th>
                         <th>Master:</th>
                         <th>Costing Head:</th>
