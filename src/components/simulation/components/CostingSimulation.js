@@ -1298,7 +1298,6 @@ function CostingSimulation(props) {
                                                 </button>
                                             </div>
                                         </Col>
-
                                     </Row>
                                     <Row>
                                         <Col>
