@@ -339,6 +339,11 @@ function AnalyticsDrawer(props) {
 
                                                             }
                                                         },
+                                                    },
+                                                    scales: {
+                                                        y: {
+                                                            min: 0
+                                                        }
                                                     }
                                                 }}
                                             />
