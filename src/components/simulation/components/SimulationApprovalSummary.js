@@ -1223,7 +1223,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                                                 <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
                                                                 <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
 
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}
@@ -1269,7 +1269,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                     keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
-                                                                < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact for Quarter(INR)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                                < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact for Quarter (INR)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Budgeted Price Impact/Quarter' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Budgeted Price Variance' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
@@ -1524,7 +1524,7 @@ domLayout='autoHeight'
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
-                                        <div className={'cancel-icon'}></div>
+                                        <div className={'cancel-icon-white mr5'}></div>
                                         {'Reject'}
                                     </button>
                                     <button
