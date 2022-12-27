@@ -534,7 +534,7 @@ class ZBCPlantListing extends Component {
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                            <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
+                            <AgGridColumn field="CompanyName" headerName="Company (Code)"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
