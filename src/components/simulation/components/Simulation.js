@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, COMBINED_PROCESS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, COMBINED_PROCESS, EMPTY_GUID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -181,16 +181,20 @@ function Simulation(props) {
             setSelectionForListingMasterAPI('Master')
             setmasterSummaryDrawerState(false)
             setTimeout(() => {
+                setValue('Vendor', '')
                 dispatch(setTechnologyForSimulation(value))
-                let obj = {
-                    technologyId: value.value,
-                    loggedInUserId: loggedInUserId(),
-                    simulationTechnologyId: master.value
-                }
-                dispatch(getTokenSelectListAPI(obj, () => { }))
-                if (value !== '' && Object.keys(master).length > 0) {
-                    setShowMasterList(true)
-                    setShowTokenDropdown(true)
+                if (value !== '' && Object.keys(master).length > 0 && !(master.value === COMBINED_PROCESS)) {
+                    let obj = {
+                        technologyId: value.value,
+                        loggedInUserId: loggedInUserId(),
+                        simulationTechnologyId: master.value,
+                        vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
+                    }
+                    dispatch(getTokenSelectListAPI(obj, () => { }))
+                    if (value !== '' && Object.keys(master).length > 0) {
+                        setShowMasterList(true)
+                        setShowTokenDropdown(true)
+                    }
                 }
             }, 100);
         }
@@ -202,13 +206,13 @@ function Simulation(props) {
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
-            setValue('Vendor', '')
             dispatch(setTechnologyForSimulation(value))
-            if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
+            if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
                 let obj = {
                     technologyId: value.value,
                     loggedInUserId: loggedInUserId(),
                     simulationTechnologyId: master.value,
+                    vendorId: value.value
                     /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
                     // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
                 }
@@ -217,9 +221,10 @@ function Simulation(props) {
                     setShowMasterList(true)
                     setShowTokenDropdown(true)
                 }
-
             }
         }, 100);
+        dispatch(setVendorForSimulation(value))
+        setVendor(value)
     }
 
 
@@ -1008,13 +1013,34 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-
                                 {
-                                    master.value === '3' &&
+                                    getTechnologyForSimulation.includes(master.value) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                        <div className="flex-fills label">Technology:</div>
+                                        <div className="flex-fills hide-label pl-0">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Technology'}
+                                                placeholder={'Technology'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={technology.length !== 0 ? technology : ''}
+                                                options={renderListing('technology')}
+                                                mandatory={false}
+                                                handleChange={handleTechnologyChange}
+                                                errors={errors.Masters}
+                                                disabled={isTechnologyDisable}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {(partType || master.value === COMBINED_PROCESS) &&
+                                    < div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Vendor:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
-                                            {/* {inputLoader && <LoaderCustom customClass="input-loader" />} */}
+                                            {/* {inputLoader && <LoaderCustom customClass="vendor-loader" />} */}
                                             <AsyncSearchableSelectHookForm
                                                 label={''}
                                                 name={'Vendor'}
@@ -1056,52 +1082,6 @@ function Simulation(props) {
                                     </div>
 
                                 }
-                                {partType &&
-                                    < div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                        <div className="flex-fills label">Vendor:</div>
-                                        <div className="flex-fills hide-label pl-0 p-relative">
-                                            {/* {inputLoader && <LoaderCustom customClass="vendor-loader" />} */}
-                                            <AsyncSearchableSelectHookForm
-                                                label={''}
-                                                name={'Vendor'}
-                                                placeholder={'Vendor'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ''}
-                                                asyncOptions={filterList}
-                                                mandatory={false}
-                                                handleChange={handleVendorChange}
-                                                errors={errors.Masters}
-                                                NoOptionMessage={"Enter 3 characters to show data"}
-                                            />
-                                        </div>
-                                    </div>
-                                }
-                                {showTokenDropdown &&
-                                    <div className="d-inline-flex justify-content-start align-items-center">
-                                        <div className="flex-fills label">Token:</div>
-                                        <div className="flex-fills hide-label pl-0">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'token'}
-                                                placeholder={'token'}
-                                                valueDescription={token}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={technology.length !== 0 ? technology : ''}
-                                                options={renderListing('token')}
-                                                mandatory={false}
-                                                handleChange={handleTokenChange}
-                                                errors={errors.Masters}
-                                            />
-                                        </div>
-                                    </div>
-                                }
-
                                 {(tokenForSimulation?.length !== 0 && tokenForSimulation !== null && tokenForSimulation !== undefined && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                     <div className='save-icon'></div>
                                 </button>}

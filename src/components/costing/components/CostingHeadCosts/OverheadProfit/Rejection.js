@@ -29,6 +29,7 @@ function Rejection(props) {
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection } = useSelector(state => state.costing)
+    const { SurfaceTabData } = useSelector(state => state.costing)
     const [errorMessage, setErrorMessage] = useState('')
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
@@ -122,6 +123,7 @@ function Rejection(props) {
             let BOP_CC = 0
             let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
+            const NetSurfaceTreatmentCost = (IsIncludedSurfaceInRejection ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) : 0)
 
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE BLOCK WILL EXECUTE
             if (partType) {
@@ -130,20 +132,20 @@ function Rejection(props) {
                 // RM FOR ASSEMBLY TECHNOLOGY COSTING WILL BE PART COST ONLY (SUM OF ALL COST PER ASSEMBLIES OF CHILD PART)
                 RM = checkForNull(headerCosts?.NetRawMaterialsCost)
                 BOP = checkForNull(headerCosts?.NetBoughtOutPartCost)
-                CC = checkForNull(assemblyLevelCC)
-                RM_CC_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost))
-                RM_CC = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC))
-                BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost))
+                CC = checkForNull(assemblyLevelCC) + checkForNull(NetSurfaceTreatmentCost)
+                RM_CC_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(NetSurfaceTreatmentCost))
+                RM_CC = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC) + checkForNull(NetSurfaceTreatmentCost))
+                BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(NetSurfaceTreatmentCost))
                 RM_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(headerCosts?.NetBoughtOutPartCost))
             } else {
                 const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
 
                 RM = headerCosts?.NetRawMaterialsCost
                 BOP = headerCosts?.NetBoughtOutPartCost
-                CC = ConversionCostForCalculation
-                RM_CC_BOP = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
-                RM_CC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
-                BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
+                CC = ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
+                RM_CC_BOP = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
+                RM_CC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost);
+                BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost);
                 RM_BOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
             }
 

@@ -908,13 +908,11 @@ function CostingSimulation(props) {
                 data = { ...data, hideFreightPackagingCost: false }
             }
 
-            console.log('costingList[i].NewNetChildPartsCostWithQuantity !== 0 && costingList[i].OldNetChildPartsCostWithQuantity !== 0: ', costingList[i].NewNetChildPartsCostWithQuantity !== 0 && costingList[i].OldNetChildPartsCostWithQuantity !== 0);
             if (costingList[i].NewNetChildPartsCostWithQuantity !== 0 && costingList[i].OldNetChildPartsCostWithQuantity !== 0) {
                 setShowChildParts(true)
                 data = { ...data, showChildParts: false }
             }
 
-            console.log('costingList[i].NewNetBoughtOutPartCost !== 0 && costingList[i].OldNetBoughtOutPartCost !== 0: ', costingList[i].NewNetBoughtOutPartCost !== 0 && costingList[i].OldNetBoughtOutPartCost !== 0);
             if (costingList[i].NewNetBoughtOutPartCost !== 0 && costingList[i].OldNetBoughtOutPartCost !== 0) {
                 setShowBoughtOutPartCost(true)
                 data = { ...data, showBoughtOutPartCost: false }
@@ -1301,15 +1299,6 @@ function CostingSimulation(props) {
                                             </div>
                                         </Col>
 
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                </div>
-                                            </div>
-                                        </Col>
                                     </Row>
                                     <Row>
                                         <Col>
