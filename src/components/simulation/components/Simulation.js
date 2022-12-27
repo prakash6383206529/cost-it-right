@@ -183,7 +183,7 @@ function Simulation(props) {
             setTimeout(() => {
                 setValue('Vendor', '')
                 dispatch(setTechnologyForSimulation(value))
-                if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
+                if (value !== '' && Object.keys(master).length > 0 && !(master.value === COMBINED_PROCESS)) {
                     let obj = {
                         technologyId: value.value,
                         loggedInUserId: loggedInUserId(),
@@ -1036,7 +1036,7 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
-                                {(partType || master.value === '3') &&
+                                {(partType || master.value === COMBINED_PROCESS) &&
                                     < div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Vendor:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
