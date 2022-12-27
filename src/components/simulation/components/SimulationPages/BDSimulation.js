@@ -400,9 +400,9 @@ function BDSimulation(props) {
                                             onFilterModified={onFloatingFilterChanged}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="Insert Part No" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="Insert Part Name" minWidth={140}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="Insert Category" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140}></AgGridColumn>}
 
