@@ -419,7 +419,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | serial no.): Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No.-Vendor code-Plant code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
