@@ -1669,6 +1669,8 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
+export const UNDER_APPROVAL = 'Under Approval'
+export const CANCELLED = 'Cancelled'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -2146,4 +2148,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.30";
+export const VERSION = "V2.1.31";
