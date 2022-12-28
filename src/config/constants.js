@@ -1693,6 +1693,8 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
+export const UNDER_APPROVAL = 'Under Approval'
+export const CANCELLED = 'Cancelled'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
