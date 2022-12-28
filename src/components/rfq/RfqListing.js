@@ -64,7 +64,7 @@ function RfqListing(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        gridApi.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
     }
 
@@ -153,7 +153,7 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1440 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -161,7 +161,7 @@ function RfqListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
-        window.screen.width >= 1440 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
 
     };
 

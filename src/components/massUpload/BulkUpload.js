@@ -601,9 +601,7 @@ class BulkUpload extends Component {
         }
         return (
             <>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
-                >
+                {!this.props.isDrawerfasle ? <Drawer anchor={this.props.anchor} open={this.props.isOpen}>
                     <Container>
                         <div className={'drawer-wrapper WIDTH-400'}>
                             <form
@@ -719,7 +717,104 @@ class BulkUpload extends Component {
                             </form>
                         </div>
                     </Container>
-                </Drawer>
+                </Drawer> : <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                    <Row className="pl-3">
+                        {isZBCVBCTemplate &&
+                            <Col md="12">
+                                {(fileName !== 'InterestRate') && (fileName !== 'ADDRFQ') &&
+                                    <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={
+                                                costingTypeId === ZBCTypeId ? true : false
+                                            }
+                                            onClick={() => this.onPressHeads(ZBCTypeId)}
+                                        />{' '}
+                                        <span>Zero Based</span>
+                                    </Label>
+                                }
+                                {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        checked={costingTypeId === VBCTypeId ? true : fileName === 'InterestRate' ? true : false}
+                                        onClick={() => this.onPressHeads(VBCTypeId)}
+                                    />{' '}
+                                    <span>Vendor Based</span>
+                                </Label>}
+                                {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        checked={costingTypeId === CBCTypeId ? true : false}
+                                        onClick={() => this.onPressHeads(CBCTypeId)}
+                                    />{' '}
+                                    <span>Customer Based</span>
+                                </Label>}
+                                {isMachineMoreTemplate &&
+                                    <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === ZBCADDMORE ? true : false}
+                                            onClick={() => this.onPressHeads(ZBCADDMORE)}
+                                        />{' '}
+                                        <span>ZBC More Details</span>
+                                    </Label>}
+                            </Col>}
+
+                        <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
+                            <Downloadxls
+                                isZBCVBCTemplate={isZBCVBCTemplate}
+                                isMachineMoreTemplate={isMachineMoreTemplate}
+                                fileName={fileName}
+                                isFailedFlag={false}
+                                costingTypeId={costingTypeId}
+                            />
+                        </div>
+
+                        <div className="input-group mt25 col-md-12 input-withouticon " >
+                            <div className="file-uploadsection">
+                                {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
+                                <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
+                                <input
+                                    ref={this.fileUploadRef}
+                                    type="file"
+                                    name="File"
+                                    onChange={this.fileHandler}
+                                    onClick={(event) => { event.target.value = [] }}
+                                    //accept="xls/*"
+                                    className="" placeholder="bbb" />
+                                <p> {this.state.uploadfileName}</p>
+                            </div>
+                        </div>
+
+                    </Row>
+                    <Row className=" justify-content-between">
+                        <div className="col-sm-12  text-right">
+                            <button
+                                type={'button'}
+                                className="reset mr15 cancel-btn"
+                                onClick={this.cancelHandler}
+                                disabled={setDisable}
+                            >
+                                <div className={'cancel-icon'}></div> {'Cancel'}
+                            </button>
+                            <button
+                                type="submit"
+                                className="submit-button save-btn"
+                                disabled={setDisable}
+                            >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? 'Update' : 'Save'}
+                            </button>
+                        </div>
+                    </Row>
+                </form>}
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
                 }
