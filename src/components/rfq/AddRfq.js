@@ -23,9 +23,10 @@ import redcrossImg from '../../assests/images/red-cross.png'
 import NoContentFound from '../common/NoContentFound';
 import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../common/CommonFunctions';
+import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
+import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 
 const gridOptions = {};
 
@@ -95,10 +96,11 @@ function AddRfq(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
-        if (props?.data?.isEditFlag) {
+        if (props?.isEditFlag) {
             setIsEditFlag(true)
             setIsViewFlag(props?.data?.isViewFlag)
             dispatch(getQuotationById(props?.data?.Id, (res) => {
+                setPartNoDisable(false)
 
 
                 if (res?.data?.Data) {
@@ -235,6 +237,7 @@ function AddRfq(props) {
             }
         })
 
+        console.log('arr: ', arr);
         if (arr.length === 0) {
             setDisableTechnology(false)
         }
@@ -361,6 +364,7 @@ function AddRfq(props) {
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
         obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
 
+        console.log('dataForm: ', dataForm);
         obj.Remark = dataForm?.remark
         obj.TechnologyId = dataForm?.technology?.value
         obj.PlantId = dataForm?.plant?.value
@@ -368,6 +372,7 @@ function AddRfq(props) {
         obj.VendorList = vendorList
         obj.PartList = partList
         obj.Attachments = files
+        obj.IsSent = true
 
         if (isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
@@ -411,17 +416,17 @@ function AddRfq(props) {
     }
 
 
-    const buttonFormatter = (props) => {
+    const buttonFormatterFirst = (props) => {
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         return (
             <>
                 {< button title='Edit' className="Edit mr-2 align-middle" disabled={isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
             </>
         )
     };
 
     const buttonFormatterVendorTable = (props) => {
-
         return (
             <>
                 {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
@@ -429,16 +434,6 @@ function AddRfq(props) {
             </>
         )
     };
-
-
-    const frameworkComponents = {
-        hyphenFormatter: hyphenFormatter,
-        totalValueRenderer: buttonFormatter,
-        buttonFormatter: buttonFormatterVendorTable,
-        customNoRowsOverlay: NoContentFound
-
-    };
-
 
     const addRowVendorTable = () => {
 
@@ -530,7 +525,8 @@ function AddRfq(props) {
         let obj = {}
         obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNumber = getValues('partNumber')?.label
+        obj.PartNumber = getValues('partNumber')?.RevisionNumber ? getValues('partNumber')?.label + ' (' + getValues('partNumber')?.RevisionNumber + ')'
+            : getValues('partNumber')?.label
         obj.technology = getValues('technology')
 
         if (errors.annualForecastQuantity) {
@@ -669,14 +665,14 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, 3)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListByTechnology(getValues('technology').value, resultInput);
+            const res = await getPartSelectListWtihRevNo(resultInput, getValues('technology').value)
             setPartName(resultInput)
-            let partDataAPI = res?.data?.SelectList
+            let partDataAPI = res?.data?.DataList
             reactLocalStorage.setObject('PartData', partDataAPI)
             let partData = []
             if (inputValue) {
                 partData = reactLocalStorage.getObject('PartData')
-                return autoCompleteDropdown(inputValue, partData)
+                return autoCompleteDropdownPart(inputValue, partData)
 
             } else {
                 return partData
@@ -688,7 +684,7 @@ function AddRfq(props) {
                 let partData = reactLocalStorage.getObject('PartData')
                 if (inputValue) {
                     partData = reactLocalStorage.getObject('PartData')
-                    return autoCompleteDropdown(inputValue, partData)
+                    return autoCompleteDropdownPart(inputValue, partData)
                 } else {
                     return partData
                 }
@@ -696,6 +692,21 @@ function AddRfq(props) {
         }
 
     }
+
+    const partNumberFormatter = (props) => {
+        const row = props?.data;
+        const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '-')
+        return value
+    }
+
+    const frameworkComponents = {
+        hyphenFormatter: hyphenFormatter,
+        buttonFormatterFirst: buttonFormatterFirst,
+        buttonFormatterVendorTable: buttonFormatterVendorTable,
+        customNoRowsOverlay: NoContentFound,
+        partNumberFormatter: partNumberFormatter
+    };
+
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
     /**
@@ -750,7 +761,7 @@ function AddRfq(props) {
                                                 handleChange={() => { }}
                                                 errors={errors.plant}
                                                 isLoading={VendorLoaderObj}
-                                                disabled={isEditFlag}
+                                                disabled={false}
                                             />
                                         </Col>
                                     </Row>
@@ -771,7 +782,7 @@ function AddRfq(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                disabled={partNoDisable || isEditFlag}
+                                                disabled={partNoDisable}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
@@ -792,7 +803,7 @@ function AddRfq(props) {
                                                     validate: { postiveNumber, maxLength10, nonZero }
                                                 }}
                                                 handleChange={() => { }}
-                                                disabled={isEditFlag}
+                                                disabled={false}
                                                 placeholder={'Enter'}
                                                 customClassName={'withBorder'}
                                             />
@@ -802,7 +813,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left ml-2'}
                                                 onClick={() => addRowPartNoTable()}
-                                                disabled={isEditFlag}
+                                                disabled={false}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -811,7 +822,7 @@ function AddRfq(props) {
                                                 type="submit"
                                                 value="CANCEL"
                                                 className="reset ml-10 ml-2 mr5"
-                                                disabled={isEditFlag}
+                                                disabled={false}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -829,35 +840,39 @@ function AddRfq(props) {
                                     </Row>
                                     <div>
                                         {true && <div className={`ag-grid-react`}>
-                                            <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                            <Row>
+                                                <Col>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                <div className={`ag-theme-material  max-loader-height`}>
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        //floatingFilter={true}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={partList}
-                                                        //pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                    >
-                                                        <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" ></AgGridColumn>
+                                                        <div className={`ag-theme-material  max-loader-height`}>
+                                                            <AgGridReact
+                                                                defaultColDef={defaultColDef}
+                                                                //floatingFilter={true}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={partList}
+                                                                //pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
-                                                        <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                        <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
 
-                                                        <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                                    </AgGridReact>
+                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                            </AgGridReact>
 
-                                                </div>
-                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                         </div>
                                         }
                                     </div>
@@ -932,32 +947,37 @@ function AddRfq(props) {
 
                                     <div>
                                         {true && <div className={`ag-grid-react`}>
-                                            <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border " : ""} `}>
-                                                <div className={`ag-theme-material  max-loader-height`}>
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        //floatingFilter={true}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={vendorList}
-                                                        //pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        //noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                    >
-                                                        <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+                                            <Row>
+                                                <Col>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
-                                                        <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                        <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
-                                                    </AgGridReact>
-                                                </div>
-                                            </div>
+                                                        <div className={`ag-theme-material  max-loader-height`}>
+                                                            <AgGridReact
+                                                                defaultColDef={defaultColDef}
+                                                                //floatingFilter={true}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={vendorList}
+                                                                //pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+
+                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                            </AgGridReact>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                         </div>
                                         }
                                     </div>
@@ -985,7 +1005,7 @@ function AddRfq(props) {
                                                 customClassName={"withBorder"}
                                                 handleChange={() => { }}
                                                 errors={errors.remark}
-                                                disabled={isEditFlag}
+                                                disabled={false}
                                                 rowHeight={6}
                                             // isLoading={plantLoaderObj}
                                             />
@@ -1073,9 +1093,17 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="submit" className="submit-button save-btn"
+                                            <button type="button" className="submit-button save-btn mr15"
+                                                onClick={handleSubmit(onSubmit)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
+                                                {"Save"}
+                                            </button>
+
+                                            <button type="button" className="submit-button save-btn"
+                                                onClick={handleSubmit(onSubmit)}
+                                                disabled={isViewFlag}>
+                                                <div className={"upload"}></div>
                                                 {"Send"}
                                             </button>
                                         </div>

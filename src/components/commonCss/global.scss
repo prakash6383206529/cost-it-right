@@ -2703,7 +2703,8 @@ td,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
   .Cancelled,
-  .CreatedByAssembly {
+  .CreatedByAssembly,
+  .Sent {
     background-color: #da94a1;
     min-width: 90px;
     height: 26px;
@@ -2753,8 +2754,8 @@ td,
 
   .Pushed,
   .POUpdated,
-  .PO.Updated,
-  .Linked {
+  .Linked,
+  .Sent {
     background-color: #498cef;
   }
 }
