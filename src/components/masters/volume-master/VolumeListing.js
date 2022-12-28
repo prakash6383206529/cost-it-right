@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, NavItem, TabContent, TabPane, Nav, NavLink, Container } from 'reactstrap'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
@@ -26,6 +26,8 @@ import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
+import { Drawer } from '@material-ui/core'
+import classnames from 'classnames';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -108,9 +110,7 @@ function VolumeListing(props) {
   const [shown, setShown] = useState(false);
   const [showVolumeForm, setShowVolumeForm] = useState(false);
   const [data, setData] = useState({ isEditFlag: false, ID: '' });
-  const [isBulkUpload, setBulkUpload] = useState(false);
-  const [isActualBulkUpload, setIsActualBulkUpload] = useState(false);
-  const [isBudgetedBulkUpload, setIsBudgetedBulkUpload] = useState(false);
+  const [bulkUploadBtn, setBulkUploadBtn] = useState(false);
   const [addAccessibility, setAddAccessibility] = useState(false);
   const [editAccessibility, setEditAccessibility] = useState(false);
   const [deleteAccessibility, setDeleteAccessibility] = useState(false);
@@ -123,6 +123,7 @@ function VolumeListing(props) {
   const [isLoader, setIsLoader] = useState(false);
   const [limit, setLimit] = useState(false);
   const [dataCount, setDataCount] = useState(0);
+  const [activeTab, setactiveTab] = useState('1');
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
@@ -308,26 +309,14 @@ function VolumeListing(props) {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-  /**
-   * @method actualBulkToggle
-   * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
-   */
-  const bulkToggle = () => {
-    setBulkUpload(true)
-  }
-  /**
-   * @method actualBulkToggle
-   * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
-   */
-  const actualBulkToggle = () => {
-    setIsActualBulkUpload(true)
-  }
+
+
   /**
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
    */
   const closeBulkUploadDrawer = () => {
-    setBulkUpload(false)
+    setBulkUploadBtn(false)
     setTimeout(() => {
       getTableListData(0, globalTake, true)
     }, 200);
@@ -337,34 +326,15 @@ function VolumeListing(props) {
    * @description CLOSE ACTUAL BULK DRAWER
    */
   const closeActualBulkUploadDrawer = () => {
-    setIsActualBulkUpload(false)
+    setBulkUploadBtn(false)
     setTimeout(() => {
       getTableListData(0, globalTake, true)
     }, 200);
   }
 
-  /**
-   * @method budgetedBulkToggle
-   * @description OPEN BUDGETED BULK UPLOAD DRAWER FOR BULK UPLOAD
-   */
-  const budgetedBulkToggle = () => {
-    setIsBudgetedBulkUpload(true)
-  }
 
-  /**
-   * @method closeBudgetedBulkUploadDrawer
-   * @description CLOSE BUDGETED BULK DRAWER
-   */
-  const closeBudgetedBulkUploadDrawer = () => {
-    setIsBudgetedBulkUpload(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
-  }
 
-  const formToggle = () => {
-    setShowVolumeForm(true)
-  }
+
 
   const returnExcelColumn = (data = [], TempData) => {
     return (
@@ -595,6 +565,14 @@ function VolumeListing(props) {
   const limitHandler = () => {
     setLimit(true)
   };
+  const BulkToggle = () => {
+    setBulkUploadBtn(true)
+  }
+  const toggle = (tab) => {
+    if (activeTab !== tab) {
+      setactiveTab(tab);
+    }
+  }
 
 
   /**
@@ -653,6 +631,9 @@ function VolumeListing(props) {
     )
   }
 
+  const toggleDrawer = () => {
+    setBulkUploadBtn(false)
+  }
   /**
    * @method render
    * @description Renders the component
@@ -681,17 +662,7 @@ function VolumeListing(props) {
                     ) : (
                       ""
                     )}
-                    {bulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={bulkToggle}
-                        title="Actual Volume Upload"
-                      >
-                        <div className={"ml5 upload mr-0"}></div>
-                        {/* Actual Upload */}
-                      </button>
-                    )}
+
                     <button
                       type="button"
                       className={"user-btn mr5"}
@@ -699,39 +670,16 @@ function VolumeListing(props) {
                     >
                       Add Limit
                     </button>
-                    {addAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
-                      </button>
-                    )}
-                    {bulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={actualBulkToggle}
-                        title="Actual Volume Upload"
-                      >{"A"}
-                        <div className={"ml5 upload mr-0"}></div>
-                        {/* Actual Upload */}
-                      </button>
-                    )}
-                    {bulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={budgetedBulkToggle}
-                        title="Budgeted Volume Upload"
-                      >{"B"}
-                        <div className={"ml5 upload mr-0"}></div>
-                        {/* Budgeted Bulk Upload */}
-                      </button>
-                    )}
+                    {bulkUploadAccessibility && <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={BulkToggle}
+                      title="Bulk Upload"
+                    >
+                      <div className={"upload mr-0"}></div>
+                      {/* Budgeted Bulk Upload */}
+                    </button>}
+
                     {
                       downloadAccessibility &&
                       <>
@@ -811,39 +759,81 @@ function VolumeListing(props) {
             </div>
           </>
         }
-        {isBulkUpload && (
-          <VolumeBulkUploadDrawer
-            isOpen={isBulkUpload}
-            closeDrawer={closeBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'Volume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume'}
-            anchor={'right'}
-          />
-        )}
-        {isActualBulkUpload && (
-          <BulkUpload
-            isOpen={isActualBulkUpload}
-            closeDrawer={closeActualBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'ActualVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Actual'}
-            anchor={'right'}
-          />
-        )}
-        {isBudgetedBulkUpload && (
-          <BulkUpload
-            isOpen={isBudgetedBulkUpload}
-            closeDrawer={closeBudgetedBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'BudgetedVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Budgeted'}
-            anchor={'right'}
-          />
-        )}
+        {bulkUploadBtn && <Drawer anchor={"right"} open={bulkUploadBtn}>
+          <Container>
+            <div className='drawer-wrapper volume-drawer'>
+              <Row className="drawer-heading mb-0">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>Bulk Upload</h3>
+                  </div>
+                  <div
+                    onClick={toggleDrawer}
+                    className={'close-button right'}>
+                  </div>
+                </Col>
+              </Row>
+              <Row className="">
+                <Col md="12" className=""> <Nav tabs className="subtabs">
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                      Actual
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                      Budgeted
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                      Others
+                    </NavLink>
+                  </NavItem>
+
+                </Nav></Col>
+                <Col md="12" className='px-0 mt-3'><TabContent activeTab={activeTab}>
+                  {(Number(activeTab) === 1) &&
+                    <TabPane tabId="1">
+                      <BulkUpload
+                        closeDrawer={closeActualBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'ActualVolume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume Actual'}
+                        anchor={'right'}
+                        isDrawerfasle={true}
+                      />
+                    </TabPane>}
+                  {(Number(activeTab) === 2) &&
+                    <TabPane tabId="2">
+                      <BulkUpload
+                        closeDrawer={closeActualBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'ActualVolume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume Actual'}
+                        anchor={'right'}
+                        isDrawerfasle={true}
+                      />
+                    </TabPane>}
+                  {(Number(activeTab) === 3) &&
+                    <TabPane tabId="3">
+                      <VolumeBulkUploadDrawer
+                        closeDrawer={closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Volume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume'}
+                      />
+                    </TabPane>}
+
+                </TabContent></Col>
+              </Row>
+            </div>
+          </Container>
+
+        </Drawer>}
         {
           showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
         }
