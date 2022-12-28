@@ -237,7 +237,6 @@ function AddRfq(props) {
             }
         })
 
-        console.log('arr: ', arr);
         if (arr.length === 0) {
             setDisableTechnology(false)
         }
@@ -364,7 +363,6 @@ function AddRfq(props) {
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
         obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
 
-        console.log('dataForm: ', dataForm);
         obj.Remark = dataForm?.remark
         obj.TechnologyId = dataForm?.technology?.value
         obj.PlantId = dataForm?.plant?.value
