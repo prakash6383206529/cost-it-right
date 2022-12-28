@@ -103,7 +103,26 @@ function SheetMetalBaicDrawer(props) {
       }, 200);
 
     }
+    switch (props.calculatorData.UOMType) {
+      case MASS:
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
+        return true
+      case AREA:
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
+        return true
+      case TIME:
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
+        return;
+      case DIMENSIONLESS:
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
+        return true
+      case VOLUMETYPE:
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
+        return true
+      default:
 
+        break;
+    }
 
   }, [])
 
@@ -168,14 +187,12 @@ function SheetMetalBaicDrawer(props) {
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
           setProcessCost(cost)
-          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
           setProcessCost(cost)
-          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case TIME:
@@ -184,7 +201,6 @@ function SheetMetalBaicDrawer(props) {
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
           cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
-          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
@@ -192,14 +208,12 @@ function SheetMetalBaicDrawer(props) {
           let updatedQuantity = quantity === 0 ? 1 : quantity
           setDisabled(true)
           cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
-          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case VOLUMETYPE:
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
-          setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
