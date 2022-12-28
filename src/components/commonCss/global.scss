@@ -3119,6 +3119,10 @@ body {
         min-height: auto !important;
       }
     }
+
+    &.border {
+      border-top: none !important;
+    }
   }
 }
 
