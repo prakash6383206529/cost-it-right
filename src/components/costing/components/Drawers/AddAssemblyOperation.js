@@ -31,10 +31,12 @@ function AddAssemblyOperation(props) {
   const netPOPrice = useContext(NetPOPriceContext);
 
   useEffect(() => {
-    let operationCost = operationGridData && operationGridData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.OperationCost)
-    }, 0)
-    setOperationCostAssemblyTechnology(operationCost)
+    if (!CostingViewMode) {
+      let operationCost = operationGridData && operationGridData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(operationCost)
+    }
   }, [operationGridData])
 
   /**
