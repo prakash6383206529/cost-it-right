@@ -115,7 +115,7 @@ function AnalyticsDrawer(props) {
         labels: dateRangeArray,
         datasets: [
             {
-                label: `Landed Rate (${uomValue})`,
+                label: `Net Landed Rate (${uomValue})`,
                 fill: false,
                 lineTension: 0,
                 backgroundColor: secondryColor,
@@ -135,7 +135,7 @@ function AnalyticsDrawer(props) {
 
             {
                 type: 'bar',
-                label: `Landed Rate (${uomValue})`,
+                label: `Net Landed Rate (${uomValue})`,
                 backgroundColor: primaryColor,
                 data: netLandedCostArray,
                 maxBarThickness: 25,
@@ -281,9 +281,9 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {<AgGridColumn field="NetLandedCost" headerName="Landed (Total)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName="Net Landed (Total)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
 
-                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName=" Net Landed Total (Currency)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
                                                         </AgGridReact>
