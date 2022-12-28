@@ -33,10 +33,12 @@ function AddAssemblyOperation(props) {
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
 
   useEffect(() => {
-    let operationCost = operationGridData && operationGridData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.OperationCost)
-    }, 0)
-    setOperationCostAssemblyTechnology(operationCost)
+    if (!CostingViewMode) {
+      let operationCost = operationGridData && operationGridData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(operationCost)
+    }
   }, [operationGridData])
 
   /**
