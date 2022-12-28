@@ -340,7 +340,7 @@ class BulkUpload extends Component {
                 Toaster.success(`${res?.data?.Data?.SuccessRecordCount} ${messageLabel} uploaded successfully.`)
             }
             if (res?.data?.Data?.FailedRecordCount > 0) {
-                Toaster.warning('Part upload failed.');
+                Toaster.warning(`${res?.data?.Data?.FailedRecordCount} upload failed.`)
                 this.setState({
                     failedData: res?.data?.Data?.FailedRecord,
                     faildRecords: true,
