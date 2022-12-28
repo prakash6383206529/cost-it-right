@@ -491,7 +491,7 @@ function BOPCost(props) {
                       <th>{`UOM`}</th>
                       <th>{`Insert Cost (INR)`}</th>
                       <th>{`Quantity`}</th>
-                      <th>{`Net Insert Cost`}<TooltipCustom customClass="header-tooltip" id="bop-cost" tooltipText="Net Insert Cost = Insert Cost * Qauntity" /></th>
+                      <th>{`Net Insert Cost`}</th>
                       <th>{`Action`}</th>
                     </tr>
                   </thead>
