@@ -45,6 +45,38 @@ body a:hover {
   color: $colorgraylighter !important;
 }
 
+%nav-tabs {
+  border-bottom: 1px solid #d9e2f0;
+  margin-top: 1rem;
+
+  a.nav-link {
+    color: #8a91ac;
+    font-size: $font-15;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    background: transparent;
+    border: none;
+    padding-bottom: 10px;
+
+    &:hover {
+      border: none;
+      background: transparent;
+      color: $highlightcolor !important;
+      border-bottom: $highlightcolor 2px solid;
+    }
+  }
+
+  .nav-link.active {
+    color: $highlightcolor;
+    background-color: transparent;
+    border: none;
+    border-bottom: $highlightcolor 2px solid;
+    font-weight: 400;
+  }
+}
+
 ul,
 li,
 h1,
@@ -1660,37 +1692,7 @@ p {
     }
   }
 
-  .nav-tabs {
-    border-bottom: 1px solid #d9e2f0;
-    margin-top: 1rem;
-
-    a.nav-link {
-      color: #8a91ac;
-      font-size: $font-15;
-      font-weight: 400;
-      padding-left: 10px;
-      padding-right: 10px;
-      padding-top: 0;
-      background: transparent;
-      border: none;
-      padding-bottom: 10px;
-
-      &:hover {
-        border: none;
-        background: transparent;
-        color: $highlightcolor !important;
-        border-bottom: $highlightcolor 2px solid;
-      }
-    }
-
-    .nav-link.active {
-      color: $highlightcolor;
-      background-color: transparent;
-      border: none;
-      border-bottom: $highlightcolor 2px solid;
-      font-weight: 400;
-    }
-  }
+  @extend %nav-tabs;
 
   .filter-block {
 
@@ -2700,7 +2702,8 @@ td,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
   .Cancelled,
-  .CreatedByAssembly {
+  .CreatedByAssembly,
+  .Sent {
     background-color: #da94a1;
     min-width: 90px;
     height: 26px;
@@ -2750,7 +2753,8 @@ td,
 
   .Pushed,
   .POUpdated,
-  .Linked {
+  .Linked,
+  .Sent {
     background-color: #498cef;
   }
 }
@@ -3119,6 +3123,10 @@ body {
         min-height: auto !important;
       }
     }
+
+    &.border {
+      border-top: none !important;
+    }
   }
 }
 
@@ -3456,5 +3464,12 @@ input:focus,
   &:focus {
     border-color: transparent !important;
     box-shadow: none !important;
+  }
+}
+
+.volume-drawer {
+  .subtabs {
+    @extend %nav-tabs;
+    grid-gap: 5px;
   }
 }

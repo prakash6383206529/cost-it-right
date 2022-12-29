@@ -397,8 +397,8 @@ export function checkRegularizationLimit(obj, callback) {
       });
   };
 }
-export function getPartSelectListWtihRevNo(partNumber, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?partNumber=${partNumber}`, config());
+export function getPartSelectListWtihRevNo(partNumber, technologyId, callback) {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?partNumber=${partNumber}&technologyId=${technologyId}`, config());
 }
 /**
  * @method bulkUploadVolume

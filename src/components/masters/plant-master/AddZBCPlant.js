@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -383,7 +383,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, maxLength4, checkSpacesInString, postiveNumber]}
+                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode]}
                       component={renderText}
                       required={true}
                       className=""
@@ -399,7 +399,7 @@ class AddZBCPlant extends Component {
                       <Field
                         name="CompanyName"
                         type="text"
-                        label="Company Name"
+                        label="Company (Code)"
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}

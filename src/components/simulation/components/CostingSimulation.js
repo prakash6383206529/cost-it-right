@@ -1200,16 +1200,6 @@ function CostingSimulation(props) {
                                                 </button>
                                             </div>
                                         </Col>
-
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                </div>
-                                            </div>
-                                        </Col>
                                     </Row>
                                     <Row>
                                         <Col>

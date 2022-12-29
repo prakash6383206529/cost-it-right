@@ -16,14 +16,17 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
 import NoContentFound from '../common/NoContentFound';
 import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../common/CommonFunctions';
+import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
+import BulkUpload from '../massUpload/BulkUpload';
+import _ from 'lodash';
+import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 
 const gridOptions = {};
 
@@ -65,8 +68,10 @@ function AddRfq(props) {
     const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
+    const [isBulkUpload, setisBulkUpload] = useState(false);
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -83,15 +88,19 @@ function AddRfq(props) {
         }
     }, []);
 
-
+    useEffect(() => {
+        let tempp = _.unionBy(partList, checkRFQPartBulkUpload?.SuccessfulRecord, 'PartNumber');
+        setPartList(tempp)
+    }, [checkRFQPartBulkUpload])
 
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
-        if (props?.data?.isEditFlag) {
+        if (props?.isEditFlag) {
             setIsEditFlag(true)
             setIsViewFlag(props?.data?.isViewFlag)
             dispatch(getQuotationById(props?.data?.Id, (res) => {
+                setPartNoDisable(false)
 
 
                 if (res?.data?.Data) {
@@ -267,7 +276,7 @@ function AddRfq(props) {
 
         setSelectedRowPartNoTable(props.node.data)
         setUpdateButtonPartNoTable(true)
-        setValue('partNumber', { label: props?.node?.data?.PartNo, value: props?.node?.data?.PartId })
+        setValue('partNumber', { label: props?.node?.data?.PartNumber, value: props?.node?.data?.PartId })
         setValue('annualForecastQuantity', props?.node?.data?.Quantity)
         setValue('technology', props?.node?.data?.technology)
     }
@@ -361,6 +370,7 @@ function AddRfq(props) {
         obj.VendorList = vendorList
         obj.PartList = partList
         obj.Attachments = files
+        obj.IsSent = true
 
         if (isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
@@ -404,17 +414,17 @@ function AddRfq(props) {
     }
 
 
-    const buttonFormatter = (props) => {
+    const buttonFormatterFirst = (props) => {
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         return (
             <>
                 {< button title='Edit' className="Edit mr-2 align-middle" disabled={isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
             </>
         )
     };
 
     const buttonFormatterVendorTable = (props) => {
-
         return (
             <>
                 {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
@@ -422,16 +432,6 @@ function AddRfq(props) {
             </>
         )
     };
-
-
-    const frameworkComponents = {
-        hyphenFormatter: hyphenFormatter,
-        totalValueRenderer: buttonFormatter,
-        buttonFormatter: buttonFormatterVendorTable,
-        customNoRowsOverlay: NoContentFound
-
-    };
-
 
     const addRowVendorTable = () => {
 
@@ -523,7 +523,8 @@ function AddRfq(props) {
         let obj = {}
         obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNo = getValues('partNumber')?.label
+        obj.PartNumber = getValues('partNumber')?.RevisionNumber ? getValues('partNumber')?.label + ' (' + getValues('partNumber')?.RevisionNumber + ')'
+            : getValues('partNumber')?.label
         obj.technology = getValues('technology')
 
         if (errors.annualForecastQuantity) {
@@ -532,7 +533,7 @@ function AddRfq(props) {
 
         if (!updateButtonPartNoTable) {
             partList && partList.map((item) => {
-                if (item.PartNo === obj.PartNo) {
+                if (item.PartNumber === obj.PartNumber) {
                     isDuplicateEntry = true
                 }
             })
@@ -561,7 +562,7 @@ function AddRfq(props) {
             })
 
             arr.map((item) => {
-                if (item.PartNo === obj.PartNo) {
+                if (item.PartNumber === obj.PartNumber) {
                     isDuplicateEntry = true
                 }
             })
@@ -582,7 +583,6 @@ function AddRfq(props) {
         setDisableTechnology(true)
     }
 
-
     const onResetPartNoTable = () => {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
@@ -590,6 +590,13 @@ function AddRfq(props) {
         // setValue('technology', "")
     }
 
+    const bulkToggle = () => {
+        setisBulkUpload(true);
+    }
+
+    const closeBulkUploadDrawer = () => {
+        setisBulkUpload(false);
+    }
 
     const onResetVendorTable = () => {
         setUpdateButtonVendorTable(false)
@@ -656,14 +663,14 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, 3)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListByTechnology(getValues('technology').value, resultInput);
+            const res = await getPartSelectListWtihRevNo(resultInput, getValues('technology').value)
             setPartName(resultInput)
-            let partDataAPI = res?.data?.SelectList
+            let partDataAPI = res?.data?.DataList
             reactLocalStorage.setObject('PartData', partDataAPI)
             let partData = []
             if (inputValue) {
                 partData = reactLocalStorage.getObject('PartData')
-                return autoCompleteDropdown(inputValue, partData)
+                return autoCompleteDropdownPart(inputValue, partData)
 
             } else {
                 return partData
@@ -675,7 +682,7 @@ function AddRfq(props) {
                 let partData = reactLocalStorage.getObject('PartData')
                 if (inputValue) {
                     partData = reactLocalStorage.getObject('PartData')
-                    return autoCompleteDropdown(inputValue, partData)
+                    return autoCompleteDropdownPart(inputValue, partData)
                 } else {
                     return partData
                 }
@@ -683,6 +690,21 @@ function AddRfq(props) {
         }
 
     }
+
+    const partNumberFormatter = (props) => {
+        const row = props?.data;
+        const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '-')
+        return value
+    }
+
+    const frameworkComponents = {
+        hyphenFormatter: hyphenFormatter,
+        buttonFormatterFirst: buttonFormatterFirst,
+        buttonFormatterVendorTable: buttonFormatterVendorTable,
+        customNoRowsOverlay: NoContentFound,
+        partNumberFormatter: partNumberFormatter
+    };
+
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
     /**
@@ -690,397 +712,425 @@ function AddRfq(props) {
     * @description Renders the component
     */
     return (
-        <div>
-            <Drawer
-                anchor={props.anchor}
-                open={props.isOpen}
-                onClose={(e) => cancel}
-                className='rfq-container-drawer'
-            >
-                <Container>
-                    <div className={`drawer-wrapper drawer-700px`}>
-                        <Row className="drawer-heading">
-                            <Col className='pl-0'>
-                                <div className={"header-wrapper d-flex justify-content-between right"}>
+        <div className="container-fluid">
+            <div className="login-container signup-form">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="shadow-lgg login-formg">
+                            <div className="row">
+                                <div className="col-md-6">
                                     <h3>{isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} RFQ</h3>
-                                    <div
-                                        onClick={cancel}
-                                        className={"close-button right"}
-                                    ></div>
                                 </div>
-
-                            </Col>
-                        </Row>
-
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row className="part-detail-wrapper">
-                                <Col md="4">
-                                    <SearchableSelectHookForm
-                                        label={"Technology"}
-                                        name={"technology"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("technology")}
-                                        mandatory={true}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.technology}
-                                        disabled={isEditFlag || disableTechnology}
-                                        isLoading={VendorLoaderObj}
-                                    />
-                                </Col>
-                                <Col md="4">
-                                    <SearchableSelectHookForm
-                                        label={"Plant (Code)"}
-                                        name={"plant"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("plant")}
-                                        mandatory={true}
-                                        // handleChange={handleVendorChange}
-                                        handleChange={() => { }}
-                                        errors={errors.plant}
-                                        isLoading={VendorLoaderObj}
-                                        disabled={isEditFlag}
-                                    />
-                                </Col>
-                            </Row>
-                            <HeaderTitle title={'Part:'} />
-                            <Row className="part-detail-wrapper">
-                                <Col md="4">
-                                    <AsyncSearchableSelectHookForm
-                                        label={"Part No"}
-                                        name={"partNumber"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                        options={renderListing("partNo")}
-                                        mandatory={true}
-                                        // handleChange={handleDestinationPlantChange}
-                                        handleChange={() => { }}
-                                        errors={errors.partNumber}
-                                        disabled={partNoDisable || isEditFlag}
-                                        isLoading={plantLoaderObj}
-                                        asyncOptions={partFilterList}
-                                        NoOptionMessage={"Enter 3 characters to show data"}
-                                    />
-                                </Col>
-                                <Col md="4">
-                                    <NumberFieldHookForm
-                                        label="Annual Forecast Quantity"
-                                        name={"annualForecastQuantity"}
-                                        errors={errors.annualForecastQuantity}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        disableErrorOverflow={true}
-                                        mandatory={true}
-                                        rules={{
-                                            required: false,
-                                            validate: { postiveNumber, maxLength10, nonZero }
-                                        }}
-                                        handleChange={() => { }}
-                                        disabled={isEditFlag}
-                                        placeholder={'Enter'}
-                                        customClassName={'withBorder'}
-                                    />
-                                </Col>
-                                <Col md="4" className='d-flex align-items-center pb-1'>
-                                    <button
-                                        type="button"
-                                        className={'user-btn pull-left ml-2'}
-                                        onClick={() => addRowPartNoTable()}
-                                        disabled={isEditFlag}
-                                    >
-                                        <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
-                                    </button>
-                                    <button
-                                        onClick={onResetPartNoTable} // Need to change this cancel functionality
-                                        type="submit"
-                                        value="CANCEL"
-                                        className="reset ml-10 ml-2"
-                                        disabled={isEditFlag}
-                                    >
-                                        <div className={''}></div>
-                                        RESET
-                                    </button>
-                                </Col>
-                            </Row>
-                            <div>
-                                {true && <div className={`ag-grid-react`}>
-                                    <Row>
-                                        <Col>
-                                            <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain" : ""} `}>
-
-                                                <div className={`ag-theme-material  max-loader-height`}>
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        //floatingFilter={true}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={partList}
-                                                        //pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                    >
-                                                        <AgGridColumn width={"230px"} field="PartNo" headerName="Part No" ></AgGridColumn>
-
-                                                        <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                        <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-
-                                                        <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                                    </AgGridReact>
-
-                                                </div>
-                                            </div>
+                            </div>
+                            <div >
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    <Row className="part-detail-wrapper">
+                                        <Col md="4">
+                                            <SearchableSelectHookForm
+                                                label={"Technology"}
+                                                name={"technology"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                options={renderListing("technology")}
+                                                mandatory={true}
+                                                handleChange={handleTechnologyChange}
+                                                errors={errors.technology}
+                                                disabled={isEditFlag || disableTechnology}
+                                                isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <SearchableSelectHookForm
+                                                label={"Plant (Code)"}
+                                                name={"plant"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                options={renderListing("plant")}
+                                                mandatory={true}
+                                                // handleChange={handleVendorChange}
+                                                handleChange={() => { }}
+                                                errors={errors.plant}
+                                                isLoading={VendorLoaderObj}
+                                                disabled={false}
+                                            />
                                         </Col>
                                     </Row>
-                                </div>
-                                }
-                            </div>
-
-                            <HeaderTitle title={'Vendor:'} customClass="mt-4" />
-                            <Row className="mt-1 part-detail-wrapper">
-                                <Col md="4">
-                                    <AsyncSearchableSelectHookForm
-                                        label={"Vendor (Code)"}
-                                        name={"vendor"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        defaultValue={vendor.length !== 0 ? vendor : ""}
-                                        options={renderListing("vendor")}
-                                        mandatory={true}
-                                        handleChange={handleVendorChange}
-                                        // handleChange={() => { }}
-                                        errors={errors.vendor}
-                                        isLoading={VendorLoaderObj}
-                                        asyncOptions={vendorFilterList}
-                                        disabled={isViewFlag || partList.length === 0}
-                                        NoOptionMessage={"Enter 3 characters to show data"}
-                                    />
-                                </Col>
-
-
-                                <Col md="4">
-                                    <SearchableSelectHookForm
-                                        label={"Contact Person"}
-                                        name={"contactPerson"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                        options={renderListing("reporter")}
-                                        mandatory={true}
-                                        // handleChange={handleDestinationPlantChange}
-                                        handleChange={() => { }}
-                                        errors={errors.contactPerson}
-                                        disabled={isViewFlag}
-                                        isLoading={plantLoaderObj}
-                                    />
-                                </Col>
-                                <Col md="4" className='d-flex align-items-center pb-1'>
-                                    <button
-                                        type="button"
-                                        className={'user-btn pull-left ml-2'}
-                                        onClick={() => addRowVendorTable()}
-                                        disabled={isViewFlag}
-                                    >
-                                        <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
-                                    </button>
-
-                                    <button
-                                        onClick={onResetVendorTable} // Need to change this cancel functionality
-                                        type="submit"
-                                        value="CANCEL"
-                                        className="reset ml-10 ml-2"
-                                        disabled={isViewFlag}
-                                    >
-                                        <div className={''}></div>
-                                        RESET
-                                    </button>
-                                </Col>
-                            </Row>
-
-
-                            <div>
-                                {true && <div className={`ag-grid-react`}>
-                                    <Row>
-                                        <Col>
-                                            <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain" : ""} `}>
-
-                                                <div className={`ag-theme-material  max-loader-height`}>
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        //floatingFilter={true}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={vendorList}
-                                                        //pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        //noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                    >
-                                                        <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-
-                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
-                                                        <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                        <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
-                                                    </AgGridReact>
-                                                </div>
-                                            </div>
+                                    <HeaderTitle title={'Part:'} />
+                                    <Row className="part-detail-wrapper">
+                                        <Col md="4">
+                                            <AsyncSearchableSelectHookForm
+                                                label={"Part No"}
+                                                name={"partNumber"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                options={renderListing("partNo")}
+                                                mandatory={true}
+                                                // handleChange={handleDestinationPlantChange}
+                                                handleChange={() => { }}
+                                                errors={errors.partNumber}
+                                                disabled={partNoDisable}
+                                                isLoading={plantLoaderObj}
+                                                asyncOptions={partFilterList}
+                                                NoOptionMessage={"Enter 3 characters to show data"}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <NumberFieldHookForm
+                                                label="Annual Forecast Quantity"
+                                                name={"annualForecastQuantity"}
+                                                errors={errors.annualForecastQuantity}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disableErrorOverflow={true}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { postiveNumber, maxLength10, nonZero }
+                                                }}
+                                                handleChange={() => { }}
+                                                disabled={false}
+                                                placeholder={'Enter'}
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                            <button
+                                                type="button"
+                                                className={'user-btn pull-left ml-2'}
+                                                onClick={() => addRowPartNoTable()}
+                                                disabled={false}
+                                            >
+                                                <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
+                                            </button>
+                                            <button
+                                                onClick={onResetPartNoTable} // Need to change this cancel functionality
+                                                type="submit"
+                                                value="CANCEL"
+                                                className="reset ml-10 ml-2 mr5"
+                                                disabled={false}
+                                            >
+                                                <div className={''}></div>
+                                                RESET
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={"user-btn "}
+                                                onClick={bulkToggle}
+                                                title="Bulk Upload"
+                                                disabled={partNoDisable}
+                                            >
+                                                <div className={"upload mr-0"}></div>
+                                            </button>
                                         </Col>
                                     </Row>
-                                </div>
-                                }
-                            </div>
-                            <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
-                            <Row className='part-detail-wrapper'>
-                                <Col md="4">
-                                    <TextAreaHookForm
-                                        label={"Remark"}
-                                        name={"remark"}
-                                        // placeholder={"Select"}
-                                        placeholder={isViewFlag ? '-' : "Type here..."}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{
-                                            required: true,
-                                            maxLength: {
-                                                value: 256,
-                                                message: "Remark should be less than 256 words"
-                                            },
-                                        }}
-                                        register={register}
-                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                        // options={renderListing("DestinationPlant")}
-                                        mandatory={true}
-                                        // handleChange={handleDestinationPlantChange}
-                                        handleChange={() => { }}
-                                        errors={errors.remark}
-                                        disabled={isEditFlag}
-                                    // isLoading={plantLoaderObj}
-                                    />
-                                </Col>
+                                    <div>
+                                        {true && <div className={`ag-grid-react`}>
+                                            <Row>
+                                                <Col>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                <Col md="4" className="height152-label">
-                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
-                                    <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
-                                        Maximum file upload limit has been reached.
-                                    </div>
-                                    <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
-                                        <Dropzone
-                                            ref={dropzone}
-                                            onChangeStatus={handleChangeStatus}
-                                            PreviewComponent={Preview}
-                                            //onSubmit={this.handleSubmit}
-                                            accept="*"
-                                            initialFiles={initialFiles}
-                                            maxFiles={4}
-                                            maxSizeBytes={20000000}
-                                            inputContent={(files, extra) =>
-                                                extra.reject ? (
-                                                    "Image, audio and video files only"
-                                                ) : (
-                                                    <div className="text-center">
-                                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                                        <span className="d-block">
-                                                            Drag and Drop or{" "}
-                                                            <span className="text-primary">Browse</span>
-                                                            <br />
-                                                            file to upload
-                                                        </span>
+                                                        <div className={`ag-theme-material  max-loader-height`}>
+                                                            <AgGridReact
+                                                                defaultColDef={defaultColDef}
+                                                                //floatingFilter={true}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={partList}
+                                                                //pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
+                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                            </AgGridReact>
+
+                                                        </div>
                                                     </div>
-                                                )
-                                            }
-                                            styles={{
-                                                dropzoneReject: {
-                                                    borderColor: "red",
-                                                    backgroundColor: "#DAA",
-                                                },
-                                                inputLabel: (files, extra) =>
-                                                    extra.reject ? { color: "red" } : {},
-                                            }}
-                                            classNames="draper-drop"
-                                            disabled={isViewFlag}
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                        }
+                                    </div>
+
+                                    <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                                    <Row className="mt-1 part-detail-wrapper">
+                                        <Col md="4">
+                                            <AsyncSearchableSelectHookForm
+                                                label={"Vendor (Code)"}
+                                                name={"vendor"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                options={renderListing("vendor")}
+                                                mandatory={true}
+                                                handleChange={handleVendorChange}
+                                                // handleChange={() => { }}
+                                                errors={errors.vendor}
+                                                isLoading={VendorLoaderObj}
+                                                asyncOptions={vendorFilterList}
+                                                disabled={isViewFlag || partList?.length === 0}
+                                                NoOptionMessage={"Enter 3 characters to show data"}
+                                            />
+                                        </Col>
+
+
+                                        <Col md="4">
+                                            <SearchableSelectHookForm
+                                                label={"Contact Person"}
+                                                name={"contactPerson"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                options={renderListing("reporter")}
+                                                mandatory={true}
+                                                // handleChange={handleDestinationPlantChange}
+                                                handleChange={() => { }}
+                                                errors={errors.contactPerson}
+                                                disabled={isViewFlag}
+                                                isLoading={plantLoaderObj}
+                                            />
+                                        </Col>
+                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                            <button
+                                                type="button"
+                                                className={'user-btn pull-left ml-2'}
+                                                onClick={() => addRowVendorTable()}
+                                                disabled={isViewFlag}
+                                            >
+                                                <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
+                                            </button>
+
+                                            <button
+                                                onClick={onResetVendorTable} // Need to change this cancel functionality
+                                                type="submit"
+                                                value="CANCEL"
+                                                className="reset ml-10 ml-2"
+                                                disabled={isViewFlag}
+                                            >
+                                                <div className={''}></div>
+                                                RESET
+                                            </button>
+                                        </Col>
+                                    </Row>
+
+
+                                    <div>
+                                        {true && <div className={`ag-grid-react`}>
+                                            <Row>
+                                                <Col>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
+
+                                                        <div className={`ag-theme-material  max-loader-height`}>
+                                                            <AgGridReact
+                                                                defaultColDef={defaultColDef}
+                                                                //floatingFilter={true}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={vendorList}
+                                                                //pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+
+                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                            </AgGridReact>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                        }
+                                    </div>
+                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
+                                    <Row className='part-detail-wrapper'>
+                                        <Col md="4">
+                                            <TextAreaHookForm
+                                                label={"Remark"}
+                                                name={"remark"}
+                                                // placeholder={"Select"}
+                                                placeholder={isViewFlag ? '-' : "Type here..."}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{
+                                                    required: true,
+                                                    maxLength: {
+                                                        value: 256,
+                                                        message: "Remark should be less than 256 words"
+                                                    },
+                                                }}
+                                                register={register}
+                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                // options={renderListing("DestinationPlant")}
+                                                mandatory={true}
+                                                customClassName={"withBorder"}
+                                                handleChange={() => { }}
+                                                errors={errors.remark}
+                                                disabled={false}
+                                                rowHeight={6}
+                                            // isLoading={plantLoaderObj}
+                                            />
+                                        </Col>
+
+                                        <Col md="4" className="height152-label">
+                                            <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
+                                            <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                                                Maximum file upload limit has been reached.
+                                            </div>
+                                            <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                                                <Dropzone
+                                                    ref={dropzone}
+                                                    onChangeStatus={handleChangeStatus}
+                                                    PreviewComponent={Preview}
+                                                    //onSubmit={this.handleSubmit}
+                                                    accept="*"
+                                                    initialFiles={initialFiles}
+                                                    maxFiles={4}
+                                                    maxSizeBytes={20000000}
+                                                    inputContent={(files, extra) =>
+                                                        extra.reject ? (
+                                                            "Image, audio and video files only"
+                                                        ) : (
+                                                            <div className="text-center">
+                                                                <i className="text-primary fa fa-cloud-upload"></i>
+                                                                <span className="d-block">
+                                                                    Drag and Drop or{" "}
+                                                                    <span className="text-primary">Browse</span>
+                                                                    <br />
+                                                                    file to upload
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    }
+                                                    styles={{
+                                                        dropzoneReject: {
+                                                            borderColor: "red",
+                                                            backgroundColor: "#DAA",
+                                                        },
+                                                        inputLabel: (files, extra) =>
+                                                            extra.reject ? { color: "red" } : {},
+                                                    }}
+                                                    classNames="draper-drop"
+                                                    disabled={isViewFlag}
+                                                />
+                                            </div>
+                                        </Col>
+                                        <Col md="4">
+                                            <div className={"attachment-wrapper"}>
+                                                {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                                {files &&
+                                                    files.map((f) => {
+                                                        const withOutTild = f.FileURL?.replace("~", "");
+                                                        const fileURL = `${FILE_URL}${withOutTild}`;
+                                                        return (
+                                                            <div className={"attachment images"}>
+                                                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                                                    {f.OriginalFileName}
+                                                                </a>
+                                                                {
+                                                                    !isViewFlag &&
+                                                                    <img
+                                                                        alt={""}
+                                                                        className="float-right"
+                                                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                        src={redcrossImg}
+                                                                    ></img>
+                                                                }
+                                                            </div>
+                                                        );
+                                                    })}
+                                            </div>
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="justify-content-between">
+                                        <div className="col-sm-12 text-right">
+                                            <button
+                                                type={"button"}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={cancel}
+                                            >
+                                                <div className={"cancel-icon"}></div>
+                                                {"Cancel"}
+                                            </button>
+
+                                            <button type="button" className="submit-button save-btn mr15"
+                                                onClick={handleSubmit(onSubmit)}
+                                                disabled={isViewFlag}>
+                                                <div className={"save-icon"}></div>
+                                                {"Save"}
+                                            </button>
+
+                                            <button type="button" className="submit-button save-btn"
+                                                onClick={handleSubmit(onSubmit)}
+                                                disabled={isViewFlag}>
+                                                <div className={"upload"}></div>
+                                                {"Send"}
+                                            </button>
+                                        </div>
+                                    </Row>
+                                </form>
+
+                                {
+                                    isBulkUpload && (
+                                        <BulkUpload
+                                            isOpen={isBulkUpload}
+                                            closeDrawer={closeBulkUploadDrawer}
+                                            isEditFlag={false}
+                                            // densityAlert={densityAlert}
+                                            fileName={"ADDRFQ"}
+                                            messageLabel={"ADDRFQ"}
+                                            anchor={"right"}
+                                            technologyId={getValues('technology')}
+                                        // isFinalApprovar={isFinalLevelUser}
                                         />
-                                    </div>
-                                </Col>
-                                <Col md="4">
-                                    <div className={"attachment-wrapper"}>
-                                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                        {files &&
-                                            files.map((f) => {
-                                                const withOutTild = f.FileURL?.replace("~", "");
-                                                const fileURL = `${FILE_URL}${withOutTild}`;
-                                                return (
-                                                    <div className={"attachment images"}>
-                                                        <a href={fileURL} target="_blank" rel="noreferrer">
-                                                            {f.OriginalFileName}
-                                                        </a>
-                                                        {
-                                                            !isViewFlag &&
-                                                            <img
-                                                                alt={""}
-                                                                className="float-right"
-                                                                onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                                src={redcrossImg}
-                                                            ></img>
-                                                        }
-                                                    </div>
-                                                );
-                                            })}
-                                    </div>
-                                </Col>
-                            </Row>
+                                    )
+                                }
 
-                            <Row className="justify-content-between">
-                                <div className="col-sm-12 text-right">
-                                    <button
-                                        type={"button"}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={cancel}
-                                    >
-                                        <div className={"cancel-icon"}></div>
-                                        {"Cancel"}
-                                    </button>
-
-                                    <button type="submit" className="submit-button save-btn"
-                                        disabled={isViewFlag}>
-                                        <div className={"save-icon"}></div>
-                                        {"Send"}
-                                    </button>
-                                </div>
-                            </Row>
-                        </form>
+                            </div>
+                        </div>
                     </div>
-                </Container >
-            </Drawer >
+                </div>
+            </div>
+
+            {/* </Drawer > */}
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
