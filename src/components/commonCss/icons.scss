@@ -106,6 +106,7 @@
 
 .CancelIcon {
     @include icons("../../assests/images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include extra-icon-styles;
 }
 
 .CalculatorIcon {
