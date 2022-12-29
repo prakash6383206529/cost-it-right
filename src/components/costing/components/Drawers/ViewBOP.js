@@ -192,7 +192,7 @@ function ViewBOP(props) {
           </Container>
         </Drawer> : <div className='mt-2'>
           {viewBOPCost.length !== 0 && bopDataTable()}
-          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0) && handlingChargeTableData())}</div>}
+          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0 || bopPHandlingCharges !== 0) && handlingChargeTableData())}</div>}
     </Fragment>
   )
 }
