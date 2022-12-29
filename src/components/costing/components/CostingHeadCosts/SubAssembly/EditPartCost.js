@@ -15,6 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_DATA } from '../../../../../config/constants';
 
 function EditPartCost(props) {
 
@@ -574,8 +575,8 @@ function EditPartCost(props) {
                                         })
                                         }
                                         {gridData && gridData.length === 0 && <tr>
-                                            <td colSpan={6}>
-                                                <NoContentFound />
+                                            <td colSpan={8}>
+                                                <NoContentFound title={EMPTY_DATA} />
                                             </td>
                                         </tr>}
                                     </tbody>
