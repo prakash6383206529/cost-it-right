@@ -126,7 +126,7 @@ function RfqListing(props) {
             <>
                 < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
                 {(status === DRAFT) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
