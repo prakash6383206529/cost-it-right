@@ -776,17 +776,17 @@ function VolumeListing(props) {
                 <Col md="12" className=""> <Nav tabs className="subtabs">
                   <NavItem>
                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                      Actual
+                      Actual (Monthly)
                     </NavLink>
                   </NavItem>
                   <NavItem>
                     <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                      Budgeted
+                      Budgeted (Monthly)
                     </NavLink>
                   </NavItem>
                   <NavItem>
                     <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                      Others
+                      Actual (Daily)
                     </NavLink>
                   </NavItem>
 
