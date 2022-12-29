@@ -333,8 +333,9 @@ function VolumeListing(props) {
   }
 
 
-
-
+  const formToggle = () => {
+    setShowVolumeForm(true)
+  }
 
   const returnExcelColumn = (data = [], TempData) => {
     return (
@@ -670,6 +671,17 @@ function VolumeListing(props) {
                     >
                       Add Limit
                     </button>
+                    {addAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={formToggle}
+                        title="Add"
+                      >
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
                     {bulkUploadAccessibility && <button
                       type="button"
                       className={"user-btn mr5"}
