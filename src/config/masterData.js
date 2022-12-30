@@ -1799,7 +1799,9 @@ export const RIVET = 19
 export const PLATING = 21
 export const DIE_CASTING = 23
 
-
+export const STRINGMAXLENGTH = 50
+export const NUMBERMAXLENGTH = 6
+export const REMARKMAXLENGTH = 50             //REMARK LENGTH CHANGED 255 TO 50 FOR ONLY RE, THIS IS RE SPECIFIC REQUIREMENT FROM CLIENT
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
