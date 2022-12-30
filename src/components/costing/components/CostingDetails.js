@@ -335,6 +335,7 @@ function CostingDetails(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    setpartName([])
     reactLocalStorage.setObject('PartData', [])
   }
 
@@ -1714,7 +1715,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterList = async (inputValue) => {
+  const filterList = debounce(async (inputValue) => {
 
     const resultInput = inputValue.slice(0, 3)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
@@ -1746,7 +1747,7 @@ function CostingDetails(props) {
       }
     }
 
-  }
+  }, 500)
 
   const loaderObj = { isLoader: inputLoader, }
   return (
