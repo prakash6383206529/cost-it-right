@@ -32,6 +32,7 @@ function OperationCostExcludedOverhead(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [otherOperationRemark, setOtherOperationRemark] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -112,6 +113,10 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    setOtherOperationRemark(true)
+    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -131,6 +136,10 @@ function OperationCostExcludedOverhead(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUppTriggerss${index}`)
+    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
+      delete errors.OperationGridFields[index].remarkPopUp;
+      setOtherOperationRemark(false)
+    }
     button.click()
   }
 
@@ -413,10 +422,9 @@ function OperationCostExcludedOverhead(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      validate: { checkWhiteSpaces },
-                                      maxLength: REMARKMAXLENGTH
+                                      maxLength: otherOperationRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setOtherOperationRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
