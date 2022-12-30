@@ -46,6 +46,8 @@ function ProcessCost(props) {
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
   const [isFromApi, setIsFromApi] = useState(true)
+  const [singleProcessRemark, setSingleProcessRemark] = useState(true)
+  const [groupProcessRemark, setGroupProcessRemark] = useState(true)
   const [groupNameMachine, setGroupNameMachine] = useState('')
   const [groupNameIndex, setGroupNameIndex] = useState('')
   const dispatch = useDispatch()
@@ -332,7 +334,7 @@ function ProcessCost(props) {
 
 
   const onRemarkPopUpClick = (index) => {
-    if (errors.rmGridFields && errors.rmGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -363,6 +365,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpClosee = (index) => {
     var button = document.getElementById(`popUpTriggers${index}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setSingleProcessRemark(false)
+    }
     button.click()
   }
 
@@ -407,6 +413,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpCloseGroup = (index, parentIndex) => {
     let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setGroupProcessRemark(false)
+    }
     button.click()
 
   }
@@ -1146,10 +1156,12 @@ function ProcessCost(props) {
                     register={register}
                     mandatory={false}
                     rules={{
-                      validate: { checkWhiteSpaces },
-                      maxLength: REMARKMAXLENGTH
+                      maxLength: groupProcessRemark && REMARKMAXLENGTH
                     }}
-                    handleChange={(e) => { }}
+                    handleChange={(e) => {
+                      setGroupProcessRemark(true)
+                      console.log(e.target.value)
+                    }}
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
@@ -1256,7 +1268,6 @@ function ProcessCost(props) {
                               {
 
                                 < div className='d-flex align-items-center'>
-                                  {console.log('item.BoughtOutPartUOM: ', item)}
                                   <span className="d-inline-block mr-2">
                                     {
                                       <TextFieldHookForm
@@ -1338,10 +1349,9 @@ function ProcessCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      validate: { checkWhiteSpaces },
-                                      maxLength: REMARKMAXLENGTH
+                                      maxLength: singleProcessRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setSingleProcessRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
