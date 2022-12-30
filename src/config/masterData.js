@@ -4028,8 +4028,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
@@ -4048,22 +4047,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
     { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
@@ -4074,24 +4067,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
@@ -4102,24 +4090,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
     { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
     { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4197,12 +4180,14 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
     { label: "Plant Name", value: "PlantName", },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", }
+    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -4849,22 +4834,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old Net Process Cost", value: "OldNetProcessCost" },
     { label: "New Net Process Cost", value: "NewNetProcessCost" },
-    { label: "Net Process Cost Variance", value: "NetProcessCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const MRGridForTokenSummary = [
