@@ -288,6 +288,7 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
+            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
