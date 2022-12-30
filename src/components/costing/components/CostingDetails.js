@@ -1718,7 +1718,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterList = debounce(async (inputValue) => {
+  const filterList = async (inputValue) => {
 
     const resultInput = inputValue.slice(0, 3)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
@@ -1750,7 +1750,7 @@ function CostingDetails(props) {
       }
     }
 
-  }, 500)
+  }
 
   const loaderObj = { isLoader: inputLoader, }
   return (
