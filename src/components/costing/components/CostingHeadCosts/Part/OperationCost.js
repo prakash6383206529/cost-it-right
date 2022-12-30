@@ -11,6 +11,7 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 
 let counter = 0;
 function OperationCost(props) {
@@ -28,6 +29,7 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [operationRemark, setOperationRemark] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -129,6 +131,9 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -149,6 +154,10 @@ function OperationCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
+    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
+      delete errors.OperationGridFields[index].remarkPopUp;
+      setOperationRemark(false)
+    }
     button.click()
   }
 
@@ -407,12 +416,9 @@ function OperationCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      maxLength: operationRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setOperationRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}

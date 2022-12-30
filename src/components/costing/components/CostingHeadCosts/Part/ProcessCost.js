@@ -15,7 +15,7 @@ import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, set
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
-import { MACHINING, } from '../../../../../config/masterData'
+import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 
@@ -44,6 +44,8 @@ function ProcessCost(props) {
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
   const [isFromApi, setIsFromApi] = useState(true)
+  const [singleProcessRemark, setSingleProcessRemark] = useState(true)
+  const [groupProcessRemark, setGroupProcessRemark] = useState(true)
   const [groupNameMachine, setGroupNameMachine] = useState('')
   const [groupNameIndex, setGroupNameIndex] = useState('')
   const dispatch = useDispatch()
@@ -310,7 +312,10 @@ function ProcessCost(props) {
   }
 
 
-  const onRemarkPopUpClickk = (index) => {
+  const onRemarkPopUpClick = (index) => {
+    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -339,6 +344,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpClosee = (index) => {
     var button = document.getElementById(`popUpTriggers${index}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setSingleProcessRemark(false)
+    }
     button.click()
   }
 
@@ -383,6 +392,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpCloseGroup = (index, parentIndex) => {
     let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setGroupProcessRemark(false)
+    }
     button.click()
 
   }
@@ -1084,12 +1097,12 @@ function ProcessCost(props) {
                     register={register}
                     mandatory={false}
                     rules={{
-                      maxLength: {
-                        value: 75,
-                        message: "Remark should be less than 75 word"
-                      },
+                      maxLength: groupProcessRemark && REMARKMAXLENGTH
                     }}
-                    handleChange={(e) => { }}
+                    handleChange={(e) => {
+                      setGroupProcessRemark(true)
+                      console.log(e.target.value)
+                    }}
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
@@ -1273,12 +1286,9 @@ function ProcessCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      maxLength: singleProcessRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setSingleProcessRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
@@ -1289,7 +1299,7 @@ function ProcessCost(props) {
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
