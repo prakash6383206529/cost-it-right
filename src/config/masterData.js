@@ -4067,8 +4067,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
@@ -4087,22 +4086,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
     { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
@@ -4113,24 +4106,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
@@ -4141,24 +4129,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant (Code)", value: "PlantCode" },
 
     { label: "Insert Name", value: "BoughtOutPartName" },
     { label: "Insert Number", value: "BoughtOutPartNumber" },
     { label: "Old Insert Cost", value: "OldNetBoughtOutPartCost" },
     { label: "New Insert Cost", value: "NewNetBoughtOutPartCost" },
     { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
-
-    { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4238,12 +4221,14 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
     { label: "Plant Name", value: "PlantName", },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", }
+    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -4455,7 +4440,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Part Name", value: "PartName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
-    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE 
+    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
@@ -4567,7 +4552,7 @@ export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Sr No", value: "SrNo" }, //Serial no
     { label: "evrtn", value: "SANumber" },//SA no
     { label: "ebelp", value: "LineNumber" },//Line no
-    { label: "datab", value: "CreatedDate", },//Date 
+    { label: "datab", value: "CreatedDate", },//Date
     { label: "kbetr", value: "NetPOPrice" }, //Price
     { label: "Reason", value: "Reason" }, //Reason
     { label: "Text", value: "Text" }, //Text
@@ -4911,22 +4896,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old Net Process Cost", value: "OldNetProcessCost" },
     { label: "New Net Process Cost", value: "NewNetProcessCost" },
-    { label: "Net Process Cost Variance", value: "NetProcessCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const MRGridForTokenSummary = [
@@ -5266,7 +5245,7 @@ export const tempObject = [
             }
         },
         "CostingChildPartDetails": [
-            // Bop11    
+            // Bop11
             {
                 "JsonStage": "_apart",
                 "IsLocked": null,
@@ -5352,7 +5331,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
-            // LOWER CROSS BEAM FABRICATED 
+            // LOWER CROSS BEAM FABRICATED
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -5437,7 +5416,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
-            // Test 07 
+            // Test 07
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -5522,7 +5501,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
-            // demo part1   
+            // demo part1
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -5607,7 +5586,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
-            // Bop12     
+            // Bop12
             {
                 "JsonStage": "_apart",
                 "IsLocked": null,
