@@ -174,6 +174,7 @@ function CostingSummary(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    setpartName([])
     reactLocalStorage.setObject('PartData', [])
   }
   useEffect(() => {
