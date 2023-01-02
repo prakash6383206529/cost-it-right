@@ -200,6 +200,7 @@ function CostReportForm(props) {
             setTechnology([])
             setIsTechnologySelected(false)
         }
+        setpartName([])
         reactLocalStorage.setObject('PartData', [])
     }
 

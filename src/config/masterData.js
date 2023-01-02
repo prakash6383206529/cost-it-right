@@ -2683,9 +2683,9 @@ export const ZBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
-        'ICCApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'ICCPercent': 10,
-        'PaymentTermApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'RepaymentPeriod': 30,
         'PaymentTermPercent': 10,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2714,9 +2714,9 @@ export const VBCInterestRateTempData = [
         'VendorCode': 'VCode001',
         "PlantName": "1511",
         "PlantCode": "1511",
-        'ICCApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'ICCPercent': '10   ',
-        'PaymentTermApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'RepaymentPeriod': '30',
         'PaymentTermPercent': '10',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2741,9 +2741,9 @@ export const CBCInterestRateTempData = [
         'CustomerCode': 'C-10008',
         "PlantName": "1511",
         "PlantCode": "1511",
-        'ICCApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'ICCPercent': '10   ',
-        'PaymentTermApplicability': 'RM/RM + CC/RM + BOP + CC/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
+        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
         'RepaymentPeriod': '30',
         'PaymentTermPercent': '10',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -4028,8 +4028,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
@@ -4048,22 +4047,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
     { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
@@ -4074,24 +4067,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
@@ -4102,24 +4090,19 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
     { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
     { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4197,12 +4180,14 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
     { label: "Plant Name", value: "PlantName", },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", }
+    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -4471,7 +4456,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Overhead Percentage", value: "OverheadPercentage", },
     { label: "Overhead Combined Cost", value: "OverheadCombinedCost", },
     { label: "Profit Applicability", value: "ProfitApplicability", },
-    { label: "Profit Percentage(Overall)", value: "ProfitPercentage", },
+    { label: "Profit Percentage (Overall)", value: "ProfitPercentage", },
     { label: "Profit Cost", value: "ProfitCost", },
     { label: "Net Overhead And Profit Cost", value: "NetOverheadAndProfitCost", },
     { label: "Rejection Applicability", value: "RejectionApplicability", },
@@ -4496,22 +4481,22 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Packaging Cost", value: "PackagingCost", },
     { label: "Freight Percentage", value: "FreightPercentage", },
     { label: "Freight Cost", value: "FreightCost", },
-    { label: "FreightType", value: "FreightType", },
-    { label: "Hundi/DiscountPercentage", value: "HundiOrDiscountPercentage", },
-    { label: "Hundi/DiscountValue", value: "HundiOrDiscountValue", },
-    { label: "ToolCost", value: "ToolCost", },
+    { label: "Freight Type", value: "FreightType", },
+    { label: "Hundi/Discount Percentage", value: "HundiOrDiscountPercentage", },
+    { label: "Hundi/Discount Value", value: "HundiOrDiscountValue", },
+    { label: "Tool Cost", value: "ToolCost", },
     { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
     { label: "Tool Maintenance Cost", value: "ToolMaintenanceCost", },
     { label: "Net Tool Cost", value: "NetToolCost", },
     { label: "Other Cost Percentage", value: "OtherCostPercentage", },
     { label: "Any Other Cost", value: "AnyOtherCost", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Effective Date", value: "EffectiveDate", },
     { label: "Currency", value: "Currency", },
     { label: "Costing Head", value: "CostingHead", },
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
-    { label: "Net POPrice Other Currency", value: "NetPOPriceOtherCurrency", },
-    { label: "Net POPrice(INR)", value: "NetPOPriceINR", },
+    { label: "Net PO Price Other Currency", value: "NetPOPriceOtherCurrency", },
+    { label: "Net PO Price (INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     { label: "Status", value: "Status", },
 
@@ -4849,22 +4834,16 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant", value: "PlantName" },
-    { label: "Plant Code", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Old Net Process Cost", value: "OldNetProcessCost" },
     { label: "New Net Process Cost", value: "NewNetProcessCost" },
-    { label: "Net Process Cost Variance", value: "NetProcessCostVariance" },
-
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
-
 ]
 
 export const MRGridForTokenSummary = [
