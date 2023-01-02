@@ -187,6 +187,15 @@ function EditPartCost(props) {
         setGridData(gridTempArr)
     }
 
+    const calculateWeightedCost = (arrayTemp = []) => {
+        let weightedCostCalc = 0
+        weightedCostCalc = arrayTemp && arrayTemp.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
+
+        return weightedCostCalc
+    }
+
     const handleDeltaSignChange = (value, index) => {
         if (value?.label === '-') {
             if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
@@ -197,6 +206,7 @@ function EditPartCost(props) {
                 tempGrid.DeltaValue = 0
                 tempGrid.NetCost = 0
                 let arr = Object.assign([...gridData], { [index]: tempGrid })
+                setWeightedCost(calculateWeightedCost(arr))
                 setGridData(arr)
 
                 setTimeout(() => {
@@ -226,6 +236,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
                 setValue(`${PartCostFields}.${index}.NetCost`, 0)
             }, 200);
+            setWeightedCost(calculateWeightedCost(gridData))
             return false
         }
         setTimeout(() => {
