@@ -18,6 +18,7 @@ import Insights from '../../report/components/BenchMarkReportPages/RMInsights'
 import MachineInsights from '../../report/components/BenchMarkReportPages/MachineInsights'
 import InsightsBop from '../../report/components/BenchMarkReportPages/InsightsBop'
 import OperationInsights from '../../report/components/BenchMarkReportPages/OperationInsights'
+import LoaderCustom from '../../common/LoaderCustom';
 
 function CostingBenchmarkReport(props) {
 
@@ -39,6 +40,7 @@ function CostingBenchmarkReport(props) {
     const [blueDivison, setblueDivison] = useState(false)
     const [dateArray, setDateArray] = useState([])
     const [disableRunReport, setDisableRunReport] = useState(true)
+    const [loader, setLoader] = useState(false)
 
     const dispatch = useDispatch()
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -73,26 +75,24 @@ function CostingBenchmarkReport(props) {
     }, [selectedRowForPagination])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
-
-
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
-
         setShowInsight(false)
-
         dispatch(setMasterForSimulation(value))
-
         setRunReportButton(true)
         setblueDivison(true)
-
         setShowMasterList(false)
+        setLoader(true)
+
         setTimeout(() => {
+            setTimeout(() => {
+                setLoader(false)
+            }, 400);
             setShowMasterList(true)
-        }, 300);
+        }, 200);
 
         setMaster(value)
     }
-
 
     const handleDate = (data) => {
 
@@ -102,7 +102,6 @@ function CostingBenchmarkReport(props) {
 
 
     const renderModule = (value) => {
-
 
         switch (value.value) {
             case RMDOMESTIC:
@@ -127,9 +126,7 @@ function CostingBenchmarkReport(props) {
     }
 
 
-
     const renderInsights = (value) => {
-
 
         switch (value.value) {
             case RMDOMESTIC:
@@ -154,7 +151,6 @@ function CostingBenchmarkReport(props) {
     }
 
 
-
     const runReport = () => {
 
         setShowInsight(true)
@@ -162,7 +158,6 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(false)
         setDropDown(false)
         setcancelButton(true)
-
     }
 
     const cancelReport = () => {
@@ -172,10 +167,7 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(true)
         setDropDown(true)
         setcancelButton(false)
-
-
     }
-
 
     const renderListing = (label) => {
         let temp = []
@@ -191,14 +183,11 @@ function CostingBenchmarkReport(props) {
             })
             return temp
         }
-
     }
-
 
     /**
   
     */
-
 
     return (
         <div className="container-fluid simulation-page">
@@ -238,7 +227,7 @@ function CostingBenchmarkReport(props) {
                         </Col>
                     </Row>
 
-
+                    {loader && < LoaderCustom />}
                     {showMasterList && renderModule(master)}
                     {showInsight && renderInsights(master)}
 
@@ -257,8 +246,6 @@ function CostingBenchmarkReport(props) {
                             </div>
                         </Row>
                     }
-
-
 
                 </div >
             }
