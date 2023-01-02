@@ -70,7 +70,7 @@ function VerifySimulation(props) {
             dispatch(getAllMultiTechnologyImpactedSimulationCostings(props?.token, (res) => {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
-                    if (data?.SimulationImpactedCostings?.length === 0) {
+                    if ((Object.keys(data).length === 0) || (data?.SimulationImpactedCostings?.length === 0)) {
                         Toaster.warning('No approved costing exist for this Vendor.')
                         setHideRunButton(true)
                         return false

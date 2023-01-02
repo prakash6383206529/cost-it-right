@@ -1330,7 +1330,7 @@ export function getAllMultiTechnologyImpactedSimulationCostings(simulationId, ca
             if (response?.data?.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response?.data?.Data?.SimulationImpactedCostings,
+                    payload: response?.data?.Data?.SimulationImpactedCostings ? response?.data?.Data?.SimulationImpactedCostings : [],
                 });
                 callback(response);
             }
