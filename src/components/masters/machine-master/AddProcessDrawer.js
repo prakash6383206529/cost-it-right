@@ -81,17 +81,16 @@ class AddProcessDrawer extends Component {
     let obj = {
       processName: value,
       processCode: ""
-
     }
     this.setState({ processName: value, setDisable: false })
-
-    this.props.getProcessCode(obj, (res) => {
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.DynamicData
-        this.props.change('ProcessCode', Data.ProcessCode)
-      }
-    })
-
+    if (e?.target?.value) {
+      this.props.getProcessCode(obj, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.DynamicData
+          this.props.change('ProcessCode', Data.ProcessCode)
+        }
+      })
+    }
   }
 
   checkProcessCodeUnique = (e) => {
@@ -372,7 +371,7 @@ class AddProcessDrawer extends Component {
                       type={'button'}
                       className="mr15 cancel-btn"
                       onClick={this.cancelHandler}
-                      disabled={setDisable}
+                      disabled={false}
                     >
                       <div className={"cancel-icon"}></div>
                       {'Cancel'}
