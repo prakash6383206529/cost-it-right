@@ -51,6 +51,7 @@
 
 .Delete {
     @include icons("../../assests/images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include extra-icon-styles;
 }
 
 .Comment-box {
@@ -105,6 +106,7 @@
 
 .CancelIcon {
     @include icons("../../assests/images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include extra-icon-styles;
 }
 
 .CalculatorIcon {

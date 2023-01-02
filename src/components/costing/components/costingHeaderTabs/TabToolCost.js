@@ -394,6 +394,8 @@ function TabToolCost(props) {
         ToolCost: rowData.ToolCost,
         Life: rowData.Life,
         NetToolCost: rowData.NetToolCost,
+        BOMLevel: RMCCTabData && RMCCTabData[0]?.BOMLevel,
+        PartNumber: RMCCTabData && RMCCTabData[0].PartNumber
       }
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })

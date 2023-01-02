@@ -466,6 +466,7 @@ function CostingHeaderTabs(props) {
               <TabPackagingFreight
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderPackageFreightTab}
+                toggle={props.toggle}
               />
             </TabPane>
             <TabPane tabId="5">

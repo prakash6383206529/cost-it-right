@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, FILE_URL, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, UNDER_APPROVAL, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -64,7 +64,7 @@ function RfqListing(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        gridApi.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
     }
 
@@ -120,13 +120,13 @@ function RfqListing(props) {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let isActive = rowData?.IsActive
-        let quotationReceived = rowData.CostingReceived === 0
+        let status = rowData?.Status
+
         return (
             <>
-                {isActive && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isActive && quotationReceived && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isActive && quotationReceived && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+                {(status === DRAFT) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -153,7 +153,7 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1440 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -161,7 +161,7 @@ function RfqListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
-        window.screen.width >= 1440 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
 
     };
 
@@ -272,86 +272,105 @@ function RfqListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
-                <>
-                    <h1 className='mb-0'>RFQ</h1>
-                    <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+        <>
+            {!addRfq &&
+                <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                    {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
+                        <>
+                            <h1 className='mb-0'>RFQ</h1>
+                            <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
-                        <Col md="3" lg="3" className='mb-2'>
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                            {
-                                // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                (!props.isMasterSummaryDrawer) &&
-                                <>
-                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                <Col md="3" lg="3" className='mb-2'>
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                </Col>
+                                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                                    {
+                                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                                        (!props.isMasterSummaryDrawer) &&
                                         <>
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
+                                            <div className="d-flex justify-content-end bd-highlight w100">
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className={"user-btn mr5"}
+                                                        onClick={formToggle}
+                                                        title="Add"
+                                                    >
+                                                        <div className={"plus mr-0"}></div>
+                                                        {/* ADD */}
+                                                    </button>
+
+                                                </>
+                                            </div>
+
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
                                             </button>
-
                                         </>
+                                    }
+                                </Col>
+
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                                        <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            <AgGridReact
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                floatingFilter={true}
+                                                domLayout='autoHeight'
+                                                rowData={rowData}
+                                                pagination={true}
+                                                paginationPageSize={10}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                                suppressRowClickSelection={true}
+                                            >
+                                                <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                                <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
+                                                <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                                <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+
+                                            </AgGridReact>
+                                            <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
+                                        </div>
                                     </div>
+                                </Col>
+                            </Row>
 
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                </>
-                            }
-                        </Col>
+                        </>))
+                    }
 
-                    </Row>
-                    <Row>
-                        <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
-                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                    <AgGridReact
-                                        style={{ height: '100%', width: '100%' }}
-                                        defaultColDef={defaultColDef}
-                                        floatingFilter={true}
-                                        domLayout='autoHeight'
-                                        rowData={rowData}
-                                        pagination={true}
-                                        paginationPageSize={10}
-                                        onGridReady={onGridReady}
-                                        gridOptions={gridOptions}
-                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                        noRowsOverlayComponentParams={{
-                                            title: EMPTY_DATA,
-                                            imagClass: 'imagClass'
-                                        }}
-                                        frameworkComponents={frameworkComponents}
-                                        rowSelection={'multiple'}
-                                        suppressRowClickSelection={true}
-                                    >
-                                        <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                        <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
-                                        <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
-                                        <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
-                                        <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                        <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
-                                        <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                        <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                        {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {viewRfq &&
 
-                                    </AgGridReact>
-                                    <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                        <ViewRfq
+                            data={viewRfqData}
+                            isOpen={viewRfq}
+                            closeDrawer={closeDrawerViewRfq}
+                        />
 
-                </>))
+                    }
+
+                    {
+                        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+                    }
+
+                </div >
             }
 
             {addRfq &&
@@ -371,21 +390,7 @@ function RfqListing(props) {
             }
 
 
-            {viewRfq &&
-
-                <ViewRfq
-                    data={viewRfqData}
-                    isOpen={viewRfq}
-                    closeDrawer={closeDrawerViewRfq}
-                />
-
-            }
-
-            {
-                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
-            }
-
-        </div >
+        </>
     );
 }
 

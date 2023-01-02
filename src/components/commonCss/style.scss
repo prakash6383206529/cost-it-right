@@ -1129,6 +1129,7 @@ button.user-btn.pull-right {
 
 .cr-subtabs-head {
   background-color: #E0E9F5;
+  margin-top: 1rem;
 }
 
 .content-page .cr-subtabs-head.nav-tabs .nav-link {
@@ -6205,7 +6206,8 @@ body {
       .Rejected,
       .RejectedBySystem,
       .History,
-      .ApprovedByAssembly {
+      .ApprovedByAssembly,
+      .Sent {
         min-width: calc(90px * 80 / 100);
         height: calc(30px * 80 / 100);
         font-size: calc(14px * 80 / 100);
@@ -8872,4 +8874,8 @@ table.group-process-table {
     bottom: -14px;
     position: absolute;
   }
+}
+
+.pie-chart-container {
+  height: 30px;
 }

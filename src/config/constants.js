@@ -115,6 +115,7 @@ export const API = {
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+  checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -625,6 +626,8 @@ export const API = {
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
   uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
+  uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
+  uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
 
 
   //COST SUMMARY
@@ -1648,6 +1651,7 @@ export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
+export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1665,6 +1669,8 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
+export const UNDER_APPROVAL = 'Under Approval'
+export const CANCELLED = 'Cancelled'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1805,6 +1811,8 @@ export const RFQ_LISTING = '/rfq-listing'
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
+
+export const PART_COST = 'Part Cost'
 
 export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
@@ -1947,6 +1955,8 @@ export const PROFIT = 'Profits'
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
 export const PLASTIC_GROUP_BULKUPLOAD = 2
 export const MACHINING_GROUP_BULKUPLOAD = 3
+export const CORRUGATED_BOX = 4
+export const ASSEMBLY = 5
 
 
 export const REASON_ID = 2
@@ -2049,6 +2059,7 @@ export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
+export const ADDRFQ = 'ADDRFQ'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
@@ -2139,4 +2150,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.26";
+export const VERSION = "V2.1.34";
