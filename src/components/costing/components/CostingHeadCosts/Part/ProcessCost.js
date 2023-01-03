@@ -1046,7 +1046,6 @@ function ProcessCost(props) {
   const SingleProcessGridField = 'SingleProcessGridField'
 
   const processNetCostFormula = (value) => {
-    console.log('value: ', value);
     let processNetCostFormulaText;
     switch (value) {
       case 'Hours':
