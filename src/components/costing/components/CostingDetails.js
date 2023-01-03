@@ -1716,30 +1716,26 @@ function CostingDetails(props) {
 
   const filterList = async (inputValue) => {
 
-    const resultInput = inputValue.slice(0, 3)
+    const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
       const res = await getPartSelectListByTechnology(technology.value, resultInput);
       setInputLoader(false)
       setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
-      reactLocalStorage.setObject('PartData', partDataAPI)
-      let partData = []
       if (inputValue) {
-        partData = reactLocalStorage.getObject('PartData')
-        return autoCompleteDropdown(inputValue, partData)
+        return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
 
       } else {
-        return partData
+        return partDataAPI
       }
     }
     else {
       if (inputValue?.length < searchCount) return false
       else {
-        let partData = reactLocalStorage.getObject('PartData')
+        let partData = reactLocalStorage.getObject('Data')
         if (inputValue) {
-          partData = reactLocalStorage.getObject('PartData')
-          return autoCompleteDropdown(inputValue, partData)
+          return autoCompleteDropdown(inputValue, partData, false, [], false)
         } else {
           return partData
         }

@@ -4304,7 +4304,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UnitOfMeasurement", },
+    { label: "UOM", value: "UOM", },
     { label: "Rate", value: "Rate", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
