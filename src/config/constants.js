@@ -1812,6 +1812,8 @@ export const RFQ_LISTING = '/rfq-listing'
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
+export const PART_COST = 'Part Cost'
+
 export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
   // costingName: '',
@@ -2148,4 +2150,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.32";
+export const VERSION = "V2.1.34";
