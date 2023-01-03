@@ -903,7 +903,7 @@ function ApprovalListing(props) {
         <> {
           (loader) ? <LoaderCustom customClass="center-loader" /> :
             <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
-              <ScrollToTop pointProp={"approval-go-to-top"} />
+              {!isDashboard && <ScrollToTop pointProp={"approval-go-to-top"} />}
               <form noValidate>
                 <Row className="pt-4 blue-before">
                   <Col md="6" lg="6" className="search-user-block mb-3">
