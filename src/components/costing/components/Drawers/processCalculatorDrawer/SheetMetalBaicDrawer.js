@@ -106,21 +106,20 @@ function SheetMetalBaicDrawer(props) {
     switch (props.calculatorData.UOMType) {
       case MASS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
-        return true
+        break;
       case AREA:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
-        return true
+        break;
       case TIME:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
-        return;
+        break;
       case DIMENSIONLESS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
-        return true
+        break;
       case VOLUMETYPE:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
-        return true
+        break;
       default:
-
         break;
     }
 
