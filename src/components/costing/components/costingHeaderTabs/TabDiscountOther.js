@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useForm, Controller, } from "react-hook-form";
+import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -68,6 +68,11 @@ function TabDiscountOther(props) {
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+
+  const fieldValues = useWatch({
+    control,
+    name: ['Remarks', 'OtherCostDescription', 'Currency'],
+  });
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -174,7 +179,7 @@ function TabDiscountOther(props) {
 
       dispatch(setComponentDiscountOtherItemData(data, () => { }))
     }, 1000)
-  }, [DiscountCostData])
+  }, [DiscountCostData, fieldValues])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -332,6 +337,7 @@ function TabDiscountOther(props) {
   const handleAnyOtherCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
+        dispatch(isDiscountDataChange(true))
         setDiscountObj({
           ...discountObj,
           AnyOtherCost: event.target.value
@@ -348,6 +354,7 @@ function TabDiscountOther(props) {
   const handleDiscountCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
+        dispatch(isDiscountDataChange(true))
         if (checkForNull(event.target.value) > totalCost) {
           setTimeout(() => {
             setValue('HundiOrDiscountValue', 0)
@@ -382,6 +389,7 @@ function TabDiscountOther(props) {
   const handleDiscountPercenatgeCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
+        dispatch(isDiscountDataChange(true))
         setDiscountObj({
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
@@ -399,6 +407,7 @@ function TabDiscountOther(props) {
   const handleOtherCostTypeChange = (newValue) => {
     if (!CostingViewMode) {
       if (newValue && newValue !== '') {
+        dispatch(isDiscountDataChange(true))
         setOtherCostType(newValue)
         setValue('AnyOtherCost', 0)
         setValue('PercentageOtherCost', 0)
@@ -422,6 +431,7 @@ function TabDiscountOther(props) {
   const handleDiscountTypeChange = (newValue) => {
     if (!CostingViewMode) {
       if (newValue && newValue !== '') {
+        dispatch(isDiscountDataChange(true))
         setHundiDiscountType(newValue)
         setValue('HundiOrDiscountValue', 0)
         setValue('HundiOrDiscountPercentage', 0)
@@ -446,7 +456,7 @@ function TabDiscountOther(props) {
   const handleOtherCostPercentageChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-
+        dispatch(isDiscountDataChange(true))
         setDiscountObj({
           ...discountObj,
           OtherCostPercentage: checkForNull(event.target.value)
@@ -467,6 +477,8 @@ function TabDiscountOther(props) {
     setValue('NetPOPriceOtherCurrency', 0)
     setNetPoPriceCurrencyState(0)
     setShowWarning(false)
+    console.log('ccccc');
+    dispatch(isDiscountDataChange(true))
   }
 
   /**
@@ -475,6 +487,7 @@ function TabDiscountOther(props) {
     */
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
+      dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
       dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
@@ -720,6 +733,7 @@ function TabDiscountOther(props) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
       if (!CostingViewMode) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        dispatch(isDiscountDataChange(false))
       }
     }
 
@@ -729,6 +743,7 @@ function TabDiscountOther(props) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+          dispatch(isDiscountDataChange(false))
           if (gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
@@ -755,6 +770,7 @@ function TabDiscountOther(props) {
         let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
+        dispatch(isDiscountDataChange(false))
 
       }
     }, 500);
@@ -762,6 +778,7 @@ function TabDiscountOther(props) {
   }, 500)
 
   const handleOherCostApplicabilityChange = (value) => {
+    dispatch(isDiscountDataChange(true))
     setOtherCostApplicability(value)
     setDiscountObj({
       ...discountObj,
@@ -770,6 +787,7 @@ function TabDiscountOther(props) {
   }
 
   const handleDiscountApplicabilityChange = (value) => {
+    dispatch(isDiscountDataChange(true))
     setDiscountCostApplicability(value)
     setDiscountObj({
       ...discountObj,
@@ -892,7 +910,7 @@ function TabDiscountOther(props) {
                           validate: { checkWhiteSpaces, hashValidation },
                           maxLength: STRINGMAXLENGTH
                         }}
-                        handleChange={() => { }}
+                        handleChange={() => { dispatch(isDiscountDataChange(true)) }}
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
@@ -1120,7 +1138,7 @@ function TabDiscountOther(props) {
                             message: "Remark should be less than 500 words"
                           },
                         }}
-                        handleChange={() => { }}
+                        handleChange={() => { dispatch(isDiscountDataChange(true)) }}
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}

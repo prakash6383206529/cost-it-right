@@ -162,7 +162,7 @@ function AddRfq(props) {
 
 
     const setDisableFalseFunction = () => {
-        const loop = Number(dropzone.current.files.length) - Number(files.length)
+        const loop = Number(dropzone.current.files?.length) - Number(files?.length)
         if (Number(loop) === 1) {
             setIsDisable(false)
         }
@@ -354,7 +354,7 @@ function AddRfq(props) {
         } else if (partList.length === 0) {
             Toaster.warning("Please enter part details")
             return false
-        } else if (files.length === 0) {
+        } else if (files?.length === 0) {
             Toaster.warning("Please add atleast one attachment file")
             return false
         }
@@ -1011,10 +1011,10 @@ function AddRfq(props) {
 
                                         <Col md="4" className="height152-label">
                                             <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
-                                            <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                                            <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                 Maximum file upload limit has been reached.
                                             </div>
-                                            <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                                            <div className={`${files?.length >= 4 ? 'd-none' : ''}`}>
                                                 <Dropzone
                                                     ref={dropzone}
                                                     onChangeStatus={handleChangeStatus}
