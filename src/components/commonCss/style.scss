@@ -3163,7 +3163,7 @@ button:disabled,
   &:hover,
   &:focus,
   &:active:focus {
-    background-color: #1d59af !important;
+    background-color: $primaryhoverColor !important;
     color: #fff !important;
   }
 }

@@ -19,6 +19,14 @@
     margin-left: $i * 0.25rem;
   }
 
+  .ml-n#{$i} {
+    margin-left: $i * -0.25rem;
+  }
+
+  .mr-n#{$i} {
+    margin-right: $i * -0.25rem;
+  }
+
   .pr-#{$i} {
     padding-right: $i * 0.25rem;
   }
@@ -29,6 +37,7 @@
 
   .col-md-#{$i} {
     flex: 0 0 $i * 8.33%;
+    width: 100%;
   }
 }
 
@@ -38,6 +47,26 @@
 
 .float-left {
   float: left;
+}
+
+.fa-info-circle {
+  &::before {
+    position: absolute;
+    right: 1px;
+  }
+}
+
+table {
+
+  th,
+  td {
+    .fa-info-circle {
+      &::before {
+        position: static;
+        right: unset;
+      }
+    }
+  }
 }
 
 table {
@@ -52,7 +81,7 @@ body {
 }
 
 body a {
-  color: $colorPrimary;
+  color: $headingblack;
   text-decoration: none !important;
 }
 
@@ -806,13 +835,14 @@ a:hover {
               }
 
               .form-control {
-                padding: 7px 8px !important;
-                height: auto;
+                padding: 4px 8px !important;
+                height: 26px;
                 min-height: auto;
                 line-height: initial;
                 max-width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-bottom: 4px;
               }
             }
 
@@ -1483,8 +1513,8 @@ p {
   text-transform: uppercase;
 
   &:hover {
-    // background: $customPrimary-Hover;
-    // border-color: $customPrimary-Hover;
+    background: $primaryhoverColor;
+    border-color: $primaryhoverColor;
     color: $white;
   }
 

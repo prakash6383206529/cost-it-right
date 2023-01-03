@@ -16,6 +16,7 @@ import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";
 import './dashboard.scss';
 import MasterApprovalTabs from "./MasterApprovalTabs";
+import ScrollToTop from "../common/ScrollToTop";
 
 
 function Dashboard(props) {
@@ -103,10 +104,11 @@ function Dashboard(props) {
   }
 
   return (
-    <>
+    <div id="dashboard-go-to-top">
       {
         !hideDash &&
         <>
+          <ScrollToTop pointProp={"dashboard-go-to-top"} />
           <div className="dashboard-page w-100">
             <CalculatorWrapper />
             {/* <Row>
@@ -231,7 +233,7 @@ function Dashboard(props) {
           </Row>
         </>
       }
-    </>
+    </div>
   )
 }
 /**
