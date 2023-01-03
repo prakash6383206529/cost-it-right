@@ -2159,6 +2159,7 @@ export const statusOptions = [
 ]
 //AUTOCOMPLETE IN PART
 export const searchCount = 3
+export const dropdownLimit = 100
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])

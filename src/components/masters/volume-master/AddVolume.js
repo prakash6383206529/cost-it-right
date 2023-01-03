@@ -680,9 +680,10 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
+
     const vendorFilterList = async (inputValue) => {
       const { vendorName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         this.setState({ inputLoader: true })
         let res
@@ -690,44 +691,37 @@ class AddVolume extends Component {
         this.setState({ inputLoader: false })
         this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let VendorData = []
         if (inputValue) {
-          VendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, VendorData)
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
         } else {
-          return VendorData
+          return vendorDataAPI
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let VendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('Data')
           if (inputValue) {
-            VendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, VendorData)
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
           } else {
             return VendorData
           }
         }
       }
     };
+
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
-        this.setState({ isLoader: true })
         const res = await getPartSelectListWtihRevNo(resultInput)
-        this.setState({ isLoader: false })
+
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.DataList
-        reactLocalStorage?.setObject('PartData', partDataAPI)
-        let partData = []
         if (inputValue) {
-          partData = reactLocalStorage?.getObject('PartData')
-          return autoCompleteDropdownPart(inputValue, partData)
+          return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
         } else {
-          return partData
+          return partDataAPI
         }
       }
       else {
@@ -735,7 +729,7 @@ class AddVolume extends Component {
         else {
           let partData = reactLocalStorage?.getObject('PartData')
           if (inputValue) {
-            partData = reactLocalStorage?.getObject('PartData')
+            return autoCompleteDropdownPart(inputValue, partData, false, [], false)
           } else {
             return partData
           }
