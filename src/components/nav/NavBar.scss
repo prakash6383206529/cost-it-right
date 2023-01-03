@@ -150,6 +150,7 @@ li.nav-item .logo {
     border-bottom: 1px solid rgba(180, 197, 226, 0.51);
     z-index: 9;
     position: static;
+
     .nav-link {
       display: block;
       padding: 4px 0.55rem 0 0.55rem;
@@ -165,12 +166,13 @@ li.nav-item .logo {
     // border-top: #ccc 1px dashed;
     background: $white !important;
     box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.075) !important;
-     
+
     // line-height: 32px; 
     padding: 0px 2rem;
-    nav{
+
+    nav {
       align-items: center;
-      height: 50px; 
+      height: 50px;
     }
 
     a {
@@ -181,9 +183,15 @@ li.nav-item .logo {
       font-weight: 400;
       opacity: 1;
       margin-right: 25px;
-      &:hover, &:active{
-        span{ color:#256BD1}
+
+      &:hover,
+      &:active {
+        span {
+          color: $navbarHover;
+          font-weight: bold;
+        }
       }
+
       img,
       span {
         display: inline-block;
@@ -200,13 +208,37 @@ li.nav-item .logo {
         padding-left: 0;
       }
     }
-    a.IsActive{color: #256bd1;}
+
+    a.IsActive {
+      color: $navbarHover;
+      font-weight: bold;
+    }
 
     .additional-masters {
       img {
         height: 20px;
         object-fit: contain;
       }
+    }
+
+    .additional-masters {
+      min-width: 140px;
+    }
+
+    .costing {
+      min-width: 58px;
+    }
+
+    .masters {
+      min-width: 60px;
+    }
+
+    .simulation {
+      min-width: 80px;
+    }
+
+    .report {
+      min-width: 50px;
     }
   }
 
@@ -352,6 +384,7 @@ li.nav-item .logo {
       box-shadow: none;
       height: 43px;
       margin-top: 1px;
+
       &:hover,
       &:focus,
       &:active,
@@ -373,26 +406,107 @@ li.nav-item .logo {
       background-color: #d9e2f0;
       left: 0;
       top: 9px;
+
       @media screen and (max-width:$max1367) {
         top: 4px;
       }
     }
   }
-  .cr-logout-btn{
-    .nav-link{
+
+  .cr-logout-btn {
+    .nav-link {
       padding-top: 2px;
       padding-right: 2px;
       margin-left: 4px;
-      img{
-        width: 19px;height:19px;
+
+      img {
+        width: 19px;
+        height: 19px;
       }
     }
   }
-  .top-menu.logout{
-    button{
-      &:after{
+
+  .top-menu.logout {
+    button {
+      &:after {
         content: none;
       }
+    }
+  }
+}
+
+// top menu bar drop down css starts here
+.nav-item.dropdown {
+  position: unset;
+
+  .dr-icon {
+    font-size: 14px;
+  }
+
+  .dropdown-menu.sub-menu {
+    display: none;
+    position: absolute;
+    right: 29px;
+    top: 30px;
+    left: 29px;
+    z-index: 10;
+    text-align: left;
+    list-style: none;
+    padding-top: 20px;
+    background-clip: padding-box;
+    background-color: transparent;
+    border: none;
+
+    ul {
+      background-color: #fff;
+      box-shadow: 0px 5px 10px #00000033;
+      border-radius: 4px;
+      min-width: 8.4375rem;
+      padding: 25px;
+
+      li {
+        padding: 5px 10px;
+        padding: 5px 10px;
+        display: inline-block;
+        vertical-align: top;
+        width: 19.8%;
+        text-align: left;
+      }
+
+      a {
+        color: #8A91AC;
+        font-size: 15px;
+        padding: 0;
+
+        &:hover,
+        &:focus {
+          background-color: #fff;
+          color: $navbarHover !important;
+          font-weight: bold;
+        }
+      }
+
+      .active-nav {
+        color: $colorPrimary;
+        font-weight: bold;
+      }
+    }
+  }
+
+  &:hover {
+    >.nav-link {
+      color: $navbarHover;
+      font-weight: bold;
+    }
+
+    i.dr-icon {
+      transform: rotate(180deg);
+      color: $navbarHover;
+      letter-spacing: 0px !important;
+    }
+
+    .dropdown-menu.sub-menu {
+      display: block;
     }
   }
 }
@@ -732,6 +846,7 @@ ul.ml-auto.top-menu.logout.nav {
     height: 20px;
   }
 }
+
 @media (max-width: 360px) {
   .userImg-header {
     span {
@@ -764,36 +879,46 @@ label.btn.btn-link.align-middle.checkbox-label {
   font-size: 1rem;
   margin-top: 8px;
 }
+
 .inner-header.main-menu {
   // position: fixed;
-    width: 100%;
+  width: 100%;
 }
-.MuiDrawer-root.MuiDrawer-modal{
+
+.MuiDrawer-root.MuiDrawer-modal {
   top: 0 !important;
   max-height: 100vh;
   overflow-y: auto;
-  .MuiBackdrop-root,.MuiDrawer-paper{
+
+  .MuiBackdrop-root,
+  .MuiDrawer-paper {
     top: 0;
     padding-bottom: 20px;
     overflow-x: hidden;
   }
 }
-.cr-other-logo{
+
+.cr-other-logo {
   border-left: 1px solid #959CB6;
   padding-left: 16px;
   margin-left: 16px;
 }
+
 .username {
   &.btn-secondary.dropdown-toggle {
     font-size: 14px !important;
   }
+
   cursor: no-drop;
+
   &:hover {
     color: #256bd1 !important;
   }
+
   &:focus {
     color: #256bd1 !important;
   }
+
   &:active {
     color: #256bd1 !important;
   }

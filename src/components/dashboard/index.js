@@ -13,6 +13,8 @@ import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTE
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import CommonApproval from "../masters/material-master/CommonApproval";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
+import './dashboard.scss';
+import ScrollToTop from "../common/ScrollToTop";
 
 
 function Dashboard(props) {
@@ -100,10 +102,11 @@ function Dashboard(props) {
   }
 
   return (
-    <>
+    <div id="dashboard-go-to-top">
       {
         !hideDash &&
         <>
+          <ScrollToTop pointProp={"dashboard-go-to-top"} />
           <div className="dashboard-page w-100">
             <CalculatorWrapper />
             <Row>
@@ -229,7 +232,7 @@ function Dashboard(props) {
           </Row>
         </>
       }
-    </>
+    </div>
   )
 }
 /**
