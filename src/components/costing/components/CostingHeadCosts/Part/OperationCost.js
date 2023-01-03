@@ -37,6 +37,7 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
   const [showQuantity, setShowQuantity] = useState(true)
+  const [operationRemark, setOperationRemark] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -154,6 +155,9 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -174,6 +178,10 @@ function OperationCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
+    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
+      delete errors.OperationGridFields[index].remarkPopUp;
+      setOperationRemark(false)
+    }
     button.click()
   }
 
@@ -449,10 +457,9 @@ function OperationCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      validate: { checkWhiteSpaces },
-                                      maxLength: REMARKMAXLENGTH
+                                      maxLength: operationRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setOperationRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
