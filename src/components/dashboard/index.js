@@ -100,7 +100,7 @@ function Dashboard(props) {
   }
 
   return (
-    <>
+    <div id="dashboard-go-to-top">
       {
         !hideDash &&
         <>
@@ -229,7 +229,7 @@ function Dashboard(props) {
           </Row>
         </>
       }
-    </>
+    </div>
   )
 }
 /**
