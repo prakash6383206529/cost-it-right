@@ -230,9 +230,11 @@ class MachineRateListing extends Component {
     }
 
     resetState = () => {
+        this.setState({ dataCount: 0, filterModel: {} })
+        setTimeout(() => {
+            resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
+        }, 300);
         this.props.setSelectedRowForPagination([])
-        resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
-        this.setState({ dataCount: 0 })
     }
 
     onBtPrevious = () => {
@@ -561,6 +563,8 @@ class MachineRateListing extends Component {
 
         var filterParams = {
             date: "",
+            inRangeInclusive: true,
+            filterOptions: ['equals', 'inRange'],
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';

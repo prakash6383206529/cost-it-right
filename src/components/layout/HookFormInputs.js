@@ -389,7 +389,7 @@ const errorAreaFunc = (errors, field) => {
 @desc: Render textarea input
 */
 export const TextAreaHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, rowHeight } = field
 
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
@@ -418,6 +418,7 @@ export const TextAreaHookForm = (field) => {
                 disabled={isDisabled}
                 value={value}
                 autoComplete={'off'}
+                rows={rowHeight && rowHeight}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)

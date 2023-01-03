@@ -70,7 +70,7 @@ function SupplierContributionReport(props) {
         if (label === 'plant') {
             plants && plants.map((item) => {
                 if (item.PlantId === '0') return false
-                temp.push({ label: item.PlantName, value: item.PlantId })
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
                 return null
             })
             return temp
@@ -131,7 +131,22 @@ function SupplierContributionReport(props) {
         plugins: {
             legend: {
                 display: false
-            }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        let label = '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed !== null) {
+                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
+                        }
+                        return label;
+                    }
+                }
+            },
         }
     };
 

@@ -70,7 +70,7 @@ function VerifySimulation(props) {
             dispatch(getAllMultiTechnologyImpactedSimulationCostings(props?.token, (res) => {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
-                    if (data?.SimulationImpactedCostings?.length === 0) {
+                    if ((Object.keys(data).length === 0) || (data?.SimulationImpactedCostings?.length === 0)) {
                         Toaster.warning('No approved costing exist for this Vendor.')
                         setHideRunButton(true)
                         return false
@@ -614,11 +614,14 @@ function VerifySimulation(props) {
                         <Col>
                             <div className={`ag-grid-react`}>
                                 <div className={`ag-grid-wrapper height-width-wrapper ${(verifyList && verifyList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                    <div className="ag-grid-header d-flex align-item-center justify-content-between">
+                                        <div className='d-flex align-item-center'>
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+                                        </div>
+                                        <button type="button" className={"apply"} onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
                                     </div>
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -705,10 +708,6 @@ function VerifySimulation(props) {
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
-                            <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
-                                <div className={"cancel-icon"}></div>
-                                {"CANCEL"}
-                            </button>
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}
                             <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >

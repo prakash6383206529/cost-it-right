@@ -126,101 +126,76 @@ class VolumeBulkUploadDrawer extends Component {
         const { handleSubmit } = this.props
         return (
             <>
-                <Drawer
-                    anchor={this.props.anchor}
-                    open={this.props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
-                >
-                    <Container>
-                        <div className={"drawer-wrapper"}>
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={"header-wrapper left"}>
-                                            <h3>
-                                                {"Volume Bulk Upload"}
-                                            </h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={"close-button right"}
-                                        ></div>
-                                    </Col>
-                                </Row>
-                                <Row className="pl-12">
+                <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 
-                                    <Col md="12">
-                                        <label>Upload File</label>
-                                        {this.state.fileName !== "" ? (
-                                            <div class="alert alert-danger" role="alert">
-                                                {this.state.fileName}
-                                            </div>
-                                        ) : (
-                                            <Dropzone
-                                                onChangeStatus={this.handleChangeStatus}
-                                                PreviewComponent={this.Preview}
-                                                onChange={this.fileHandler}
-                                                accept=".xlsx"
-                                                initialFiles={this.state.initialFiles}
-                                                maxFiles={1}
-                                                maxSizeBytes={2000000}
-                                                inputContent={(files, extra) =>
-                                                    extra.reject ? (
-                                                        "Image, audio and video files only"
-                                                    ) : (<div className="text-center">
-                                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                                        <span className="d-block">
-                                                            Drag and Drop or{" "}
-                                                            <span className="text-primary">
-                                                                Browse
-                                                            </span>
-                                                            <br />
-                                                            file to upload
-                                                        </span>
-                                                    </div>)
-                                                }
 
-                                                styles={{
-                                                    dropzoneReject: {
-                                                        borderColor: "red",
-                                                        backgroundColor: "#DAA",
-                                                    },
-                                                    inputLabel: (files, extra) =>
-                                                        extra.reject ? { color: "red" } : {},
-                                                }}
-                                                classNames="draper-drop"
-                                            />
-                                        )}
-                                        {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                    </Col>
-                                </Row>
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12 pl-3 pr-3">
-                                        <div className="text-right ">
-                                            <button
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn"
-                                            >
-                                                <div className={'cancel-icon'}></div>
-                                                CANCEL
-                                            </button>
-                                            <button type="submit" className="btn-primary save-btn">
-                                                <div className={'save-icon'}></div>
-                                                {"SAVE"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Row>
-                            </form>
+                    <Col md="12">
+                        <label>Upload File</label>
+                        {this.state.fileName !== "" ? (
+                            <div class="alert alert-danger" role="alert">
+                                {this.state.fileName}
+                            </div>
+                        ) : (
+                            <Dropzone
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                onChange={this.fileHandler}
+                                accept=".xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={1}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                    extra.reject ? (
+                                        "Image, audio and video files only"
+                                    ) : (<div className="text-center">
+                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                        <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">
+                                                Browse
+                                            </span>
+                                            <br />
+                                            file to upload
+                                        </span>
+                                    </div>)
+                                }
+
+                                styles={{
+                                    dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                    },
+                                    inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                            />
+                        )}
+                        {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                    </Col>
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <div className="col-md-12 pl-3 pr-3">
+                            <div className="text-right ">
+                                <button
+                                    onClick={this.cancel}
+                                    type="submit"
+                                    value="CANCEL"
+                                    className="reset mr15 cancel-btn"
+                                >
+                                    <div className={'cancel-icon'}></div>
+                                    CANCEL
+                                </button>
+                                <button type="submit" className="btn-primary save-btn">
+                                    <div className={'save-icon'}></div>
+                                    {"SAVE"}
+                                </button>
+                            </div>
                         </div>
-                    </Container>
-                </Drawer>
+                    </Row>
+                </form>
             </>
         );
     }

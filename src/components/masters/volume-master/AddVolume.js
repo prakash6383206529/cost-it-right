@@ -22,7 +22,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
@@ -720,12 +720,12 @@ class AddVolume extends Component {
         const res = await getPartSelectListWtihRevNo(resultInput)
         this.setState({ isLoader: false })
         this.setState({ partName: resultInput })
-        let partDataAPI = res?.data?.SelectList
+        let partDataAPI = res?.data?.DataList
         reactLocalStorage?.setObject('PartData', partDataAPI)
         let partData = []
         if (inputValue) {
           partData = reactLocalStorage?.getObject('PartData')
-          return autoCompleteDropdown(inputValue, partData)
+          return autoCompleteDropdownPart(inputValue, partData)
         } else {
           return partData
         }
@@ -736,7 +736,6 @@ class AddVolume extends Component {
           let partData = reactLocalStorage?.getObject('PartData')
           if (inputValue) {
             partData = reactLocalStorage?.getObject('PartData')
-            return autoCompleteDropdown(inputValue, partData)
           } else {
             return partData
           }

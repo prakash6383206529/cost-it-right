@@ -335,6 +335,7 @@ function CostingDetails(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    setpartName([])
     reactLocalStorage.setObject('PartData', [])
   }
 

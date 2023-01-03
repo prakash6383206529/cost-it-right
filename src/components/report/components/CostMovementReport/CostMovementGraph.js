@@ -382,23 +382,9 @@ function CostMovementGraph(props) {
                 maxRatation: 180,
                 minRatation: 180,
             },
-            // y: {
-            //     title: {
-            //         display: true,
-            //         text: getCurrencySymbol(getConfigurationKey().BaseCurrency),
-            //         color: '#000',
-            //         autoSkip: false,
-            //         maxRotation: 90,
-            //         minRotation: 90,
-            //         font: {
-            //             size: 28,
-            //             weight: 500,
-
-            //         },
-            //     },
-            //     maxRatation: 180,
-            //     minRatation: 180,
-            // },
+            y: {
+                min: 0
+            },
 
         },
     }
@@ -433,7 +419,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | serial no.): Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No.-Vendor code-Plant code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
