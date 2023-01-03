@@ -801,7 +801,7 @@ class SideBar extends Component {
                   <img src={cirLogo} alt="Cost It Right" height="40" />
                 </button>
               </div>
-              <div className="navbar-collapse offcanvas-collapse" id="">
+              <div className="navbar-collapse offcanvas-collapse justify-content-end" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
                     {VERSION}

@@ -877,7 +877,8 @@ a:hover {
 
       .paging-container {
         margin-top: -44px;
-        position: relative;
+        position: absolute;
+        right: 22px;
 
         &::before {
           content: "";
