@@ -51,6 +51,7 @@
 
 .Delete {
     @include icons("../../assests/images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include extra-icon-styles;
 }
 
 .Comment-box {
@@ -105,6 +106,7 @@
 
 .CancelIcon {
     @include icons("../../assests/images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include extra-icon-styles;
 }
 
 .CalculatorIcon {
@@ -212,7 +214,7 @@
 
 .download {
     @include icons("../../assests/images/download.png", 14px, 14px);
-    margin-right: 5px;
+    // margin-right: 5px;
 }
 
 .cancel-icon-white {
@@ -241,7 +243,7 @@
 
 .send-for-approval {
     @include icons("../../assests/images/send-for-approval.svg", 13px, 16px);
-    margin-right: 5px;
+    // margin-right: 5px;
 }
 
 .compare-arrows {
@@ -251,7 +253,7 @@
 
 .hirarchy-icon {
     @include icons("../../assests/images/hirarchy-icon.svg", 18px, 12px);
-    margin-right: 5px;
+    // margin-right: 5px;
 }
 
 .group-process {
@@ -278,12 +280,10 @@
 
 .filter {
     @include icons("../../assests/images/filter.png", 12px, 12px);
-    margin-right: 5px;
 }
 
 .refresh {
     @include icons("../../assests/images/refresh-icon.svg", 14px, 14px);
-    margin-right: 5px;
 }
 
 .cross-light {
