@@ -34,11 +34,7 @@
 
   .col-md-#{$i} {
     flex: 0 0 $i * 8.33%;
-    width: $i * 8.33%;
-  }
-
-  .mt#{$i} {
-    margin-right: #{$i}px;
+    width: 100%;
   }
 }
 
@@ -70,9 +66,9 @@ table {
   }
 }
 
-.nav-item {
-  a.nav-link {
-    color: $headingblack;
+table {
+  th {
+    border: 0 solid !important;
   }
 }
 
@@ -877,8 +873,7 @@ a:hover {
 
       .paging-container {
         margin-top: -44px;
-        position: absolute;
-        right: 22px;
+        position: relative;
 
         &::before {
           content: "";
