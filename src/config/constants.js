@@ -2139,9 +2139,9 @@ export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
 
-//AUTOCOMPLETE IN PART
-
+//AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
+export const dropdownLimit = 100
 
 // KEY AND IV
 

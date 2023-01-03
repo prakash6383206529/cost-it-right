@@ -1463,28 +1463,24 @@ function UserRegistration(props) {
   };
 
   const vendorFilterList = async (inputValue) => {
-    const resultInput = inputValue.slice(0, 3)
+    const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && vendor !== resultInput) {
       let res
       res = await getVendorWithVendorCodeSelectList(resultInput)
       setVendor(resultInput)
       let vendorDataAPI = res?.data?.SelectList
-      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-      let VendorData = []
       if (inputValue) {
-        VendorData = reactLocalStorage?.getObject('vendorData')
-        return autoCompleteDropdown(inputValue, VendorData)
+        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
       } else {
-        return VendorData
+        return vendorDataAPI
       }
     }
     else {
       if (inputValue?.length < searchCount) return false
       else {
-        let VendorData = reactLocalStorage?.getObject('vendorData')
+        let VendorData = reactLocalStorage?.getObject('Data')
         if (inputValue) {
-          VendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, VendorData)
+          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
         } else {
           return VendorData
         }
