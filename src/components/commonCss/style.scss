@@ -7040,6 +7040,7 @@ body {
 
   .paging-container {
     margin-top: 0 !important;
+    position: relative !important;
   }
 }
 
@@ -8323,7 +8324,7 @@ body {
   .input-group-prepend {
     position: absolute;
     right: 2px;
-    top: 1px;
+    top: 24%;
     min-height: 38px;
     z-index: 10;
 
