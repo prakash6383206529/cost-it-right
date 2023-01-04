@@ -1096,6 +1096,9 @@ export const scrollReset = (ID) => {
 
 //FOR SHOWING COLOR ON VALUE DECREASE AND INCREASE
 export const highlightCostingSummaryValue = (oldValue, newValue) => {
-  let className = oldValue === newValue ? '' : oldValue > newValue ? 'green-text' : 'red-text';
+  let getOldValue = oldValue ? oldValue : 0;
+  let getNewValue = newValue ? newValue : 0;
+  let className = getOldValue === getNewValue ? '' : getOldValue > getNewValue ? 'green-text' : 'red-text';
+
   return className;
 }
