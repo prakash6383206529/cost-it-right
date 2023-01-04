@@ -43,6 +43,7 @@ function BOPCost(props) {
   const [oldGridData, setOldGridData] = useState(data)
   const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
   const [fixedLimit, setFixedLimit] = useState(false)
+  const [headerPinned, setHeaderPinned] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -483,8 +484,8 @@ function BOPCost(props) {
               {/*BOP COST GRID */}
 
               <Col md="12">
-                <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
-                  <thead className='table-header'>
+                <Table className="table cr-brdr-main costing-bop-cost-section p-relative" size="sm" >
+                  <thead className={`${headerPinned ? 'sticky-headers' : ''} table-header`}>
                     <tr>
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
@@ -492,7 +493,7 @@ function BOPCost(props) {
                       <th>{`Insert Cost (INR)`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Net Insert Cost`}</th>
-                      <th>{`Action`}</th>
+                      <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>

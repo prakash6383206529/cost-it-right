@@ -374,6 +374,15 @@
     @include icons("../../assests/images/link.svg", 20px, 20px)
 }
 
+.pinned {
+    @include icons("../../assests/images/pinned.svg", 20px, 20px);
+
+    &:focus {
+        box-shadow: none;
+        border: none;
+    }
+}
+
 .broken-link-icon {
     @include icons("../../assests/images/broken-link.svg", 18px, 18px)
 }
