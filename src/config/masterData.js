@@ -1749,7 +1749,7 @@ export const BOP_CBC_IMPORT_TempData = [
 */
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -1759,7 +1759,7 @@ export const VOLUME_ACTUAL_ZBC = [
 export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
-        'PartNo': 'Screw01',
+        'PartNumber': 'Screw01',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
