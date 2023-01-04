@@ -123,7 +123,9 @@ function Rejection(props) {
             let BOP_CC = 0
             let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
             const NetSurfaceTreatmentCost = (IsIncludedSurfaceInRejection ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) : 0)
+            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
 
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE BLOCK WILL EXECUTE
             if (partType) {
@@ -178,15 +180,16 @@ function Rejection(props) {
                     break;
 
                 case 'CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(CC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull(((CC) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    let totalRejectionCost = ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(totalRejectionCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((totalRejectionCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: CC,
-                        RejectionTotalCost: checkForNull(CC) * calculatePercentage(checkForNull(RejectionPercentage))
+                        RejectionCost: totalRejectionCost,
+                        RejectionTotalCost: checkForNull((totalRejectionCost * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
