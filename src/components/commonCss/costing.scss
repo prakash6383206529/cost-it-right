@@ -393,3 +393,35 @@
     min-width: 310px;
   }
 }
+
+.sticky-headers {
+  position: sticky;
+  top: 182px;
+  z-index: 1;
+  background-color: $agGridBorder;
+
+  @media screen and (min-height:768px) and (max-height: 1092px) {
+    top: 165px;
+  }
+}
+
+.pin-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  grid-gap: 3px;
+
+  .pinned {
+    position: relative;
+
+    .unpin {
+      position: absolute;
+      height: 18px;
+      width: 1px;
+      background-color: $colorPrimary;
+      transform: rotate(-15deg);
+      right: 9px;
+      top: 1px;
+    }
+  }
+}
