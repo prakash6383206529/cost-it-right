@@ -48,6 +48,7 @@ function ProcessCost(props) {
   const [isFromApi, setIsFromApi] = useState(true)
   const [singleProcessRemark, setSingleProcessRemark] = useState(true)
   const [groupProcessRemark, setGroupProcessRemark] = useState(true)
+  const [headerPinned, setHeaderPinned] = useState(true)
   const [groupNameMachine, setGroupNameMachine] = useState('')
   const [groupNameIndex, setGroupNameIndex] = useState('')
   const dispatch = useDispatch()
@@ -1207,8 +1208,8 @@ function ProcessCost(props) {
           <Row>
             {/*OPERATION COST GRID */}
             <Col md="12">
-              <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
-                <thead>
+              <Table className="table cr-brdr-main costing-process-cost-section p-relative" size="sm">
+                <thead className={`${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
@@ -1218,7 +1219,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
-                    <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
+                    <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
                 <tbody>
