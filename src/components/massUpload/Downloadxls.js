@@ -196,6 +196,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkLabourRateConfigure(CBCOperation, CBCTypeId), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
+            case 'InsertDomestic':
             case 'BOPDomestic':
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_CBC_DOMESTIC, CBCTypeId), BOP_CBC_DOMESTIC_TempData);
             case 'BOPImport':
